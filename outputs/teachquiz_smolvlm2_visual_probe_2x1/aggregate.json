@@ -1,0 +1,45 @@
+{
+  "n_total": 2,
+  "n_scored": 2,
+  "n_valid": 2,
+  "overall": {
+    "n": 2,
+    "pre_score": 0.0,
+    "post_video_score": 0.0,
+    "random_video_score": 0.0,
+    "learning_gain": 0.0,
+    "normalized_gain": 0.0,
+    "positive_gain_rate": 0.0
+  },
+  "per_discipline": {
+    "mathematics": {
+      "n": 1,
+      "pre_score": 0.0,
+      "post_video_score": 0.0,
+      "random_video_score": 0.0,
+      "learning_gain": 0.0,
+      "normalized_gain": 0.0,
+      "positive_gain_rate": 0.0
+    },
+    "physics": {
+      "n": 1,
+      "pre_score": 0.0,
+      "post_video_score": 0.0,
+      "random_video_score": 0.0,
+      "learning_gain": 0.0,
+      "normalized_gain": 0.0,
+      "positive_gain_rate": 0.0
+    }
+  },
+  "per_task_type": {
+    "explanation": {
+      "n": 2,
+      "pre_score": 0.0,
+      "post_video_score": 0.0,
+      "random_video_score": 0.0,
+      "learning_gain": 0.0,
+      "normalized_gain": 0.0,
+      "positive_gain_rate": 0.0
+    }
+  }
+}

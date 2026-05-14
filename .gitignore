@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+dist/
+build/
+
+# Virtual environment
+.venv/
+
+# Models (large binaries)
+models/
+models_students/
+
+# HuggingFace cache
+.hf_cache
+
+# Environment secrets
+.envrc
+
+# IDE / editor
+.claude/
+.agents/
+.codex/
+
+# Accidental files
+--local-dir
+--max-workers
+
+# OS
+.DS_Store
+Thumbs.db
