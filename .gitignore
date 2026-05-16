@@ -28,6 +28,13 @@ models_students/
 --local-dir
 --max-workers
 
+# First-frame iteration intermediates (large, easily regenerable)
+data/first_frames/_backup_*/
+data/first_frames/manifest_*.jsonl
+data/first_frames/check_report_iter*.jsonl
+data/first_frames/check_report_mmmu_real.jsonl
+data/first_frames/check_report_gpt_image1.jsonl
+
 # OS
 .DS_Store
 Thumbs.db
