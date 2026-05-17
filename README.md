@@ -167,10 +167,24 @@ All 6 standard-eval dimensions are pilot-ready; learning gain is the headline co
 
 ## Environment
 
+First-time setup:
+
 ```bash
 cd /home/azureuser/workspace-gzy/zyf/rise-teacher
-source .envrc                # exports HF_HOME, AZURE_OPENAI_*, etc.
-source .venv/bin/activate
+conda env create -f environment.yml          # Python 3.10, torch 2.5.1+cu121, ~5 min
+cp .envrc.example .envrc                     # then edit Azure endpoint + paths
+```
+
+Every shell:
+
+```bash
+source .envrc                # activates the `rise-teacher` conda env and exports HF / Azure / CUDA env vars
+```
+
+For exact pin-for-pin reproducibility (after `conda activate rise-teacher`):
+
+```bash
+pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
 ```
 
 **Important paths:**

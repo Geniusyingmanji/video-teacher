@@ -1,0 +1,45 @@
+# Template for rise-teacher environment setup. Copy to .envrc and edit:
+#   cp .envrc.example .envrc
+#   source .envrc
+
+# === Paths ===
+export PROJECT_ROOT="/home/azureuser/workspace-gzy/zyf/rise-teacher"
+export DATA_ROOT="/data/zyf/rise-teacher"        # large model weights, generations, eval outputs
+
+# === Conda env activation ===
+# Requires: conda env create -f environment.yml
+if [ -z "${CONDA_DEFAULT_ENV:-}" ] || [ "$CONDA_DEFAULT_ENV" != "rise-teacher" ]; then
+    if [ -f /opt/miniconda/etc/profile.d/conda.sh ]; then
+        source /opt/miniconda/etc/profile.d/conda.sh
+        conda activate rise-teacher 2>/dev/null || \
+            echo "[.envrc] WARNING: conda env 'rise-teacher' not found — run \`conda env create -f environment.yml\`"
+    fi
+fi
+
+# === HuggingFace cache (off root partition to save space) ===
+export HF_HOME="$DATA_ROOT/hf_cache"
+export HF_HUB_CACHE="$DATA_ROOT/hf_cache/hub"
+export TRANSFORMERS_CACHE="$DATA_ROOT/hf_cache/transformers"
+export HUGGINGFACE_HUB_CACHE="$DATA_ROOT/hf_cache/hub"
+export DIFFUSERS_CACHE="$DATA_ROOT/hf_cache/diffusers"
+
+# === Pip cache off root partition ===
+export PIP_CACHE_DIR="$DATA_ROOT/pip_cache"
+mkdir -p "$PIP_CACHE_DIR"
+
+# === Azure OpenAI (key-less GPT-5.5 via Azure CLI bearer token) ===
+# Set your own endpoints if reusing this template outside the dev VM.
+export AZURE_OPENAI_ENDPOINT="https://YOUR-ENDPOINT-HERE.openai.azure.com/"
+export AZURE_OPENAI_API_VERSION="2025-01-01-preview"
+export AZURE_OPENAI_AUTH_MODE="azure_cli"
+export AZURE_OPENAI_AD_SCOPE="https://cognitiveservices.azure.com/.default"
+export LLM_MODEL="gpt-5.5"
+
+# === Bypass proxy for API calls ===
+export no_proxy="*"
+export NO_PROXY="*"
+
+# === GPU selection ===
+# Default prefers GPUs 1,2,3 (GPU 0 is heavily used by another workload on this VM).
+# Override at run time: CUDA_VISIBLE_DEVICES=2 python ...
+export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-1,2,3}"

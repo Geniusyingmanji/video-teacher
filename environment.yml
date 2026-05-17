@@ -1,0 +1,45 @@
+# rise-teacher conda environment.
+#
+# Create:
+#   conda env create -f environment.yml
+#   conda activate rise-teacher
+#
+# Update:
+#   conda env update -f environment.yml --prune
+#
+# Pins match the working venv on the dev VM (Python 3.10.20, PyTorch
+# 2.5.1+cu121, transformers 5.8, diffusers 0.38, accelerate 1.13).
+# Conda only provides the Python interpreter + pip; everything else is
+# installed by pip so we can pull the +cu121 PyTorch wheels from
+# download.pytorch.org (conda's pytorch channel does not always carry
+# matching builds).
+name: rise-teacher
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.10
+  - pip
+  - pip:
+      - --extra-index-url https://download.pytorch.org/whl/cu121
+      - torch==2.5.1+cu121
+      - torchvision==0.20.1+cu121
+      - torchaudio==2.5.1+cu121
+      - accelerate==1.13.0
+      - av==17.0.1
+      - azure-core==1.41.0
+      - azure-identity==1.25.3
+      - datasets==4.8.5
+      - diffusers==0.38.0
+      - httpx==0.28.1
+      - huggingface_hub==1.14.0
+      - imageio==2.37.3
+      - imageio-ffmpeg==0.6.0
+      - numpy==2.2.6
+      - openai==2.36.0
+      - opencv-python-headless==4.13.0.92
+      - pillow==12.2.0
+      - safetensors==0.8.0rc0
+      - sentencepiece==0.2.1
+      - tokenizers==0.22.2
+      - transformers==5.8.0
