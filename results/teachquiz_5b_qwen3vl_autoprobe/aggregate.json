@@ -1,0 +1,144 @@
+{
+  "n_total": 60,
+  "n_scored": 60,
+  "n_valid": 52,
+  "overall": {
+    "n": 52,
+    "pre_score": 0.3654,
+    "post_video_score": 0.8718,
+    "random_video_score": 0.3397,
+    "learning_gain": 0.4295,
+    "normalized_gain": 0.7596,
+    "positive_gain_rate": 0.8846
+  },
+  "per_discipline": {
+    "art_music": {
+      "n": 3,
+      "pre_score": 0.2222,
+      "post_video_score": 0.7778,
+      "random_video_score": 0.3333,
+      "learning_gain": 0.3334,
+      "normalized_gain": 0.6667,
+      "positive_gain_rate": 1.0
+    },
+    "biology": {
+      "n": 4,
+      "pre_score": 0.3333,
+      "post_video_score": 0.8334,
+      "random_video_score": 0.25,
+      "learning_gain": 0.5,
+      "normalized_gain": 0.75,
+      "positive_gain_rate": 1.0
+    },
+    "chemistry": {
+      "n": 4,
+      "pre_score": 0.25,
+      "post_video_score": 0.8334,
+      "random_video_score": 0.5,
+      "learning_gain": 0.3333,
+      "normalized_gain": 0.6667,
+      "positive_gain_rate": 0.75
+    },
+    "civics": {
+      "n": 4,
+      "pre_score": 0.1667,
+      "post_video_score": 0.9167,
+      "random_video_score": 0.3333,
+      "learning_gain": 0.5834,
+      "normalized_gain": 0.75,
+      "positive_gain_rate": 0.75
+    },
+    "computer_science": {
+      "n": 5,
+      "pre_score": 0.6667,
+      "post_video_score": 0.8,
+      "random_video_score": 0.4,
+      "learning_gain": 0.1333,
+      "normalized_gain": 0.4,
+      "positive_gain_rate": 0.4
+    },
+    "economics": {
+      "n": 4,
+      "pre_score": 0.5,
+      "post_video_score": 0.9167,
+      "random_video_score": 0.3333,
+      "learning_gain": 0.4167,
+      "normalized_gain": 0.75,
+      "positive_gain_rate": 0.75
+    },
+    "geography": {
+      "n": 4,
+      "pre_score": 0.25,
+      "post_video_score": 1.0,
+      "random_video_score": 0.0833,
+      "learning_gain": 0.6667,
+      "normalized_gain": 1.0,
+      "positive_gain_rate": 1.0
+    },
+    "history": {
+      "n": 5,
+      "pre_score": 0.3333,
+      "post_video_score": 0.9333,
+      "random_video_score": 0.3333,
+      "learning_gain": 0.4667,
+      "normalized_gain": 0.9,
+      "positive_gain_rate": 1.0
+    },
+    "language_literature": {
+      "n": 5,
+      "pre_score": 0.3333,
+      "post_video_score": 0.8667,
+      "random_video_score": 0.3333,
+      "learning_gain": 0.4667,
+      "normalized_gain": 0.8,
+      "positive_gain_rate": 1.0
+    },
+    "mathematics": {
+      "n": 5,
+      "pre_score": 0.3333,
+      "post_video_score": 0.8,
+      "random_video_score": 0.2666,
+      "learning_gain": 0.4667,
+      "normalized_gain": 0.7667,
+      "positive_gain_rate": 1.0
+    },
+    "medicine": {
+      "n": 4,
+      "pre_score": 0.5,
+      "post_video_score": 0.9167,
+      "random_video_score": 0.5,
+      "learning_gain": 0.4167,
+      "normalized_gain": 0.875,
+      "positive_gain_rate": 1.0
+    },
+    "physics": {
+      "n": 5,
+      "pre_score": 0.4,
+      "post_video_score": 0.8667,
+      "random_video_score": 0.4,
+      "learning_gain": 0.4,
+      "normalized_gain": 0.8,
+      "positive_gain_rate": 1.0
+    }
+  },
+  "per_task_type": {
+    "explanation": {
+      "n": 32,
+      "pre_score": 0.3854,
+      "post_video_score": 0.8854,
+      "random_video_score": 0.3958,
+      "learning_gain": 0.3854,
+      "normalized_gain": 0.8073,
+      "positive_gain_rate": 0.9375
+    },
+    "problem_solving": {
+      "n": 20,
+      "pre_score": 0.3333,
+      "post_video_score": 0.85,
+      "random_video_score": 0.25,
+      "learning_gain": 0.5,
+      "normalized_gain": 0.6834,
+      "positive_gain_rate": 0.8
+    }
+  }
+}

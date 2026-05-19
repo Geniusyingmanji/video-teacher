@@ -1,0 +1,101 @@
+{
+  "n_total": 60,
+  "mean_aggregate": 1.754,
+  "strict_accuracy": 0.0,
+  "per_dim_mean": {
+    "narrative_structure": 1.5,
+    "conceptual_correctness": 1.45,
+    "visual_quality": 2.896
+  },
+  "per_discipline": {
+    "mathematics": {
+      "n": 5,
+      "mean": 1.8,
+      "strict_acc": 0.0
+    },
+    "physics": {
+      "n": 5,
+      "mean": 1.78,
+      "strict_acc": 0.0
+    },
+    "chemistry": {
+      "n": 5,
+      "mean": 1.51,
+      "strict_acc": 0.0
+    },
+    "biology": {
+      "n": 5,
+      "mean": 1.79,
+      "strict_acc": 0.0
+    },
+    "medicine": {
+      "n": 5,
+      "mean": 1.51,
+      "strict_acc": 0.0
+    },
+    "computer_science": {
+      "n": 5,
+      "mean": 1.59,
+      "strict_acc": 0.0
+    },
+    "history": {
+      "n": 5,
+      "mean": 2.23,
+      "strict_acc": 0.0
+    },
+    "geography": {
+      "n": 5,
+      "mean": 1.88,
+      "strict_acc": 0.0
+    },
+    "economics": {
+      "n": 5,
+      "mean": 1.35,
+      "strict_acc": 0.0
+    },
+    "civics": {
+      "n": 5,
+      "mean": 2.01,
+      "strict_acc": 0.0
+    },
+    "language_literature": {
+      "n": 5,
+      "mean": 1.6,
+      "strict_acc": 0.0
+    },
+    "art_music": {
+      "n": 5,
+      "mean": 2.0,
+      "strict_acc": 0.0
+    }
+  },
+  "per_task_type": {
+    "problem_solving": {
+      "n": 24,
+      "mean": 1.5,
+      "strict_acc": 0.0
+    },
+    "explanation": {
+      "n": 36,
+      "mean": 1.924,
+      "strict_acc": 0.0
+    }
+  },
+  "per_difficulty": {
+    "k12": {
+      "n": 29,
+      "mean": 1.909,
+      "strict_acc": 0.0
+    },
+    "undergrad": {
+      "n": 26,
+      "mean": 1.629,
+      "strict_acc": 0.0
+    },
+    "professional": {
+      "n": 5,
+      "mean": 1.51,
+      "strict_acc": 0.0
+    }
+  }
+}
