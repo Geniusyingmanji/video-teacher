@@ -1,0 +1,7 @@
+[regen-cand_retry_20260601_191325] 4 FAIL cases via gpt-image-1 (1536x1024, q=high)
+[regen-cand_retry_20260601_191325] backed up 4 originals -> data/first_frames_candidates/sleep2_20260601_180854_sample12/_backup_before_cand_retry_20260601_191325
+[regen-cand_retry_20260601_191325] [1/4] sleep2_20260601_180854_08_zero_based_array_index: ok in 43.2s (wall 0.7m, 1726KB)
+[regen-cand_retry_20260601_191325] [2/4] sleep2_20260601_180854_09_boolean_expression_tru: ok in 40.3s (wall 1.4m, 1900KB)
+[regen-cand_retry_20260601_191325] [3/4] sleep2_20260601_180854_12_html_dom_tree_intro: ok in 37.6s (wall 2.0m, 1583KB)
+[regen-cand_retry_20260601_191325] [4/4] sleep2_20260601_180854_13_middle_passage_route: ok in 63.9s (wall 3.1m, 2110KB)
+[regen-cand_retry_20260601_191325] DONE — 3.1 min, 4 ok, 0 err, manifest @ data/first_frames_candidates/sleep2_20260601_180854_sample12/manifest_regen_cand_retry_20260601_191325.jsonl

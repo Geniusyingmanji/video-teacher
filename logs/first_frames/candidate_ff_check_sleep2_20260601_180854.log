@@ -1,0 +1,22 @@
+[check] [1/12] sleep2_20260601_180854_001_proton_pump_inhibitor: PASS (rel=5 elem=4 edu=5 tech=5)
+[check] [2/12] sleep2_20260601_180854_003_naloxone_opioid_rever: PASS (rel=5 elem=4 edu=4 tech=5)
+[check] [3/12] sleep2_20260601_180854_004_diagnostic_test_ppv_t: PASS (rel=5 elem=5 edu=5 tech=4)
+[check] [4/12] sleep2_20260601_180854_005_bilirubin_jaundice_fl: PASS (rel=5 elem=5 edu=5 tech=5)
+[check] [5/12] sleep2_20260601_180854_006_microcytic_anemia_lab: PASS (rel=5 elem=5 edu=5 tech=5)
+[check] [6/12] sleep2_20260601_180854_07_stack_push_pop_trace: PASS (rel=5 elem=4 edu=5 tech=5)
+[check] [7/12] sleep2_20260601_180854_08_zero_based_array_index: ERROR, retrying in 5s
+[check] [7/12] sleep2_20260601_180854_08_zero_based_array_index: FAIL (rel=4 elem=2 edu=2 tech=4)
+[check] [8/12] sleep2_20260601_180854_09_boolean_expression_tru: ERROR, retrying in 5s
+[check] [8/12] sleep2_20260601_180854_09_boolean_expression_tru: ERROR, retrying in 10s
+[check] [8/12] sleep2_20260601_180854_09_boolean_expression_tru: ERROR, retrying in 15s
+[check] [8/12] sleep2_20260601_180854_09_boolean_expression_tru: ERROR (rel=? elem=? edu=? tech=?)
+[check] [9/12] sleep2_20260601_180854_10_function_call_return_t: PASS (rel=5 elem=4 edu=5 tech=5)
+[check] [10/12] sleep2_20260601_180854_11_selection_sort_first_p: PASS (rel=5 elem=4 edu=5 tech=5)
+[check] [11/12] sleep2_20260601_180854_12_html_dom_tree_intro: FAIL (rel=4 elem=3 edu=2 tech=4)
+[check] [12/12] sleep2_20260601_180854_13_middle_passage_route: ERROR, retrying in 5s
+[check] [12/12] sleep2_20260601_180854_13_middle_passage_route: ERROR, retrying in 10s
+[check] [12/12] sleep2_20260601_180854_13_middle_passage_route: ERROR, retrying in 15s
+[check] [12/12] sleep2_20260601_180854_13_middle_passage_route: ERROR (rel=? elem=? edu=? tech=?)
+
+[check] DONE — 12 checked, 8 PASS, 4 FAIL
+[check] Failed IDs need regeneration. See data/first_frames_candidates/sleep2_20260601_180854_sample12/check_report.jsonl

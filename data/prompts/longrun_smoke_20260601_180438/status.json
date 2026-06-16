@@ -1,0 +1,20 @@
+{
+  "prefix": "smoke_20260601_180438",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_smoke_20260601_180438",
+  "elapsed_minutes": 0.65,
+  "batches": 1,
+  "accepted": 2,
+  "raw": 2,
+  "rejected": 0,
+  "accepted_by_discipline": {
+    "medicine": 2
+  },
+  "accepted_by_task_type": {
+    "explanation": 1,
+    "problem_solving": 1
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 2
+  },
+  "finished_at": "2026-06-01T18:05:17Z"
+}

@@ -1,0 +1,2425 @@
+2026-06-01T18:12:36+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 1.59,
+  "batch": 0,
+  "accepted": 5,
+  "raw": 6,
+  "rejected": 1,
+  "accepted_by_discipline": {
+    "medicine": 5
+  },
+  "accepted_by_task_type": {
+    "explanation": 3,
+    "problem_solving": 2
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 3,
+    "professional": 1,
+    "k12": 1
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T18:10:31Z"
+}
+FF_REGEN
+{"regen_rows": 6, "regen_status": {"ok": 6}, "last_ids": ["math_exp_03", "math_prob_01", "math_prob_02", "phys_exp_01", "phys_prob_01"]}
+----
+2026-06-01T18:22:36+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 12.77,
+  "batch": 3,
+  "accepted": 21,
+  "raw": 24,
+  "rejected": 3,
+  "accepted_by_discipline": {
+    "medicine": 5,
+    "computer_science": 6,
+    "history": 2,
+    "language_literature": 1,
+    "art_music": 2,
+    "economics": 2,
+    "geography": 2,
+    "civics": 1
+  },
+  "accepted_by_task_type": {
+    "explanation": 7,
+    "problem_solving": 14
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 9,
+    "professional": 2,
+    "k12": 10
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T18:21:41Z"
+}
+FF_REGEN
+{"regen_rows": 19, "regen_status": {"ok": 19}, "last_ids": ["cs_exp_01", "cs_exp_02", "cs_exp_03", "cs_prob_02", "hist_exp_02"]}
+----
+2026-06-01T18:32:36+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 23.15,
+  "batch": 6,
+  "accepted": 38,
+  "raw": 42,
+  "rejected": 4,
+  "accepted_by_discipline": {
+    "medicine": 11,
+    "computer_science": 13,
+    "history": 2,
+    "language_literature": 1,
+    "art_music": 2,
+    "economics": 3,
+    "geography": 2,
+    "civics": 1,
+    "mathematics": 1,
+    "physics": 1,
+    "chemistry": 1
+  },
+  "accepted_by_task_type": {
+    "explanation": 12,
+    "problem_solving": 26
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 17,
+    "professional": 7,
+    "k12": 14
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T18:32:04Z"
+}
+FF_REGEN
+{"regen_rows": 30, "regen_status": {"ok": 30}, "last_ids": ["geo_prob_02", "econ_exp_01", "econ_exp_02", "econ_exp_03", "econ_prob_01"]}
+----
+2026-06-01T18:42:36+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 29.93,
+  "batch": 8,
+  "accepted": 49,
+  "raw": 54,
+  "rejected": 5,
+  "accepted_by_discipline": {
+    "medicine": 11,
+    "computer_science": 13,
+    "history": 4,
+    "language_literature": 2,
+    "art_music": 3,
+    "economics": 5,
+    "geography": 4,
+    "civics": 4,
+    "mathematics": 1,
+    "physics": 1,
+    "chemistry": 1
+  },
+  "accepted_by_task_type": {
+    "explanation": 15,
+    "problem_solving": 34
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 21,
+    "professional": 8,
+    "k12": 20
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T18:38:51Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 10, "check_verdicts": {"FAIL": 2, "PASS": 8}}
+----
+2026-06-01T18:52:36+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 41.03,
+  "batch": 11,
+  "accepted": 66,
+  "raw": 72,
+  "rejected": 6,
+  "accepted_by_discipline": {
+    "medicine": 17,
+    "computer_science": 20,
+    "history": 4,
+    "language_literature": 2,
+    "art_music": 3,
+    "economics": 6,
+    "geography": 4,
+    "civics": 4,
+    "mathematics": 2,
+    "physics": 2,
+    "chemistry": 2
+  },
+  "accepted_by_task_type": {
+    "explanation": 20,
+    "problem_solving": 46
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 29,
+    "professional": 14,
+    "k12": 23
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T18:49:57Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 55, "check_verdicts": {"FAIL": 17, "PASS": 37, "ERROR": 1}}
+----
+2026-06-01T19:02:36+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 52.01,
+  "batch": 14,
+  "accepted": 83,
+  "raw": 90,
+  "rejected": 7,
+  "accepted_by_discipline": {
+    "medicine": 17,
+    "computer_science": 21,
+    "history": 6,
+    "language_literature": 3,
+    "art_music": 3,
+    "economics": 9,
+    "geography": 6,
+    "civics": 8,
+    "mathematics": 3,
+    "physics": 3,
+    "chemistry": 4
+  },
+  "accepted_by_task_type": {
+    "explanation": 26,
+    "problem_solving": 57
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 34,
+    "professional": 21,
+    "k12": 28
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-01T19:00:56Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T19:12:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 62.56,
+  "batch": 17,
+  "accepted": 100,
+  "raw": 108,
+  "rejected": 8,
+  "accepted_by_discipline": {
+    "medicine": 23,
+    "computer_science": 27,
+    "history": 8,
+    "language_literature": 4,
+    "art_music": 4,
+    "economics": 9,
+    "geography": 6,
+    "civics": 9,
+    "mathematics": 3,
+    "physics": 3,
+    "chemistry": 4
+  },
+  "accepted_by_task_type": {
+    "explanation": 29,
+    "problem_solving": 71
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 42,
+    "professional": 22,
+    "k12": 36
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T19:11:28Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T19:22:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 73.16,
+  "batch": 20,
+  "accepted": 117,
+  "raw": 126,
+  "rejected": 9,
+  "accepted_by_discipline": {
+    "medicine": 27,
+    "computer_science": 28,
+    "history": 8,
+    "language_literature": 4,
+    "art_music": 4,
+    "economics": 12,
+    "geography": 8,
+    "civics": 11,
+    "mathematics": 3,
+    "physics": 5,
+    "chemistry": 5,
+    "biology": 2
+  },
+  "accepted_by_task_type": {
+    "explanation": 37,
+    "problem_solving": 80
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 46,
+    "professional": 30,
+    "k12": 41
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T19:22:04Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T19:32:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 80.41,
+  "batch": 22,
+  "accepted": 129,
+  "raw": 138,
+  "rejected": 9,
+  "accepted_by_discipline": {
+    "medicine": 27,
+    "computer_science": 34,
+    "history": 10,
+    "language_literature": 5,
+    "art_music": 6,
+    "economics": 12,
+    "geography": 8,
+    "civics": 12,
+    "mathematics": 3,
+    "physics": 5,
+    "chemistry": 5,
+    "biology": 2
+  },
+  "accepted_by_task_type": {
+    "explanation": 37,
+    "problem_solving": 92
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 50,
+    "professional": 30,
+    "k12": 49
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T19:29:19Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T19:42:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 91.14,
+  "batch": 25,
+  "accepted": 147,
+  "raw": 156,
+  "rejected": 9,
+  "accepted_by_discipline": {
+    "medicine": 32,
+    "computer_science": 35,
+    "history": 10,
+    "language_literature": 5,
+    "art_music": 6,
+    "economics": 15,
+    "geography": 10,
+    "civics": 14,
+    "mathematics": 5,
+    "physics": 6,
+    "chemistry": 6,
+    "biology": 3
+  },
+  "accepted_by_task_type": {
+    "explanation": 46,
+    "problem_solving": 101
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 57,
+    "professional": 36,
+    "k12": 54
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T19:40:03Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T19:52:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 101.67,
+  "batch": 28,
+  "accepted": 163,
+  "raw": 174,
+  "rejected": 11,
+  "accepted_by_discipline": {
+    "medicine": 32,
+    "computer_science": 40,
+    "history": 12,
+    "language_literature": 6,
+    "art_music": 8,
+    "economics": 17,
+    "geography": 12,
+    "civics": 16,
+    "mathematics": 5,
+    "physics": 6,
+    "chemistry": 6,
+    "biology": 3
+  },
+  "accepted_by_task_type": {
+    "explanation": 50,
+    "problem_solving": 113
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 62,
+    "professional": 36,
+    "k12": 65
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T19:50:35Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T20:02:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 111.71,
+  "batch": 31,
+  "accepted": 180,
+  "raw": 192,
+  "rejected": 12,
+  "accepted_by_discipline": {
+    "medicine": 37,
+    "computer_science": 47,
+    "history": 12,
+    "language_literature": 6,
+    "art_music": 8,
+    "economics": 18,
+    "geography": 12,
+    "civics": 16,
+    "mathematics": 5,
+    "physics": 7,
+    "chemistry": 8,
+    "biology": 4
+  },
+  "accepted_by_task_type": {
+    "explanation": 55,
+    "problem_solving": 125
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 68,
+    "professional": 42,
+    "k12": 70
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T20:00:38Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T20:12:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 122.72,
+  "batch": 34,
+  "accepted": 198,
+  "raw": 210,
+  "rejected": 12,
+  "accepted_by_discipline": {
+    "medicine": 37,
+    "computer_science": 48,
+    "history": 14,
+    "language_literature": 7,
+    "art_music": 9,
+    "economics": 22,
+    "geography": 14,
+    "civics": 20,
+    "mathematics": 6,
+    "physics": 8,
+    "chemistry": 9,
+    "biology": 4
+  },
+  "accepted_by_task_type": {
+    "explanation": 61,
+    "problem_solving": 137
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 73,
+    "professional": 49,
+    "k12": 76
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-01T20:11:38Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T20:22:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 133.16,
+  "batch": 37,
+  "accepted": 216,
+  "raw": 228,
+  "rejected": 12,
+  "accepted_by_discipline": {
+    "medicine": 41,
+    "computer_science": 54,
+    "history": 16,
+    "language_literature": 8,
+    "art_music": 10,
+    "economics": 22,
+    "geography": 14,
+    "civics": 22,
+    "mathematics": 6,
+    "physics": 8,
+    "chemistry": 10,
+    "biology": 5
+  },
+  "accepted_by_task_type": {
+    "explanation": 64,
+    "problem_solving": 152
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 86,
+    "professional": 50,
+    "k12": 80
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T20:22:04Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T20:32:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 140.81,
+  "batch": 39,
+  "accepted": 227,
+  "raw": 240,
+  "rejected": 13,
+  "accepted_by_discipline": {
+    "medicine": 41,
+    "computer_science": 55,
+    "history": 16,
+    "language_literature": 8,
+    "art_music": 10,
+    "economics": 26,
+    "geography": 16,
+    "civics": 23,
+    "mathematics": 7,
+    "physics": 9,
+    "chemistry": 11,
+    "biology": 5
+  },
+  "accepted_by_task_type": {
+    "explanation": 69,
+    "problem_solving": 158
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 88,
+    "professional": 57,
+    "k12": 82
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-01T20:29:44Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T20:42:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 151.28,
+  "batch": 42,
+  "accepted": 244,
+  "raw": 258,
+  "rejected": 14,
+  "accepted_by_discipline": {
+    "medicine": 46,
+    "computer_science": 60,
+    "history": 18,
+    "language_literature": 9,
+    "art_music": 11,
+    "economics": 26,
+    "geography": 16,
+    "civics": 25,
+    "mathematics": 7,
+    "physics": 9,
+    "chemistry": 11,
+    "biology": 6
+  },
+  "accepted_by_task_type": {
+    "explanation": 72,
+    "problem_solving": 172
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 95,
+    "professional": 58,
+    "k12": 91
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T20:40:12Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T20:52:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 161.74,
+  "batch": 45,
+  "accepted": 262,
+  "raw": 276,
+  "rejected": 14,
+  "accepted_by_discipline": {
+    "medicine": 51,
+    "computer_science": 61,
+    "history": 18,
+    "language_literature": 9,
+    "art_music": 11,
+    "economics": 29,
+    "geography": 18,
+    "civics": 27,
+    "mathematics": 9,
+    "physics": 10,
+    "chemistry": 12,
+    "biology": 7
+  },
+  "accepted_by_task_type": {
+    "explanation": 81,
+    "problem_solving": 181
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 100,
+    "professional": 67,
+    "k12": 95
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T20:50:39Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T21:02:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 172.68,
+  "batch": 48,
+  "accepted": 279,
+  "raw": 294,
+  "rejected": 15,
+  "accepted_by_discipline": {
+    "medicine": 51,
+    "computer_science": 67,
+    "history": 20,
+    "language_literature": 10,
+    "art_music": 11,
+    "economics": 31,
+    "geography": 20,
+    "civics": 31,
+    "mathematics": 9,
+    "physics": 10,
+    "chemistry": 12,
+    "biology": 7
+  },
+  "accepted_by_task_type": {
+    "explanation": 84,
+    "problem_solving": 195
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 108,
+    "professional": 67,
+    "k12": 104
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T21:01:36Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T21:12:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 183.04,
+  "batch": 51,
+  "accepted": 296,
+  "raw": 312,
+  "rejected": 16,
+  "accepted_by_discipline": {
+    "medicine": 57,
+    "computer_science": 73,
+    "history": 20,
+    "language_literature": 10,
+    "art_music": 11,
+    "economics": 33,
+    "geography": 20,
+    "civics": 31,
+    "mathematics": 10,
+    "physics": 11,
+    "chemistry": 13,
+    "biology": 7
+  },
+  "accepted_by_task_type": {
+    "explanation": 90,
+    "problem_solving": 206
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 112,
+    "professional": 73,
+    "k12": 111
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T21:11:58Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T21:22:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 190.43,
+  "batch": 53,
+  "accepted": 306,
+  "raw": 324,
+  "rejected": 18,
+  "accepted_by_discipline": {
+    "medicine": 57,
+    "computer_science": 73,
+    "history": 22,
+    "language_literature": 10,
+    "art_music": 12,
+    "economics": 35,
+    "geography": 22,
+    "civics": 34,
+    "mathematics": 10,
+    "physics": 11,
+    "chemistry": 13,
+    "biology": 7
+  },
+  "accepted_by_task_type": {
+    "explanation": 93,
+    "problem_solving": 213
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 118,
+    "professional": 74,
+    "k12": 114
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T21:19:21Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T21:32:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 200.9,
+  "batch": 56,
+  "accepted": 322,
+  "raw": 342,
+  "rejected": 20,
+  "accepted_by_discipline": {
+    "medicine": 62,
+    "computer_science": 79,
+    "history": 22,
+    "language_literature": 10,
+    "art_music": 12,
+    "economics": 36,
+    "geography": 22,
+    "civics": 34,
+    "mathematics": 10,
+    "physics": 12,
+    "chemistry": 15,
+    "biology": 8
+  },
+  "accepted_by_task_type": {
+    "explanation": 100,
+    "problem_solving": 222
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 124,
+    "professional": 80,
+    "k12": 118
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T21:29:49Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T21:42:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 212.64,
+  "batch": 59,
+  "accepted": 338,
+  "raw": 360,
+  "rejected": 22,
+  "accepted_by_discipline": {
+    "medicine": 62,
+    "computer_science": 81,
+    "history": 23,
+    "language_literature": 11,
+    "art_music": 13,
+    "economics": 39,
+    "geography": 24,
+    "civics": 37,
+    "mathematics": 11,
+    "physics": 13,
+    "chemistry": 16,
+    "biology": 8
+  },
+  "accepted_by_task_type": {
+    "explanation": 106,
+    "problem_solving": 232
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 129,
+    "professional": 87,
+    "k12": 122
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-01T21:41:34Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T21:52:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 223.11,
+  "batch": 62,
+  "accepted": 355,
+  "raw": 378,
+  "rejected": 23,
+  "accepted_by_discipline": {
+    "medicine": 68,
+    "computer_science": 87,
+    "history": 25,
+    "language_literature": 12,
+    "art_music": 13,
+    "economics": 39,
+    "geography": 24,
+    "civics": 39,
+    "mathematics": 11,
+    "physics": 13,
+    "chemistry": 16,
+    "biology": 8
+  },
+  "accepted_by_task_type": {
+    "explanation": 109,
+    "problem_solving": 246
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 137,
+    "professional": 87,
+    "k12": 131
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T21:52:02Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T22:02:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 233.68,
+  "batch": 65,
+  "accepted": 372,
+  "raw": 396,
+  "rejected": 24,
+  "accepted_by_discipline": {
+    "medicine": 73,
+    "computer_science": 88,
+    "history": 25,
+    "language_literature": 12,
+    "art_music": 13,
+    "economics": 42,
+    "geography": 26,
+    "civics": 41,
+    "mathematics": 12,
+    "physics": 14,
+    "chemistry": 18,
+    "biology": 8
+  },
+  "accepted_by_task_type": {
+    "explanation": 118,
+    "problem_solving": 254
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 142,
+    "professional": 96,
+    "k12": 134
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T22:02:36Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T22:12:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 240.88,
+  "batch": 67,
+  "accepted": 382,
+  "raw": 408,
+  "rejected": 26,
+  "accepted_by_discipline": {
+    "medicine": 73,
+    "computer_science": 94,
+    "history": 27,
+    "language_literature": 13,
+    "art_music": 13,
+    "economics": 42,
+    "geography": 26,
+    "civics": 42,
+    "mathematics": 12,
+    "physics": 14,
+    "chemistry": 18,
+    "biology": 8
+  },
+  "accepted_by_task_type": {
+    "explanation": 118,
+    "problem_solving": 264
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 145,
+    "professional": 96,
+    "k12": 141
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T22:09:48Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T22:22:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 251.74,
+  "batch": 70,
+  "accepted": 400,
+  "raw": 426,
+  "rejected": 26,
+  "accepted_by_discipline": {
+    "medicine": 77,
+    "computer_science": 95,
+    "history": 27,
+    "language_literature": 13,
+    "art_music": 13,
+    "economics": 45,
+    "geography": 28,
+    "civics": 44,
+    "mathematics": 13,
+    "physics": 16,
+    "chemistry": 20,
+    "biology": 9
+  },
+  "accepted_by_task_type": {
+    "explanation": 127,
+    "problem_solving": 273
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 151,
+    "professional": 102,
+    "k12": 147
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T22:20:40Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T22:32:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 262.67,
+  "batch": 73,
+  "accepted": 417,
+  "raw": 444,
+  "rejected": 27,
+  "accepted_by_discipline": {
+    "medicine": 77,
+    "computer_science": 101,
+    "history": 29,
+    "language_literature": 15,
+    "art_music": 13,
+    "economics": 47,
+    "geography": 30,
+    "civics": 47,
+    "mathematics": 13,
+    "physics": 16,
+    "chemistry": 20,
+    "biology": 9
+  },
+  "accepted_by_task_type": {
+    "explanation": 130,
+    "problem_solving": 287
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 156,
+    "professional": 103,
+    "k12": 158
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T22:31:35Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T22:42:37+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 273.31,
+  "batch": 76,
+  "accepted": 435,
+  "raw": 462,
+  "rejected": 27,
+  "accepted_by_discipline": {
+    "medicine": 82,
+    "computer_science": 108,
+    "history": 29,
+    "language_literature": 15,
+    "art_music": 13,
+    "economics": 48,
+    "geography": 30,
+    "civics": 47,
+    "mathematics": 15,
+    "physics": 17,
+    "chemistry": 22,
+    "biology": 9
+  },
+  "accepted_by_task_type": {
+    "explanation": 137,
+    "problem_solving": 298
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 162,
+    "professional": 110,
+    "k12": 163
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T22:42:14Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T22:52:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 280.82,
+  "batch": 78,
+  "accepted": 445,
+  "raw": 474,
+  "rejected": 29,
+  "accepted_by_discipline": {
+    "medicine": 82,
+    "computer_science": 108,
+    "history": 31,
+    "language_literature": 15,
+    "art_music": 14,
+    "economics": 50,
+    "geography": 32,
+    "civics": 50,
+    "mathematics": 15,
+    "physics": 17,
+    "chemistry": 22,
+    "biology": 9
+  },
+  "accepted_by_task_type": {
+    "explanation": 140,
+    "problem_solving": 305
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 166,
+    "professional": 111,
+    "k12": 168
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T22:49:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T23:02:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 291.43,
+  "batch": 81,
+  "accepted": 463,
+  "raw": 492,
+  "rejected": 29,
+  "accepted_by_discipline": {
+    "medicine": 85,
+    "computer_science": 115,
+    "history": 31,
+    "language_literature": 15,
+    "art_music": 14,
+    "economics": 51,
+    "geography": 32,
+    "civics": 50,
+    "mathematics": 16,
+    "physics": 18,
+    "chemistry": 25,
+    "biology": 11
+  },
+  "accepted_by_task_type": {
+    "explanation": 146,
+    "problem_solving": 317
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 174,
+    "professional": 117,
+    "k12": 172
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-01T23:00:21Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T23:12:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 302.09,
+  "batch": 84,
+  "accepted": 480,
+  "raw": 510,
+  "rejected": 30,
+  "accepted_by_discipline": {
+    "medicine": 85,
+    "computer_science": 116,
+    "history": 33,
+    "language_literature": 16,
+    "art_music": 14,
+    "economics": 54,
+    "geography": 34,
+    "civics": 54,
+    "mathematics": 18,
+    "physics": 19,
+    "chemistry": 26,
+    "biology": 11
+  },
+  "accepted_by_task_type": {
+    "explanation": 152,
+    "problem_solving": 328
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 179,
+    "professional": 124,
+    "k12": 177
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-01T23:11:01Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T23:22:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 312.23,
+  "batch": 87,
+  "accepted": 497,
+  "raw": 528,
+  "rejected": 31,
+  "accepted_by_discipline": {
+    "medicine": 89,
+    "computer_science": 122,
+    "history": 35,
+    "language_literature": 17,
+    "art_music": 14,
+    "economics": 54,
+    "geography": 34,
+    "civics": 56,
+    "mathematics": 18,
+    "physics": 19,
+    "chemistry": 28,
+    "biology": 11
+  },
+  "accepted_by_task_type": {
+    "explanation": 155,
+    "problem_solving": 342
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 188,
+    "professional": 124,
+    "k12": 185
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-01T23:21:09Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T23:32:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 322.57,
+  "batch": 90,
+  "accepted": 514,
+  "raw": 546,
+  "rejected": 32,
+  "accepted_by_discipline": {
+    "medicine": 93,
+    "computer_science": 123,
+    "history": 35,
+    "language_literature": 17,
+    "art_music": 14,
+    "economics": 57,
+    "geography": 36,
+    "civics": 58,
+    "mathematics": 18,
+    "physics": 20,
+    "chemistry": 31,
+    "biology": 12
+  },
+  "accepted_by_task_type": {
+    "explanation": 163,
+    "problem_solving": 351
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 194,
+    "professional": 130,
+    "k12": 190
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T23:31:29Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T23:42:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 332.85,
+  "batch": 93,
+  "accepted": 530,
+  "raw": 564,
+  "rejected": 34,
+  "accepted_by_discipline": {
+    "medicine": 93,
+    "computer_science": 129,
+    "history": 36,
+    "language_literature": 17,
+    "art_music": 15,
+    "economics": 59,
+    "geography": 38,
+    "civics": 62,
+    "mathematics": 18,
+    "physics": 20,
+    "chemistry": 31,
+    "biology": 12
+  },
+  "accepted_by_task_type": {
+    "explanation": 166,
+    "problem_solving": 364
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 198,
+    "professional": 132,
+    "k12": 200
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T23:41:46Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-01T23:52:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 340.08,
+  "batch": 95,
+  "accepted": 542,
+  "raw": 576,
+  "rejected": 34,
+  "accepted_by_discipline": {
+    "medicine": 98,
+    "computer_science": 131,
+    "history": 36,
+    "language_literature": 17,
+    "art_music": 15,
+    "economics": 60,
+    "geography": 38,
+    "civics": 62,
+    "mathematics": 19,
+    "physics": 21,
+    "chemistry": 32,
+    "biology": 13
+  },
+  "accepted_by_task_type": {
+    "explanation": 172,
+    "problem_solving": 370
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 202,
+    "professional": 138,
+    "k12": 202
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-01T23:49:00Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T00:02:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 351.0,
+  "batch": 98,
+  "accepted": 559,
+  "raw": 594,
+  "rejected": 35,
+  "accepted_by_discipline": {
+    "medicine": 98,
+    "computer_science": 137,
+    "history": 38,
+    "language_literature": 18,
+    "art_music": 15,
+    "economics": 62,
+    "geography": 40,
+    "civics": 66,
+    "mathematics": 19,
+    "physics": 21,
+    "chemistry": 32,
+    "biology": 13
+  },
+  "accepted_by_task_type": {
+    "explanation": 175,
+    "problem_solving": 384
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 208,
+    "professional": 140,
+    "k12": 211
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-01T23:59:55Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T00:12:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 361.63,
+  "batch": 101,
+  "accepted": 575,
+  "raw": 612,
+  "rejected": 37,
+  "accepted_by_discipline": {
+    "medicine": 104,
+    "computer_science": 143,
+    "history": 38,
+    "language_literature": 18,
+    "art_music": 15,
+    "economics": 63,
+    "geography": 40,
+    "civics": 66,
+    "mathematics": 19,
+    "physics": 22,
+    "chemistry": 34,
+    "biology": 13
+  },
+  "accepted_by_task_type": {
+    "explanation": 179,
+    "problem_solving": 396
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 214,
+    "professional": 145,
+    "k12": 216
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-02T00:10:33Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T00:22:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 372.76,
+  "batch": 104,
+  "accepted": 591,
+  "raw": 630,
+  "rejected": 39,
+  "accepted_by_discipline": {
+    "medicine": 104,
+    "computer_science": 145,
+    "history": 40,
+    "language_literature": 19,
+    "art_music": 16,
+    "economics": 65,
+    "geography": 42,
+    "civics": 69,
+    "mathematics": 20,
+    "physics": 23,
+    "chemistry": 35,
+    "biology": 13
+  },
+  "accepted_by_task_type": {
+    "explanation": 184,
+    "problem_solving": 407
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 218,
+    "professional": 151,
+    "k12": 222
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-02T00:21:41Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T00:32:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 383.23,
+  "batch": 107,
+  "accepted": 606,
+  "raw": 648,
+  "rejected": 42,
+  "accepted_by_discipline": {
+    "medicine": 107,
+    "computer_science": 151,
+    "history": 42,
+    "language_literature": 19,
+    "art_music": 17,
+    "economics": 65,
+    "geography": 42,
+    "civics": 70,
+    "mathematics": 20,
+    "physics": 23,
+    "chemistry": 36,
+    "biology": 14
+  },
+  "accepted_by_task_type": {
+    "explanation": 188,
+    "problem_solving": 418
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 226,
+    "professional": 152,
+    "k12": 228
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-02T00:32:09Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T00:42:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 390.47,
+  "batch": 109,
+  "accepted": 617,
+  "raw": 660,
+  "rejected": 43,
+  "accepted_by_discipline": {
+    "medicine": 107,
+    "computer_science": 152,
+    "history": 42,
+    "language_literature": 19,
+    "art_music": 17,
+    "economics": 68,
+    "geography": 44,
+    "civics": 72,
+    "mathematics": 20,
+    "physics": 25,
+    "chemistry": 37,
+    "biology": 14
+  },
+  "accepted_by_task_type": {
+    "explanation": 193,
+    "problem_solving": 424
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 228,
+    "professional": 158,
+    "k12": 231
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-02T00:39:23Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T00:52:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 401.16,
+  "batch": 112,
+  "accepted": 633,
+  "raw": 678,
+  "rejected": 45,
+  "accepted_by_discipline": {
+    "medicine": 111,
+    "computer_science": 158,
+    "history": 44,
+    "language_literature": 20,
+    "art_music": 17,
+    "economics": 68,
+    "geography": 44,
+    "civics": 73,
+    "mathematics": 20,
+    "physics": 25,
+    "chemistry": 38,
+    "biology": 15
+  },
+  "accepted_by_task_type": {
+    "explanation": 197,
+    "problem_solving": 436
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 235,
+    "professional": 159,
+    "k12": 239
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-02T00:50:04Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T01:02:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 411.58,
+  "batch": 115,
+  "accepted": 647,
+  "raw": 696,
+  "rejected": 49,
+  "accepted_by_discipline": {
+    "medicine": 115,
+    "computer_science": 159,
+    "history": 44,
+    "language_literature": 20,
+    "art_music": 17,
+    "economics": 70,
+    "geography": 45,
+    "civics": 75,
+    "mathematics": 20,
+    "physics": 26,
+    "chemistry": 41,
+    "biology": 15
+  },
+  "accepted_by_task_type": {
+    "explanation": 205,
+    "problem_solving": 442
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 240,
+    "professional": 164,
+    "k12": 243
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-02T01:00:30Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T01:12:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 421.78,
+  "batch": 118,
+  "accepted": 662,
+  "raw": 714,
+  "rejected": 52,
+  "accepted_by_discipline": {
+    "medicine": 115,
+    "computer_science": 165,
+    "history": 46,
+    "language_literature": 20,
+    "art_music": 17,
+    "economics": 71,
+    "geography": 47,
+    "civics": 79,
+    "mathematics": 20,
+    "physics": 26,
+    "chemistry": 41,
+    "biology": 15
+  },
+  "accepted_by_task_type": {
+    "explanation": 208,
+    "problem_solving": 454
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 245,
+    "professional": 165,
+    "k12": 252
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-02T01:10:42Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T01:22:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 432.39,
+  "batch": 121,
+  "accepted": 678,
+  "raw": 732,
+  "rejected": 54,
+  "accepted_by_discipline": {
+    "medicine": 120,
+    "computer_science": 172,
+    "history": 46,
+    "language_literature": 20,
+    "art_music": 17,
+    "economics": 72,
+    "geography": 47,
+    "civics": 79,
+    "mathematics": 21,
+    "physics": 27,
+    "chemistry": 41,
+    "biology": 16
+  },
+  "accepted_by_task_type": {
+    "explanation": 214,
+    "problem_solving": 464
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 249,
+    "professional": 170,
+    "k12": 259
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-02T01:21:18Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T01:32:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 443.53,
+  "batch": 124,
+  "accepted": 694,
+  "raw": 750,
+  "rejected": 56,
+  "accepted_by_discipline": {
+    "medicine": 120,
+    "computer_science": 174,
+    "history": 48,
+    "language_literature": 21,
+    "art_music": 17,
+    "economics": 75,
+    "geography": 49,
+    "civics": 82,
+    "mathematics": 22,
+    "physics": 28,
+    "chemistry": 42,
+    "biology": 16
+  },
+  "accepted_by_task_type": {
+    "explanation": 220,
+    "problem_solving": 474
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 253,
+    "professional": 176,
+    "k12": 265
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-02T01:32:27Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T01:42:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 450.35,
+  "batch": 126,
+  "accepted": 706,
+  "raw": 762,
+  "rejected": 56,
+  "accepted_by_discipline": {
+    "medicine": 125,
+    "computer_science": 180,
+    "history": 48,
+    "language_literature": 21,
+    "art_music": 17,
+    "economics": 75,
+    "geography": 49,
+    "civics": 82,
+    "mathematics": 22,
+    "physics": 28,
+    "chemistry": 42,
+    "biology": 17
+  },
+  "accepted_by_task_type": {
+    "explanation": 223,
+    "problem_solving": 483
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 259,
+    "professional": 177,
+    "k12": 270
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-02T01:39:16Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T01:52:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 461.73,
+  "batch": 129,
+  "accepted": 720,
+  "raw": 780,
+  "rejected": 60,
+  "accepted_by_discipline": {
+    "medicine": 125,
+    "computer_science": 181,
+    "history": 50,
+    "language_literature": 21,
+    "art_music": 18,
+    "economics": 78,
+    "geography": 51,
+    "civics": 85,
+    "mathematics": 23,
+    "physics": 29,
+    "chemistry": 42,
+    "biology": 17
+  },
+  "accepted_by_task_type": {
+    "explanation": 228,
+    "problem_solving": 492
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 265,
+    "professional": 182,
+    "k12": 273
+  },
+  "last_focus": "high_difficulty_visualizable",
+  "updated_at": "2026-06-02T01:50:39Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T02:02:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 471.9,
+  "batch": 132,
+  "accepted": 738,
+  "raw": 798,
+  "rejected": 60,
+  "accepted_by_discipline": {
+    "medicine": 129,
+    "computer_science": 187,
+    "history": 51,
+    "language_literature": 23,
+    "art_music": 20,
+    "economics": 78,
+    "geography": 51,
+    "civics": 86,
+    "mathematics": 23,
+    "physics": 29,
+    "chemistry": 43,
+    "biology": 18
+  },
+  "accepted_by_task_type": {
+    "explanation": 232,
+    "problem_solving": 506
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 276,
+    "professional": 183,
+    "k12": 279
+  },
+  "last_focus": "humanities_problem_solving",
+  "updated_at": "2026-06-02T02:00:49Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T02:12:38+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 482.57,
+  "batch": 135,
+  "accepted": 756,
+  "raw": 816,
+  "rejected": 60,
+  "accepted_by_discipline": {
+    "medicine": 135,
+    "computer_science": 188,
+    "history": 51,
+    "language_literature": 23,
+    "art_music": 20,
+    "economics": 81,
+    "geography": 53,
+    "civics": 88,
+    "mathematics": 24,
+    "physics": 31,
+    "chemistry": 44,
+    "biology": 18
+  },
+  "accepted_by_task_type": {
+    "explanation": 241,
+    "problem_solving": 515
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 284,
+    "professional": 190,
+    "k12": 282
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-02T02:11:29Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T02:22:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 493.05,
+  "batch": 138,
+  "accepted": 773,
+  "raw": 834,
+  "rejected": 61,
+  "accepted_by_discipline": {
+    "medicine": 135,
+    "computer_science": 194,
+    "history": 53,
+    "language_literature": 24,
+    "art_music": 21,
+    "economics": 83,
+    "geography": 55,
+    "civics": 91,
+    "mathematics": 24,
+    "physics": 31,
+    "chemistry": 44,
+    "biology": 18
+  },
+  "accepted_by_task_type": {
+    "explanation": 244,
+    "problem_solving": 529
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 292,
+    "professional": 190,
+    "k12": 291
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-02T02:21:58Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T02:32:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 500.72,
+  "batch": 140,
+  "accepted": 784,
+  "raw": 846,
+  "rejected": 62,
+  "accepted_by_discipline": {
+    "medicine": 140,
+    "computer_science": 195,
+    "history": 53,
+    "language_literature": 24,
+    "art_music": 21,
+    "economics": 84,
+    "geography": 55,
+    "civics": 91,
+    "mathematics": 25,
+    "physics": 32,
+    "chemistry": 46,
+    "biology": 18
+  },
+  "accepted_by_task_type": {
+    "explanation": 249,
+    "problem_solving": 535
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 295,
+    "professional": 195,
+    "k12": 294
+  },
+  "last_focus": "medicine_low_medium",
+  "updated_at": "2026-06-02T02:29:38Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T02:42:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 511.56,
+  "batch": 143,
+  "accepted": 801,
+  "raw": 864,
+  "rejected": 63,
+  "accepted_by_discipline": {
+    "medicine": 140,
+    "computer_science": 200,
+    "history": 55,
+    "language_literature": 25,
+    "art_music": 22,
+    "economics": 86,
+    "geography": 57,
+    "civics": 94,
+    "mathematics": 26,
+    "physics": 32,
+    "chemistry": 46,
+    "biology": 18
+  },
+  "accepted_by_task_type": {
+    "explanation": 253,
+    "problem_solving": 548
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 301,
+    "professional": 196,
+    "k12": 304
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-02T02:40:28Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T02:52:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 522.35,
+  "batch": 146,
+  "accepted": 819,
+  "raw": 882,
+  "rejected": 63,
+  "accepted_by_discipline": {
+    "medicine": 145,
+    "computer_science": 207,
+    "history": 55,
+    "language_literature": 25,
+    "art_music": 22,
+    "economics": 87,
+    "geography": 57,
+    "civics": 94,
+    "mathematics": 28,
+    "physics": 33,
+    "chemistry": 47,
+    "biology": 19
+  },
+  "accepted_by_task_type": {
+    "explanation": 260,
+    "problem_solving": 559
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 308,
+    "professional": 202,
+    "k12": 309
+  },
+  "last_focus": "cs_low_accessible",
+  "updated_at": "2026-06-02T02:51:16Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T03:02:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "duration_hours": 9.0,
+  "elapsed_minutes": 529.96,
+  "batch": 148,
+  "accepted": 829,
+  "raw": 894,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 145,
+    "computer_science": 207,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 89,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 28,
+    "physics": 33,
+    "chemistry": 47,
+    "biology": 19
+  },
+  "accepted_by_task_type": {
+    "explanation": 263,
+    "problem_solving": 566
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 310,
+    "professional": 205,
+    "k12": 314
+  },
+  "last_focus": "social_science_visual",
+  "updated_at": "2026-06-02T02:58:53Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T03:12:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T03:22:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T03:32:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T03:42:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T03:52:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----
+2026-06-02T04:02:39+00:00
+DATA_STATUS
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
+FF_REGEN
+{"regen_rows": 39, "regen_status": {"ok": 38, "error": 1}, "last_ids": ["lang_prob_01", "art_exp_01", "art_exp_02", "art_exp_03", "art_prob_01"]}
+{"check_rows": 60, "check_verdicts": {"FAIL": 20, "PASS": 39, "ERROR": 1}}
+----

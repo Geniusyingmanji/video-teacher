@@ -238,6 +238,90 @@
       }
     }
   },
+  "Wan5B-TI2V-FF-3s": {
+    "n": 60,
+    "mean": 2.017,
+    "strict_acc": 0.0,
+    "dims": {
+      "conceptual_correctness": 1.967,
+      "narrative_structure": 1.733,
+      "visual_quality": 2.675,
+      "pedagogical_clarity": 1.581,
+      "didactic_affordances": 1.863,
+      "audience_appropriateness": 2.44
+    },
+    "per_difficulty": {
+      "k12": {
+        "n": 29,
+        "mean": 2.121,
+        "strict_acc": 0.0
+      },
+      "undergrad": {
+        "n": 26,
+        "mean": 1.924,
+        "strict_acc": 0.0
+      },
+      "professional": {
+        "n": 5,
+        "mean": 1.905,
+        "strict_acc": 0.0
+      }
+    },
+    "per_task_type": {
+      "problem_solving": {
+        "n": 24,
+        "mean": 1.853,
+        "strict_acc": 0.0
+      },
+      "explanation": {
+        "n": 36,
+        "mean": 2.127,
+        "strict_acc": 0.0
+      }
+    }
+  },
+  "Wan5B-TI2V-FF-5s": {
+    "n": 60,
+    "mean": 2.013,
+    "strict_acc": 0.0,
+    "dims": {
+      "conceptual_correctness": 1.917,
+      "narrative_structure": 1.683,
+      "visual_quality": 2.688,
+      "pedagogical_clarity": 1.617,
+      "didactic_affordances": 1.842,
+      "audience_appropriateness": 2.548
+    },
+    "per_difficulty": {
+      "k12": {
+        "n": 29,
+        "mean": 2.095,
+        "strict_acc": 0.0
+      },
+      "undergrad": {
+        "n": 26,
+        "mean": 1.93,
+        "strict_acc": 0.0
+      },
+      "professional": {
+        "n": 5,
+        "mean": 1.971,
+        "strict_acc": 0.0
+      }
+    },
+    "per_task_type": {
+      "problem_solving": {
+        "n": 24,
+        "mean": 1.798,
+        "strict_acc": 0.0
+      },
+      "explanation": {
+        "n": 36,
+        "mean": 2.156,
+        "strict_acc": 0.0
+      }
+    }
+  },
   "Wan1.3B-v0.2-high": {
     "n": 22,
     "mean": 1.486,

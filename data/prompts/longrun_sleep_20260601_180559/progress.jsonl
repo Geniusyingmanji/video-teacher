@@ -1,0 +1,2 @@
+{"event": "batch_start", "batch": 0, "focus": "medicine_low_medium", "accepted_total": 0, "raw_total": 0, "rejected_total": 0, "ts": "2026-06-01T18:05:59Z"}
+{"event": "batch_done", "batch": 0, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 6, "elapsed_minutes": 1.3}

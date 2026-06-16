@@ -1,0 +1,14 @@
+[gpt-imggen] 12 cases; resume=0
+[gpt-imggen] [1/12] sleep2_20260601_180854_001_proton_pump_inhibitor: ok in 48.9s (wall 0.8m)
+[gpt-imggen] [2/12] sleep2_20260601_180854_003_naloxone_opioid_rever: ok in 42.6s (wall 1.5m)
+[gpt-imggen] [3/12] sleep2_20260601_180854_004_diagnostic_test_ppv_t: ok in 50.1s (wall 2.4m)
+[gpt-imggen] [4/12] sleep2_20260601_180854_005_bilirubin_jaundice_fl: ok in 69.2s (wall 3.5m)
+[gpt-imggen] [5/12] sleep2_20260601_180854_006_microcytic_anemia_lab: ok in 48.4s (wall 4.3m)
+[gpt-imggen] [6/12] sleep2_20260601_180854_07_stack_push_pop_trace: ok in 44.1s (wall 5.1m)
+[gpt-imggen] [7/12] sleep2_20260601_180854_08_zero_based_array_index: ok in 41.2s (wall 5.7m)
+[gpt-imggen] [8/12] sleep2_20260601_180854_09_boolean_expression_tru: ok in 41.3s (wall 6.4m)
+[gpt-imggen] [9/12] sleep2_20260601_180854_10_function_call_return_t: ok in 60.2s (wall 7.4m)
+[gpt-imggen] [10/12] sleep2_20260601_180854_11_selection_sort_first_p: ok in 44.1s (wall 8.2m)
+[gpt-imggen] [11/12] sleep2_20260601_180854_12_html_dom_tree_intro: ok in 41.1s (wall 8.9m)
+[gpt-imggen] [12/12] sleep2_20260601_180854_13_middle_passage_route: ok in 59.2s (wall 9.8m)
+[gpt-imggen] DONE 9.8m; ok=12; error=0; manifest=data/first_frames_candidates/sleep2_20260601_180854_sample12/manifest.jsonl

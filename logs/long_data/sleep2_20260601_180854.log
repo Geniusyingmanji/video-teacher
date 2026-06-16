@@ -1,0 +1,305 @@
+[long-data] batch 0 focus=medicine_low_medium accepted=0
+[long-data] batch 0 done: +5 accepted, +1 rejected; total=5
+[long-data] batch 1 focus=cs_low_accessible accepted=5
+[long-data] batch 1 done: +6 accepted, +0 rejected; total=11
+[long-data] batch 2 focus=humanities_problem_solving accepted=11
+[long-data] batch 2 done: +5 accepted, +1 rejected; total=16
+[long-data] batch 3 focus=social_science_visual accepted=16
+[long-data] batch 3 done: +5 accepted, +1 rejected; total=21
+[long-data] batch 4 focus=high_difficulty_visualizable accepted=21
+[long-data] batch 4 done: +5 accepted, +1 rejected; total=26
+[long-data] batch 5 focus=medicine_low_medium accepted=26
+[long-data] batch 5 done: +6 accepted, +0 rejected; total=32
+[long-data] batch 6 focus=cs_low_accessible accepted=32
+[long-data] batch 6 done: +6 accepted, +0 rejected; total=38
+[long-data] batch 7 focus=humanities_problem_solving accepted=38
+[long-data] batch 7 done: +5 accepted, +1 rejected; total=43
+[long-data] batch 8 focus=social_science_visual accepted=43
+[long-data] batch 8 done: +6 accepted, +0 rejected; total=49
+[long-data] batch 9 focus=high_difficulty_visualizable accepted=49
+[long-data] batch 9 done: +5 accepted, +1 rejected; total=54
+[long-data] batch 10 focus=medicine_low_medium accepted=54
+[long-data] batch 10 done: +6 accepted, +0 rejected; total=60
+[long-data] batch 11 focus=cs_low_accessible accepted=60
+[long-data] batch 11 done: +6 accepted, +0 rejected; total=66
+[long-data] batch 12 focus=humanities_problem_solving accepted=66
+[long-data] batch 12 done: +5 accepted, +1 rejected; total=71
+[long-data] batch 13 focus=social_science_visual accepted=71
+[long-data] batch 13 done: +6 accepted, +0 rejected; total=77
+[long-data] batch 14 focus=high_difficulty_visualizable accepted=77
+[long-data] batch 14 done: +6 accepted, +0 rejected; total=83
+[long-data] batch 15 focus=medicine_low_medium accepted=83
+[long-data] batch 15 done: +6 accepted, +0 rejected; total=89
+[long-data] batch 16 focus=cs_low_accessible accepted=89
+[long-data] batch 16 done: +6 accepted, +0 rejected; total=95
+[long-data] batch 17 focus=humanities_problem_solving accepted=95
+[long-data] batch 17 done: +5 accepted, +1 rejected; total=100
+[long-data] batch 18 focus=social_science_visual accepted=100
+[long-data] batch 18 done: +6 accepted, +0 rejected; total=106
+[long-data] batch 19 focus=high_difficulty_visualizable accepted=106
+[long-data] batch 19 done: +5 accepted, +1 rejected; total=111
+[long-data] batch 20 focus=medicine_low_medium accepted=111
+[long-data] batch 20 done: +6 accepted, +0 rejected; total=117
+[long-data] batch 21 focus=cs_low_accessible accepted=117
+[long-data] batch 21 done: +6 accepted, +0 rejected; total=123
+[long-data] batch 22 focus=humanities_problem_solving accepted=123
+[long-data] batch 22 done: +6 accepted, +0 rejected; total=129
+[long-data] batch 23 focus=social_science_visual accepted=129
+[long-data] batch 23 done: +6 accepted, +0 rejected; total=135
+[long-data] batch 24 focus=high_difficulty_visualizable accepted=135
+[long-data] batch 24 done: +6 accepted, +0 rejected; total=141
+[long-data] batch 25 focus=medicine_low_medium accepted=141
+[long-data] batch 25 done: +6 accepted, +0 rejected; total=147
+[long-data] batch 26 focus=cs_low_accessible accepted=147
+[long-data] batch 26 done: +5 accepted, +1 rejected; total=152
+[long-data] batch 27 focus=humanities_problem_solving accepted=152
+[long-data] batch 27 done: +6 accepted, +0 rejected; total=158
+[long-data] batch 28 focus=social_science_visual accepted=158
+[long-data] batch 28 done: +5 accepted, +1 rejected; total=163
+[long-data] batch 29 focus=high_difficulty_visualizable accepted=163
+[long-data] batch 29 done: +5 accepted, +1 rejected; total=168
+[long-data] batch 30 focus=medicine_low_medium accepted=168
+[long-data] batch 30 done: +6 accepted, +0 rejected; total=174
+[long-data] batch 31 focus=cs_low_accessible accepted=174
+[long-data] batch 31 done: +6 accepted, +0 rejected; total=180
+[long-data] batch 32 focus=humanities_problem_solving accepted=180
+[long-data] batch 32 done: +6 accepted, +0 rejected; total=186
+[long-data] batch 33 focus=social_science_visual accepted=186
+[long-data] batch 33 done: +6 accepted, +0 rejected; total=192
+[long-data] batch 34 focus=high_difficulty_visualizable accepted=192
+[long-data] batch 34 done: +6 accepted, +0 rejected; total=198
+[long-data] batch 35 focus=medicine_low_medium accepted=198
+[long-data] batch 35 done: +6 accepted, +0 rejected; total=204
+[long-data] batch 36 focus=cs_low_accessible accepted=204
+[long-data] batch 36 done: +6 accepted, +0 rejected; total=210
+[long-data] batch 37 focus=humanities_problem_solving accepted=210
+[long-data] batch 37 done: +6 accepted, +0 rejected; total=216
+[long-data] batch 38 focus=social_science_visual accepted=216
+[long-data] batch 38 done: +5 accepted, +1 rejected; total=221
+[long-data] batch 39 focus=high_difficulty_visualizable accepted=221
+[long-data] batch 39 done: +6 accepted, +0 rejected; total=227
+[long-data] batch 40 focus=medicine_low_medium accepted=227
+[long-data] batch 40 done: +6 accepted, +0 rejected; total=233
+[long-data] batch 41 focus=cs_low_accessible accepted=233
+[long-data] batch 41 done: +5 accepted, +1 rejected; total=238
+[long-data] batch 42 focus=humanities_problem_solving accepted=238
+[long-data] batch 42 done: +6 accepted, +0 rejected; total=244
+[long-data] batch 43 focus=social_science_visual accepted=244
+[long-data] batch 43 done: +6 accepted, +0 rejected; total=250
+[long-data] batch 44 focus=high_difficulty_visualizable accepted=250
+[long-data] batch 44 done: +6 accepted, +0 rejected; total=256
+[long-data] batch 45 focus=medicine_low_medium accepted=256
+[long-data] batch 45 done: +6 accepted, +0 rejected; total=262
+[long-data] batch 46 focus=cs_low_accessible accepted=262
+[long-data] batch 46 done: +6 accepted, +0 rejected; total=268
+[long-data] batch 47 focus=humanities_problem_solving accepted=268
+[long-data] batch 47 done: +5 accepted, +1 rejected; total=273
+[long-data] batch 48 focus=social_science_visual accepted=273
+[long-data] batch 48 done: +6 accepted, +0 rejected; total=279
+[long-data] batch 49 focus=high_difficulty_visualizable accepted=279
+[long-data] batch 49 done: +5 accepted, +1 rejected; total=284
+[long-data] batch 50 focus=medicine_low_medium accepted=284
+[long-data] batch 50 done: +6 accepted, +0 rejected; total=290
+[long-data] batch 51 focus=cs_low_accessible accepted=290
+[long-data] batch 51 done: +6 accepted, +0 rejected; total=296
+[long-data] batch 52 focus=humanities_problem_solving accepted=296
+[long-data] batch 52 done: +4 accepted, +2 rejected; total=300
+[long-data] batch 53 focus=social_science_visual accepted=300
+[long-data] batch 53 done: +6 accepted, +0 rejected; total=306
+[long-data] batch 54 focus=high_difficulty_visualizable accepted=306
+[long-data] batch 54 done: +5 accepted, +1 rejected; total=311
+[long-data] batch 55 focus=medicine_low_medium accepted=311
+[long-data] batch 55 done: +6 accepted, +0 rejected; total=317
+[long-data] batch 56 focus=cs_low_accessible accepted=317
+[long-data] batch 56 done: +5 accepted, +1 rejected; total=322
+[long-data] batch 57 focus=humanities_problem_solving accepted=322
+[long-data] batch 57 done: +4 accepted, +2 rejected; total=326
+[long-data] batch 58 focus=social_science_visual accepted=326
+[long-data] batch 58 done: +6 accepted, +0 rejected; total=332
+[long-data] batch 59 focus=high_difficulty_visualizable accepted=332
+[long-data] batch 59 done: +6 accepted, +0 rejected; total=338
+[long-data] batch 60 focus=medicine_low_medium accepted=338
+[long-data] batch 60 done: +6 accepted, +0 rejected; total=344
+[long-data] batch 61 focus=cs_low_accessible accepted=344
+[long-data] batch 61 done: +6 accepted, +0 rejected; total=350
+[long-data] batch 62 focus=humanities_problem_solving accepted=350
+[long-data] batch 62 done: +5 accepted, +1 rejected; total=355
+[long-data] batch 63 focus=social_science_visual accepted=355
+[long-data] batch 63 done: +6 accepted, +0 rejected; total=361
+[long-data] batch 64 focus=high_difficulty_visualizable accepted=361
+[long-data] batch 64 done: +6 accepted, +0 rejected; total=367
+[long-data] batch 65 focus=medicine_low_medium accepted=367
+[long-data] batch 65 done: +5 accepted, +1 rejected; total=372
+[long-data] batch 66 focus=cs_low_accessible accepted=372
+[long-data] batch 66 done: +6 accepted, +0 rejected; total=378
+[long-data] batch 67 focus=humanities_problem_solving accepted=378
+[long-data] batch 67 done: +4 accepted, +2 rejected; total=382
+[long-data] batch 68 focus=social_science_visual accepted=382
+[long-data] batch 68 done: +6 accepted, +0 rejected; total=388
+[long-data] batch 69 focus=high_difficulty_visualizable accepted=388
+[long-data] batch 69 done: +6 accepted, +0 rejected; total=394
+[long-data] batch 70 focus=medicine_low_medium accepted=394
+[long-data] batch 70 done: +6 accepted, +0 rejected; total=400
+[long-data] batch 71 focus=cs_low_accessible accepted=400
+[long-data] batch 71 done: +6 accepted, +0 rejected; total=406
+[long-data] batch 72 focus=humanities_problem_solving accepted=406
+[long-data] batch 72 done: +5 accepted, +1 rejected; total=411
+[long-data] batch 73 focus=social_science_visual accepted=411
+[long-data] batch 73 done: +6 accepted, +0 rejected; total=417
+[long-data] batch 74 focus=high_difficulty_visualizable accepted=417
+[long-data] batch 74 done: +6 accepted, +0 rejected; total=423
+[long-data] batch 75 focus=medicine_low_medium accepted=423
+[long-data] batch 75 done: +6 accepted, +0 rejected; total=429
+[long-data] batch 76 focus=cs_low_accessible accepted=429
+[long-data] batch 76 done: +6 accepted, +0 rejected; total=435
+[long-data] batch 77 focus=humanities_problem_solving accepted=435
+[long-data] batch 77 done: +4 accepted, +2 rejected; total=439
+[long-data] batch 78 focus=social_science_visual accepted=439
+[long-data] batch 78 done: +6 accepted, +0 rejected; total=445
+[long-data] batch 79 focus=high_difficulty_visualizable accepted=445
+[long-data] batch 79 done: +6 accepted, +0 rejected; total=451
+[long-data] batch 80 focus=medicine_low_medium accepted=451
+[long-data] batch 80 done: +6 accepted, +0 rejected; total=457
+[long-data] batch 81 focus=cs_low_accessible accepted=457
+[long-data] batch 81 done: +6 accepted, +0 rejected; total=463
+[long-data] batch 82 focus=humanities_problem_solving accepted=463
+[long-data] batch 82 done: +5 accepted, +1 rejected; total=468
+[long-data] batch 83 focus=social_science_visual accepted=468
+[long-data] batch 83 done: +6 accepted, +0 rejected; total=474
+[long-data] batch 84 focus=high_difficulty_visualizable accepted=474
+[long-data] batch 84 done: +6 accepted, +0 rejected; total=480
+[long-data] batch 85 focus=medicine_low_medium accepted=480
+[long-data] batch 85 done: +6 accepted, +0 rejected; total=486
+[long-data] batch 86 focus=cs_low_accessible accepted=486
+[long-data] batch 86 done: +6 accepted, +0 rejected; total=492
+[long-data] batch 87 focus=humanities_problem_solving accepted=492
+[long-data] batch 87 done: +5 accepted, +1 rejected; total=497
+[long-data] batch 88 focus=social_science_visual accepted=497
+[long-data] batch 88 done: +6 accepted, +0 rejected; total=503
+[long-data] batch 89 focus=high_difficulty_visualizable accepted=503
+[long-data] batch 89 done: +5 accepted, +1 rejected; total=508
+[long-data] batch 90 focus=medicine_low_medium accepted=508
+[long-data] batch 90 done: +6 accepted, +0 rejected; total=514
+[long-data] batch 91 focus=cs_low_accessible accepted=514
+[long-data] batch 91 done: +6 accepted, +0 rejected; total=520
+[long-data] batch 92 focus=humanities_problem_solving accepted=520
+[long-data] batch 92 done: +4 accepted, +2 rejected; total=524
+[long-data] batch 93 focus=social_science_visual accepted=524
+[long-data] batch 93 done: +6 accepted, +0 rejected; total=530
+[long-data] batch 94 focus=high_difficulty_visualizable accepted=530
+[long-data] batch 94 done: +6 accepted, +0 rejected; total=536
+[long-data] batch 95 focus=medicine_low_medium accepted=536
+[long-data] batch 95 done: +6 accepted, +0 rejected; total=542
+[long-data] batch 96 focus=cs_low_accessible accepted=542
+[long-data] batch 96 done: +6 accepted, +0 rejected; total=548
+[long-data] batch 97 focus=humanities_problem_solving accepted=548
+[long-data] batch 97 done: +5 accepted, +1 rejected; total=553
+[long-data] batch 98 focus=social_science_visual accepted=553
+[long-data] batch 98 done: +6 accepted, +0 rejected; total=559
+[long-data] batch 99 focus=high_difficulty_visualizable accepted=559
+[long-data] batch 99 done: +4 accepted, +2 rejected; total=563
+[long-data] batch 100 focus=medicine_low_medium accepted=563
+[long-data] batch 100 done: +6 accepted, +0 rejected; total=569
+[long-data] batch 101 focus=cs_low_accessible accepted=569
+[long-data] batch 101 done: +6 accepted, +0 rejected; total=575
+[long-data] batch 102 focus=humanities_problem_solving accepted=575
+[long-data] batch 102 done: +5 accepted, +1 rejected; total=580
+[long-data] batch 103 focus=social_science_visual accepted=580
+[long-data] batch 103 done: +6 accepted, +0 rejected; total=586
+[long-data] batch 104 focus=high_difficulty_visualizable accepted=586
+[long-data] batch 104 done: +5 accepted, +1 rejected; total=591
+[long-data] batch 105 focus=medicine_low_medium accepted=591
+[long-data] batch 105 done: +5 accepted, +1 rejected; total=596
+[long-data] batch 106 focus=cs_low_accessible accepted=596
+[long-data] batch 106 done: +6 accepted, +0 rejected; total=602
+[long-data] batch 107 focus=humanities_problem_solving accepted=602
+[long-data] batch 107 done: +4 accepted, +2 rejected; total=606
+[long-data] batch 108 focus=social_science_visual accepted=606
+[long-data] batch 108 done: +6 accepted, +0 rejected; total=612
+[long-data] batch 109 focus=high_difficulty_visualizable accepted=612
+[long-data] batch 109 done: +5 accepted, +1 rejected; total=617
+[long-data] batch 110 focus=medicine_low_medium accepted=617
+[long-data] batch 110 done: +6 accepted, +0 rejected; total=623
+[long-data] batch 111 focus=cs_low_accessible accepted=623
+[long-data] batch 111 done: +6 accepted, +0 rejected; total=629
+[long-data] batch 112 focus=humanities_problem_solving accepted=629
+[long-data] batch 112 done: +4 accepted, +2 rejected; total=633
+[long-data] batch 113 focus=social_science_visual accepted=633
+[long-data] batch 113 done: +4 accepted, +2 rejected; total=637
+[long-data] batch 114 focus=high_difficulty_visualizable accepted=637
+[long-data] batch 114 done: +5 accepted, +1 rejected; total=642
+[long-data] batch 115 focus=medicine_low_medium accepted=642
+[long-data] batch 115 done: +5 accepted, +1 rejected; total=647
+[long-data] batch 116 focus=cs_low_accessible accepted=647
+[long-data] batch 116 done: +6 accepted, +0 rejected; total=653
+[long-data] batch 117 focus=humanities_problem_solving accepted=653
+[long-data] batch 117 done: +4 accepted, +2 rejected; total=657
+[long-data] batch 118 focus=social_science_visual accepted=657
+[long-data] batch 118 done: +5 accepted, +1 rejected; total=662
+[long-data] batch 119 focus=high_difficulty_visualizable accepted=662
+[long-data] batch 119 done: +4 accepted, +2 rejected; total=666
+[long-data] batch 120 focus=medicine_low_medium accepted=666
+[long-data] batch 120 done: +6 accepted, +0 rejected; total=672
+[long-data] batch 121 focus=cs_low_accessible accepted=672
+[long-data] batch 121 done: +6 accepted, +0 rejected; total=678
+[long-data] batch 122 focus=humanities_problem_solving accepted=678
+[long-data] batch 122 done: +5 accepted, +1 rejected; total=683
+[long-data] batch 123 focus=social_science_visual accepted=683
+[long-data] batch 123 done: +5 accepted, +1 rejected; total=688
+[long-data] batch 124 focus=high_difficulty_visualizable accepted=688
+[long-data] batch 124 done: +6 accepted, +0 rejected; total=694
+[long-data] batch 125 focus=medicine_low_medium accepted=694
+[long-data] batch 125 done: +6 accepted, +0 rejected; total=700
+[long-data] batch 126 focus=cs_low_accessible accepted=700
+[long-data] batch 126 done: +6 accepted, +0 rejected; total=706
+[long-data] batch 127 focus=humanities_problem_solving accepted=706
+[long-data] batch 127 done: +4 accepted, +2 rejected; total=710
+[long-data] batch 128 focus=social_science_visual accepted=710
+[long-data] batch 128 done: +6 accepted, +0 rejected; total=716
+[long-data] batch 129 focus=high_difficulty_visualizable accepted=716
+[long-data] batch 129 done: +4 accepted, +2 rejected; total=720
+[long-data] batch 130 focus=medicine_low_medium accepted=720
+[long-data] batch 130 done: +6 accepted, +0 rejected; total=726
+[long-data] batch 131 focus=cs_low_accessible accepted=726
+[long-data] batch 131 done: +6 accepted, +0 rejected; total=732
+[long-data] batch 132 focus=humanities_problem_solving accepted=732
+[long-data] batch 132 done: +6 accepted, +0 rejected; total=738
+[long-data] batch 133 focus=social_science_visual accepted=738
+[long-data] batch 133 done: +6 accepted, +0 rejected; total=744
+[long-data] batch 134 focus=high_difficulty_visualizable accepted=744
+[long-data] batch 134 done: +6 accepted, +0 rejected; total=750
+[long-data] batch 135 focus=medicine_low_medium accepted=750
+[long-data] batch 135 done: +6 accepted, +0 rejected; total=756
+[long-data] batch 136 focus=cs_low_accessible accepted=756
+[long-data] batch 136 done: +6 accepted, +0 rejected; total=762
+[long-data] batch 137 focus=humanities_problem_solving accepted=762
+[long-data] batch 137 done: +6 accepted, +0 rejected; total=768
+[long-data] batch 138 focus=social_science_visual accepted=768
+[long-data] batch 138 done: +5 accepted, +1 rejected; total=773
+[long-data] batch 139 focus=high_difficulty_visualizable accepted=773
+[long-data] batch 139 done: +5 accepted, +1 rejected; total=778
+[long-data] batch 140 focus=medicine_low_medium accepted=778
+[long-data] batch 140 done: +6 accepted, +0 rejected; total=784
+[long-data] batch 141 focus=cs_low_accessible accepted=784
+[long-data] batch 141 done: +6 accepted, +0 rejected; total=790
+[long-data] batch 142 focus=humanities_problem_solving accepted=790
+[long-data] batch 142 done: +5 accepted, +1 rejected; total=795
+[long-data] batch 143 focus=social_science_visual accepted=795
+[long-data] batch 143 done: +6 accepted, +0 rejected; total=801
+[long-data] batch 144 focus=high_difficulty_visualizable accepted=801
+[long-data] batch 144 done: +6 accepted, +0 rejected; total=807
+[long-data] batch 145 focus=medicine_low_medium accepted=807
+[long-data] batch 145 done: +6 accepted, +0 rejected; total=813
+[long-data] batch 146 focus=cs_low_accessible accepted=813
+[long-data] batch 146 done: +6 accepted, +0 rejected; total=819
+[long-data] batch 147 focus=humanities_problem_solving accepted=819
+[long-data] batch 147 done: +5 accepted, +1 rejected; total=824
+[long-data] batch 148 focus=social_science_visual accepted=824
+[long-data] batch 148 done: +5 accepted, +1 rejected; total=829
+[long-data] batch 149 focus=high_difficulty_visualizable accepted=829
+[long-data] batch 149 done: +6 accepted, +0 rejected; total=835
+[long-data] batch 150 focus=medicine_low_medium accepted=835
+[long-data] batch 150 done: +6 accepted, +0 rejected; total=841
+[long-data] batch 151 focus=cs_low_accessible accepted=841
+[long-data] batch 151 done: +6 accepted, +0 rejected; total=847
+[long-data] finished. accepted=847 out_dir=/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854

@@ -23,6 +23,8 @@ EVAL_DIRS = {
     "Wan1.3B-3s": "/data/zyf/rise-teacher/outputs/eval_pilot_v0_1_wan13b",
     "Wan5B-5s": "/data/zyf/rise-teacher/outputs/eval_pilot_v0_1_5s",
     "Wan1.3B-5s": "/data/zyf/rise-teacher/outputs/eval_pilot_v0_1_wan13b_5s",
+    "Wan5B-TI2V-FF-3s": "/data/zyf/rise-teacher/outputs/eval_wan2_2_ti2v_5b_ff",
+    "Wan5B-TI2V-FF-5s": "/data/zyf/rise-teacher/outputs/eval_wan2_2_ti2v_5b_ff_5s",
     "Wan1.3B-v0.2-high": "/data/zyf/rise-teacher/outputs/eval_pilot_v0_2_high",
 }
 

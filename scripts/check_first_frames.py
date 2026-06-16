@@ -17,6 +17,7 @@ import argparse
 import base64
 import json
 import sys
+import time
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -56,12 +57,21 @@ def check_image(case: dict, image_path: str) -> dict:
     with open(image_path, "rb") as f:
         img_b64 = base64.b64encode(f.read()).decode()
 
+    first_frame_spec = case.get("first_frame") or case.get("first_frame_spec")
+    first_frame_text = ""
+    if first_frame_spec:
+        first_frame_text = (
+            f"\nFirst-frame specification: "
+            f"{json.dumps(first_frame_spec, ensure_ascii=False)[:800]}"
+        )
+
     user_content = [
         {"type": "text", "text": (
             f"Case: {case['id']} — {case['discipline']} ({case['task_type']}, {case['difficulty']})\n"
             f"Video prompt: {case['prompt_text'][:300]}\n"
             f"Expected visual elements: {case.get('expected_visual_elements', [])}\n"
-            f"Expected concepts: {case.get('expected_concepts', [])}\n\n"
+            f"Expected concepts: {case.get('expected_concepts', [])}"
+            f"{first_frame_text}\n\n"
             "Is this image suitable as the opening frame for this educational video?"
         )},
         {"type": "image_url", "image_url": {
@@ -90,6 +100,7 @@ def main() -> None:
     ap.add_argument("--first-frames", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--limit", type=int, default=0)
+    ap.add_argument("--retries", type=int, default=2)
     args = ap.parse_args()
 
     cases: list[dict] = []
@@ -130,7 +141,15 @@ def main() -> None:
                 print(f"[check] [{i+1}/{len(cases)}] {cid}: no image, skip")
                 continue
 
-            result = check_image(case, str(img_path))
+            result = {"verdict": "ERROR", "raw": ""}
+            for attempt in range(max(1, args.retries + 1)):
+                result = check_image(case, str(img_path))
+                if result.get("verdict") != "ERROR":
+                    break
+                if attempt < args.retries:
+                    wait = 5 * (attempt + 1)
+                    print(f"[check] [{i+1}/{len(cases)}] {cid}: ERROR, retrying in {wait}s")
+                    time.sleep(wait)
             result["id"] = cid
             out_f.write(json.dumps(result, ensure_ascii=False) + "\n")
             out_f.flush()

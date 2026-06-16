@@ -33,6 +33,50 @@ def build_image_prompt(case: dict) -> str:
     elements_str = ", ".join(visual_elements[:5]) if visual_elements else ""
     concepts_str = ", ".join(concepts[:3]) if concepts else ""
 
+    explicit = case.get("first_frame") or case.get("first_frame_spec")
+    if explicit:
+        if isinstance(explicit, str):
+            base_prompt = explicit
+            must_include = []
+            avoid = []
+            quality_checks = []
+        else:
+            base_prompt = str(explicit.get("prompt", "")).strip()
+            must_include = explicit.get("must_include") or []
+            avoid = explicit.get("avoid") or []
+            quality_checks = explicit.get("quality_checks") or []
+
+        if not base_prompt:
+            base_prompt = (
+                f"Opening frame for an educational video about {discipline}: "
+                f"{concepts_str}. Must include: {elements_str}."
+            )
+
+        task_guard = (
+            "This is a concept-explanation opening frame: establish the clean "
+            "initial teaching diagram, not a poster or decorative cover."
+            if task_type == "explanation"
+            else "This is a worked-problem opening frame: show the problem setup "
+            "and workspace; do not reveal final steps unless explicitly requested."
+        )
+        parts = [
+            base_prompt,
+            task_guard,
+        ]
+        if must_include:
+            parts.append("Must include: " + ", ".join(map(str, must_include[:8])) + ".")
+        if avoid:
+            parts.append("Avoid: " + ", ".join(map(str, avoid[:8])) + ".")
+        if quality_checks:
+            parts.append("Quality checks: " + ", ".join(map(str, quality_checks[:6])) + ".")
+        parts.append(
+            "Use a clean 16:9 educational-diagram composition with large readable "
+            "labels, accurate symbols, no text watermarks, no motion blur, no video "
+            "artifacts, and generous margins so all content remains visible after "
+            "resizing to 832x480."
+        )
+        return " ".join(parts)
+
     # Extract the core topic from prompt_text
     topic = prompt_text.split(".")[-2] if "." in prompt_text else prompt_text[:120]
     # Clean up common prefixes

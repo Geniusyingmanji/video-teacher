@@ -1,3 +1,42 @@
+# STATUS — 2026-06-03 17:35 UTC  ⏳ DEFECT-ORIENTED EXTENSION STARTED
+
+## 2026-06-03 continuation
+
+New long-term direction: move beyond broad pilot averages into defect-oriented tests that expose where current T2V and agentic long-video workflows fail as teaching media.
+
+### New artifacts
+
+- `data/prompts/candidates_defect_oriented_v1_seed.jsonl` — 12 first-frame-first seed cases, one per frozen discipline, targeting symbolic fidelity, state continuity, causal order, transition correctness, graph directionality, and role consistency.
+- `docs/defect_oriented_v1_plan.md` — execution plan and current defect-oriented results.
+- `docs/long_video_agent_survey.md` — recent long-video/agent workflow notes and failure modes to convert into rise-teacher probes.
+- `docs/reports/PILOT_REPORT_wan5b_ti2v_ff_3s.md` and `docs/reports/PILOT_REPORT_wan5b_ti2v_ff_5s.md` — existing TI2V+first-frame runs are now rendered into reports.
+- `docs/reports/DEFECT_ORIENTED_V1_SEED_PASS6_TI2V_FF.md` — first pass report for the defect seed PASS subset.
+
+### First-frame repair status
+
+- Generated 12 GPT-Image-1 high-quality first frames for the defect seed.
+- Initial strict check: 5 PASS / 5 FAIL / 2 ERROR.
+- After one GPT-Image repair pass: 6 PASS / 4 FAIL / 2 ERROR.
+- Persistent FAIL modes are exactly the intended stress area: ECG 12-lead layout omissions, Dijkstra graph topology/weights changing, cropped poetry/title text, and unresolved judge ERRORs for SN2/music notation.
+
+### Video generation and eval
+
+- Extracted `data/prompts/defect_oriented_v1_seed_pass6.jsonl` from second-check PASS rows.
+- Installed missing `ftfy` dependency; without it Wan I2V failed with `NameError: ftfy is not defined`.
+- Generated 6/6 Wan2.2-TI2V-5B first-frame-conditioned videos:
+  `/data/zyf/rise-teacher/generations/wan2_2_ti2v_5b_ff/defect_oriented_v1_seed_pass6/manifest.jsonl`.
+- Standard 6-dim eval:
+  `/data/zyf/rise-teacher/outputs/eval_defect_oriented_v1_seed_pass6_ti2v_ff/aggregate.json`
+  - N=6, mean=2.512, strict=0.0%.
+  - Dim means: CC 2.667, NS 2.167, VQ 2.583, PC 2.167, DA 2.417, AA 3.083.
+  - Best: geography rain-shadow 3.853. Weakest: economics AD-AS 1.820, math chain rule 1.895.
+- TeachQuiz-T smoke with local SmolVLM2 student:
+  `/data/zyf/rise-teacher/outputs/teachquiz_defect_oriented_v1_seed_pass6_smolvlm2/aggregate.json`
+  - N valid=6, normalized gain=0.5833, positive gain rate=0.6667.
+  - Qwen3-VL could not run because `/data/zyf/rise-teacher/models/Qwen3-VL-2B-Instruct` is absent locally; use SmolVLM2 only as a smoke until the canonical student is restored.
+
+---
+
 # STATUS — 2026-05-13 15:25 UTC  ✅ ALL PIPELINES COMPLETE
 
 ## 醒来检查清单

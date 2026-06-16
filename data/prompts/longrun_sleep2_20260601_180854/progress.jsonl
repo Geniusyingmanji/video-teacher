@@ -1,0 +1,304 @@
+{"event": "batch_start", "batch": 0, "focus": "medicine_low_medium", "accepted_total": 0, "raw_total": 0, "rejected_total": 0, "ts": "2026-06-01T18:08:55Z"}
+{"event": "batch_done", "batch": 0, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 5, "elapsed_minutes": 1.59}
+{"event": "batch_start", "batch": 1, "focus": "cs_low_accessible", "accepted_total": 5, "raw_total": 6, "rejected_total": 1, "ts": "2026-06-01T18:12:31Z"}
+{"event": "batch_done", "batch": 1, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 11, "elapsed_minutes": 5.1}
+{"event": "batch_start", "batch": 2, "focus": "humanities_problem_solving", "accepted_total": 11, "raw_total": 12, "rejected_total": 1, "ts": "2026-06-01T18:16:01Z"}
+{"event": "batch_done", "batch": 2, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 16, "elapsed_minutes": 9.3}
+{"event": "batch_start", "batch": 3, "focus": "social_science_visual", "accepted_total": 16, "raw_total": 18, "rejected_total": 2, "ts": "2026-06-01T18:20:13Z"}
+{"event": "batch_done", "batch": 3, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 21, "elapsed_minutes": 12.77}
+{"event": "batch_start", "batch": 4, "focus": "high_difficulty_visualizable", "accepted_total": 21, "raw_total": 24, "rejected_total": 3, "ts": "2026-06-01T18:23:41Z"}
+{"event": "batch_done", "batch": 4, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 26, "elapsed_minutes": 16.66}
+{"event": "batch_start", "batch": 5, "focus": "medicine_low_medium", "accepted_total": 26, "raw_total": 30, "rejected_total": 4, "ts": "2026-06-01T18:27:35Z"}
+{"event": "batch_done", "batch": 5, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 32, "elapsed_minutes": 19.88}
+{"event": "batch_start", "batch": 6, "focus": "cs_low_accessible", "accepted_total": 32, "raw_total": 36, "rejected_total": 4, "ts": "2026-06-01T18:30:48Z"}
+{"event": "batch_done", "batch": 6, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 38, "elapsed_minutes": 23.15}
+{"event": "batch_start", "batch": 7, "focus": "humanities_problem_solving", "accepted_total": 38, "raw_total": 42, "rejected_total": 4, "ts": "2026-06-01T18:34:04Z"}
+{"event": "batch_done", "batch": 7, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 43, "elapsed_minutes": 26.53}
+{"event": "batch_start", "batch": 8, "focus": "social_science_visual", "accepted_total": 43, "raw_total": 48, "rejected_total": 5, "ts": "2026-06-01T18:37:27Z"}
+{"event": "batch_done", "batch": 8, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 49, "elapsed_minutes": 29.93}
+{"event": "batch_start", "batch": 9, "focus": "high_difficulty_visualizable", "accepted_total": 49, "raw_total": 54, "rejected_total": 5, "ts": "2026-06-01T18:40:51Z"}
+{"event": "batch_done", "batch": 9, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 54, "elapsed_minutes": 34.01}
+{"event": "batch_start", "batch": 10, "focus": "medicine_low_medium", "accepted_total": 54, "raw_total": 60, "rejected_total": 6, "ts": "2026-06-01T18:44:56Z"}
+{"event": "batch_done", "batch": 10, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 60, "elapsed_minutes": 37.47}
+{"event": "batch_start", "batch": 11, "focus": "cs_low_accessible", "accepted_total": 60, "raw_total": 66, "rejected_total": 6, "ts": "2026-06-01T18:48:24Z"}
+{"event": "batch_done", "batch": 11, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 66, "elapsed_minutes": 41.03}
+{"event": "batch_start", "batch": 12, "focus": "humanities_problem_solving", "accepted_total": 66, "raw_total": 72, "rejected_total": 6, "ts": "2026-06-01T18:51:57Z"}
+{"event": "batch_done", "batch": 12, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 71, "elapsed_minutes": 44.62}
+{"event": "batch_start", "batch": 13, "focus": "social_science_visual", "accepted_total": 71, "raw_total": 78, "rejected_total": 7, "ts": "2026-06-01T18:55:32Z"}
+{"event": "batch_done", "batch": 13, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 77, "elapsed_minutes": 48.33}
+{"event": "batch_start", "batch": 14, "focus": "high_difficulty_visualizable", "accepted_total": 77, "raw_total": 84, "rejected_total": 7, "ts": "2026-06-01T18:59:15Z"}
+{"event": "batch_done", "batch": 14, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 83, "elapsed_minutes": 52.01}
+{"event": "batch_start", "batch": 15, "focus": "medicine_low_medium", "accepted_total": 83, "raw_total": 90, "rejected_total": 7, "ts": "2026-06-01T19:02:56Z"}
+{"event": "batch_done", "batch": 15, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 89, "elapsed_minutes": 55.52}
+{"event": "batch_start", "batch": 16, "focus": "cs_low_accessible", "accepted_total": 89, "raw_total": 96, "rejected_total": 7, "ts": "2026-06-01T19:06:26Z"}
+{"event": "batch_done", "batch": 16, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 95, "elapsed_minutes": 58.8}
+{"event": "batch_start", "batch": 17, "focus": "humanities_problem_solving", "accepted_total": 95, "raw_total": 102, "rejected_total": 7, "ts": "2026-06-01T19:09:43Z"}
+{"event": "batch_done", "batch": 17, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 100, "elapsed_minutes": 62.56}
+{"event": "batch_start", "batch": 18, "focus": "social_science_visual", "accepted_total": 100, "raw_total": 108, "rejected_total": 8, "ts": "2026-06-01T19:13:29Z"}
+{"event": "batch_done", "batch": 18, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 106, "elapsed_minutes": 66.32}
+{"event": "batch_start", "batch": 19, "focus": "high_difficulty_visualizable", "accepted_total": 106, "raw_total": 114, "rejected_total": 8, "ts": "2026-06-01T19:17:14Z"}
+{"event": "batch_done", "batch": 19, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 111, "elapsed_minutes": 69.76}
+{"event": "batch_start", "batch": 20, "focus": "medicine_low_medium", "accepted_total": 111, "raw_total": 120, "rejected_total": 9, "ts": "2026-06-01T19:20:41Z"}
+{"event": "batch_done", "batch": 20, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 117, "elapsed_minutes": 73.16}
+{"event": "batch_start", "batch": 21, "focus": "cs_low_accessible", "accepted_total": 117, "raw_total": 126, "rejected_total": 9, "ts": "2026-06-01T19:24:05Z"}
+{"event": "batch_done", "batch": 21, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 123, "elapsed_minutes": 76.66}
+{"event": "batch_start", "batch": 22, "focus": "humanities_problem_solving", "accepted_total": 123, "raw_total": 132, "rejected_total": 9, "ts": "2026-06-01T19:27:35Z"}
+{"event": "batch_done", "batch": 22, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 129, "elapsed_minutes": 80.41}
+{"event": "batch_start", "batch": 23, "focus": "social_science_visual", "accepted_total": 129, "raw_total": 138, "rejected_total": 9, "ts": "2026-06-01T19:31:20Z"}
+{"event": "batch_done", "batch": 23, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 135, "elapsed_minutes": 83.91}
+{"event": "batch_start", "batch": 24, "focus": "high_difficulty_visualizable", "accepted_total": 135, "raw_total": 144, "rejected_total": 9, "ts": "2026-06-01T19:34:50Z"}
+{"event": "batch_done", "batch": 24, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 141, "elapsed_minutes": 87.96}
+{"event": "batch_start", "batch": 25, "focus": "medicine_low_medium", "accepted_total": 141, "raw_total": 150, "rejected_total": 9, "ts": "2026-06-01T19:38:53Z"}
+{"event": "batch_done", "batch": 25, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 147, "elapsed_minutes": 91.14}
+{"event": "batch_start", "batch": 26, "focus": "cs_low_accessible", "accepted_total": 147, "raw_total": 156, "rejected_total": 9, "ts": "2026-06-01T19:42:03Z"}
+{"event": "batch_done", "batch": 26, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 152, "elapsed_minutes": 94.65}
+{"event": "batch_start", "batch": 27, "focus": "humanities_problem_solving", "accepted_total": 152, "raw_total": 162, "rejected_total": 10, "ts": "2026-06-01T19:45:34Z"}
+{"event": "batch_done", "batch": 27, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 158, "elapsed_minutes": 98.19}
+{"event": "batch_start", "batch": 28, "focus": "social_science_visual", "accepted_total": 158, "raw_total": 168, "rejected_total": 10, "ts": "2026-06-01T19:49:07Z"}
+{"event": "batch_done", "batch": 28, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 163, "elapsed_minutes": 101.67}
+{"event": "batch_start", "batch": 29, "focus": "high_difficulty_visualizable", "accepted_total": 163, "raw_total": 174, "rejected_total": 11, "ts": "2026-06-01T19:52:35Z"}
+{"event": "batch_done", "batch": 29, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 168, "elapsed_minutes": 105.22}
+{"event": "batch_start", "batch": 30, "focus": "medicine_low_medium", "accepted_total": 168, "raw_total": 180, "rejected_total": 12, "ts": "2026-06-01T19:56:09Z"}
+{"event": "batch_done", "batch": 30, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 174, "elapsed_minutes": 108.6}
+{"event": "batch_start", "batch": 31, "focus": "cs_low_accessible", "accepted_total": 174, "raw_total": 186, "rejected_total": 12, "ts": "2026-06-01T19:59:31Z"}
+{"event": "batch_done", "batch": 31, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 180, "elapsed_minutes": 111.71}
+{"event": "batch_start", "batch": 32, "focus": "humanities_problem_solving", "accepted_total": 180, "raw_total": 192, "rejected_total": 12, "ts": "2026-06-01T20:02:38Z"}
+{"event": "batch_done", "batch": 32, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 186, "elapsed_minutes": 115.31}
+{"event": "batch_start", "batch": 33, "focus": "social_science_visual", "accepted_total": 186, "raw_total": 198, "rejected_total": 12, "ts": "2026-06-01T20:06:14Z"}
+{"event": "batch_done", "batch": 33, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 192, "elapsed_minutes": 118.77}
+{"event": "batch_start", "batch": 34, "focus": "high_difficulty_visualizable", "accepted_total": 192, "raw_total": 204, "rejected_total": 12, "ts": "2026-06-01T20:09:41Z"}
+{"event": "batch_done", "batch": 34, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 198, "elapsed_minutes": 122.72}
+{"event": "batch_start", "batch": 35, "focus": "medicine_low_medium", "accepted_total": 198, "raw_total": 210, "rejected_total": 12, "ts": "2026-06-01T20:13:38Z"}
+{"event": "batch_done", "batch": 35, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 204, "elapsed_minutes": 126.21}
+{"event": "batch_start", "batch": 36, "focus": "cs_low_accessible", "accepted_total": 204, "raw_total": 216, "rejected_total": 12, "ts": "2026-06-01T20:17:08Z"}
+{"event": "batch_done", "batch": 36, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 210, "elapsed_minutes": 129.52}
+{"event": "batch_start", "batch": 37, "focus": "humanities_problem_solving", "accepted_total": 210, "raw_total": 222, "rejected_total": 12, "ts": "2026-06-01T20:20:27Z"}
+{"event": "batch_done", "batch": 37, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 216, "elapsed_minutes": 133.16}
+{"event": "batch_start", "batch": 38, "focus": "social_science_visual", "accepted_total": 216, "raw_total": 228, "rejected_total": 12, "ts": "2026-06-01T20:24:05Z"}
+{"event": "batch_done", "batch": 38, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 221, "elapsed_minutes": 136.7}
+{"event": "batch_start", "batch": 39, "focus": "high_difficulty_visualizable", "accepted_total": 221, "raw_total": 234, "rejected_total": 13, "ts": "2026-06-01T20:27:37Z"}
+{"event": "batch_done", "batch": 39, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 227, "elapsed_minutes": 140.81}
+{"event": "batch_start", "batch": 40, "focus": "medicine_low_medium", "accepted_total": 227, "raw_total": 240, "rejected_total": 13, "ts": "2026-06-01T20:31:44Z"}
+{"event": "batch_done", "batch": 40, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 233, "elapsed_minutes": 144.19}
+{"event": "batch_start", "batch": 41, "focus": "cs_low_accessible", "accepted_total": 233, "raw_total": 246, "rejected_total": 13, "ts": "2026-06-01T20:35:07Z"}
+{"event": "batch_done", "batch": 41, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 238, "elapsed_minutes": 147.59}
+{"event": "batch_start", "batch": 42, "focus": "humanities_problem_solving", "accepted_total": 238, "raw_total": 252, "rejected_total": 14, "ts": "2026-06-01T20:38:31Z"}
+{"event": "batch_done", "batch": 42, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 244, "elapsed_minutes": 151.28}
+{"event": "batch_start", "batch": 43, "focus": "social_science_visual", "accepted_total": 244, "raw_total": 258, "rejected_total": 14, "ts": "2026-06-01T20:42:12Z"}
+{"event": "batch_done", "batch": 43, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 250, "elapsed_minutes": 154.49}
+{"event": "batch_start", "batch": 44, "focus": "high_difficulty_visualizable", "accepted_total": 250, "raw_total": 264, "rejected_total": 14, "ts": "2026-06-01T20:45:25Z"}
+{"event": "batch_done", "batch": 44, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 256, "elapsed_minutes": 158.25}
+{"event": "batch_start", "batch": 45, "focus": "medicine_low_medium", "accepted_total": 256, "raw_total": 270, "rejected_total": 14, "ts": "2026-06-01T20:49:10Z"}
+{"event": "batch_done", "batch": 45, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 262, "elapsed_minutes": 161.74}
+{"event": "batch_start", "batch": 46, "focus": "cs_low_accessible", "accepted_total": 262, "raw_total": 276, "rejected_total": 14, "ts": "2026-06-01T20:52:40Z"}
+{"event": "batch_done", "batch": 46, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 268, "elapsed_minutes": 165.2}
+{"event": "batch_start", "batch": 47, "focus": "humanities_problem_solving", "accepted_total": 268, "raw_total": 282, "rejected_total": 14, "ts": "2026-06-01T20:56:07Z"}
+{"event": "batch_done", "batch": 47, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 273, "elapsed_minutes": 168.92}
+{"event": "batch_start", "batch": 48, "focus": "social_science_visual", "accepted_total": 273, "raw_total": 288, "rejected_total": 15, "ts": "2026-06-01T20:59:50Z"}
+{"event": "batch_done", "batch": 48, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 279, "elapsed_minutes": 172.68}
+{"event": "batch_start", "batch": 49, "focus": "high_difficulty_visualizable", "accepted_total": 279, "raw_total": 294, "rejected_total": 15, "ts": "2026-06-01T21:03:36Z"}
+{"event": "batch_done", "batch": 49, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 284, "elapsed_minutes": 176.45}
+{"event": "batch_start", "batch": 50, "focus": "medicine_low_medium", "accepted_total": 284, "raw_total": 300, "rejected_total": 16, "ts": "2026-06-01T21:07:22Z"}
+{"event": "batch_done", "batch": 50, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 290, "elapsed_minutes": 179.91}
+{"event": "batch_start", "batch": 51, "focus": "cs_low_accessible", "accepted_total": 290, "raw_total": 306, "rejected_total": 16, "ts": "2026-06-01T21:10:50Z"}
+{"event": "batch_done", "batch": 51, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 296, "elapsed_minutes": 183.04}
+{"event": "batch_start", "batch": 52, "focus": "humanities_problem_solving", "accepted_total": 296, "raw_total": 312, "rejected_total": 16, "ts": "2026-06-01T21:13:58Z"}
+{"event": "batch_done", "batch": 52, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 300, "elapsed_minutes": 187.09}
+{"event": "batch_start", "batch": 53, "focus": "social_science_visual", "accepted_total": 300, "raw_total": 318, "rejected_total": 18, "ts": "2026-06-01T21:18:00Z"}
+{"event": "batch_done", "batch": 53, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 306, "elapsed_minutes": 190.43}
+{"event": "batch_start", "batch": 54, "focus": "high_difficulty_visualizable", "accepted_total": 306, "raw_total": 324, "rejected_total": 18, "ts": "2026-06-01T21:21:21Z"}
+{"event": "batch_done", "batch": 54, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 311, "elapsed_minutes": 194.32}
+{"event": "batch_start", "batch": 55, "focus": "medicine_low_medium", "accepted_total": 311, "raw_total": 330, "rejected_total": 19, "ts": "2026-06-01T21:25:14Z"}
+{"event": "batch_done", "batch": 55, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 317, "elapsed_minutes": 197.71}
+{"event": "batch_start", "batch": 56, "focus": "cs_low_accessible", "accepted_total": 317, "raw_total": 336, "rejected_total": 19, "ts": "2026-06-01T21:28:38Z"}
+{"event": "batch_done", "batch": 56, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 322, "elapsed_minutes": 200.9}
+{"event": "batch_start", "batch": 57, "focus": "humanities_problem_solving", "accepted_total": 322, "raw_total": 342, "rejected_total": 20, "ts": "2026-06-01T21:31:49Z"}
+{"event": "batch_done", "batch": 57, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 326, "elapsed_minutes": 204.97}
+{"event": "batch_start", "batch": 58, "focus": "social_science_visual", "accepted_total": 326, "raw_total": 348, "rejected_total": 22, "ts": "2026-06-01T21:35:53Z"}
+{"event": "batch_done", "batch": 58, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 332, "elapsed_minutes": 208.72}
+{"event": "batch_start", "batch": 59, "focus": "high_difficulty_visualizable", "accepted_total": 332, "raw_total": 354, "rejected_total": 22, "ts": "2026-06-01T21:39:38Z"}
+{"event": "batch_done", "batch": 59, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 338, "elapsed_minutes": 212.64}
+{"event": "batch_start", "batch": 60, "focus": "medicine_low_medium", "accepted_total": 338, "raw_total": 360, "rejected_total": 22, "ts": "2026-06-01T21:43:34Z"}
+{"event": "batch_done", "batch": 60, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 344, "elapsed_minutes": 216.06}
+{"event": "batch_start", "batch": 61, "focus": "cs_low_accessible", "accepted_total": 344, "raw_total": 366, "rejected_total": 22, "ts": "2026-06-01T21:46:59Z"}
+{"event": "batch_done", "batch": 61, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 350, "elapsed_minutes": 219.42}
+{"event": "batch_start", "batch": 62, "focus": "humanities_problem_solving", "accepted_total": 350, "raw_total": 372, "rejected_total": 22, "ts": "2026-06-01T21:50:20Z"}
+{"event": "batch_done", "batch": 62, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 355, "elapsed_minutes": 223.11}
+{"event": "batch_start", "batch": 63, "focus": "social_science_visual", "accepted_total": 355, "raw_total": 378, "rejected_total": 23, "ts": "2026-06-01T21:54:02Z"}
+{"event": "batch_done", "batch": 63, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 361, "elapsed_minutes": 226.52}
+{"event": "batch_start", "batch": 64, "focus": "high_difficulty_visualizable", "accepted_total": 361, "raw_total": 384, "rejected_total": 23, "ts": "2026-06-01T21:57:26Z"}
+{"event": "batch_done", "batch": 64, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 367, "elapsed_minutes": 230.32}
+{"event": "batch_start", "batch": 65, "focus": "medicine_low_medium", "accepted_total": 367, "raw_total": 390, "rejected_total": 23, "ts": "2026-06-01T22:01:14Z"}
+{"event": "batch_done", "batch": 65, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 372, "elapsed_minutes": 233.68}
+{"event": "batch_start", "batch": 66, "focus": "cs_low_accessible", "accepted_total": 372, "raw_total": 396, "rejected_total": 24, "ts": "2026-06-01T22:04:36Z"}
+{"event": "batch_done", "batch": 66, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 378, "elapsed_minutes": 237.03}
+{"event": "batch_start", "batch": 67, "focus": "humanities_problem_solving", "accepted_total": 378, "raw_total": 402, "rejected_total": 24, "ts": "2026-06-01T22:07:57Z"}
+{"event": "batch_done", "batch": 67, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 382, "elapsed_minutes": 240.88}
+{"event": "batch_start", "batch": 68, "focus": "social_science_visual", "accepted_total": 382, "raw_total": 408, "rejected_total": 26, "ts": "2026-06-01T22:11:48Z"}
+{"event": "batch_done", "batch": 68, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 388, "elapsed_minutes": 244.08}
+{"event": "batch_start", "batch": 69, "focus": "high_difficulty_visualizable", "accepted_total": 388, "raw_total": 414, "rejected_total": 26, "ts": "2026-06-01T22:15:00Z"}
+{"event": "batch_done", "batch": 69, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 394, "elapsed_minutes": 248.01}
+{"event": "batch_start", "batch": 70, "focus": "medicine_low_medium", "accepted_total": 394, "raw_total": 420, "rejected_total": 26, "ts": "2026-06-01T22:18:56Z"}
+{"event": "batch_done", "batch": 70, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 400, "elapsed_minutes": 251.74}
+{"event": "batch_start", "batch": 71, "focus": "cs_low_accessible", "accepted_total": 400, "raw_total": 426, "rejected_total": 26, "ts": "2026-06-01T22:22:40Z"}
+{"event": "batch_done", "batch": 71, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 406, "elapsed_minutes": 255.19}
+{"event": "batch_start", "batch": 72, "focus": "humanities_problem_solving", "accepted_total": 406, "raw_total": 432, "rejected_total": 26, "ts": "2026-06-01T22:26:07Z"}
+{"event": "batch_done", "batch": 72, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 411, "elapsed_minutes": 259.09}
+{"event": "batch_start", "batch": 73, "focus": "social_science_visual", "accepted_total": 411, "raw_total": 438, "rejected_total": 27, "ts": "2026-06-01T22:30:01Z"}
+{"event": "batch_done", "batch": 73, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 417, "elapsed_minutes": 262.67}
+{"event": "batch_start", "batch": 74, "focus": "high_difficulty_visualizable", "accepted_total": 417, "raw_total": 444, "rejected_total": 27, "ts": "2026-06-01T22:33:35Z"}
+{"event": "batch_done", "batch": 74, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 423, "elapsed_minutes": 266.81}
+{"event": "batch_start", "batch": 75, "focus": "medicine_low_medium", "accepted_total": 423, "raw_total": 450, "rejected_total": 27, "ts": "2026-06-01T22:37:44Z"}
+{"event": "batch_done", "batch": 75, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 429, "elapsed_minutes": 270.04}
+{"event": "batch_start", "batch": 76, "focus": "cs_low_accessible", "accepted_total": 429, "raw_total": 456, "rejected_total": 27, "ts": "2026-06-01T22:40:57Z"}
+{"event": "batch_done", "batch": 76, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 435, "elapsed_minutes": 273.31}
+{"event": "batch_start", "batch": 77, "focus": "humanities_problem_solving", "accepted_total": 435, "raw_total": 462, "rejected_total": 27, "ts": "2026-06-01T22:44:14Z"}
+{"event": "batch_done", "batch": 77, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 439, "elapsed_minutes": 277.42}
+{"event": "batch_start", "batch": 78, "focus": "social_science_visual", "accepted_total": 439, "raw_total": 468, "rejected_total": 29, "ts": "2026-06-01T22:48:20Z"}
+{"event": "batch_done", "batch": 78, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 445, "elapsed_minutes": 280.82}
+{"event": "batch_start", "batch": 79, "focus": "high_difficulty_visualizable", "accepted_total": 445, "raw_total": 474, "rejected_total": 29, "ts": "2026-06-01T22:51:45Z"}
+{"event": "batch_done", "batch": 79, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 451, "elapsed_minutes": 284.68}
+{"event": "batch_start", "batch": 80, "focus": "medicine_low_medium", "accepted_total": 451, "raw_total": 480, "rejected_total": 29, "ts": "2026-06-01T22:55:36Z"}
+{"event": "batch_done", "batch": 80, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 457, "elapsed_minutes": 288.16}
+{"event": "batch_start", "batch": 81, "focus": "cs_low_accessible", "accepted_total": 457, "raw_total": 486, "rejected_total": 29, "ts": "2026-06-01T22:59:05Z"}
+{"event": "batch_done", "batch": 81, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 463, "elapsed_minutes": 291.43}
+{"event": "batch_start", "batch": 82, "focus": "humanities_problem_solving", "accepted_total": 463, "raw_total": 492, "rejected_total": 29, "ts": "2026-06-01T23:02:21Z"}
+{"event": "batch_done", "batch": 82, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 468, "elapsed_minutes": 294.86}
+{"event": "batch_start", "batch": 83, "focus": "social_science_visual", "accepted_total": 468, "raw_total": 498, "rejected_total": 30, "ts": "2026-06-01T23:05:47Z"}
+{"event": "batch_done", "batch": 83, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 474, "elapsed_minutes": 298.33}
+{"event": "batch_start", "batch": 84, "focus": "high_difficulty_visualizable", "accepted_total": 474, "raw_total": 504, "rejected_total": 30, "ts": "2026-06-01T23:09:15Z"}
+{"event": "batch_done", "batch": 84, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 480, "elapsed_minutes": 302.09}
+{"event": "batch_start", "batch": 85, "focus": "medicine_low_medium", "accepted_total": 480, "raw_total": 510, "rejected_total": 30, "ts": "2026-06-01T23:13:01Z"}
+{"event": "batch_done", "batch": 85, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 486, "elapsed_minutes": 305.36}
+{"event": "batch_start", "batch": 86, "focus": "cs_low_accessible", "accepted_total": 486, "raw_total": 516, "rejected_total": 30, "ts": "2026-06-01T23:16:17Z"}
+{"event": "batch_done", "batch": 86, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 492, "elapsed_minutes": 308.72}
+{"event": "batch_start", "batch": 87, "focus": "humanities_problem_solving", "accepted_total": 492, "raw_total": 522, "rejected_total": 30, "ts": "2026-06-01T23:19:38Z"}
+{"event": "batch_done", "batch": 87, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 497, "elapsed_minutes": 312.23}
+{"event": "batch_start", "batch": 88, "focus": "social_science_visual", "accepted_total": 497, "raw_total": 528, "rejected_total": 31, "ts": "2026-06-01T23:23:09Z"}
+{"event": "batch_done", "batch": 88, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 503, "elapsed_minutes": 315.49}
+{"event": "batch_start", "batch": 89, "focus": "high_difficulty_visualizable", "accepted_total": 503, "raw_total": 534, "rejected_total": 31, "ts": "2026-06-01T23:26:24Z"}
+{"event": "batch_done", "batch": 89, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 508, "elapsed_minutes": 319.25}
+{"event": "batch_start", "batch": 90, "focus": "medicine_low_medium", "accepted_total": 508, "raw_total": 540, "rejected_total": 32, "ts": "2026-06-01T23:30:10Z"}
+{"event": "batch_done", "batch": 90, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 514, "elapsed_minutes": 322.57}
+{"event": "batch_start", "batch": 91, "focus": "cs_low_accessible", "accepted_total": 514, "raw_total": 546, "rejected_total": 32, "ts": "2026-06-01T23:33:29Z"}
+{"event": "batch_done", "batch": 91, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 520, "elapsed_minutes": 325.86}
+{"event": "batch_start", "batch": 92, "focus": "humanities_problem_solving", "accepted_total": 520, "raw_total": 552, "rejected_total": 32, "ts": "2026-06-01T23:36:47Z"}
+{"event": "batch_done", "batch": 92, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 524, "elapsed_minutes": 329.5}
+{"event": "batch_start", "batch": 93, "focus": "social_science_visual", "accepted_total": 524, "raw_total": 558, "rejected_total": 34, "ts": "2026-06-01T23:40:25Z"}
+{"event": "batch_done", "batch": 93, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 530, "elapsed_minutes": 332.85}
+{"event": "batch_start", "batch": 94, "focus": "high_difficulty_visualizable", "accepted_total": 530, "raw_total": 564, "rejected_total": 34, "ts": "2026-06-01T23:43:46Z"}
+{"event": "batch_done", "batch": 94, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 536, "elapsed_minutes": 336.67}
+{"event": "batch_start", "batch": 95, "focus": "medicine_low_medium", "accepted_total": 536, "raw_total": 570, "rejected_total": 34, "ts": "2026-06-01T23:47:36Z"}
+{"event": "batch_done", "batch": 95, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 542, "elapsed_minutes": 340.08}
+{"event": "batch_start", "batch": 96, "focus": "cs_low_accessible", "accepted_total": 542, "raw_total": 576, "rejected_total": 34, "ts": "2026-06-01T23:51:00Z"}
+{"event": "batch_done", "batch": 96, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 548, "elapsed_minutes": 343.76}
+{"event": "batch_start", "batch": 97, "focus": "humanities_problem_solving", "accepted_total": 548, "raw_total": 582, "rejected_total": 34, "ts": "2026-06-01T23:54:41Z"}
+{"event": "batch_done", "batch": 97, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 553, "elapsed_minutes": 347.51}
+{"event": "batch_start", "batch": 98, "focus": "social_science_visual", "accepted_total": 553, "raw_total": 588, "rejected_total": 35, "ts": "2026-06-01T23:58:26Z"}
+{"event": "batch_done", "batch": 98, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 559, "elapsed_minutes": 351.0}
+{"event": "batch_start", "batch": 99, "focus": "high_difficulty_visualizable", "accepted_total": 559, "raw_total": 594, "rejected_total": 35, "ts": "2026-06-02T00:01:55Z"}
+{"event": "batch_done", "batch": 99, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 563, "elapsed_minutes": 355.11}
+{"event": "batch_start", "batch": 100, "focus": "medicine_low_medium", "accepted_total": 563, "raw_total": 600, "rejected_total": 37, "ts": "2026-06-02T00:06:02Z"}
+{"event": "batch_done", "batch": 100, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 569, "elapsed_minutes": 358.32}
+{"event": "batch_start", "batch": 101, "focus": "cs_low_accessible", "accepted_total": 569, "raw_total": 606, "rejected_total": 37, "ts": "2026-06-02T00:09:14Z"}
+{"event": "batch_done", "batch": 101, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 575, "elapsed_minutes": 361.63}
+{"event": "batch_start", "batch": 102, "focus": "humanities_problem_solving", "accepted_total": 575, "raw_total": 612, "rejected_total": 37, "ts": "2026-06-02T00:12:33Z"}
+{"event": "batch_done", "batch": 102, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 580, "elapsed_minutes": 365.41}
+{"event": "batch_start", "batch": 103, "focus": "social_science_visual", "accepted_total": 580, "raw_total": 618, "rejected_total": 38, "ts": "2026-06-02T00:16:19Z"}
+{"event": "batch_done", "batch": 103, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 586, "elapsed_minutes": 368.87}
+{"event": "batch_start", "batch": 104, "focus": "high_difficulty_visualizable", "accepted_total": 586, "raw_total": 624, "rejected_total": 38, "ts": "2026-06-02T00:19:48Z"}
+{"event": "batch_done", "batch": 104, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 591, "elapsed_minutes": 372.76}
+{"event": "batch_start", "batch": 105, "focus": "medicine_low_medium", "accepted_total": 591, "raw_total": 630, "rejected_total": 39, "ts": "2026-06-02T00:23:41Z"}
+{"event": "batch_done", "batch": 105, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 596, "elapsed_minutes": 376.41}
+{"event": "batch_start", "batch": 106, "focus": "cs_low_accessible", "accepted_total": 596, "raw_total": 636, "rejected_total": 40, "ts": "2026-06-02T00:27:20Z"}
+{"event": "batch_done", "batch": 106, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 602, "elapsed_minutes": 379.46}
+{"event": "batch_start", "batch": 107, "focus": "humanities_problem_solving", "accepted_total": 602, "raw_total": 642, "rejected_total": 40, "ts": "2026-06-02T00:30:23Z"}
+{"event": "batch_done", "batch": 107, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 606, "elapsed_minutes": 383.23}
+{"event": "batch_start", "batch": 108, "focus": "social_science_visual", "accepted_total": 606, "raw_total": 648, "rejected_total": 42, "ts": "2026-06-02T00:34:09Z"}
+{"event": "batch_done", "batch": 108, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 612, "elapsed_minutes": 386.59}
+{"event": "batch_start", "batch": 109, "focus": "high_difficulty_visualizable", "accepted_total": 612, "raw_total": 654, "rejected_total": 42, "ts": "2026-06-02T00:37:31Z"}
+{"event": "batch_done", "batch": 109, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 617, "elapsed_minutes": 390.47}
+{"event": "batch_start", "batch": 110, "focus": "medicine_low_medium", "accepted_total": 617, "raw_total": 660, "rejected_total": 43, "ts": "2026-06-02T00:41:23Z"}
+{"event": "batch_done", "batch": 110, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 623, "elapsed_minutes": 393.81}
+{"event": "batch_start", "batch": 111, "focus": "cs_low_accessible", "accepted_total": 623, "raw_total": 666, "rejected_total": 43, "ts": "2026-06-02T00:44:44Z"}
+{"event": "batch_done", "batch": 111, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 629, "elapsed_minutes": 397.17}
+{"event": "batch_start", "batch": 112, "focus": "humanities_problem_solving", "accepted_total": 629, "raw_total": 672, "rejected_total": 43, "ts": "2026-06-02T00:48:05Z"}
+{"event": "batch_done", "batch": 112, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 633, "elapsed_minutes": 401.16}
+{"event": "batch_start", "batch": 113, "focus": "social_science_visual", "accepted_total": 633, "raw_total": 678, "rejected_total": 45, "ts": "2026-06-02T00:52:05Z"}
+{"event": "batch_done", "batch": 113, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 637, "elapsed_minutes": 404.64}
+{"event": "batch_start", "batch": 114, "focus": "high_difficulty_visualizable", "accepted_total": 637, "raw_total": 684, "rejected_total": 47, "ts": "2026-06-02T00:55:34Z"}
+{"event": "batch_done", "batch": 114, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 642, "elapsed_minutes": 408.26}
+{"event": "batch_start", "batch": 115, "focus": "medicine_low_medium", "accepted_total": 642, "raw_total": 690, "rejected_total": 48, "ts": "2026-06-02T00:59:11Z"}
+{"event": "batch_done", "batch": 115, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 647, "elapsed_minutes": 411.58}
+{"event": "batch_start", "batch": 116, "focus": "cs_low_accessible", "accepted_total": 647, "raw_total": 696, "rejected_total": 49, "ts": "2026-06-02T01:02:30Z"}
+{"event": "batch_done", "batch": 116, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 653, "elapsed_minutes": 414.91}
+{"event": "batch_start", "batch": 117, "focus": "humanities_problem_solving", "accepted_total": 653, "raw_total": 702, "rejected_total": 49, "ts": "2026-06-02T01:05:50Z"}
+{"event": "batch_done", "batch": 117, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 657, "elapsed_minutes": 418.54}
+{"event": "batch_start", "batch": 118, "focus": "social_science_visual", "accepted_total": 657, "raw_total": 708, "rejected_total": 51, "ts": "2026-06-02T01:09:28Z"}
+{"event": "batch_done", "batch": 118, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 662, "elapsed_minutes": 421.78}
+{"event": "batch_start", "batch": 119, "focus": "high_difficulty_visualizable", "accepted_total": 662, "raw_total": 714, "rejected_total": 52, "ts": "2026-06-02T01:12:42Z"}
+{"event": "batch_done", "batch": 119, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 666, "elapsed_minutes": 425.54}
+{"event": "batch_start", "batch": 120, "focus": "medicine_low_medium", "accepted_total": 666, "raw_total": 720, "rejected_total": 54, "ts": "2026-06-02T01:16:28Z"}
+{"event": "batch_done", "batch": 120, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 672, "elapsed_minutes": 429.05}
+{"event": "batch_start", "batch": 121, "focus": "cs_low_accessible", "accepted_total": 672, "raw_total": 726, "rejected_total": 54, "ts": "2026-06-02T01:19:58Z"}
+{"event": "batch_done", "batch": 121, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 678, "elapsed_minutes": 432.39}
+{"event": "batch_start", "batch": 122, "focus": "humanities_problem_solving", "accepted_total": 678, "raw_total": 732, "rejected_total": 54, "ts": "2026-06-02T01:23:18Z"}
+{"event": "batch_done", "batch": 122, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 683, "elapsed_minutes": 436.19}
+{"event": "batch_start", "batch": 123, "focus": "social_science_visual", "accepted_total": 683, "raw_total": 738, "rejected_total": 55, "ts": "2026-06-02T01:27:06Z"}
+{"event": "batch_done", "batch": 123, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 688, "elapsed_minutes": 439.8}
+{"event": "batch_start", "batch": 124, "focus": "high_difficulty_visualizable", "accepted_total": 688, "raw_total": 744, "rejected_total": 56, "ts": "2026-06-02T01:30:43Z"}
+{"event": "batch_done", "batch": 124, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 694, "elapsed_minutes": 443.53}
+{"event": "batch_start", "batch": 125, "focus": "medicine_low_medium", "accepted_total": 694, "raw_total": 750, "rejected_total": 56, "ts": "2026-06-02T01:34:27Z"}
+{"event": "batch_done", "batch": 125, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 700, "elapsed_minutes": 447.07}
+{"event": "batch_start", "batch": 126, "focus": "cs_low_accessible", "accepted_total": 700, "raw_total": 756, "rejected_total": 56, "ts": "2026-06-02T01:37:59Z"}
+{"event": "batch_done", "batch": 126, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 706, "elapsed_minutes": 450.35}
+{"event": "batch_start", "batch": 127, "focus": "humanities_problem_solving", "accepted_total": 706, "raw_total": 762, "rejected_total": 56, "ts": "2026-06-02T01:41:16Z"}
+{"event": "batch_done", "batch": 127, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 710, "elapsed_minutes": 454.51}
+{"event": "batch_start", "batch": 128, "focus": "social_science_visual", "accepted_total": 710, "raw_total": 768, "rejected_total": 58, "ts": "2026-06-02T01:45:26Z"}
+{"event": "batch_done", "batch": 128, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 716, "elapsed_minutes": 457.76}
+{"event": "batch_start", "batch": 129, "focus": "high_difficulty_visualizable", "accepted_total": 716, "raw_total": 774, "rejected_total": 58, "ts": "2026-06-02T01:48:41Z"}
+{"event": "batch_done", "batch": 129, "generated": 6, "prepared": 6, "accepted": 4, "rejected": 2, "accepted_total": 720, "elapsed_minutes": 461.73}
+{"event": "batch_start", "batch": 130, "focus": "medicine_low_medium", "accepted_total": 720, "raw_total": 780, "rejected_total": 60, "ts": "2026-06-02T01:52:39Z"}
+{"event": "batch_done", "batch": 130, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 726, "elapsed_minutes": 465.0}
+{"event": "batch_start", "batch": 131, "focus": "cs_low_accessible", "accepted_total": 726, "raw_total": 786, "rejected_total": 60, "ts": "2026-06-02T01:55:55Z"}
+{"event": "batch_done", "batch": 131, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 732, "elapsed_minutes": 468.31}
+{"event": "batch_start", "batch": 132, "focus": "humanities_problem_solving", "accepted_total": 732, "raw_total": 792, "rejected_total": 60, "ts": "2026-06-02T01:59:14Z"}
+{"event": "batch_done", "batch": 132, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 738, "elapsed_minutes": 471.9}
+{"event": "batch_start", "batch": 133, "focus": "social_science_visual", "accepted_total": 738, "raw_total": 798, "rejected_total": 60, "ts": "2026-06-02T02:02:49Z"}
+{"event": "batch_done", "batch": 133, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 744, "elapsed_minutes": 475.38}
+{"event": "batch_start", "batch": 134, "focus": "high_difficulty_visualizable", "accepted_total": 744, "raw_total": 804, "rejected_total": 60, "ts": "2026-06-02T02:06:18Z"}
+{"event": "batch_done", "batch": 134, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 750, "elapsed_minutes": 479.23}
+{"event": "batch_start", "batch": 135, "focus": "medicine_low_medium", "accepted_total": 750, "raw_total": 810, "rejected_total": 60, "ts": "2026-06-02T02:10:09Z"}
+{"event": "batch_done", "batch": 135, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 756, "elapsed_minutes": 482.57}
+{"event": "batch_start", "batch": 136, "focus": "cs_low_accessible", "accepted_total": 756, "raw_total": 816, "rejected_total": 60, "ts": "2026-06-02T02:13:30Z"}
+{"event": "batch_done", "batch": 136, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 762, "elapsed_minutes": 485.92}
+{"event": "batch_start", "batch": 137, "focus": "humanities_problem_solving", "accepted_total": 762, "raw_total": 822, "rejected_total": 60, "ts": "2026-06-02T02:16:50Z"}
+{"event": "batch_done", "batch": 137, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 768, "elapsed_minutes": 489.64}
+{"event": "batch_start", "batch": 138, "focus": "social_science_visual", "accepted_total": 768, "raw_total": 828, "rejected_total": 60, "ts": "2026-06-02T02:20:33Z"}
+{"event": "batch_done", "batch": 138, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 773, "elapsed_minutes": 493.05}
+{"event": "batch_start", "batch": 139, "focus": "high_difficulty_visualizable", "accepted_total": 773, "raw_total": 834, "rejected_total": 61, "ts": "2026-06-02T02:23:58Z"}
+{"event": "batch_done", "batch": 139, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 778, "elapsed_minutes": 497.27}
+{"event": "batch_start", "batch": 140, "focus": "medicine_low_medium", "accepted_total": 778, "raw_total": 840, "rejected_total": 62, "ts": "2026-06-02T02:28:12Z"}
+{"event": "batch_done", "batch": 140, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 784, "elapsed_minutes": 500.72}
+{"event": "batch_start", "batch": 141, "focus": "cs_low_accessible", "accepted_total": 784, "raw_total": 846, "rejected_total": 62, "ts": "2026-06-02T02:31:38Z"}
+{"event": "batch_done", "batch": 141, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 790, "elapsed_minutes": 504.05}
+{"event": "batch_start", "batch": 142, "focus": "humanities_problem_solving", "accepted_total": 790, "raw_total": 852, "rejected_total": 62, "ts": "2026-06-02T02:34:58Z"}
+{"event": "batch_done", "batch": 142, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 795, "elapsed_minutes": 508.02}
+{"event": "batch_start", "batch": 143, "focus": "social_science_visual", "accepted_total": 795, "raw_total": 858, "rejected_total": 63, "ts": "2026-06-02T02:38:56Z"}
+{"event": "batch_done", "batch": 143, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 801, "elapsed_minutes": 511.56}
+{"event": "batch_start", "batch": 144, "focus": "high_difficulty_visualizable", "accepted_total": 801, "raw_total": 864, "rejected_total": 63, "ts": "2026-06-02T02:42:29Z"}
+{"event": "batch_done", "batch": 144, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 807, "elapsed_minutes": 515.71}
+{"event": "batch_start", "batch": 145, "focus": "medicine_low_medium", "accepted_total": 807, "raw_total": 870, "rejected_total": 63, "ts": "2026-06-02T02:46:38Z"}
+{"event": "batch_done", "batch": 145, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 813, "elapsed_minutes": 519.1}
+{"event": "batch_start", "batch": 146, "focus": "cs_low_accessible", "accepted_total": 813, "raw_total": 876, "rejected_total": 63, "ts": "2026-06-02T02:50:01Z"}
+{"event": "batch_done", "batch": 146, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 819, "elapsed_minutes": 522.35}
+{"event": "batch_start", "batch": 147, "focus": "humanities_problem_solving", "accepted_total": 819, "raw_total": 882, "rejected_total": 63, "ts": "2026-06-02T02:53:16Z"}
+{"event": "batch_done", "batch": 147, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 824, "elapsed_minutes": 526.49}
+{"event": "batch_start", "batch": 148, "focus": "social_science_visual", "accepted_total": 824, "raw_total": 888, "rejected_total": 64, "ts": "2026-06-02T02:57:24Z"}
+{"event": "batch_done", "batch": 148, "generated": 6, "prepared": 6, "accepted": 5, "rejected": 1, "accepted_total": 829, "elapsed_minutes": 529.96}
+{"event": "batch_start", "batch": 149, "focus": "high_difficulty_visualizable", "accepted_total": 829, "raw_total": 894, "rejected_total": 65, "ts": "2026-06-02T03:00:53Z"}
+{"event": "batch_done", "batch": 149, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 835, "elapsed_minutes": 534.11}
+{"event": "batch_start", "batch": 150, "focus": "medicine_low_medium", "accepted_total": 835, "raw_total": 900, "rejected_total": 65, "ts": "2026-06-02T03:05:02Z"}
+{"event": "batch_done", "batch": 150, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 841, "elapsed_minutes": 537.63}
+{"event": "batch_start", "batch": 151, "focus": "cs_low_accessible", "accepted_total": 841, "raw_total": 906, "rejected_total": 65, "ts": "2026-06-02T03:08:33Z"}
+{"event": "batch_done", "batch": 151, "generated": 6, "prepared": 6, "accepted": 6, "rejected": 0, "accepted_total": 847, "elapsed_minutes": 540.83}

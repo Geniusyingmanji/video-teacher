@@ -1,0 +1,33 @@
+{
+  "prefix": "sleep2_20260601_180854",
+  "out_dir": "/data/zyf/rise-teacher-code/data/prompts/longrun_sleep2_20260601_180854",
+  "elapsed_minutes": 540.83,
+  "batches": 152,
+  "accepted": 847,
+  "raw": 912,
+  "rejected": 65,
+  "accepted_by_discipline": {
+    "medicine": 149,
+    "computer_science": 214,
+    "history": 57,
+    "language_literature": 26,
+    "art_music": 23,
+    "economics": 90,
+    "geography": 58,
+    "civics": 97,
+    "mathematics": 29,
+    "physics": 34,
+    "chemistry": 50,
+    "biology": 20
+  },
+  "accepted_by_task_type": {
+    "explanation": 270,
+    "problem_solving": 577
+  },
+  "accepted_by_difficulty": {
+    "undergrad": 317,
+    "professional": 213,
+    "k12": 317
+  },
+  "finished_at": "2026-06-02T03:09:45Z"
+}
