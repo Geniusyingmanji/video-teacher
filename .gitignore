@@ -35,6 +35,10 @@ data/first_frames/check_report_iter*.jsonl
 data/first_frames/check_report_mmmu_real.jsonl
 data/first_frames/check_report_gpt_image1.jsonl
 
+# Locally fetched third-party assets; metadata/manifests remain trackable.
+data/sources/grade/selected_assets/before/
+data/sources/grade/selected_assets/gt/
+
 # OS
 .DS_Store
 Thumbs.db

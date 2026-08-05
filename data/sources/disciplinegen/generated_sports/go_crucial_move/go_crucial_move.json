@@ -1,0 +1,16 @@
+[
+  {
+    "text": "A Go problem. Black to play. Please find the crucial first move and mark it with \"1\" on the board.",
+    "task_id": "task_1",
+    "image_path": "go_crucial_move/editing/1_before.png",
+    "gt": "go_crucial_move/gt/1_after.png",
+    "sub_task": "Go",
+    "meta": {
+      "category": "Go crucial move",
+      "board_size": 19,
+      "to_play": "black",
+      "answer": "J10",
+      "source_id": "disciplinegen_quickstart_extended_1"
+    }
+  }
+]

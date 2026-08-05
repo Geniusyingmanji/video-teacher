@@ -43,7 +43,9 @@ def main() -> None:
 
     for raw_path in args.paths:
         path = Path(raw_path)
-        with path.open() as f:
+        # Dataset JSONL is always UTF-8.  Relying on the platform default made
+        # the validator crash on Windows installations that default to GBK.
+        with path.open(encoding="utf-8") as f:
             for lineno, line in enumerate(f, 1):
                 if not line.strip():
                     continue

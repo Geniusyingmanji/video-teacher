@@ -1,0 +1,12 @@
+[
+{
+  "text": "Given a graph showing blood glucose levels over time after consuming high-GI foods, draw the corresponding blood glucose response curve for consuming low-GI foods.",
+  "task_id": "task_1",
+  "image_path": "glucose_curve_low_gi/editing/1_before.png",
+  "gt": "glucose_curve_low_gi/gt/1_after.png",
+  "sub_task": "Sports Nutrition",
+  "meta": {
+    "task_type": "glucose_curve_low_gi"
+  }
+}
+]

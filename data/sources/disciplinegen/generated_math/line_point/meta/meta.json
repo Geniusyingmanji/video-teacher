@@ -1,0 +1,8 @@
+[
+  {
+    "index": 1,
+    "input_image": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\generated_math\\line_point\\input\\00001_input.png",
+    "gt_image": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\generated_math\\line_point\\gt\\00001_gt.png",
+    "prompt": "Draw a line through point W perpendicular to line LT."
+  }
+]

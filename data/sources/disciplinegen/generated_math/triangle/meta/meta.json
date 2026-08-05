@@ -1,0 +1,8 @@
+[
+  {
+    "index": 2001,
+    "input_image": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\generated_math\\triangle\\input\\02001_input.png",
+    "gt_image": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\generated_math\\triangle\\gt\\02001_gt.png",
+    "prompt": "Draw the midsegment parallel to side ZV."
+  }
+]

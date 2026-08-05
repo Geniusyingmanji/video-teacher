@@ -1,0 +1,100 @@
+{
+  "valid": true,
+  "release_ready": false,
+  "row_count": 100,
+  "by_source": {
+    "DisciplineGen-1M": 50,
+    "GRADE": 50
+  },
+  "by_discipline": {
+    "biology": 10,
+    "chemistry": 10,
+    "computer_science": 10,
+    "economics": 10,
+    "geography": 10,
+    "history": 10,
+    "mathematics": 10,
+    "music": 10,
+    "physics": 10,
+    "sports": 10
+  },
+  "by_source_discipline": {
+    "DisciplineGen-1M/biology": 5,
+    "DisciplineGen-1M/chemistry": 5,
+    "DisciplineGen-1M/computer_science": 5,
+    "DisciplineGen-1M/economics": 5,
+    "DisciplineGen-1M/geography": 5,
+    "DisciplineGen-1M/history": 5,
+    "DisciplineGen-1M/mathematics": 5,
+    "DisciplineGen-1M/music": 5,
+    "DisciplineGen-1M/physics": 5,
+    "DisciplineGen-1M/sports": 5,
+    "GRADE/biology": 5,
+    "GRADE/chemistry": 5,
+    "GRADE/computer_science": 5,
+    "GRADE/economics": 5,
+    "GRADE/geography": 5,
+    "GRADE/history": 5,
+    "GRADE/mathematics": 5,
+    "GRADE/music": 5,
+    "GRADE/physics": 5,
+    "GRADE/sports": 5
+  },
+  "issues": [],
+  "release_issues": [
+    {
+      "scope": "curation",
+      "issues": [
+        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 40, 'draft_needs_subject_review': 50, 'reviewed_release_ready': 10}"
+      ]
+    },
+    {
+      "scope": "licensing",
+      "issues": [
+        "50 rows have no verified redistribution license"
+      ]
+    },
+    {
+      "scope": "near_duplicates",
+      "issues": [
+        "3 high-similarity pairs require review"
+      ],
+      "pairs": [
+        {
+          "left": "disciplinegen_music_3e5eb71566d7a026",
+          "right": "disciplinegen_music_89e9398e256c7300",
+          "jaccard": 0.774
+        },
+        {
+          "left": "disciplinegen_music_59828b181aedfaa9",
+          "right": "disciplinegen_music_f1127f2fcc50b010",
+          "jaccard": 0.839
+        },
+        {
+          "left": "disciplinegen_music_89e9398e256c7300",
+          "right": "disciplinegen_music_f1127f2fcc50b010",
+          "jaccard": 0.75
+        }
+      ]
+    }
+  ],
+  "curation_status": {
+    "draft_needs_subject_review": 50,
+    "draft_needs_visual_review": 40,
+    "reviewed_release_ready": 10
+  },
+  "inputs": {
+    "grade_metadata": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\grade\\metadata\\data.json",
+    "grade_available": 520,
+    "disciplinegen_metadata": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\metadata\\sampled_rows.jsonl",
+    "disciplinegen_sampled_available": 181,
+    "seed": 20260803,
+    "per_source_discipline": 5,
+    "content_review_exclusions": 24,
+    "replacement_files": [
+      "C:\\Users\\assd\\vt\\video-teacher\\data\\curated\\disciplinegen_math_replacements.jsonl",
+      "C:\\Users\\assd\\vt\\video-teacher\\data\\curated\\disciplinegen_sports_replacements.jsonl"
+    ],
+    "replacement_rows": 10
+  }
+}

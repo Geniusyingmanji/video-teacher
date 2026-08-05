@@ -1,0 +1,16 @@
+[
+  {
+    "text": "Use white jerseys to illustrate 4-3-3 formation in soccer.",
+    "task_id": "task_1",
+    "image_path": "soccer_formation_jerseys/editing/1_before.png",
+    "gt": "soccer_formation_jerseys/gt/1_after.png",
+    "sub_task": "Sports Tactic",
+    "meta": {
+      "task_type": "soccer_formation_jerseys",
+      "source_id": "disciplinegen_tactics_433",
+      "match_id": 20260805,
+      "team_name": "Teaching XI",
+      "formation": "4-3-3"
+    }
+  }
+]

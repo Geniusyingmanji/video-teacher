@@ -1,3 +1,22 @@
+# STATUS — 2026-08-05  MULTISOURCE PILOT CURATION IN PROGRESS
+
+## 2026-08-05 continuation
+
+The GRADE + DisciplineGen-1M multisource pilot is reproducible and
+schema-valid: 100 cases, balanced as 5 GRADE and 5 DisciplineGen cases across
+each of 10 disciplines. The dataset remains deliberately blocked from release:
+GRADE redistribution terms are unverified, 90 source rows still require
+disciplinary or image review, and three music rows require duplicate review.
+
+- Main prompt file: `data/prompts/multisource_pilot_100.jsonl`.
+- Build and release validation: `scripts/build_multisource_pilot.py`.
+- Validation checks source provenance and ensures every row marked
+  `reviewed_release_ready` has its local before/ground-truth asset pair.
+- `docs/MULTISOURCE_PILOT.md` documents reproducible sampling and the release
+  gate. It intentionally does not claim the draft as a benchmark release.
+
+---
+
 # STATUS — 2026-06-03 17:35 UTC  ⏳ DEFECT-ORIENTED EXTENSION STARTED
 
 ## 2026-06-03 continuation

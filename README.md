@@ -7,6 +7,11 @@ Benchmark for evaluating text-to-video models on **multi-discipline knowledge-ex
 
 Headline finding: **standard eval explains <5% of variance in actual learning gain** — motivating TeachQuiz-T as a complementary metric. See [`docs/STATUS.md`](docs/STATUS.md) and [`docs/TEACHQUIZ_REPORT.md`](docs/TEACHQUIZ_REPORT.md) for the full results.
 
+The in-progress 100-case GRADE + DisciplineGen-1M data expansion is documented
+in [`docs/MULTISOURCE_PILOT.md`](docs/MULTISOURCE_PILOT.md). It is
+schema-valid but intentionally remains outside the released benchmark until its
+curation and redistribution gates pass.
+
 ---
 
 ## End-to-end pipeline

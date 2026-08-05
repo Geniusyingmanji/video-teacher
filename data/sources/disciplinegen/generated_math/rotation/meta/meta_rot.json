@@ -1,0 +1,15 @@
+[
+  {
+    "index": 10001,
+    "input_image": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\generated_math\\rotation\\input\\010001_input.png",
+    "gt_image": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\disciplinegen\\generated_math\\rotation\\gt\\010001_gt.png",
+    "rotation": {
+      "center": {
+        "x": 19,
+        "y": 9
+      },
+      "angle_deg": 120,
+      "direction": "ccw"
+    }
+  }
+]

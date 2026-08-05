@@ -1,0 +1,362 @@
+[
+  {
+    "filename": "science_t2i.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/science_t2i.parquet",
+    "size": 26051712756,
+    "num_rows": 422442,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "t2i_CS.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/t2i_CS.parquet",
+    "size": 4770385574,
+    "num_rows": 64000,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "t2i_chemistry.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/t2i_chemistry.parquet",
+    "size": 891373204,
+    "num_rows": 40000,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "t2i_music.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/t2i_music.parquet",
+    "size": 1014165814,
+    "num_rows": 38535,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "edit_histrory_timeline_pairs.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/edit_histrory_timeline_pairs.parquet",
+    "size": 3100885187,
+    "num_rows": 10000,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "edit_math_math_textedit.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/edit_math_math_textedit.parquet",
+    "size": 36075382,
+    "num_rows": 1303,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "edit_sports_data_soccer_formation_dots.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/edit_sports_data_soccer_formation_dots.parquet",
+    "size": 54256,
+    "num_rows": 24,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  },
+  {
+    "filename": "edit_sports_data_soccer_formation_jerseys.parquet",
+    "url": "https://huggingface.co/datasets/VisionXLab/DisciplineGen-1M/resolve/main/edit_sports_data_soccer_formation_jerseys.parquet",
+    "size": 54319,
+    "num_rows": 24,
+    "num_row_groups": 1,
+    "columns": [
+      {
+        "name": "id",
+        "type": "int64"
+      },
+      {
+        "name": "conversations",
+        "type": "large_string"
+      },
+      {
+        "name": "metadata",
+        "type": "large_string"
+      },
+      {
+        "name": "image",
+        "type": "large_string"
+      },
+      {
+        "name": "image_path",
+        "type": "large_string"
+      },
+      {
+        "name": "image_type",
+        "type": "large_string"
+      },
+      {
+        "name": "width",
+        "type": "int64"
+      },
+      {
+        "name": "height",
+        "type": "int64"
+      },
+      {
+        "name": "image_index",
+        "type": "int64"
+      }
+    ]
+  }
+]

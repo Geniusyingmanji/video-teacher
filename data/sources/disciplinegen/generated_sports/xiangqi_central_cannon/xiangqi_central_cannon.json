@@ -1,0 +1,24 @@
+[
+  {
+    "text": "Edit the Chinese chess diagram to show the Central Cannon Opening.",
+    "task_id": "task_1",
+    "image_path": "xiangqi_central_cannon/editing/1_before.png",
+    "gt": "xiangqi_central_cannon/gt/1_after.png",
+    "sub_task": "Chinese Chess",
+    "meta": {
+      "opening": "Central Cannon Opening",
+      "opening_en": "Central Cannon Opening",
+      "plies_used": 4,
+      "requested_plies": 4,
+      "source_count": 1,
+      "canonical_count": 1,
+      "canonical_prefix_moves_ucci": [
+        "h2e2",
+        "h9e7",
+        "b0c2",
+        "b9c7"
+      ],
+      "source_id": "disciplinegen_quickstart_xiangqi_1"
+    }
+  }
+]
