@@ -1,0 +1,27 @@
+[
+  {
+    "text": "Edit the chess diagram to show the Queen's Gambit Declined.",
+    "task_id": "task_1",
+    "image_path": "chess_queens_gambit/editing/1_before.png",
+    "gt": "chess_queens_gambit/gt/1_after.png",
+    "sub_task": "Chess",
+    "meta": {
+      "opening": "Queen's Gambit Declined",
+      "eco": "",
+      "plies_used": 4,
+      "requested_plies": 4,
+      "source_count": 1,
+      "canonical_count": 1,
+      "canonical_prefix_moves_uci": [
+        "d2d4",
+        "d7d5",
+        "c2c4",
+        "e7e6"
+      ],
+      "renderer": "simple",
+      "board_theme": "green_classic",
+      "light_square_texture": "",
+      "dark_square_texture": ""
+    }
+  }
+]

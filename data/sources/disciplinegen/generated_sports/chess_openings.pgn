@@ -1,0 +1,21 @@
+[Event "DisciplineGen sample 1"]
+[Site "local"]
+[Date "2026.08.05"]
+[Round "1"]
+[White "A"]
+[Black "B"]
+[Result "*"]
+[Opening "King's Knight Opening"]
+
+1. e4 e5 2. Nf3 Nc6 *
+
+[Event "DisciplineGen sample 2"]
+[Site "local"]
+[Date "2026.08.05"]
+[Round "2"]
+[White "C"]
+[Black "D"]
+[Result "*"]
+[Opening "Queen's Gambit Declined"]
+
+1. d4 d5 2. c4 e6 *

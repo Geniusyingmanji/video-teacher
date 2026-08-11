@@ -1,0 +1,12 @@
+[
+{
+  "text": "Label the top-right corner of the line chart with the protein source corresponding to each curve (whey, meat, casein).",
+  "task_id": "task_1",
+  "image_path": "protein_curve_label/editing/1_before.png",
+  "gt": "protein_curve_label/gt/1_after.png",
+  "sub_task": "Sports Nutrition",
+  "meta": {
+    "task_type": "protein_curve_label"
+  }
+}
+]

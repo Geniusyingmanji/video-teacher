@@ -1,0 +1,27 @@
+[
+  {
+    "text": "Edit the chess diagram to show the King's Knight Opening.",
+    "task_id": "task_1",
+    "image_path": "chess_kings_knight/editing/1_before.png",
+    "gt": "chess_kings_knight/gt/1_after.png",
+    "sub_task": "Chess",
+    "meta": {
+      "opening": "King's Knight Opening",
+      "eco": "",
+      "plies_used": 4,
+      "requested_plies": 4,
+      "source_count": 1,
+      "canonical_count": 1,
+      "canonical_prefix_moves_uci": [
+        "e2e4",
+        "e7e5",
+        "g1f3",
+        "b8c6"
+      ],
+      "renderer": "simple",
+      "board_theme": "green_classic",
+      "light_square_texture": "",
+      "dark_square_texture": ""
+    }
+  }
+]

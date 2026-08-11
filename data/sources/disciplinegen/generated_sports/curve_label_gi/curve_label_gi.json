@@ -1,0 +1,12 @@
+[
+{
+  "text": "Label the top-right corner of the image with the GI level (High, Medium, Low) corresponding to each blood glucose curve.",
+  "task_id": "task_1",
+  "image_path": "curve_label_gi/editing/1_before.png",
+  "gt": "curve_label_gi/gt/1_after.png",
+  "sub_task": "Sports Nutrition",
+  "meta": {
+    "task_type": "curve_label_gi"
+  }
+}
+]

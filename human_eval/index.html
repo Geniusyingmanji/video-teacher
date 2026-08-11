@@ -1,0 +1,11 @@
+<!doctype html><meta charset="utf-8"><title>rise-teacher blinded rating</title>
+<style>body{font:16px system-ui;max-width:900px;margin:2rem auto}video{width:100%;max-height:480px}label{display:block;margin:.6rem 0}select{margin-left:.5rem}button{padding:.6rem;margin:.6rem .4rem 0 0}#meta{white-space:pre-wrap}</style>
+<h1>Blinded educational-video rating</h1><p>Watch the full video. Score each displayed dimension from 1 (fails) to 5 (excellent). Do not infer or record the source model.</p>
+<input id=file type=file accept=".jsonl"><div id=meta></div><video id=video controls></video><form id=form></form><button id=next disabled>Save and next</button><button id=download disabled>Download responses</button>
+<script>
+let tasks=[],i=0,responses=[]; const $=x=>document.querySelector(x);
+$('#file').onchange=async e=>{tasks=(await e.target.files[0].text()).trim().split(/\n+/).map(JSON.parse); const ids=[...new Set(tasks.map(x=>x.rater_id))]; if(ids.length!==1){alert('Load one rater\'s assignments only.');tasks=[];return} render()};
+function render(){let t=tasks[i]; $('#next').disabled=!t; if(!t)return; $('#meta').textContent=`Video ${i+1}/${tasks.length}\n${t.prompt_text||''}\nTarget audience: ${t.target_audience||'not specified'}`; $('#video').src=t.video_path; $('#form').innerHTML=t.dimensions.map(d=>`<label><b>${d.replaceAll('_',' ')}</b> — ${t.rubrics?.[d]||''}<select name="${d}" required><option value="">choose 1–5</option>${[1,2,3,4,5].map(n=>`<option>${n}</option>`).join('')}</select></label>`).join('')}
+$('#next').onclick=()=>{let t=tasks[i], f=$('#form'); if(!f.reportValidity())return; let scores=Object.fromEntries(t.dimensions.map(d=>[d,+f.elements[d].value])); responses.push({assignment_id:t.assignment_id,rater_id:t.rater_id,scores,submitted_at:new Date().toISOString()}); i++; $('#download').disabled=false; render()};
+$('#download').onclick=()=>{let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([responses.map(JSON.stringify).join('\n')+'\n'],{type:'application/jsonl'}));a.download='responses.jsonl';a.click()};
+</script>
