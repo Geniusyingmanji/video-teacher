@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -27,13 +28,16 @@ def extract_dim_score(rec: dict, dim: str) -> float | None:
     if dim not in rec:
         return None
     sub = rec[dim]
-    s = sub.get("score") or sub.get("final_score")
+    s = sub.get("score")
+    if s is None:
+        s = sub.get("final_score")
     if s is None:
         return None
     try:
-        return float(s)
-    except Exception:
+        value = float(s)
+    except (TypeError, ValueError):
         return None
+    return value if math.isfinite(value) else None
 
 
 def main() -> None:

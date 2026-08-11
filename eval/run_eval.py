@@ -16,6 +16,7 @@ from __future__ import annotations
 import argparse
 import concurrent.futures as cf
 import json
+import math
 import time
 import traceback
 from pathlib import Path
@@ -60,6 +61,18 @@ EXTENDED_WEIGHTS = {
 }
 
 
+def dimension_score(result: dict) -> float | None:
+    """Extract a finite dimension score without treating a valid zero as missing."""
+    value = result.get("score")
+    if value is None:
+        value = result.get("final_score")
+    try:
+        value = float(value)
+    except (TypeError, ValueError):
+        return None
+    return value if math.isfinite(value) else None
+
+
 def load_jsonl(path: str) -> list[dict]:
     out: list[dict] = []
     with open(path) as f:
@@ -87,16 +100,14 @@ def evaluate_one(
         try:
             r = dim_mod.score(case, frames)
             out[dim_name] = r
-            s = r.get("score") or r.get("final_score") or 0
-            try:
-                s = float(s)
-            except Exception:
-                s = 0.0
+            s = dimension_score(r)
+            if s is None:
+                raise ValueError(f"{dim_name} returned no finite score")
             w = weights[dim_name]
             weighted_sum += s * w
             weight_sum += w
         except Exception as e:
-            out[dim_name] = {"error": str(e)[:300], "score": 0}
+            out[dim_name] = {"error": str(e)[:300]}
     out["aggregate_score"] = (
         round(weighted_sum / weight_sum, 3) if weight_sum > 0 else 0
     )
@@ -148,19 +159,20 @@ def main() -> None:
                 except Exception:
                     pass
     # Rewrite per_case_path keeping only good records so re-run appends cleanly
-    if per_case_path.exists() and done_ids:
-        good_lines = []
+    if per_case_path.exists():
+        good_records = {}
         with per_case_path.open() as f:
             for line in f:
                 try:
                     rec = json.loads(line)
                     if rec["id"] in done_ids:
-                        good_lines.append(line if line.endswith("\n") else line + "\n")
+                        good_records[rec["id"]] = rec
                 except Exception:
                     pass
         with per_case_path.open("w") as f:
-            f.writelines(good_lines)
-        print(f"[eval] resume: kept {len(done_ids)} clean records, pruned errors")
+            for rec in good_records.values():
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+        print(f"[eval] resume: kept {len(good_records)} unique clean records, pruned errors/duplicates")
 
     tasks = [m for m in manifest if m["id"] not in done_ids]
     print(f"[eval] {len(tasks)} new (skipping {len(done_ids)} already-evaluated)")
@@ -212,17 +224,22 @@ def aggregate(results: list[dict], prompts: dict[str, dict], dims: dict) -> dict
     for r in results:
         if "error" in r and "aggregate_score" not in r:
             continue
+        dim_scores = {}
+        for dim in dims:
+            dim_result = r.get(dim)
+            if not isinstance(dim_result, dict) or "error" in dim_result:
+                break
+            value = dimension_score(dim_result)
+            if value is None:
+                break
+            dim_scores[dim] = value
+        if len(dim_scores) != len(dims):
+            continue
         aggregates.append(float(r.get("aggregate_score", 0) or 0))
         if r.get("strict_pass"):
             strict_pass += 1
-        for dim in dims:
-            if dim in r:
-                s = r[dim].get("score") or r[dim].get("final_score") or 0
-                try:
-                    s = float(s)
-                except Exception:
-                    s = 0.0
-                scores_by_dim[dim].append(s)
+        for dim, value in dim_scores.items():
+            scores_by_dim[dim].append(value)
         case = prompts.get(r["id"], {})
         d = case.get("discipline", "unknown")
         t = case.get("task_type", "unknown")
@@ -240,6 +257,8 @@ def aggregate(results: list[dict], prompts: dict[str, dict], dims: dict) -> dict
         per_difficulty[diff]["sum"] += float(r.get("aggregate_score", 0) or 0)
         per_difficulty[diff]["pass"] += int(bool(r.get("strict_pass")))
 
+    rep["n_valid"] = len(aggregates)
+    rep["n_failed"] = len(results) - len(aggregates)
     rep["mean_aggregate"] = round(sum(aggregates) / max(1, len(aggregates)), 3)
     rep["strict_accuracy"] = round(strict_pass / max(1, len(aggregates)), 3)
     rep["per_dim_mean"] = {d: round(sum(v) / max(1, len(v)), 3) for d, v in scores_by_dim.items()}

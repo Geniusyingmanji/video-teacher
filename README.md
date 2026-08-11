@@ -5,7 +5,7 @@ Benchmark for evaluating text-to-video models on **multi-discipline knowledge-ex
 1. **Standard eval** — GPT-5.5 scores 6 pedagogy-aware dimensions (Conceptual Correctness, Narrative Structure, Visual Quality, Pedagogical Clarity, Didactic Affordances, Audience Appropriateness).
 2. **TeachQuiz-T** — a weak student VLM (Qwen3-VL-2B) takes pre/post quizzes around each generated video; we measure the *normalized learning gain*.
 
-Headline finding: **standard eval explains <5% of variance in actual learning gain** — motivating TeachQuiz-T as a complementary metric. See [`docs/STATUS.md`](docs/STATUS.md) and [`docs/TEACHQUIZ_REPORT.md`](docs/TEACHQUIZ_REPORT.md) for the full results.
+Pilot finding: **standard eval explains <5% of variance in normalized gain for one frozen VLM learner proxy**. This motivates studying TeachQuiz-T as a complementary metric; it is not yet evidence about human learning. See [`docs/STATUS.md`](docs/STATUS.md), [`docs/TEACHQUIZ_REPORT.md`](docs/TEACHQUIZ_REPORT.md), and the [`paper-readiness audit`](docs/PAPER_READINESS.md) for results and claim boundaries.
 
 The in-progress 100-case GRADE + DisciplineGen-1M data expansion is documented
 in [`docs/MULTISOURCE_PILOT.md`](docs/MULTISOURCE_PILOT.md). It is
@@ -255,3 +255,5 @@ bash scripts/run_full_pipeline.sh
 - [`docs/TEACHQUIZ.md`](docs/TEACHQUIZ.md) — TeachQuiz-T design
 - [`docs/TEACHQUIZ_REPORT.md`](docs/TEACHQUIZ_REPORT.md) — learning-gain results
 - [`docs/paper_stats.md`](docs/paper_stats.md) — headline numbers (auto-generated)
+- [`docs/HUMAN_EVAL_PROTOCOL.md`](docs/HUMAN_EVAL_PROTOCOL.md) — blinded human-validation protocol
+- [`docs/PAPER_READINESS.md`](docs/PAPER_READINESS.md) — evidence gaps and allowed claim language
