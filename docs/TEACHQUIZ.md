@@ -3,6 +3,12 @@
 TeachQuiz-T estimates whether a generated educational video helps a small
 student VLM answer case-specific quiz questions.
 
+For cross-model comparisons, freeze the quiz before video generation and use
+the exact same file for every model. The runner records its SHA-256 fingerprint
+and whether the output is cross-model comparable. Probes built from a model's
+own output must be declared with `--probe-origin output_adaptive`; they are
+diagnostic only and must not be used to rank models.
+
 For each case:
 
 1. `pre`: answer quiz with no video.
@@ -15,6 +21,10 @@ The reported gain is:
 learning_gain = post_video - max(pre, random_video)
 normalized_gain = learning_gain / (1 - max(pre, random_video))
 ```
+
+The output additionally reports `raw_gain = post - pre` and
+`control_adjusted_gain = post - random_video`. Random controls are selected
+deterministically, preferring the same discipline, task type, and difficulty.
 
 Cases with baseline score at or above `--max-baseline-score` are marked invalid
 by default because the student already knows the answer.

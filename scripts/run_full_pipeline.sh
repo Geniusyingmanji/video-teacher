@@ -95,6 +95,7 @@ for config in wan2_2_ti2v_5b_ff; do
     CUDA_VISIBLE_DEVICES=3 python -m eval.run_teachquiz \
         --prompts $PROMPTS \
         --quiz $PROBE \
+        --probe-origin output_adaptive \
         --manifest $GEN_BASE/$config/pilot_v0_1/manifest.jsonl \
         --student qwen3vl \
         --out $EVAL_BASE/teachquiz_qwen3vl_${config} \

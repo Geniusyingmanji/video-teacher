@@ -13,6 +13,7 @@ The metric is post - max(pre, random), with a normalized-gain variant.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import random
 import time
@@ -37,6 +38,36 @@ def load_jsonl(path: str | Path) -> list[dict[str, Any]]:
             if line:
                 rows.append(json.loads(line))
     return rows
+
+
+def validate_quiz_rows(rows: list[dict[str, Any]]) -> None:
+    """Fail early on probe defects that would silently invalidate comparisons."""
+    case_ids: set[str] = set()
+    question_ids: set[str] = set()
+    for row in rows:
+        case_id = str(row.get("case_id", "")).strip()
+        if not case_id or case_id in case_ids:
+            raise ValueError(f"missing or duplicate quiz case_id: {case_id!r}")
+        case_ids.add(case_id)
+        if not row.get("quiz"):
+            raise ValueError(f"quiz case {case_id!r} has no questions")
+        for item in row["quiz"]:
+            question_id = str(item.get("id", "")).strip()
+            if not question_id or question_id in question_ids:
+                raise ValueError(f"missing or duplicate question id: {question_id!r}")
+            question_ids.add(question_id)
+            choices = item.get("choices", [])
+            answer = item.get("answer")
+            if len(choices) < 2 or answer not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[:len(choices)]:
+                raise ValueError(f"invalid choices/answer for question {question_id!r}")
+
+
+def file_sha256(path: str | Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def load_student(args: argparse.Namespace, quiz_rows: list[dict[str, Any]]):
@@ -84,17 +115,41 @@ def choose_random_manifest(
     manifest: list[dict[str, Any]],
     case_id: str,
     rng: random.Random,
+    prompts: dict[str, dict[str, Any]] | None = None,
 ) -> dict[str, Any] | None:
     candidates = [m for m in manifest if m.get("id") != case_id and m.get("status") == "ok"]
     if not candidates:
         return None
-    return rng.choice(candidates)
+    # Prefer controls with the same discipline, task type, and difficulty. This
+    # reduces the chance that a trivially unrelated clip becomes an artificially
+    # weak baseline. Relax constraints only when the dataset is too small.
+    if prompts and case_id in prompts:
+        target = prompts[case_id]
+        fields = ("discipline", "task_type", "difficulty")
+        for n_fields in range(len(fields), 0, -1):
+            matched = [
+                m for m in candidates
+                if all(
+                    prompts.get(m.get("id"), {}).get(field) == target.get(field)
+                    for field in fields[:n_fields]
+                )
+            ]
+            if matched:
+                candidates = matched
+                break
+    # Sorting makes the seeded choice independent of manifest row order.
+    return rng.choice(sorted(candidates, key=lambda item: str(item.get("id", ""))))
 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompts", required=True)
-    ap.add_argument("--quiz", required=True)
+    ap.add_argument("--quiz", "--probe", dest="quiz", required=True,
+                    help="Frozen shared quiz/probe JSONL. --probe is a backwards-compatible alias.")
+    ap.add_argument("--probe-origin", choices=["frozen_shared", "output_adaptive"],
+                    default="frozen_shared",
+                    help="Declare whether questions were frozen before generation. "
+                         "Output-adaptive probes are diagnostic and not comparable across models.")
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--student", default="dummy", choices=["dummy", "oracle", "qwen25vl", "qwen3vl", "smolvlm2", "gpt55"])
@@ -121,6 +176,10 @@ def main() -> None:
 
     prompts = {row["id"]: row for row in load_jsonl(args.prompts)}
     quiz_rows = load_jsonl(args.quiz)
+    validate_quiz_rows(quiz_rows)
+    if args.probe_origin == "output_adaptive":
+        print("[teachquiz] WARNING: output-adaptive probes are diagnostic only; "
+              "do not use their scores for cross-model ranking")
     manifest = [row for row in load_jsonl(args.manifest) if row.get("status") == "ok"]
     videos = {row["id"]: row for row in manifest}
     if args.limit > 0:
@@ -151,7 +210,9 @@ def main() -> None:
                 video_path = videos[cid]["video_path"]
                 frames = extract_frames(video_path, n=args.n_frames, resize_max=args.frame_max_px)
 
-                random_entry = None if args.skip_random else choose_random_manifest(manifest, cid, rng)
+                random_entry = None if args.skip_random else choose_random_manifest(
+                    manifest, cid, rng, prompts
+                )
                 random_frames = None
                 random_id = None
                 if random_entry:
@@ -204,6 +265,19 @@ def main() -> None:
 
     all_rows = load_jsonl(per_case_path)
     aggregate = build_aggregate(all_rows)
+    aggregate["protocol"] = {
+        "student": student.name,
+        "quiz_path": str(Path(args.quiz).resolve()),
+        "quiz_sha256": file_sha256(args.quiz),
+        "probe_origin": args.probe_origin,
+        "cross_model_comparable": args.probe_origin == "frozen_shared",
+        "random_control": "skipped" if args.skip_random else "seeded_matched",
+        "random_seed": args.seed,
+        "match_priority": ["discipline", "task_type", "difficulty"],
+        "max_baseline_score": args.max_baseline_score,
+        "n_frames": args.n_frames,
+        "frame_max_px": args.frame_max_px,
+    }
     with (out_dir / "aggregate.json").open("w", encoding="utf-8") as f:
         json.dump(aggregate, f, indent=2, ensure_ascii=False)
     print(f"[teachquiz] wrote {out_dir / 'aggregate.json'}")
@@ -233,6 +307,15 @@ def build_aggregate(rows: list[dict[str, Any]]) -> dict[str, Any]:
                 float(r["random_video"]["score"]) for r in rs if r.get("random_video")
             ]),
             "learning_gain": mean([float(r["learning_gain"]) for r in rs]),
+            "raw_gain": mean([float(r.get("raw_gain", r["post_video"]["score"] - r["pre"]["score"])) for r in rs]),
+            "control_adjusted_gain": mean([
+                float(r.get(
+                    "control_adjusted_gain",
+                    r["post_video"]["score"] - (
+                        r["random_video"]["score"] if r.get("random_video") else r["pre"]["score"]
+                    ),
+                )) for r in rs
+            ]),
             "normalized_gain": mean([float(r["normalized_gain"]) for r in rs]),
             "positive_gain_rate": mean([1.0 if r.get("positive_gain") else 0.0 for r in rs]),
         }

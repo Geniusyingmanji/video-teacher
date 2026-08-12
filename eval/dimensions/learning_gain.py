@@ -60,11 +60,17 @@ def learning_gain(
     random_score: float | None = None,
     max_baseline_score: float = 0.8,
 ) -> dict[str, float | bool]:
+    raw_gain = post_score - pre_score
+    control_adjusted_gain = (
+        post_score - random_score if random_score is not None else raw_gain
+    )
     baseline = max(pre_score, random_score if random_score is not None else pre_score)
     gain = post_score - baseline
     denom = max(1e-6, 1.0 - baseline)
     normalized = gain / denom
     return {
+        "raw_gain": round(raw_gain, 4),
+        "control_adjusted_gain": round(control_adjusted_gain, 4),
         "baseline_score": round(baseline, 4),
         "learning_gain": round(gain, 4),
         "normalized_gain": round(normalized, 4),
