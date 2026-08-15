@@ -70,6 +70,49 @@ def file_sha256(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def protocol_metadata(args: argparse.Namespace, student_name: str) -> dict[str, Any]:
+    """Return the immutable portion of a TeachQuiz run protocol.
+
+    This is written before inference starts so an interrupted run cannot later
+    be resumed with a different quiz, learner, or scoring configuration.
+    """
+    return {
+        "schema_version": 1,
+        "student": student_name,
+        "quiz_path": str(Path(args.quiz).resolve()),
+        "quiz_sha256": file_sha256(args.quiz),
+        "probe_origin": args.probe_origin,
+        "cross_model_comparable": args.probe_origin == "frozen_shared",
+        "random_control": "skipped" if args.skip_random else "seeded_matched",
+        "random_seed": args.seed,
+        "match_priority": ["discipline", "task_type", "difficulty"],
+        "max_baseline_score": args.max_baseline_score,
+        "n_frames": args.n_frames,
+        "frame_max_px": args.frame_max_px,
+        "max_questions": args.max_questions,
+    }
+
+
+def ensure_protocol(path: Path, protocol: dict[str, Any]) -> None:
+    """Create a run protocol or reject an unsafe resume."""
+    if path.exists():
+        previous = json.loads(path.read_text(encoding="utf-8"))
+        if previous != protocol:
+            changed = sorted(
+                key for key in set(previous) | set(protocol)
+                if previous.get(key) != protocol.get(key)
+            )
+            raise RuntimeError(
+                "refusing to resume TeachQuiz with a changed protocol: "
+                + ", ".join(changed)
+            )
+        return
+    path.write_text(
+        json.dumps(protocol, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
+    )
+
+
 def load_student(args: argparse.Namespace, quiz_rows: list[dict[str, Any]]):
     if args.student == "dummy":
         return DummyStudent()
@@ -186,6 +229,8 @@ def main() -> None:
         quiz_rows = quiz_rows[: args.limit]
 
     student = load_student(args, quiz_rows)
+    protocol = protocol_metadata(args, student.name)
+    ensure_protocol(out_dir / "protocol.json", protocol)
     rng = random.Random(args.seed)
 
     done_ids = set()
@@ -265,19 +310,7 @@ def main() -> None:
 
     all_rows = load_jsonl(per_case_path)
     aggregate = build_aggregate(all_rows)
-    aggregate["protocol"] = {
-        "student": student.name,
-        "quiz_path": str(Path(args.quiz).resolve()),
-        "quiz_sha256": file_sha256(args.quiz),
-        "probe_origin": args.probe_origin,
-        "cross_model_comparable": args.probe_origin == "frozen_shared",
-        "random_control": "skipped" if args.skip_random else "seeded_matched",
-        "random_seed": args.seed,
-        "match_priority": ["discipline", "task_type", "difficulty"],
-        "max_baseline_score": args.max_baseline_score,
-        "n_frames": args.n_frames,
-        "frame_max_px": args.frame_max_px,
-    }
+    aggregate["protocol"] = protocol
     with (out_dir / "aggregate.json").open("w", encoding="utf-8") as f:
         json.dump(aggregate, f, indent=2, ensure_ascii=False)
     print(f"[teachquiz] wrote {out_dir / 'aggregate.json'}")

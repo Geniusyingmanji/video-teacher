@@ -123,6 +123,25 @@ python scripts/render_teachquiz_report.py \
   --title "TeachQuiz-T pilot — Wan2.2 5B / Qwen2.5-VL-3B"
 ```
 
+## Compare two runs
+
+Cross-model claims require both runs to use the same frozen quiz, student,
+scoring settings, and random-control policy. The runner writes these settings
+to `protocol.json` before inference and refuses an incompatible resume.
+
+```bash
+python scripts/compare_teachquiz.py \
+  --left outputs/teachquiz_qwen25vl3b_5b \
+  --right outputs/teachquiz_qwen25vl3b_1_3b \
+  --left-label wan5b --right-label wan1.3b \
+  --out outputs/teachquiz_qwen25vl3b_comparison.json
+```
+
+The comparison checks protocol compatibility, uses the paired case
+intersection, and reports bootstrap confidence intervals, a paired sign-flip
+permutation p-value, and both all-scored and joint-valid sensitivity results.
+Legacy runs without protocol metadata are intentionally rejected.
+
 ## Current limitations
 
 - No unlearning/fine-tuning yet; the `pre` and `random_video` controls filter

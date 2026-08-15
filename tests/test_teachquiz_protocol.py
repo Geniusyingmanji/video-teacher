@@ -1,11 +1,14 @@
 import random
+import tempfile
 import unittest
+from pathlib import Path
 
 from eval.dimensions.learning_gain import learning_gain
 from eval.run_teachquiz import (
     build_aggregate,
     choose_random_manifest,
     validate_quiz_rows,
+    ensure_protocol,
 )
 
 
@@ -52,6 +55,14 @@ class TeachQuizProtocolTest(unittest.TestCase):
         ]
         with self.assertRaisesRegex(ValueError, "duplicate question id"):
             validate_quiz_rows(rows)
+
+    def test_resume_rejects_changed_protocol(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "protocol.json"
+            ensure_protocol(path, {"quiz_sha256": "first", "student": "learner"})
+            ensure_protocol(path, {"quiz_sha256": "first", "student": "learner"})
+            with self.assertRaisesRegex(RuntimeError, "quiz_sha256"):
+                ensure_protocol(path, {"quiz_sha256": "second", "student": "learner"})
 
 
 if __name__ == "__main__":
