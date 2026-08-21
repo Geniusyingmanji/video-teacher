@@ -89,6 +89,11 @@ python scripts/dim_correlation.py            # → docs/analysis/dim_correlation
 python scripts/eval_vs_teachquiz_correlation.py  # → docs/analysis/eval_vs_teachquiz_corr.md
 python scripts/gen_teachquiz_report.py       # → docs/TEACHQUIZ_REPORT.md
 python scripts/render_report.py              # → docs/reports/PILOT_REPORT*.md
+python scripts/compare_standard_eval.py \     # paired CI/effect/permutation analysis
+  --left results/eval_pilot_v0_1/per_case.jsonl \
+  --right results/eval_pilot_v0_1_wan13b/per_case.jsonl \
+  --left-label Wan5B-3s --right-label Wan1.3B-3s \
+  --out docs/analysis/paired_wan5b_vs_wan13b_3s.md
 ```
 
 ---
@@ -112,6 +117,12 @@ python scripts/render_report.py              # → docs/reports/PILOT_REPORT*.md
 | Wan1.3B | 53/60 | 0.730 | 83.0% |
 
 **Standard eval vs TeachQuiz-T correlation:** r²(5B)=4.5%, r²(1.3B)=0.9%.
+
+Paired uncertainty analysis does **not** establish an aggregate winner between
+Wan5B-3s and Wan1.3B-3s: left-minus-right mean difference -0.0683, 95% case-
+bootstrap CI [-0.1775, 0.0425]. See `docs/analysis/paired_*.md`; raw mean
+differences should not be interpreted as significant without these paired
+analyses.
 
 ---
 

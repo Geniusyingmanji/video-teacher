@@ -42,3 +42,8 @@ data/sources/grade/selected_assets/gt/
 # OS
 .DS_Store
 Thumbs.db
+
+# Human-study participant data (keep templates/README tracked)
+data/human_eval/*/responses*.jsonl
+data/human_eval/*/raw_submissions/
+data/human_eval/*/audit_log*

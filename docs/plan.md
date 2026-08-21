@@ -176,6 +176,8 @@ DATA ─► GENERATION ─► EVAL ─► ANALYSIS
 
 ### 7.1 Must-have for paper submission
 
+- [x] **Paired uncertainty machinery for existing standard-eval comparisons** — case-level effect size, 95% bootstrap CI, paired sign-flip test, and Holm correction are implemented in `scripts/compare_standard_eval.py`; all future final comparisons must run it too.
+
 - [ ] **TI2V vs T2V comparison** — run `wan_ti2v_runner.py` with current 60 GPT-Image-1 first frames; eval; compare to pure T2V on standard + TeachQuiz-T. *Hypothesis: TI2V improves CC/NS even when first frames are imperfect.*
 - [ ] **v0.2 high-difficulty TeachQuiz-T** — re-run TeachQuiz on the 22 graduate cases (we only have standard eval for these so far).
 - [ ] **Wan5B v0.2 high-difficulty** — only Wan1.3B has been evaluated at graduate level; missing a 5B baseline.

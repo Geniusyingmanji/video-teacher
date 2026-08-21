@@ -45,3 +45,7 @@ The script rejects unknown assignments, rater/assignment mismatches, duplicate s
 Report the sample, rater qualifications, compensation, exclusions, completion rate, ordinal Krippendorff's alpha for every dimension, and case-level Spearman judge--human correlations with 5,000 case-bootstrap 95% CIs. Avoid a global claim that the automated judge is human-aligned if a core factual or pedagogical dimension has weak reliability or a CI spanning a practically negligible association. State that this validates the *video-quality judge*, not the VLM learner proxy.
 
 The static `human_eval/index.html` is an optional local collector: it reads one file from the generated `raters/` directory and downloads that rater's JSONL responses. For production collection, use an authenticated service and retain its immutable audit log.
+
+Operational handoff instructions and a response example are tracked in
+`data/human_eval/README.md`. The final study must also satisfy the human-study
+section of `docs/RELEASE_CHECKLIST.md`.
