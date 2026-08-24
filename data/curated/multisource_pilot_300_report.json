@@ -1,0 +1,79 @@
+{
+  "valid": true,
+  "release_ready": false,
+  "row_count": 300,
+  "by_source": {
+    "DisciplineGen-1M": 139,
+    "GRADE": 161
+  },
+  "by_discipline": {
+    "biology": 30,
+    "chemistry": 30,
+    "computer_science": 30,
+    "economics": 30,
+    "geography": 30,
+    "history": 30,
+    "mathematics": 30,
+    "music": 30,
+    "physics": 30,
+    "sports": 30
+  },
+  "by_source_discipline": {
+    "DisciplineGen-1M/biology": 15,
+    "DisciplineGen-1M/chemistry": 15,
+    "DisciplineGen-1M/computer_science": 15,
+    "DisciplineGen-1M/economics": 10,
+    "DisciplineGen-1M/geography": 15,
+    "DisciplineGen-1M/history": 15,
+    "DisciplineGen-1M/mathematics": 15,
+    "DisciplineGen-1M/music": 15,
+    "DisciplineGen-1M/physics": 15,
+    "DisciplineGen-1M/sports": 9,
+    "GRADE/biology": 15,
+    "GRADE/chemistry": 15,
+    "GRADE/computer_science": 15,
+    "GRADE/economics": 20,
+    "GRADE/geography": 15,
+    "GRADE/history": 15,
+    "GRADE/mathematics": 15,
+    "GRADE/music": 15,
+    "GRADE/physics": 15,
+    "GRADE/sports": 21
+  },
+  "issues": [],
+  "release_issues": [
+    {
+      "scope": "curation",
+      "issues": [
+        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 134, 'draft_needs_subject_review': 161, 'reviewed_release_ready': 5}"
+      ]
+    },
+    {
+      "scope": "licensing",
+      "issues": [
+        "161 rows have no verified redistribution license"
+      ]
+    }
+  ],
+  "curation_status": {
+    "draft_needs_subject_review": 161,
+    "draft_needs_visual_review": 134,
+    "reviewed_release_ready": 5
+  },
+  "inputs": {
+    "grade_metadata": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\grade\\metadata\\data.json",
+    "grade_available": 520,
+    "disciplinegen_metadata": "data\\sources\\disciplinegen\\metadata\\sampled_rows_expanded.jsonl",
+    "disciplinegen_sampled_available": 1995,
+    "disciplinegen_extra": [],
+    "seed": 20260803,
+    "per_source_discipline": 5,
+    "target_per_discipline": 30,
+    "content_review_exclusions": 24,
+    "replacement_files": [
+      "C:\\Users\\assd\\vt\\video-teacher\\data\\curated\\disciplinegen_math_replacements.jsonl",
+      "C:\\Users\\assd\\vt\\video-teacher\\data\\curated\\disciplinegen_sports_replacements.jsonl"
+    ],
+    "replacement_rows": 10
+  }
+}

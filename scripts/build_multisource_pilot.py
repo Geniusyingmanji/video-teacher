@@ -502,6 +502,9 @@ def row_text_fields(row: dict[str, Any]) -> list[str]:
 
 def infer_dg_discipline(row: dict[str, Any]) -> str | None:
     filename = clean_text(row.get("_source_file"), limit=200)
+    # Upstream ships the history file with this misspelling in its filename.
+    if "histrory" in filename.lower() or "history" in filename.lower():
+        return "history"
     for key in ("subject", "discipline", "domain", "category", "subdomain"):
         discipline = normalize_subject(row.get(key), filename)
         if discipline:
@@ -524,6 +527,51 @@ def infer_dg_discipline(row: dict[str, Any]) -> str | None:
 def has_usable_text(row: dict[str, Any]) -> bool:
     text = " ".join(row_text_fields(row))
     return 20 <= len(text) <= 2500
+
+
+def source_tokens(row: dict[str, Any]) -> set[str]:
+    """Content tokens used for selection-time diversity checks."""
+    return set(re.findall(r"[a-z0-9]+", " ".join(row_text_fields(row)).lower()))
+
+
+def diverse_take(
+    candidates: list[dict[str, Any]],
+    count: int,
+    *,
+    max_jaccard: float = 0.62,
+) -> list[dict[str, Any]]:
+    """Greedily keep content-distinct rows, relaxing only to fill the quota.
+
+    Selection is deterministic because callers establish candidate order first.
+    Exact and very close variants are never admitted during the relaxation pass.
+    """
+    selected: list[dict[str, Any]] = []
+    selected_tokens: list[set[str]] = []
+    deferred: list[tuple[float, dict[str, Any], set[str]]] = []
+    for row in candidates:
+        tokens = source_tokens(row)
+        highest = max(
+            (
+                len(tokens & prior) / len(tokens | prior)
+                for prior in selected_tokens
+                if tokens | prior
+            ),
+            default=0.0,
+        )
+        if highest < max_jaccard:
+            selected.append(row)
+            selected_tokens.append(tokens)
+            if len(selected) == count:
+                return selected
+        else:
+            deferred.append((highest, row, tokens))
+    for highest, row, tokens in sorted(deferred, key=lambda item: item[0]):
+        if highest < 0.72:
+            selected.append(row)
+            selected_tokens.append(tokens)
+            if len(selected) == count:
+                break
+    return selected
 
 
 def stratified_grade(rows: list[dict[str, Any]], per_discipline: int, seed: int) -> list[dict[str, Any]]:
@@ -552,7 +600,7 @@ def stratified_grade(rows: list[dict[str, Any]], per_discipline: int, seed: int)
                 ordered.append(buckets[name].pop())
                 if not buckets[name]:
                     del buckets[name]
-        output.extend(ordered[:per_discipline])
+        output.extend(diverse_take(ordered, per_discipline))
     return output
 
 
@@ -580,7 +628,7 @@ def stratified_dg(rows: list[dict[str, Any]], per_discipline: int, seed: int) ->
         # Prefer annotations that fit a short teaching video while retaining
         # deterministic random tie-breaking from the shuffle above.
         candidates.sort(key=lambda row: abs(len(" ".join(row_text_fields(row))) - 360))
-        output.extend(candidates[:per_discipline])
+        output.extend(diverse_take(candidates, per_discipline))
     return output
 
 
@@ -600,6 +648,15 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
     instruction = clean_text(row.get("text"))
     rubrics = [clean_text(question.get("question")) for question in row.get("questions", [])]
     rubrics = [item for item in rubrics if item]
+    for fallback in (
+        "the requested change is completed",
+        "the final state is disciplinarily correct",
+        "unrelated visual content remains unchanged",
+    ):
+        if len(rubrics) >= 3:
+            break
+        if fallback not in rubrics:
+            rubrics.append(fallback)
     concepts = [subdomain, "discipline-informed visual reasoning", "cause-and-effect editing"]
     visuals = [
         "the original academic diagram and its unchanged context",
@@ -628,11 +685,7 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "expected_visual_elements": visuals,
         "expected_narrative_order": beats,
         "pedagogical_target_audience": f"introductory {discipline.replace('_', ' ')} student",
-        "discipline_specific_rubric": rubrics[:6] or [
-            "the requested change is completed",
-            "the final state is disciplinarily correct",
-            "unrelated visual content remains unchanged",
-        ],
+        "discipline_specific_rubric": rubrics[:6],
         "audio_narration_required": False,
         "target_duration_s": 5,
         "narrative_beats": timed_beats(beats),
@@ -734,6 +787,8 @@ def validate_rows(
     rows: list[dict[str, Any]],
     *,
     expected_per_source_discipline: int | None = None,
+    expected_per_discipline: int | None = None,
+    expected_total: int | None = None,
 ) -> dict[str, Any]:
     issues: list[dict[str, Any]] = []
     ids = Counter(row.get("id") for row in rows)
@@ -788,6 +843,22 @@ def validate_rows(
                             ],
                         }
                     )
+    if expected_per_discipline is not None:
+        for discipline in DISCIPLINES:
+            actual = by_discipline[discipline]
+            if actual != expected_per_discipline:
+                issues.append(
+                    {
+                        "scope": discipline,
+                        "issues": [
+                            f"expected {expected_per_discipline} total rows, got {actual}"
+                        ],
+                    }
+                )
+    if expected_total is not None and len(rows) != expected_total:
+        issues.append(
+            {"scope": "total", "issues": [f"expected {expected_total} rows, got {len(rows)}"]}
+        )
     status_counts = Counter(
         row.get("curation", {}).get("status", "missing") for row in rows
     )
@@ -895,8 +966,11 @@ def validate_rows(
 def build(args: argparse.Namespace) -> None:
     grade_rows = json.loads(Path(args.grade).read_text(encoding="utf-8"))
     dg_rows = jsonl_rows(Path(args.disciplinegen))
-    selected_grade = stratified_grade(grade_rows, args.per_source_discipline, args.seed)
-    selected_dg = stratified_dg(dg_rows, args.per_source_discipline, args.seed)
+    for extra_path in args.disciplinegen_extra:
+        dg_rows.extend(jsonl_rows(Path(extra_path)))
+    selection_quota = args.target_per_discipline or args.per_source_discipline
+    selected_grade = stratified_grade(grade_rows, selection_quota, args.seed)
+    selected_dg = stratified_dg(dg_rows, selection_quota, args.seed)
     prompts = [grade_to_prompt(row) for row in selected_grade]
     prompts.extend(dg_to_prompt(row) for row in selected_dg)
     replacement_paths = [Path(path) for path in args.replacements]
@@ -907,7 +981,7 @@ def build(args: argparse.Namespace) -> None:
         for row in jsonl_rows(path)
     ]
     replacement_disciplines = {row.get("discipline") for row in replacement_rows}
-    if replacement_rows:
+    if replacement_rows and args.target_per_discipline is None:
         prompts = [
             row
             for row in prompts
@@ -916,21 +990,91 @@ def build(args: argparse.Namespace) -> None:
                 and row.get("discipline") in replacement_disciplines
             )
         ]
-        prompts.extend(replacement_rows)
+    prompts.extend(replacement_rows)
+    # The 300-case build fixes the discipline quota, not an artificial 50/50
+    # source quota. Prefer up to half DisciplineGen, then fill sparse disciplines
+    # from GRADE. This retains both papers without duplicating scarce source rows.
+    if args.target_per_discipline is not None:
+        all_prompts = list({row["id"]: row for row in prompts}.values())
+        balanced = []
+        balanced_tokens: list[set[str]] = []
+
+        def add_if_distinct(row: dict[str, Any]) -> bool:
+            source = row.get("source", {})
+            text = source.get("original_annotation") or source.get(
+                "original_instruction", ""
+            )
+            tokens = set(re.findall(r"[a-z0-9]+", str(text).lower()))
+            if any(
+                len(tokens & prior) / len(tokens | prior) >= 0.72
+                for prior in balanced_tokens
+                if tokens | prior
+            ):
+                return False
+            balanced.append(row)
+            balanced_tokens.append(tokens)
+            return True
+
+        for discipline in DISCIPLINES:
+            dg_pool = [
+                row for row in prompts
+                if row["discipline"] == discipline
+                and row["source"]["dataset"] == "DisciplineGen-1M"
+            ]
+            grade_pool = [
+                row for row in prompts
+                if row["discipline"] == discipline
+                and row["source"]["dataset"] == "GRADE"
+            ]
+            dg_count = min(len(dg_pool), args.target_per_discipline // 2)
+            for row in dg_pool[:dg_count]:
+                add_if_distinct(row)
+            need = args.target_per_discipline - sum(
+                row["discipline"] == discipline for row in balanced
+            )
+            for row in grade_pool:
+                if need <= 0:
+                    break
+                if add_if_distinct(row):
+                    need -= 1
+        # Do not pad a weak discipline with template variants. Redistribute a
+        # small shortage across content-rich disciplines while keeping the
+        # benchmark nearly balanced (at most two above the nominal quota).
+        wanted_total = args.target_per_discipline * len(DISCIPLINES)
+        selected_ids = {row["id"] for row in balanced}
+        for row in all_prompts:
+            if len(balanced) >= wanted_total:
+                break
+            discipline_count = sum(
+                item["discipline"] == row["discipline"] for item in balanced
+            )
+            if row["id"] not in selected_ids and discipline_count < args.target_per_discipline + 2:
+                if add_if_distinct(row):
+                    selected_ids.add(row["id"])
+        prompts = balanced
     prompts.sort(key=lambda row: (row["discipline"], row["source"]["dataset"], row["id"]))
 
     write_jsonl(Path(args.out), prompts)
     report = validate_rows(
         prompts,
-        expected_per_source_discipline=args.per_source_discipline,
+        expected_per_source_discipline=(
+            args.per_source_discipline if args.target_per_discipline is None else None
+        ),
+        expected_per_discipline=None,
+        expected_total=(
+            args.target_per_discipline * len(DISCIPLINES)
+            if args.target_per_discipline is not None else None
+        ),
     )
     report["inputs"] = {
         "grade_metadata": str(Path(args.grade)),
         "grade_available": len(grade_rows),
         "disciplinegen_metadata": str(Path(args.disciplinegen)),
         "disciplinegen_sampled_available": len(dg_rows),
+        "disciplinegen_extra": list(args.disciplinegen_extra),
         "seed": args.seed,
         "per_source_discipline": args.per_source_discipline,
+        "target_per_discipline": args.target_per_discipline,
         "content_review_exclusions": len(EXCLUDED_IDS),
         "replacement_files": [str(path) for path in replacement_paths],
         "replacement_rows": len(replacement_rows),
@@ -1043,7 +1187,13 @@ def parser() -> argparse.ArgumentParser:
     build_cmd = sub.add_parser("build")
     build_cmd.add_argument("--grade", default=str(DEFAULT_GRADE))
     build_cmd.add_argument("--disciplinegen", default=str(DEFAULT_DG_CACHE))
+    build_cmd.add_argument("--disciplinegen-extra", nargs="*", default=[])
     build_cmd.add_argument("--per-source-discipline", type=int, default=5)
+    build_cmd.add_argument(
+        "--target-per-discipline",
+        type=int,
+        help="build a fixed total per discipline; source shortages are backfilled",
+    )
     build_cmd.add_argument("--seed", type=int, default=20260803)
     build_cmd.add_argument("--out", default=str(DEFAULT_OUT))
     build_cmd.add_argument("--report", default=str(DEFAULT_REPORT))

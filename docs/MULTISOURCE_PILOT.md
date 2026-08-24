@@ -7,6 +7,19 @@ video-teacher prompt schema. It contains 100 draft cases:
 - 10 cases per discipline
 - 5 GRADE and 5 DisciplineGen-1M cases per discipline
 
+An expanded, diversity-filtered candidate set is also available:
+
+- `data/prompts/multisource_pilot_300.jsonl`
+- 300 cases across the same 10 disciplines (27--32 per discipline)
+- selection-time near-duplicate rejection at source-text Jaccard >= 0.72
+- source shortages are backfilled from the other paper instead of cloning a
+  template; the final source mix is recorded in the report
+
+The 300 cases are **paper candidates, not release-ready benchmark items**.
+Automated schema/provenance/diversity checks do not replace subject-matter and
+paired-image review. See `data/curated/multisource_pilot_300_report.json` for
+the exact remaining curation and licensing gates.
+
 The disciplines are mathematics, physics, chemistry, biology, geography,
 computer science, economics, history, music, and sports.
 
@@ -35,6 +48,9 @@ Parquet files.
 python scripts/build_multisource_pilot.py inspect-disciplinegen
 python scripts/build_multisource_pilot.py sample-disciplinegen --per-file 20
 python scripts/build_multisource_pilot.py build
+python scripts/build_multisource_pilot.py build --target-per-discipline 30 \
+  --out data/prompts/multisource_pilot_300.jsonl \
+  --report data/curated/multisource_pilot_300_report.json
 python scripts/build_multisource_pilot.py fetch-grade-assets
 python scripts/build_multisource_pilot.py validate
 ```
