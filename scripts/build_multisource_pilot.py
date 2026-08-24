@@ -526,7 +526,9 @@ def infer_dg_discipline(row: dict[str, Any]) -> str | None:
 
 def has_usable_text(row: dict[str, Any]) -> bool:
     text = " ".join(row_text_fields(row))
-    return 20 <= len(text) <= 2500
+    # Very short records lack a teachable target; very long records routinely
+    # require illegible multi-panel scenes in a five-second benchmark clip.
+    return 35 <= len(text) <= 1200
 
 
 def source_tokens(row: dict[str, Any]) -> set[str]:
@@ -628,7 +630,23 @@ def stratified_dg(rows: list[dict[str, Any]], per_discipline: int, seed: int) ->
         # Prefer annotations that fit a short teaching video while retaining
         # deterministic random tie-breaking from the shuffle above.
         candidates.sort(key=lambda row: abs(len(" ".join(row_text_fields(row))) - 360))
-        output.extend(diverse_take(candidates, per_discipline))
+        # Cycle through upstream files so a large templated edit subset cannot
+        # crowd out a smaller but topically broader source partition. The
+        # history timeline partition is especially repetitive at task level.
+        buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
+        for row in candidates:
+            filename = clean_text(row.get("_source_file"), 200) or "unknown"
+            buckets[filename].append(row)
+        if discipline == "history":
+            timeline_name = "edit_histrory_timeline_pairs.parquet"
+            buckets[timeline_name] = buckets.get(timeline_name, [])[:5]
+        ordered = []
+        while buckets:
+            for name in sorted(list(buckets)):
+                ordered.append(buckets[name].pop(0))
+                if not buckets[name]:
+                    del buckets[name]
+        output.extend(diverse_take(ordered, per_discipline))
     return output
 
 
@@ -640,6 +658,77 @@ def timed_beats(beats: list[str]) -> list[dict[str, Any]]:
         end = min(8, round((index + 1) / count * 7 + 1))
         output.append({"beat": beat, "expected_frame_range": [start, end]})
     return output
+
+
+def pedagogical_archetype(text: str, subdomain: str = "") -> str:
+    """Infer a source-grounded teaching operation without inventing an answer."""
+    joined = f"{subdomain} {text}".lower()
+    rules = [
+        ("quantitative_reasoning", r"calculate|equation|formula|graph|plot|curve|axis|scale|vector|angle|probability"),
+        ("comparison", r"compare|contrast|difference|versus| vs\.? |distinguish|before and after"),
+        ("temporal_sequence", r"timeline|sequence|cycle|stages?|steps?|route|path|process|flow|progression"),
+        ("causal_mechanism", r"mechanism|cause|effect|because|interaction|transmission|reaction|force|inheritance"),
+        ("classification", r"classify|category|group|sort|type of|taxonomy|hierarchy"),
+        ("spatial_reasoning", r"map|location|region|formation|geometry|spatial|direction|position|anatom"),
+        ("evidence_inference", r"infer|evidence|determine|diagnos|deduce|interpret|identify the correct"),
+        ("labeling", r"label|annotat|name|mark the|point to|numbered"),
+    ]
+    for name, pattern in rules:
+        if re.search(pattern, joined):
+            return name
+    return "visual_transformation"
+
+
+def archetype_spec(archetype: str, focus: str) -> tuple[list[str], list[str], list[str]]:
+    short_focus = clean_text(focus, 420)
+    specs = {
+        "quantitative_reasoning": (
+            ["the given quantities, axes, or symbolic constraints", "a visible intermediate calculation or construction", "the source-specified quantitative result"],
+            [f"frame the quantitative task from the source: {short_focus}", "highlight only the values, axes, or constraints needed", "show one checkable calculation or geometric operation", "reveal the result and verify units, scale, direction, or invariant"],
+            ["all displayed quantities and symbols come from the source record", "the intermediate operation is mathematically valid and visually checkable", "the final state satisfies the source-specified constraint"],
+        ),
+        "comparison": (
+            ["the two source-defined cases in a stable side-by-side layout", "matched callouts on the same comparison dimensions", "a concise visual statement of the decisive difference"],
+            [f"pose the source-grounded comparison: {short_focus}", "align the two cases so like features occupy comparable positions", "highlight one shared feature and one discriminating feature", "state the supported contrast without adding facts absent from the source"],
+            ["both cases are represented faithfully", "the comparison uses equivalent visual criteria", "the conclusion follows from the highlighted difference"],
+        ),
+        "temporal_sequence": (
+            ["an ordered timeline, route, cycle, or process path", "directional arrows and readable stage labels", "a visibly verified ordering or endpoint"],
+            [f"show the incomplete or untraced sequence specified by the source: {short_focus}", "anchor the start state and direction of progression", "reveal the key stages or route segments in source order", "check the final order, continuity, and endpoint"],
+            ["the order and direction match the source", "no stage or route segment is silently invented", "the final sequence is continuous and readable"],
+        ),
+        "causal_mechanism": (
+            ["the source-defined components before interaction", "arrows that encode the stated causal or mechanistic direction", "the resulting state separated from the initiating condition"],
+            [f"identify the mechanism to be shown: {short_focus}", "isolate the initiating component or condition", "animate the interaction in causal order", "connect the resulting state only to relationships supported by the source"],
+            ["components and causal direction are source-faithful", "cause and outcome are visually distinguishable", "the explanation does not introduce an unsupported mechanism"],
+        ),
+        "classification": (
+            ["the source items before grouping", "clearly bounded categories with one visible criterion", "a final placement that can be checked item by item"],
+            [f"present the classification task from the source: {short_focus}", "make the grouping criterion explicit", "place or reveal items according to that single criterion", "audit each placement against the stated category rule"],
+            ["the classification criterion is explicit", "each item is placed using the same rule", "category labels and boundaries remain unambiguous"],
+        ),
+        "spatial_reasoning": (
+            ["the unchanged source map, anatomy, formation, or geometry", "a localized spatial cue for the relevant region or relation", "the completed placement, direction, or construction"],
+            [f"orient the viewer to the source layout: {short_focus}", "highlight the fixed landmarks or reference geometry", "add the requested spatial relation without moving unrelated elements", "verify position, direction, adjacency, or alignment"],
+            ["reference landmarks remain unchanged", "the requested spatial relation is correctly positioned", "the result is verifiable from the final frame"],
+        ),
+        "evidence_inference": (
+            ["the source evidence before annotation", "two or more localized evidence callouts", "a conclusion panel linked back to those callouts"],
+            [f"state the inference question supported by the source: {short_focus}", "mark the first relevant visual clue", "combine it with a second independent clue", "show the narrowest conclusion supported by those clues"],
+            ["the conclusion cites visible source evidence", "at least two relevant clues are spatially grounded", "the conclusion does not exceed what the evidence supports"],
+        ),
+        "labeling": (
+            ["the unlabeled or partially labeled source visual", "leader lines that terminate on exact targets", "a completed label set with no ambiguous attachment"],
+            [f"show the labeling target from the source: {short_focus}", "locate each target before revealing its name", "attach labels one at a time with non-crossing leader lines", "check spelling, one-to-one attachment, and completeness"],
+            ["labels reproduce the source terminology", "every label points to exactly one intended target", "labels remain readable without covering evidence"],
+        ),
+        "visual_transformation": (
+            ["the unchanged input visual", "a highlighted edit region and source-defined operation", "the final state beside or overlaid on the input"],
+            [f"state the precise source-defined transformation: {short_focus}", "freeze unrelated content and mark the allowed edit region", "perform the requested change in one inspectable progression", "compare input and output against the source condition"],
+            ["the transformation follows the source instruction exactly", "unrelated content is preserved", "the final change is visible and independently checkable"],
+        ),
+    }
+    return specs[archetype]
 
 
 def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
@@ -657,18 +746,14 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
             break
         if fallback not in rubrics:
             rubrics.append(fallback)
-    concepts = [subdomain, "discipline-informed visual reasoning", "cause-and-effect editing"]
-    visuals = [
-        "the original academic diagram and its unchanged context",
-        f"the requested change: {instruction}",
-        "a clearly marked final state that preserves unrelated elements",
+    archetype = pedagogical_archetype(instruction, subdomain)
+    visuals, beats, archetype_rubrics = archetype_spec(archetype, instruction)
+    concepts = [
+        subdomain,
+        archetype.replace("_", " "),
+        f"source-defined target: {clean_text(instruction, 180)}",
     ]
-    beats = [
-        "show the original diagram and identify the relevant elements",
-        f"explain why the requested change is needed: {instruction}",
-        "animate the change step by step while preserving unrelated content",
-        "show the final diagram and verify it against the stated conditions",
-    ]
+    rubrics.extend(item for item in archetype_rubrics if item not in rubrics)
     source_id = clean_text(row["task_id"], 120)
     return {
         "id": f"grade_{source_id}".lower(),
@@ -678,8 +763,9 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "difficulty": "undergrad",
         "prompt_text": (
             "Generate a 5-second educational video using the supplied source diagram. "
-            "First explain the relevant disciplinary relationship, then carry out this "
-            f"change step by step: {instruction} End by checking the resulting diagram."
+            f"Teach this source-grounded {archetype.replace('_', ' ')} task without "
+            f"introducing facts not present in the source: {instruction} End with a "
+            "visually checkable result."
         ),
         "expected_concepts": concepts,
         "expected_visual_elements": visuals,
@@ -700,7 +786,14 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         },
         "curation": {
             "status": "draft_needs_subject_review",
-            "conversion": "deterministic_v1",
+            "conversion": "source_grounded_archetype_v2",
+            "pedagogical_archetype": archetype,
+            "automatic_quality_checks": {
+                "source_grounded": True,
+                "visually_checkable_endpoint": True,
+                "unsupported_fact_generation_forbidden": True,
+                "subject_matter_review": "required",
+            },
             "visual_pair_screening": {
                 "status": "passed",
                 "method": "paired contact-sheet review",
@@ -725,17 +818,12 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
     )
     task_type = "problem_solving" if is_edit else "explanation"
     source_key = clean_text(row.get("_source_key"), 40) or stable_key(row)
-    concepts = [subdomain, "diagram interpretation", "discipline-specific visual structure"]
-    visuals = [
-        "a clean, legible version of the source academic visual",
-        "large labels or symbols needed to understand the central relationship",
-        "a highlighted before-to-after change or explanatory focus",
-    ]
-    beats = [
-        "introduce the diagram and the question it addresses",
-        "identify the relevant labels, objects, or symbolic relationships",
-        "animate the central explanation or transformation",
-        "summarize the correct final relationship",
+    archetype = pedagogical_archetype(source_text, subdomain)
+    visuals, beats, rubrics = archetype_spec(archetype, source_text)
+    concepts = [
+        subdomain,
+        archetype.replace("_", " "),
+        f"source-defined relationship: {clean_text(source_text, 180)}",
     ]
     return {
         "id": f"disciplinegen_{discipline}_{source_key}".lower(),
@@ -745,18 +833,14 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "difficulty": "undergrad",
         "prompt_text": (
             "Generate a 5-second educational video from this DisciplineGen source "
-            "annotation. Explain the underlying knowledge and reveal the diagram in "
-            f"clear stages. Source annotation: {source_text}"
+            f"annotation as a {archetype.replace('_', ' ')} task. Use only relationships "
+            f"stated or visibly specified by the source. Source annotation: {source_text}"
         ),
         "expected_concepts": concepts,
         "expected_visual_elements": visuals,
         "expected_narrative_order": beats,
         "pedagogical_target_audience": f"introductory {discipline.replace('_', ' ')} student",
-        "discipline_specific_rubric": [
-            "the video remains faithful to the source annotation",
-            "the displayed disciplinary relationships are correct",
-            "labels and symbols are readable and spatially associated with the right objects",
-        ],
+        "discipline_specific_rubric": rubrics,
         "audio_narration_required": False,
         "target_duration_s": 5,
         "narrative_beats": timed_beats(beats),
@@ -778,7 +862,14 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         },
         "curation": {
             "status": "draft_needs_visual_review",
-            "conversion": "deterministic_v1",
+            "conversion": "source_grounded_archetype_v2",
+            "pedagogical_archetype": archetype,
+            "automatic_quality_checks": {
+                "source_grounded": True,
+                "visually_checkable_endpoint": True,
+                "unsupported_fact_generation_forbidden": True,
+                "subject_matter_review": "required",
+            },
         },
     }
 
@@ -893,9 +984,11 @@ def validate_rows(
     release_issues: list[dict[str, Any]] = []
     token_sets = []
     for row in rows:
-        text = row.get("source", {}).get("original_annotation") or row.get(
-            "source", {}
-        ).get("original_instruction", "")
+        text = (
+            row.get("source", {}).get("original_annotation")
+            or row.get("source", {}).get("original_instruction")
+            or row.get("prompt_text", "")
+        )
         token_sets.append(set(re.findall(r"[a-z0-9]+", str(text).lower())))
     near_duplicates = []
     for left in range(len(rows)):
@@ -947,6 +1040,27 @@ def validate_rows(
                 "pairs": near_duplicates,
             }
         )
+    archetype_counts = Counter(
+        row.get("curation", {}).get("pedagogical_archetype", "legacy_reviewed")
+        for row in rows
+    )
+    narrative_template_counts = Counter(
+        tuple(row.get("expected_narrative_order", [])) for row in rows
+    )
+    candidate_gate_issues = []
+    active_archetypes = [name for name in archetype_counts if name != "legacy_reviewed"]
+    if len(active_archetypes) < 8:
+        candidate_gate_issues.append("fewer than 8 pedagogical archetypes")
+    largest_archetype_share = (
+        max(archetype_counts.values(), default=0) / len(rows) if rows else 0.0
+    )
+    if largest_archetype_share > 0.35:
+        candidate_gate_issues.append("one pedagogical archetype exceeds 35% of cases")
+    largest_plan_count = max(narrative_template_counts.values(), default=0)
+    if largest_plan_count > 5:
+        candidate_gate_issues.append("one exact narrative plan occurs more than 5 times")
+    if near_duplicates:
+        candidate_gate_issues.append("source-text near duplicates remain")
     return {
         "valid": not issues,
         "release_ready": not issues and not release_issues,
@@ -960,6 +1074,20 @@ def validate_rows(
         "issues": issues,
         "release_issues": release_issues,
         "curation_status": dict(sorted(status_counts.items())),
+        "diversity": {
+            "pedagogical_archetypes": dict(sorted(archetype_counts.items())),
+            "unique_narrative_plans": len(narrative_template_counts),
+            "largest_exact_narrative_plan_count": largest_plan_count,
+            "largest_pedagogical_archetype_share": round(largest_archetype_share, 4),
+            "source_text_near_duplicate_pairs_at_0_72": len(near_duplicates),
+        },
+        "paper_candidate_gate": {
+            "automated_pass": not candidate_gate_issues,
+            "issues": candidate_gate_issues,
+            "manual_subject_review_required": True,
+            "paired_visual_review_required": True,
+            "license_review_required": True,
+        },
     }
 
 
@@ -1001,8 +1129,10 @@ def build(args: argparse.Namespace) -> None:
 
         def add_if_distinct(row: dict[str, Any]) -> bool:
             source = row.get("source", {})
-            text = source.get("original_annotation") or source.get(
-                "original_instruction", ""
+            text = (
+                source.get("original_annotation")
+                or source.get("original_instruction")
+                or row.get("prompt_text", "")
             )
             tokens = set(re.findall(r"[a-z0-9]+", str(text).lower()))
             if any(

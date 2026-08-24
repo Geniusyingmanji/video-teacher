@@ -3,8 +3,8 @@
   "release_ready": false,
   "row_count": 300,
   "by_source": {
-    "DisciplineGen-1M": 139,
-    "GRADE": 161
+    "DisciplineGen-1M": 132,
+    "GRADE": 168
   },
   "by_discipline": {
     "biology": 30,
@@ -12,8 +12,8 @@
     "computer_science": 30,
     "economics": 30,
     "geography": 30,
-    "history": 30,
-    "mathematics": 30,
+    "history": 29,
+    "mathematics": 31,
     "music": 30,
     "physics": 30,
     "sports": 30
@@ -24,41 +24,66 @@
     "DisciplineGen-1M/computer_science": 15,
     "DisciplineGen-1M/economics": 10,
     "DisciplineGen-1M/geography": 15,
-    "DisciplineGen-1M/history": 15,
+    "DisciplineGen-1M/history": 9,
     "DisciplineGen-1M/mathematics": 15,
     "DisciplineGen-1M/music": 15,
     "DisciplineGen-1M/physics": 15,
-    "DisciplineGen-1M/sports": 9,
+    "DisciplineGen-1M/sports": 8,
     "GRADE/biology": 15,
     "GRADE/chemistry": 15,
     "GRADE/computer_science": 15,
     "GRADE/economics": 20,
     "GRADE/geography": 15,
-    "GRADE/history": 15,
-    "GRADE/mathematics": 15,
+    "GRADE/history": 20,
+    "GRADE/mathematics": 16,
     "GRADE/music": 15,
     "GRADE/physics": 15,
-    "GRADE/sports": 21
+    "GRADE/sports": 22
   },
   "issues": [],
   "release_issues": [
     {
       "scope": "curation",
       "issues": [
-        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 134, 'draft_needs_subject_review': 161, 'reviewed_release_ready': 5}"
+        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 128, 'draft_needs_subject_review': 168, 'reviewed_release_ready': 4}"
       ]
     },
     {
       "scope": "licensing",
       "issues": [
-        "161 rows have no verified redistribution license"
+        "168 rows have no verified redistribution license"
       ]
     }
   ],
   "curation_status": {
-    "draft_needs_subject_review": 161,
-    "draft_needs_visual_review": 134,
-    "reviewed_release_ready": 5
+    "draft_needs_subject_review": 168,
+    "draft_needs_visual_review": 128,
+    "reviewed_release_ready": 4
+  },
+  "diversity": {
+    "pedagogical_archetypes": {
+      "causal_mechanism": 11,
+      "classification": 12,
+      "comparison": 4,
+      "evidence_inference": 1,
+      "labeling": 23,
+      "legacy_reviewed": 4,
+      "quantitative_reasoning": 91,
+      "spatial_reasoning": 30,
+      "temporal_sequence": 40,
+      "visual_transformation": 84
+    },
+    "unique_narrative_plans": 297,
+    "largest_exact_narrative_plan_count": 4,
+    "largest_pedagogical_archetype_share": 0.3033,
+    "source_text_near_duplicate_pairs_at_0_72": 0
+  },
+  "paper_candidate_gate": {
+    "automated_pass": true,
+    "issues": [],
+    "manual_subject_review_required": true,
+    "paired_visual_review_required": true,
+    "license_review_required": true
   },
   "inputs": {
     "grade_metadata": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\grade\\metadata\\data.json",

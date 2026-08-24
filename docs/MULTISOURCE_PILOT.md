@@ -12,6 +12,14 @@ An expanded, diversity-filtered candidate set is also available:
 - `data/prompts/multisource_pilot_300.jsonl`
 - 300 cases across the same 10 disciplines (27--32 per discipline)
 - selection-time near-duplicate rejection at source-text Jaccard >= 0.72
+- source-grounded conversion into ten pedagogical archetypes (quantitative
+  reasoning, comparison, temporal sequence, causal mechanism, classification,
+  spatial reasoning, evidence inference, labeling, visual transformation, and
+  reviewed legacy tasks)
+- a five-second complexity screen (35--1200 source-text characters)
+- an automated paper-candidate gate: at least eight active archetypes, no
+  archetype above 35%, no exact narrative plan repeated more than five times,
+  and zero source-text near-duplicate pairs at the 0.72 threshold
 - source shortages are backfilled from the other paper instead of cloning a
   template; the final source mix is recorded in the report
 
