@@ -123,6 +123,15 @@ REQUIRED_FIELDS = [
 
 RELEASE_STATUS = "reviewed_release_ready"
 
+# The --target-per-discipline build mode caps DisciplineGen at half of each
+# discipline's quota and backfills any shortfall from GRADE (see the
+# stratified selection loop in `build()`). When a discipline's DisciplineGen
+# pool runs short, GRADE ends up supplying most of that discipline's rows,
+# which skews the discipline's task style toward GRADE's editing tasks. This
+# default bounds how lopsided a single (discipline, source) split may become
+# before `validate_rows()` flags it.
+DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE = 0.65
+
 # Content-review rejects.  Keep reasons beside the IDs so a rebuild cannot
 # silently reintroduce known factual, timing, or near-duplicate failures.
 EXCLUDED_IDS = {
@@ -880,6 +889,7 @@ def validate_rows(
     expected_per_source_discipline: int | None = None,
     expected_per_discipline: int | None = None,
     expected_total: int | None = None,
+    max_source_share_per_discipline: float = DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE,
 ) -> dict[str, Any]:
     issues: list[dict[str, Any]] = []
     ids = Counter(row.get("id") for row in rows)
@@ -934,6 +944,29 @@ def validate_rows(
                             ],
                         }
                     )
+    # Independent of the equality check above (which only applies to the
+    # fixed-per-source-discipline build mode), always flag a discipline whose
+    # two-source split is heavily skewed toward one paper. This catches the
+    # --target-per-discipline mode, where no equality target is passed but a
+    # DisciplineGen shortfall can still let GRADE dominate a discipline.
+    source_share_issues: list[dict[str, Any]] = []
+    for discipline in DISCIPLINES:
+        discipline_total = by_discipline[discipline]
+        if discipline_total == 0:
+            continue
+        for source in ("GRADE", "DisciplineGen-1M"):
+            share = by_source_discipline[(source, discipline)] / discipline_total
+            if share > max_source_share_per_discipline:
+                source_share_issues.append(
+                    {
+                        "scope": f"{source}/{discipline}",
+                        "issues": [
+                            f"{source} supplies {share:.0%} of {discipline} rows, "
+                            f"exceeding the {max_source_share_per_discipline:.0%} cap"
+                        ],
+                    }
+                )
+    issues.extend(source_share_issues)
     if expected_per_discipline is not None:
         for discipline in DISCIPLINES:
             actual = by_discipline[discipline]
@@ -1074,6 +1107,10 @@ def validate_rows(
         "issues": issues,
         "release_issues": release_issues,
         "curation_status": dict(sorted(status_counts.items())),
+        "source_balance": {
+            "max_source_share_per_discipline": max_source_share_per_discipline,
+            "violations": source_share_issues,
+        },
         "diversity": {
             "pedagogical_archetypes": dict(sorted(archetype_counts.items())),
             "unique_narrative_plans": len(narrative_template_counts),
@@ -1195,6 +1232,7 @@ def build(args: argparse.Namespace) -> None:
             args.target_per_discipline * len(DISCIPLINES)
             if args.target_per_discipline is not None else None
         ),
+        max_source_share_per_discipline=args.max_source_share_per_discipline,
     )
     report["inputs"] = {
         "grade_metadata": str(Path(args.grade)),
@@ -1287,6 +1325,7 @@ def validate(args: argparse.Namespace) -> None:
     report = validate_rows(
         rows,
         expected_per_source_discipline=args.per_source_discipline,
+        max_source_share_per_discipline=args.max_source_share_per_discipline,
     )
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if not report["valid"] or (args.release and not report["release_ready"]):
@@ -1324,6 +1363,15 @@ def parser() -> argparse.ArgumentParser:
         type=int,
         help="build a fixed total per discipline; source shortages are backfilled",
     )
+    build_cmd.add_argument(
+        "--max-source-share-per-discipline",
+        type=float,
+        default=DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE,
+        help=(
+            "flag a discipline if one source dataset supplies more than this "
+            "fraction of its rows (default: %(default)s)"
+        ),
+    )
     build_cmd.add_argument("--seed", type=int, default=20260803)
     build_cmd.add_argument("--out", default=str(DEFAULT_OUT))
     build_cmd.add_argument("--report", default=str(DEFAULT_REPORT))
@@ -1337,6 +1385,15 @@ def parser() -> argparse.ArgumentParser:
     validate_cmd = sub.add_parser("validate")
     validate_cmd.add_argument("--input", default=str(DEFAULT_OUT))
     validate_cmd.add_argument("--per-source-discipline", type=int, default=5)
+    validate_cmd.add_argument(
+        "--max-source-share-per-discipline",
+        type=float,
+        default=DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE,
+        help=(
+            "flag a discipline if one source dataset supplies more than this "
+            "fraction of its rows (default: %(default)s)"
+        ),
+    )
     validate_cmd.add_argument(
         "--release",
         action="store_true",
