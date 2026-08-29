@@ -1,10 +1,10 @@
 {
-  "valid": true,
+  "valid": false,
   "release_ready": false,
   "row_count": 300,
   "by_source": {
-    "DisciplineGen-1M": 132,
-    "GRADE": 168
+    "DisciplineGen-1M": 139,
+    "GRADE": 161
   },
   "by_discipline": {
     "biology": 30,
@@ -28,7 +28,7 @@
     "DisciplineGen-1M/mathematics": 15,
     "DisciplineGen-1M/music": 15,
     "DisciplineGen-1M/physics": 15,
-    "DisciplineGen-1M/sports": 8,
+    "DisciplineGen-1M/sports": 15,
     "GRADE/biology": 15,
     "GRADE/chemistry": 15,
     "GRADE/computer_science": 15,
@@ -38,44 +38,72 @@
     "GRADE/mathematics": 16,
     "GRADE/music": 15,
     "GRADE/physics": 15,
-    "GRADE/sports": 22
+    "GRADE/sports": 15
   },
-  "issues": [],
+  "issues": [
+    {
+      "scope": "GRADE/economics",
+      "issues": [
+        "GRADE supplies 67% of economics rows, exceeding the 65% cap"
+      ]
+    },
+    {
+      "scope": "GRADE/history",
+      "issues": [
+        "GRADE supplies 69% of history rows, exceeding the 65% cap"
+      ]
+    }
+  ],
   "release_issues": [
     {
       "scope": "curation",
       "issues": [
-        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 128, 'draft_needs_subject_review': 168, 'reviewed_release_ready': 4}"
+        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 139, 'draft_needs_subject_review': 161}"
       ]
     },
     {
       "scope": "licensing",
       "issues": [
-        "168 rows have no verified redistribution license"
+        "161 rows have no verified redistribution license"
       ]
     }
   ],
   "curation_status": {
-    "draft_needs_subject_review": 168,
-    "draft_needs_visual_review": 128,
-    "reviewed_release_ready": 4
+    "draft_needs_subject_review": 161,
+    "draft_needs_visual_review": 139
+  },
+  "source_balance": {
+    "max_source_share_per_discipline": 0.65,
+    "violations": [
+      {
+        "scope": "GRADE/economics",
+        "issues": [
+          "GRADE supplies 67% of economics rows, exceeding the 65% cap"
+        ]
+      },
+      {
+        "scope": "GRADE/history",
+        "issues": [
+          "GRADE supplies 69% of history rows, exceeding the 65% cap"
+        ]
+      }
+    ]
   },
   "diversity": {
     "pedagogical_archetypes": {
       "causal_mechanism": 11,
       "classification": 12,
-      "comparison": 4,
+      "comparison": 7,
       "evidence_inference": 1,
       "labeling": 23,
-      "legacy_reviewed": 4,
-      "quantitative_reasoning": 91,
-      "spatial_reasoning": 30,
+      "quantitative_reasoning": 90,
+      "spatial_reasoning": 29,
       "temporal_sequence": 40,
-      "visual_transformation": 84
+      "visual_transformation": 87
     },
-    "unique_narrative_plans": 297,
-    "largest_exact_narrative_plan_count": 4,
-    "largest_pedagogical_archetype_share": 0.3033,
+    "unique_narrative_plans": 300,
+    "largest_exact_narrative_plan_count": 1,
+    "largest_pedagogical_archetype_share": 0.3,
     "source_text_near_duplicate_pairs_at_0_72": 0
   },
   "paper_candidate_gate": {
@@ -86,18 +114,18 @@
     "license_review_required": true
   },
   "inputs": {
-    "grade_metadata": "C:\\Users\\assd\\vt\\video-teacher\\data\\sources\\grade\\metadata\\data.json",
+    "grade_metadata": "D:\\ai_teacher\\video-teacher-prompts\\data\\sources\\grade\\metadata\\data.json",
     "grade_available": 520,
     "disciplinegen_metadata": "data\\sources\\disciplinegen\\metadata\\sampled_rows_expanded.jsonl",
-    "disciplinegen_sampled_available": 1995,
+    "disciplinegen_sampled_available": 2355,
     "disciplinegen_extra": [],
     "seed": 20260803,
     "per_source_discipline": 5,
     "target_per_discipline": 30,
     "content_review_exclusions": 24,
     "replacement_files": [
-      "C:\\Users\\assd\\vt\\video-teacher\\data\\curated\\disciplinegen_math_replacements.jsonl",
-      "C:\\Users\\assd\\vt\\video-teacher\\data\\curated\\disciplinegen_sports_replacements.jsonl"
+      "D:\\ai_teacher\\video-teacher-prompts\\data\\curated\\disciplinegen_math_replacements.jsonl",
+      "D:\\ai_teacher\\video-teacher-prompts\\data\\curated\\disciplinegen_sports_replacements.jsonl"
     ],
     "replacement_rows": 10
   }

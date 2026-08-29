@@ -57,6 +57,19 @@ DG_FILES = [
     "edit_math_math_textedit.parquet",
     "edit_sports_data_soccer_formation_dots.parquet",
     "edit_sports_data_soccer_formation_jerseys.parquet",
+    # Added to widen the sports candidate pool beyond the two highly
+    # templated soccer-formation files (see improvement plan item 2): the
+    # original two files reduce to only ~7-8 diverse rows after near-duplicate
+    # filtering, which is why sports fell short of its DisciplineGen quota.
+    "edit_sports_data_chess_opening_2k.parquet",
+    "edit_sports_data_go_crucial_move_strong_2k.parquet",
+    "edit_sports_data_xiangqi_opening.parquet",
+    "edit_sports_data_xiangqi_bestmove_6k.parquet",
+    "edit_sports_data_sports_nutrition_classify_grouping_6k.parquet",
+    "edit_sports_data_sports_nutrition_high_gi_6k.parquet",
+    "edit_sports_data_sports_nutrition_high_protein_6k.parquet",
+    "edit_sports_data_sports_nutrition_pie_chart_6k.parquet",
+    "edit_sports_data_sports_nutrition_pyramid_6k.parquet",
 ]
 
 DISCIPLINES = [
