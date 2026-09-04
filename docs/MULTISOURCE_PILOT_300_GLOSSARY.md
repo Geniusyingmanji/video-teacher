@@ -193,7 +193,7 @@ DisciplineGen的原始记录本身没有唯一ID，脚本用这个函数基于�
 | `source_tokens(row)` | 把记录的文本内容切分成小写单词集合，用于后续的重复度检测。 |
 | `diverse_take(candidates, count)` | 从候选列表里挑出`count`条记录，优先选择彼此文本重复度（Jaccard相似度）较低的记录，避免选出内容雷同的样本。 |
 | `stratified_grade(rows, per_discipline, seed)` | 对GRADE全量数据按学科分组，剔除已知问题ID，再调用`diverse_take()`为每个学科选出固定数量的记录。 |
-| `stratified_dg(rows, per_discipline, seed)` | 对DisciplineGen全量数据做同样的分层选取，额外增加了"按上游文件轮流取样"的桶排序逻辑，避免单一模板化文件占满某个学科的名额。 |
+| `stratified_dg(rows, per_discipline, seed)` | 对DisciplineGen全量数据做同样的分层选取，额外增加了"按上游文件轮流取样"的桶排序逻辑。可通过 `--max-source-file-share`（默认0.5）限制单个上游文件在某学科配额中的最大占比，避免高度模板化的大文件占满名额；该限制只在学科有多个来源文件时生效。 |
 | `timed_beats(beats)` | 把一组叙事节拍文字，均匀映射到1-8的帧编号区间上，生成`narrative_beats`里每个节拍对应的`expected_frame_range`。 |
 | `clean_text(value, limit)` | 把任意类型的字段值转成去除多余空白、限制长度的字符串，用于生成ID、截取展示文本等场景。 |
 

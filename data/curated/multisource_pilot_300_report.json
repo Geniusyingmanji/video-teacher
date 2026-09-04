@@ -3,8 +3,8 @@
   "release_ready": false,
   "row_count": 300,
   "by_source": {
-    "DisciplineGen-1M": 139,
-    "GRADE": 161
+    "DisciplineGen-1M": 140,
+    "GRADE": 160
   },
   "by_discipline": {
     "biology": 30,
@@ -12,8 +12,8 @@
     "computer_science": 30,
     "economics": 30,
     "geography": 30,
-    "history": 29,
-    "mathematics": 31,
+    "history": 30,
+    "mathematics": 30,
     "music": 30,
     "physics": 30,
     "sports": 30
@@ -24,7 +24,7 @@
     "DisciplineGen-1M/computer_science": 15,
     "DisciplineGen-1M/economics": 10,
     "DisciplineGen-1M/geography": 15,
-    "DisciplineGen-1M/history": 9,
+    "DisciplineGen-1M/history": 10,
     "DisciplineGen-1M/mathematics": 15,
     "DisciplineGen-1M/music": 15,
     "DisciplineGen-1M/physics": 15,
@@ -35,7 +35,7 @@
     "GRADE/economics": 20,
     "GRADE/geography": 15,
     "GRADE/history": 20,
-    "GRADE/mathematics": 16,
+    "GRADE/mathematics": 15,
     "GRADE/music": 15,
     "GRADE/physics": 15,
     "GRADE/sports": 15
@@ -50,7 +50,7 @@
     {
       "scope": "GRADE/history",
       "issues": [
-        "GRADE supplies 69% of history rows, exceeding the 65% cap"
+        "GRADE supplies 67% of history rows, exceeding the 65% cap"
       ]
     }
   ],
@@ -58,19 +58,19 @@
     {
       "scope": "curation",
       "issues": [
-        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 139, 'draft_needs_subject_review': 161}"
+        "all rows must have curation.status=reviewed_release_ready; observed {'draft_needs_visual_review': 140, 'draft_needs_subject_review': 160}"
       ]
     },
     {
       "scope": "licensing",
       "issues": [
-        "161 rows have no verified redistribution license"
+        "160 rows have no verified redistribution license"
       ]
     }
   ],
   "curation_status": {
-    "draft_needs_subject_review": 161,
-    "draft_needs_visual_review": 139
+    "draft_needs_subject_review": 160,
+    "draft_needs_visual_review": 140
   },
   "source_balance": {
     "max_source_share_per_discipline": 0.65,
@@ -84,20 +84,20 @@
       {
         "scope": "GRADE/history",
         "issues": [
-          "GRADE supplies 69% of history rows, exceeding the 65% cap"
+          "GRADE supplies 67% of history rows, exceeding the 65% cap"
         ]
       }
     ]
   },
   "task_type_balance": {
     "totals": {
-      "explanation": 183,
-      "problem_solving": 117
+      "explanation": 182,
+      "problem_solving": 118
     },
     "by_source": {
       "DisciplineGen-1M/explanation": 104,
-      "DisciplineGen-1M/problem_solving": 35,
-      "GRADE/explanation": 79,
+      "DisciplineGen-1M/problem_solving": 36,
+      "GRADE/explanation": 78,
       "GRADE/problem_solving": 82
     }
   },
@@ -110,10 +110,10 @@
     "by_source": {
       "DisciplineGen-1M/k12": 26,
       "DisciplineGen-1M/professional": 20,
-      "DisciplineGen-1M/undergrad": 93,
+      "DisciplineGen-1M/undergrad": 94,
       "GRADE/k12": 98,
       "GRADE/professional": 20,
-      "GRADE/undergrad": 43
+      "GRADE/undergrad": 42
     }
   },
   "diversity": {
@@ -123,17 +123,17 @@
       "comparison": 4,
       "evidence_inference": 1,
       "labeling": 15,
-      "quantitative_reasoning": 85,
+      "quantitative_reasoning": 84,
       "spatial_reasoning": 24,
       "strategy_decision": 22,
       "structure_construction": 46,
       "symbolic_notation": 21,
-      "temporal_sequence": 36,
+      "temporal_sequence": 37,
       "visual_transformation": 31
     },
     "unique_narrative_plans": 300,
     "largest_exact_narrative_plan_count": 1,
-    "largest_pedagogical_archetype_share": 0.2833,
+    "largest_pedagogical_archetype_share": 0.28,
     "source_text_near_duplicate_pairs_at_0_72": 0
   },
   "paper_candidate_gate": {

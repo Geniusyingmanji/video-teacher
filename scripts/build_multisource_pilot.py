@@ -628,7 +628,32 @@ def stratified_grade(rows: list[dict[str, Any]], per_discipline: int, seed: int)
     return output
 
 
-def stratified_dg(rows: list[dict[str, Any]], per_discipline: int, seed: int) -> list[dict[str, Any]]:
+# Per-source-file cap inside one discipline (improvement plan item 6).
+#
+# Some upstream partitions are large but highly templated (the history
+# timeline file has 10k rows but only ~20 distinct task templates), so an
+# unbounded partition can crowd out smaller yet topically broader files in
+# the same discipline. This replaces a `discipline == "history"` special case
+# with a general rule.
+#
+# The cap is expressed as a share of the discipline's quota rather than a
+# fixed row count: a fixed count tuned for one file (the original hardcoded
+# 5) starves disciplines whose quota is spread over several files. It also
+# only applies when a discipline draws from more than one file, since with a
+# single file there is nowhere to redistribute the quota and capping would
+# only shrink the pool (physics, biology, geography, economics, and music
+# each have exactly one source file).
+DEFAULT_MAX_SOURCE_FILE_SHARE = 0.5
+
+
+def stratified_dg(
+    rows: list[dict[str, Any]],
+    per_discipline: int,
+    seed: int,
+    *,
+    max_source_file_share: float = DEFAULT_MAX_SOURCE_FILE_SHARE,
+) -> list[dict[str, Any]]:
+
     pools: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         discipline = infer_dg_discipline(row)
@@ -652,16 +677,22 @@ def stratified_dg(rows: list[dict[str, Any]], per_discipline: int, seed: int) ->
         # Prefer annotations that fit a short teaching video while retaining
         # deterministic random tie-breaking from the shuffle above.
         candidates.sort(key=lambda row: abs(len(" ".join(row_text_fields(row))) - 360))
-        # Cycle through upstream files so a large templated edit subset cannot
-        # crowd out a smaller but topically broader source partition. The
-        # history timeline partition is especially repetitive at task level.
+        # Cycle through upstream files so a large templated partition cannot
+        # crowd out a smaller but topically broader source partition.
         buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in candidates:
             filename = clean_text(row.get("_source_file"), 200) or "unknown"
             buckets[filename].append(row)
-        if discipline == "history":
-            timeline_name = "edit_histrory_timeline_pairs.parquet"
-            buckets[timeline_name] = buckets.get(timeline_name, [])[:5]
+        # Cap each file's contribution only when the discipline has an
+        # alternative file to draw from; see the constant's comment above.
+        # The cap is generous enough to keep the pool viable while still
+        # preventing one templated partition from filling the whole quota.
+        if max_source_file_share > 0 and len(buckets) > 1:
+            cap = max(1, int(per_discipline * max_source_file_share))
+            for name in list(buckets):
+                buckets[name] = buckets[name][:cap]
+                if not buckets[name]:
+                    del buckets[name]
         ordered = []
         while buckets:
             for name in sorted(list(buckets)):
@@ -1329,7 +1360,12 @@ def build(args: argparse.Namespace) -> None:
         dg_rows.extend(jsonl_rows(Path(extra_path)))
     selection_quota = args.target_per_discipline or args.per_source_discipline
     selected_grade = stratified_grade(grade_rows, selection_quota, args.seed)
-    selected_dg = stratified_dg(dg_rows, selection_quota, args.seed)
+    selected_dg = stratified_dg(
+        dg_rows,
+        selection_quota,
+        args.seed,
+        max_source_file_share=args.max_source_file_share,
+    )
     prompts = [grade_to_prompt(row) for row in selected_grade]
     prompts.extend(dg_to_prompt(row) for row in selected_dg)
     replacement_paths = [Path(path) for path in args.replacements]
@@ -1564,6 +1600,16 @@ def parser() -> argparse.ArgumentParser:
         help=(
             "flag a discipline if one source dataset supplies more than this "
             "fraction of its rows (default: %(default)s)"
+        ),
+    )
+    build_cmd.add_argument(
+        "--max-source-file-share",
+        type=float,
+        default=DEFAULT_MAX_SOURCE_FILE_SHARE,
+        help=(
+            "cap the share of one discipline's quota that a single upstream "
+            "file may supply, applied only when that discipline has more than "
+            "one source file; 0 disables the cap (default: %(default)s)"
         ),
     )
     build_cmd.add_argument("--seed", type=int, default=20260803)
