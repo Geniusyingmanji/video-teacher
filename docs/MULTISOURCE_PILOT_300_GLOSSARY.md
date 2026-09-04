@@ -108,6 +108,9 @@ task_type = infer_task_type(source_text)
 
 | archetype | 触发关键词示例 | 含义 |
 |---|---|---|
+| `symbolic_notation` | sheet music, clef, 4/4 time, quarter note | 按既定记谱规范放置符号（主要是乐谱） |
+| `structure_construction` | molecular, skeletal structure, heap, linked list, logic gate | 构建或改造结构式/数据结构/电路 |
+| `strategy_decision` | chess, go problem, 4-3-3 formation, best move | 在给定局面下标出正确的决策 |
 | `quantitative_reasoning` | calculate, equation, formula, graph, axis, vector, angle, probability | 需要计算、作图或符号推导的任务 |
 | `comparison` | compare, contrast, difference, versus, distinguish | 对比两个对象或状态的任务 |
 | `temporal_sequence` | timeline, sequence, cycle, stages, steps, process, flow | 按时间/步骤顺序展开的任务 |
@@ -116,7 +119,9 @@ task_type = infer_task_type(source_text)
 | `spatial_reasoning` | map, location, region, formation, geometry, direction, anatomy | 涉及空间位置、地理、几何关系的任务 |
 | `evidence_inference` | infer, evidence, determine, diagnose, deduce, interpret | 根据线索推断结论的任务 |
 | `labeling` | label, annotate, name, mark the, point to | 给视觉元素打标签/命名的任务 |
-| `visual_transformation` | （无匹配规则时的兜底类别） | 上述规则都未命中时的默认归类，多为"对输入图像做某种变换"的任务 |
+| `visual_transformation` | （无匹配规则时的兜底类别） | 上述规则都未命中时的默认归类 |
+
+前三个类型是2026-08-30新增的（改进项5），用于覆盖此前大量掉进兜底类别的乐谱、分子结构/数据结构、棋类决策类任务。它们被刻意排在规则表最前面，因为判定是"首个命中即返回"，特征明确的规则必须先于宽泛规则匹配。
 
 判定顺序即代码里 `rules` 列表的顺序，也就是从上到下依次尝试匹配，一旦某条规则命中就立即返回，不会再检查后续规则。这意味着如果一段文本同时包含"calculate"和"compare"两个关键词，会被归为 `quantitative_reasoning`（因为它排在规则列表最前面），而不是`comparison`。
 

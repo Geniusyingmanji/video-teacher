@@ -118,19 +118,22 @@
   },
   "diversity": {
     "pedagogical_archetypes": {
-      "causal_mechanism": 11,
-      "classification": 12,
-      "comparison": 7,
+      "causal_mechanism": 10,
+      "classification": 5,
+      "comparison": 4,
       "evidence_inference": 1,
-      "labeling": 23,
-      "quantitative_reasoning": 90,
-      "spatial_reasoning": 29,
-      "temporal_sequence": 40,
-      "visual_transformation": 87
+      "labeling": 15,
+      "quantitative_reasoning": 85,
+      "spatial_reasoning": 24,
+      "strategy_decision": 22,
+      "structure_construction": 46,
+      "symbolic_notation": 21,
+      "temporal_sequence": 36,
+      "visual_transformation": 31
     },
     "unique_narrative_plans": 300,
     "largest_exact_narrative_plan_count": 1,
-    "largest_pedagogical_archetype_share": 0.3,
+    "largest_pedagogical_archetype_share": 0.2833,
     "source_text_near_duplicate_pairs_at_0_72": 0
   },
   "paper_candidate_gate": {

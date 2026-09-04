@@ -19,7 +19,7 @@
 | 2. 补齐 economics/history/sports 的 DisciplineGen 候选 | 🔶 部分完成 | sports已修复；economics/history确认为上游数据源硬性瓶颈，见下方"改进进展 2"详情 |
 | 3. 解耦 task_type 与数据源 | ✅ 已实现 | 见下方"改进进展 3"详情 |
 | 4. 引入难度分层 | ✅ 已实现 | 见下方"改进进展 4"详情 |
-| 5. 扩充 pedagogical_archetype 关键词规则 | ⏳ 未开始 | |
+| 5. 扩充 pedagogical_archetype 关键词规则 | ✅ 已实现 | 见下方"改进进展 5"详情 |
 | 6. 将 history 硬编码特例改为通用参数 | ⏳ 未开始 | |
 | 7. 明确当前数据状态，决定复核路径 | ⏳ 未开始，需同事决策 | 见"五、需要同事决策的开放问题" |
 
@@ -217,6 +217,79 @@ edit_sports_data_sports_nutrition_pyramid_6k.parquet
 **遗留事项**：
 - 建议人工抽样20-30条核对难度判定，尤其是 `professional` 这一档（只有40条，误判影响相对更大）。这与"五、需要同事决策的开放问题"第2条（难度分层用自动启发式还是人工标注校准）直接相关。
 - 当前分档阈值（400/180字符、术语命中数）是基于本批300条数据的分布拟合的，如果后续数据规模或来源变化，阈值可能需要重新校准。
+
+### 改进进展 5：扩充 pedagogical_archetype 关键词规则（2026-08-30）
+
+**状态**: 已实现并本地验证通过。
+
+**问题回顾**：
+
+`visual_transformation` 这个 archetype 有 87 条（占 29%），但它并不是一个真正被识别出来的教学类型，而是 `pedagogical_archetype()` 里"所有正则规则都没命中"时的兜底归类。同时 `evidence_inference` 只有 1 条、`comparison` 只有 7 条。这说明关键词规则的覆盖面不足，大量样本实际上没有被正确分类。
+
+**排查方法**：
+
+没有凭直觉加词，而是先把这 87 条兜底样本按学科拆开，逐一读源文本找规律。结果发现兜底样本高度集中在四类明确的任务family上：
+
+| 学科 | 兜底条数 | 实际任务性质 |
+|---|---|---|
+| music | 25 | 全部是"按指定调号/拍号/音符生成乐谱" |
+| sports | 15 | 棋类开局/最佳走法、球队阵型、营养决策 |
+| chemistry | 13 | 分子结构式绘制、化学反应转化 |
+| computer_science | 11 | 堆/链表/二叉树/逻辑门的结构操作 |
+
+这四类都有清晰的教学操作特征，只是原规则表里没有对应条目，所以全部掉进了兜底。
+
+**实现方案**（`scripts/build_multisource_pilot.py`）：
+
+新增三个 archetype 及其判定规则，并放在规则表**最前面**（因为 `pedagogical_archetype()` 是"首个命中即返回"，特征明确的规则必须先于宽泛规则匹配，否则会被 `quantitative_reasoning` 之类的通用规则抢先吞掉）：
+
+- `symbolic_notation`（符号化记谱）：乐谱、五线谱、谱号、拍号、音符时值等。
+- `structure_construction`（结构构建）：分子式/骨架结构/共振式、化学反应转化、以及堆/链表/二叉树/逻辑门/电路这类计算机与物理的结构构建。
+- `strategy_decision`（策略决策）：棋类（国际象棋/中国象棋/围棋）开局与最佳走法、足球阵型、运动营养决策。
+
+同时为这三个新 archetype 在 `archetype_spec()` 里补充了对应的视觉元素、叙事节拍、评分要点模板（否则构建时会直接 KeyError）。
+
+**一次误判修正（重要过程记录）**：
+
+第一版规则过于宽泛，抽样检查时发现明显误判：
+
+- `symbolic_notation` 命中了 38 条，但只有 24 条是 music。规则里的 `major`、`minor`、`staff`、`rest` 都是常见英文词，导致"a simplified political map showing the **major** countries"、"the **major** distribution regions of forest land"、"**staff**"等无关内容被误吞。
+- `strategy_decision` 命中了 29 条，但只有 21 条是 sports。`play\b`、`formation`、`variation` 太宽泛，把"the **formation** process of Chinook winds"（地理）、"**force** analysis diagram"（物理）、历史时间线填空都误判进来。
+
+修正方式是给这些高频普通词加上下文约束，而不是简单删词：
+- `major`/`minor` 改为**前瞻断言**，只在后面 30 字符内出现 key/scale/chord/staff/time 时才算命中（即"C major, 4/4 time"算，"major countries"不算）。
+- `sharp`/`flat`/`natural` 同样要求后接 note。
+- `strategy_decision` 收紧为 `\bchess\b`、`go problem`、`\d-\d-\d formation`（阵型必须是数字格式如 4-3-3）、`crucial first move` 等强特征，去掉了 `play`、`tactic`、`lineup` 这类泛词。
+
+修正后再次抽样，三个新 archetype 的学科归属完全干净：`symbolic_notation` 21条全是 music，`strategy_decision` 22条全是 sports，`structure_construction` 46条集中在 chemistry(22)/computer_science(14)/physics(6)/biology(4)。
+
+**验证结果**：
+
+| 指标 | 改进前 | 改进后 |
+|---|---|---|
+| 兜底类别 `visual_transformation` | 87 条（29.0%） | **31 条（10.3%）** |
+| 最大类别占比 | 30.0% | 28.3% |
+| 活跃 archetype 数量 | 9 个 | **12 个** |
+| 自动化门槛 `automated_pass` | true | true（仍通过） |
+| `unique_narrative_plans` | 300 | 300（无模板重复） |
+| 源文本近似重复对 | 0 | 0 |
+
+最终 archetype 分布：
+
+```
+quantitative_reasoning  85    structure_construction  46
+temporal_sequence       36    visual_transformation   31
+spatial_reasoning       24    strategy_decision       22
+symbolic_notation       21    labeling                15
+causal_mechanism        10    classification           5
+comparison               4    evidence_inference       1
+```
+
+`scripts/validate_prompt_jsonl.py` 校验300条全部通过（退出码0）。
+
+**遗留事项**：
+- `evidence_inference`（1条）和 `comparison`（4条）依然是稀缺类别。这轮改进解决的是"兜底类别过大"，但没有解决这两类的绝对数量不足——因为上游数据里本来就很少有"根据多个线索推断结论"或"对比两个对象"这类任务。要真正补充需要有针对性地去上游筛选，或者用官方渲染器生成，属于独立的工作项。
+- 剩余的 31 条兜底样本仍有可归类空间（例如"illustrate the food chain relationships using arrows"更接近 causal_mechanism，"Arrange the electron cloud diagrams in order"更接近 temporal_sequence），但继续细分的边际收益在下降，且每加一条规则都有引入新误判的风险。当前 10.3% 的兜底比例已经在合理范围，建议后续如需继续优化，配合人工抽样标注来校准，而不是纯靠关键词。
 
 ---
 

@@ -804,6 +804,30 @@ def pedagogical_archetype(text: str, subdomain: str = "") -> str:
 
     joined = f"{subdomain} {text}".lower()
     rules = [
+        # Specific notation/construction families come first: they are highly
+        # recognizable and would otherwise be swallowed by the broader rules
+        # below (or fall through to the visual_transformation fallback).
+        # Added in improvement plan item 5, which found 87 fallback rows that
+        # were in fact dominated by these four task families.
+        ("symbolic_notation", r"sheet music|staff in|clef|time signature|\d/\d time|"
+                              r"quarter note|eighth note|sixteenth note|whole note|half note|"
+                              r"dotted (quarter|eighth|half)|"
+                              r"\b(major|minor)\b(?=[^.]{0,30}\b(key|scale|chord|staff|time)\b)|"
+                              r"suspended \d|inversion as stacked|"
+                              r"\b(sharp|flat|natural)\b(?=[^.]{0,20}\bnote\b)"),
+        ("structure_construction", r"molecul\w*|skeletal structure|resonance|"
+                                   r"smiles|inchi|isomer|functional group|benzene|aromatic ring|"
+                                   r"hydrogenation|protonation|oxidiz\w*|dehydrogenation|"
+                                   r"base pairing|pyrimidine|pyrrole|aldehyde|"
+                                   r"\bheap\b|linked list|binary tree|b-tree|\bdag\b|"
+                                   r"logic gate|and gate|xor gate|\badder\b|"
+                                   r"neural network|residual connection|circuit diagram"),
+        ("strategy_decision", r"\bchess\b|xiangqi|go problem|"
+                              r"(chess|opening|defense|defence) (diagram|variation)|"
+                              r"gambit|checkmate|"
+                              r"best (next )?move|legal moves|crucial (first )?move|"
+                              r"\d-\d-\d formation|soccer formation|basketball|"
+                              r"nutrition pyramid|glycemic index"),
         ("quantitative_reasoning", r"calculate|equation|formula|graph|plot|curve|axis|scale|vector|angle|probability"),
         ("comparison", r"compare|contrast|difference|versus| vs\.? |distinguish|before and after"),
         ("temporal_sequence", r"timeline|sequence|cycle|stages?|steps?|route|path|process|flow|progression"),
@@ -822,6 +846,21 @@ def pedagogical_archetype(text: str, subdomain: str = "") -> str:
 def archetype_spec(archetype: str, focus: str) -> tuple[list[str], list[str], list[str]]:
     short_focus = clean_text(focus, 420)
     specs = {
+        "symbolic_notation": (
+            ["the empty or partial notation frame with its governing conventions", "each symbol placed at its exact required position", "the completed notation with conventions still satisfied"],
+            [f"establish the notation frame and conventions stated by the source: {short_focus}", "fix the reference markers (clef, key, meter, or axis) before adding content", "place each required symbol in source order at its exact position", "verify the finished notation against the stated conventions"],
+            ["the governing conventions (clef, key, meter, or equivalent) match the source", "every symbol is the type and position the source specifies", "the completed notation is internally consistent and legible"],
+        ),
+        "structure_construction": (
+            ["the starting structure or component inventory", "the specific site or connection being built or altered", "the completed structure with its defining relations visible"],
+            [f"present the structure and the construction target from the source: {short_focus}", "isolate the site, node, or bond where the change applies", "carry out the construction or transformation in one inspectable step", "verify connectivity, valence, ordering, or the stated structural invariant"],
+            ["the starting structure matches the source specification", "only the source-sanctioned site is modified", "the final structure satisfies the stated structural rule and stays readable"],
+        ),
+        "strategy_decision": (
+            ["the unchanged position or configuration as supplied", "the candidate options or constraints under consideration", "the source-specified chosen action marked unambiguously"],
+            [f"show the position and the decision being asked for: {short_focus}", "surface the constraints or legal options that bound the choice", "mark the source-specified decision without altering unrelated elements", "confirm the marked action is legal and matches the source answer"],
+            ["the supplied position is reproduced without unintended changes", "the marked decision is exactly the one the source specifies", "option markings remain distinguishable and rule-legal"],
+        ),
         "quantitative_reasoning": (
             ["the given quantities, axes, or symbolic constraints", "a visible intermediate calculation or construction", "the source-specified quantitative result"],
             [f"frame the quantitative task from the source: {short_focus}", "highlight only the values, axes, or constraints needed", "show one checkable calculation or geometric operation", "reveal the result and verify units, scale, direction, or invariant"],
