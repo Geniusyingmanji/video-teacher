@@ -101,6 +101,21 @@
       "GRADE/problem_solving": 82
     }
   },
+  "difficulty_balance": {
+    "totals": {
+      "k12": 124,
+      "professional": 40,
+      "undergrad": 136
+    },
+    "by_source": {
+      "DisciplineGen-1M/k12": 26,
+      "DisciplineGen-1M/professional": 20,
+      "DisciplineGen-1M/undergrad": 93,
+      "GRADE/k12": 98,
+      "GRADE/professional": 20,
+      "GRADE/undergrad": 43
+    }
+  },
   "diversity": {
     "pedagogical_archetypes": {
       "causal_mechanism": 11,

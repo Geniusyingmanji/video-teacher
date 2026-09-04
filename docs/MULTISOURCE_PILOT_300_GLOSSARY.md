@@ -36,7 +36,7 @@
 | `discipline` | 学科分类，取自 `DISCIPLINES` 列表中的10个固定值（mathematics、physics、chemistry、biology、geography、computer_science、economics、history、music、sports）。 |
 | `subdomain` | 学科下的细分方向，比如GRADE的 `sub_task`，或DisciplineGen的文件名主体（如 `science_t2i`）。 |
 | `task_type` | 教学任务的类型，只能是 `"explanation"`（讲解型）或 `"problem_solving"`（问题求解型）。详见下一节。 |
-| `difficulty` | 难度分层，当前实现里全部写死为 `"undergrad"`（本科水平）。 |
+| `difficulty` | 难度分层，取值 `k12` / `undergrad` / `professional`，由 `infer_difficulty()` 根据源文本的长度和术语复杂度自动判定（2026-08-30改进后的行为，此前全部硬编码为 `undergrad`）。 |
 | `prompt_text` | 真正会喂给视频生成模型的完整指令文本，由脚本拼接学科、任务类型、教学操作（archetype）和原始标注内容生成。 |
 | `expected_concepts` | 期望视频体现的知识点列表，用于后续人工/自动评分对照。 |
 | `expected_visual_elements` | 期望视频画面中应该出现的视觉元素清单（如"高亮的编辑区域"、"带方向箭头的时间线"）。 |

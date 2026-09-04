@@ -682,6 +682,62 @@ def timed_beats(beats: list[str]) -> list[dict[str, Any]]:
     return output
 
 
+# Difficulty inference (improvement plan item 4).
+#
+# All 300 rows previously carried a hardcoded "undergrad", so the field had no
+# discriminative value and could not support per-difficulty analysis. The
+# heuristics below derive a tier from the source text instead.
+#
+# Domain-advanced terminology: mechanisms, derivations, and quantitative or
+# molecular concepts that presuppose prior coursework.
+ADVANCED_TERM_PATTERN = re.compile(
+    r"\b(derive|prove|theorem|equilibrium|mechanism|pathway|catalys\w*|"
+    r"stoichiometr\w*|enthalp\w*|entropy|kinetic\w*|quantum|relativ\w*|eigen\w*|"
+    r"integral|derivative|logarithm\w*|probabilit\w*|regression|"
+    r"phylogen\w*|meiosis|mitosis|transcription|translation|enzym\w*|"
+    r"asymptotic|complexity|recursion|allele|genotype|"
+    r"marginal|elasticity|monetary|macroeconom\w*|"
+    r"reaction|equation|formula|curve|vector|angle)\b",
+    re.IGNORECASE,
+)
+
+# Naming/recognition verbs that indicate a recall-level task.
+BASIC_TERM_PATTERN = re.compile(
+    r"\b(label|labeled|labelled|name|color|colour|shade|circle|mark|match|count)\b",
+    re.IGNORECASE,
+)
+
+
+def infer_difficulty(text: str) -> str:
+    """Assign a difficulty tier from source-text complexity signals.
+
+    Uses source length as the primary signal (a longer specification means
+    more constraints to satisfy within a five-second clip) and adjusts with
+    domain terminology. Deterministic, so rebuilds are reproducible.
+    """
+    text = text or ""
+    length = len(text)
+    advanced = len(ADVANCED_TERM_PATTERN.findall(text))
+    basic = len(BASIC_TERM_PATTERN.findall(text))
+    score = 0
+    if length >= 400:
+        score += 2
+    elif length >= 180:
+        score += 1
+    if advanced >= 2:
+        score += 2
+    elif advanced == 1:
+        score += 1
+    # Pure naming/labeling with no advanced terminology stays introductory.
+    if basic >= 2 and advanced == 0:
+        score -= 1
+    if score >= 3:
+        return "professional"
+    if score >= 1:
+        return "undergrad"
+    return "k12"
+
+
 # Task-type inference (improvement plan item 3).
 #
 # `task_type` previously came from the source dataset alone: every GRADE row
@@ -844,7 +900,7 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "discipline": discipline,
         "subdomain": subdomain,
         "task_type": infer_task_type(instruction),
-        "difficulty": "undergrad",
+        "difficulty": infer_difficulty(instruction),
         "prompt_text": (
             "Generate a 5-second educational video using the supplied source diagram. "
             f"Teach this source-grounded {archetype.replace('_', ' ')} task without "
@@ -911,7 +967,7 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "discipline": discipline,
         "subdomain": subdomain,
         "task_type": task_type,
-        "difficulty": "undergrad",
+        "difficulty": infer_difficulty(source_text),
         "prompt_text": (
             "Generate a 5-second educational video from this DisciplineGen source "
             f"annotation as a {archetype.replace('_', ' ')} task. Use only relationships "
@@ -1045,6 +1101,12 @@ def validate_rows(
     task_type_counts = Counter(row.get("task_type") for row in rows)
     task_type_by_source = Counter(
         (row.get("source", {}).get("dataset"), row.get("task_type")) for row in rows
+    )
+    # Difficulty spread (improvement plan item 4): a single-tier dataset cannot
+    # support per-difficulty analysis, so surface the tier counts explicitly.
+    difficulty_counts = Counter(row.get("difficulty") for row in rows)
+    difficulty_by_source = Counter(
+        (row.get("source", {}).get("dataset"), row.get("difficulty")) for row in rows
     )
     if expected_per_discipline is not None:
         for discipline in DISCIPLINES:
@@ -1195,6 +1257,13 @@ def validate_rows(
             "by_source": {
                 f"{source}/{task_type}": count
                 for (source, task_type), count in sorted(task_type_by_source.items())
+            },
+        },
+        "difficulty_balance": {
+            "totals": dict(sorted(difficulty_counts.items())),
+            "by_source": {
+                f"{source}/{difficulty}": count
+                for (source, difficulty), count in sorted(difficulty_by_source.items())
             },
         },
         "diversity": {

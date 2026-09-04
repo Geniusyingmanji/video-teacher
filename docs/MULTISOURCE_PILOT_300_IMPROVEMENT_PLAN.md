@@ -18,7 +18,7 @@
 | 1. 修复来源比例校验（问题1、7） | ✅ 已实现，PR待合并 | 见下方"改进进展 1"详情 |
 | 2. 补齐 economics/history/sports 的 DisciplineGen 候选 | 🔶 部分完成 | sports已修复；economics/history确认为上游数据源硬性瓶颈，见下方"改进进展 2"详情 |
 | 3. 解耦 task_type 与数据源 | ✅ 已实现 | 见下方"改进进展 3"详情 |
-| 4. 引入难度分层 | ⏳ 未开始 | |
+| 4. 引入难度分层 | ✅ 已实现 | 见下方"改进进展 4"详情 |
 | 5. 扩充 pedagogical_archetype 关键词规则 | ⏳ 未开始 | |
 | 6. 将 history 硬编码特例改为通用参数 | ⏳ 未开始 | |
 | 7. 明确当前数据状态，决定复核路径 | ⏳ 未开始，需同事决策 | 见"五、需要同事决策的开放问题" |
@@ -156,6 +156,67 @@ edit_sports_data_sports_nutrition_pyramid_6k.parquet
 **遗留事项**：
 - 当前规则是基于关键词的启发式判断，覆盖了本批300条数据的主要模式，但没有人工逐条核对过每一条的判定是否准确。改进文档"五、需要同事决策的开放问题"里第1条提到的"是否需要人工抽样检查边界样本"仍然有效，建议在正式用于论文前抽样20-30条人工确认。
 - 总体分布现在是 183 explanation / 117 problem_solving，仍不是严格的1:1。这是内容本身决定的（DisciplineGen确实以生成类标注为主），没有强行调平，因为人为凑比例会破坏"判定基于内容"这个前提。
+
+### 改进进展 4：引入难度分层（2026-08-30）
+
+**状态**: 已实现并本地验证通过。
+
+**问题回顾**：
+
+300条数据的 `difficulty` 字段全部硬编码为 `"undergrad"`，没有任何区分度。对照仓库里早期的数据集（`pilot_v0_2` 是 low/medium/high 三档，`high_difficulty_addon` 是 professional 单档），这批300题实质上丢掉了难度维度，无法支撑"模型在不同难度题目上表现如何变化"这类分析。
+
+**信号探查过程**：
+
+先统计了数据里有哪些可用作难度判断的信号，结果决定了最终方案：
+
+| 候选信号 | 实测结果 | 是否可用 |
+|---|---|---|
+| 源文本长度 | 26 - 800 字符，四分位为 113 / 209 / 391 | ✅ 主信号，区分度好 |
+| 学科高阶术语命中数 | 中位数 0，最多 4 | ⚠️ 偏稀疏，作辅助调整 |
+| 基础动词（label/name/color）命中数 | 中位数 0，最多 4 | ⚠️ 作降级信号 |
+| `expected_narrative_order` 节拍数 | **全部是 4** | ❌ 无区分度 |
+| `expected_concepts` 概念数 | **全部是 3** | ❌ 无区分度 |
+
+后两项之所以没区分度，是因为它们由 `archetype_spec()` 的固定模板生成，不随源内容变化，所以不能用来判断难度。
+
+**实现方案**（`scripts/build_multisource_pilot.py`）：
+
+新增 `infer_difficulty()`，采用打分制：
+- **长度**（主信号）：≥400字符 +2分，≥180字符 +1分。依据是源规格越长，意味着要在5秒视频里满足的约束越多。
+- **高阶术语**（`ADVANCED_TERM_PATTERN`）：命中≥2个 +2分，命中1个 +1分。词表覆盖 derive/theorem/equilibrium/mechanism/meiosis/allele/enzyme/asymptotic/elasticity 等预设需要先修课程的概念。
+- **基础动词**（`BASIC_TERM_PATTERN`）：命中≥2个且无高阶术语时 -1分。纯粹的"标注/命名/涂色"属于记忆层级任务。
+- 分档：≥3分 → `professional`，≥1分 → `undergrad`，否则 → `k12`。
+
+规则是纯确定性的，重新构建可复现。
+
+**验证结果**：
+
+| 难度 | 条数 | GRADE | DisciplineGen-1M |
+|---|---|---|---|
+| k12 | 124 | 98 | 26 |
+| undergrad | 136 | 43 | 93 |
+| professional | 40 | 20 | 20 |
+
+三档都有实质数量，且两个数据源内部都覆盖了全部三档——这点很重要，说明难度不像修复前的 `task_type` 那样退化成数据源的代名词。
+
+抽样检查判定合理性：
+- `k12`：「illustrate the food chain relationships among the five organisms」「connect the illustrations of each stage of a butterfly's life cycle」
+- `undergrad`：「Generate a food web diagram for an ecosystem with five species labeled A-E」
+- `professional`：「Generate a diagram of a cell in meiosis II showing two chromosomes, one with alleles A and a」
+
+`scripts/validate_prompt_jsonl.py` 校验300条全部通过（退出码0），且每个学科内部都同时含有多个难度档位。
+
+**附带改动**：
+
+验证报告新增 `difficulty_balance` 字段，记录难度的总体分布和按数据源的交叉分布，便于以后每次构建都能确认难度维度没有退化成单一档位。
+
+**已知局限（如实记录）**：
+
+启发式判定存在边界误判。例如「Generate a labeled diagram of a bird egg structure, showing and labeling the following parts...」被判为 `professional`，主要是因为文本较长加上"labeled"重复出现触发了长度加分，但这道题实际上更接近 `k12`/`undergrad` 的记忆层级。这类误差是基于关键词的方案固有的局限，没有通过硬编码特例去纠正个别样本，因为那会破坏规则的可复现性和一致性。
+
+**遗留事项**：
+- 建议人工抽样20-30条核对难度判定，尤其是 `professional` 这一档（只有40条，误判影响相对更大）。这与"五、需要同事决策的开放问题"第2条（难度分层用自动启发式还是人工标注校准）直接相关。
+- 当前分档阈值（400/180字符、术语命中数）是基于本批300条数据的分布拟合的，如果后续数据规模或来源变化，阈值可能需要重新校准。
 
 ---
 
