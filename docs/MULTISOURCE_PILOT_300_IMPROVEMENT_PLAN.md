@@ -17,7 +17,7 @@
 |---|---|---|
 | 1. 修复来源比例校验（问题1、7） | ✅ 已实现，PR待合并 | 见下方"改进进展 1"详情 |
 | 2. 补齐 economics/history/sports 的 DisciplineGen 候选 | 🔶 部分完成 | sports已修复；economics/history确认为上游数据源硬性瓶颈，见下方"改进进展 2"详情 |
-| 3. 解耦 task_type 与数据源 | ⏳ 未开始 | |
+| 3. 解耦 task_type 与数据源 | ✅ 已实现 | 见下方"改进进展 3"详情 |
 | 4. 引入难度分层 | ⏳ 未开始 | |
 | 5. 扩充 pedagogical_archetype 关键词规则 | ⏳ 未开始 | |
 | 6. 将 history 硬编码特例改为通用参数 | ⏳ 未开始 | |
@@ -105,6 +105,57 @@ edit_sports_data_sports_nutrition_pyramid_6k.parquet
 - economics和history仍需要人工介入才能真正补齐：可参考现有`disciplinegen_math_replacements.jsonl`、`disciplinegen_sports_replacements.jsonl`的做法，用DisciplineGen-1M官方渲染器脚本手动生成新的economics/history样本，或者接受这两门学科在DisciplineGen来源上的天然稀缺，改为在report里显式标注为"已知数据源限制"而非"未处理的失衡"。
 - 需要决定：如果经过人工确认这两个学科的DisciplineGen补充候选确实无法在合理成本内获得，是否要把`--max-source-share-per-discipline`的65%阈值对这两个学科单独放宽，还是保留报错让每次构建都能看到这个已知限制的提醒。
 - 本次未提交到git，仍是本地工作区改动，需要与改进1的PR合并流程一并考虑。
+
+### 改进进展 3：解耦 task_type 与数据源（2026-08-30）
+
+**状态**: 已实现并本地验证通过。
+
+**问题回顾**：
+
+`task_type`（`explanation` 讲解型 / `problem_solving` 问题求解型）本应是一个独立的教学维度，但原实现里它完全由数据来源决定：
+- `grade_to_prompt()` 中硬编码 `"task_type": "problem_solving"`，即所有GRADE记录必然是问题求解；
+- `dg_to_prompt()` 中按文件名是否以 `edit_` 开头判断，而DisciplineGen绝大多数文件不是该前缀，因此几乎全部落入 `explanation`。
+
+结果是这个字段实质上成了"数据来源"的代名词，无法支撑"不同任务类型下模型表现如何差异"这类分析——因为任何按task_type的切分，本质上都在切分数据源。
+
+**解决思路**：
+
+改为基于源标注文本的内容来判断，而不是看记录来自哪个文件。核心区分逻辑是：**这个任务是在已有素材上做操作/推导，还是从零创建一个讲解用的图示**。
+
+新增三组正则模式（`scripts/build_multisource_pilot.py`）：
+- `SOLVE_VERB_PATTERN`：作用于既有素材或需要推导出答案的动词，如 complete、fill、connect、calculate、mark、highlight、rotate、missing 等。这类动词都预设了一个"给定的初始状态"需要被改变或解决。
+- `EXPLAIN_VERB_PATTERN`：从零创建讲解性素材的动词，如 generate、draw、create、illustrate、depict。这里刻意**只保留动词、排除 diagram/figure 这类名词**——因为两种任务类型都会频繁提到这些名词，把它们计入会稀释信号（这是第一版规则失败的原因，详见下方）。
+- `EXISTING_ARTIFACT_PATTERN`：显式指向已提供素材的短语，如 "in the diagram"、"shown in"、"provided"、"starting from"。
+
+判定优先级：若同时出现操作类动词**且**指向已有素材，直接判为 `problem_solving`（例如 "draw the missing curve in the diagram" 虽然有 draw，但实质是在补全已有图表，属于问题求解）；否则比较两类动词的出现次数，多者胜出。
+
+**一次失败的尝试（记录下来供参考）**：
+
+第一版规则把 diagram、schematic、labeled 这类名词也算作"讲解信号"，结果300条里有45条GRADE记录判定打平无法归类，且像 "Please complete the chemical reaction equation in the diagram"、"Please color the organ green in the diagram" 这类明显的操作型任务被误判为讲解型——因为句中的 "diagram" 把天平拉向了讲解一侧。修正方式就是把名词从判定信号里剔除，只看动词表达的**意图**，不看动作作用的**载体**。
+
+**验证结果**：
+
+重新构建300题后，两个数据源内部都出现了两种任务类型的合理分布：
+
+| 数据源 | 修复前 | 修复后 |
+|---|---|---|
+| GRADE | 161条全部 problem_solving（100%绑定） | 82条 problem_solving / 79条 explanation |
+| DisciplineGen-1M | 114条 explanation / 25条 problem_solving | 104条 explanation / 35条 problem_solving |
+| 总计 | 186 / 114 | 117 problem_solving / 183 explanation |
+
+抽样检查判定结果符合直觉：
+- 判为 `problem_solving`：「complete the chemical reaction equation in the diagram by filling in its products」「connect the illustrations of each stage in the correct order」
+- 判为 `explanation`：「Generate a labeled diagram of an animal cell, including cell membrane, cytoplasm, nucleus...」「Generate a food web diagram illustrating the relationships among a producer, a primary consumer...」
+
+同时 `scripts/validate_prompt_jsonl.py` 校验300条全部通过（退出码0），且每个学科内部都同时含有两种任务类型，不再出现某个学科被单一任务类型垄断的情况。
+
+**附带改动**：
+
+验证报告新增 `task_type_balance` 字段，记录任务类型的总体分布和按数据源的交叉分布。这样以后每次构建都能直接从报告里看出来task_type是否又退化成了数据源的代名词（如果某个数据源只输出一种任务类型，就说明解耦失效了）。
+
+**遗留事项**：
+- 当前规则是基于关键词的启发式判断，覆盖了本批300条数据的主要模式，但没有人工逐条核对过每一条的判定是否准确。改进文档"五、需要同事决策的开放问题"里第1条提到的"是否需要人工抽样检查边界样本"仍然有效，建议在正式用于论文前抽样20-30条人工确认。
+- 总体分布现在是 183 explanation / 117 problem_solving，仍不是严格的1:1。这是内容本身决定的（DisciplineGen确实以生成类标注为主），没有强行调平，因为人为凑比例会破坏"判定基于内容"这个前提。
 
 ---
 

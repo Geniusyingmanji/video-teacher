@@ -89,6 +89,18 @@
       }
     ]
   },
+  "task_type_balance": {
+    "totals": {
+      "explanation": 183,
+      "problem_solving": 117
+    },
+    "by_source": {
+      "DisciplineGen-1M/explanation": 104,
+      "DisciplineGen-1M/problem_solving": 35,
+      "GRADE/explanation": 79,
+      "GRADE/problem_solving": 82
+    }
+  },
   "diversity": {
     "pedagogical_archetypes": {
       "causal_mechanism": 11,

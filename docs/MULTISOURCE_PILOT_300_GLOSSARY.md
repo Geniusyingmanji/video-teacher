@@ -58,20 +58,19 @@
 - **`explanation`（讲解型）**：要求视频呈现一个概念、结构或关系，不涉及"编辑/修改"一个已有的视觉状态。多数来自DisciplineGen里非`edit_`前缀的文件（如 `t2i_chemistry.parquet`）。
 - **`problem_solving`（问题求解型）**：要求视频呈现"从一个初始状态，按指令完成某种操作/编辑/推导，得到最终状态"的过程。GRADE的所有记录都被固定标记为此类型（因为GRADE本身就是"原图→编辑指令→目标图"结构）；DisciplineGen里文件名以`edit_`开头，或记录中含`instruction`/`edit_instruction`字段的行，也归为此类。
 
-判定逻辑目前完全由**函数**决定，而不是分析标注文本内容本身：
+判定逻辑基于**源标注文本的内容**，而不是记录来自哪个数据源（这是2026-08-30改进后的行为，此前该字段完全由数据源决定）：
 
 ```python
-# grade_to_prompt() 内部
-"task_type": "problem_solving",   # 硬编码，GRADE记录全部如此
-
-# dg_to_prompt() 内部
-is_edit = filename.startswith("edit_") or any(
-    key in row for key in ("instruction", "edit_instruction")
-)
-task_type = "problem_solving" if is_edit else "explanation"
+# grade_to_prompt() 和 dg_to_prompt() 都调用同一个函数
+task_type = infer_task_type(source_text)
 ```
 
-这也是为什么改进文档里指出 task_type 分布"和数据源绑定"：只要一条记录来自GRADE，它必然是`problem_solving`；只要一条DisciplineGen记录不是来自`edit_`文件，它必然是`explanation`。
+`infer_task_type()` 的判定规则：
+1. 统计文本中"操作/推导类动词"（complete、fill、calculate、mark、rotate、missing 等）和"创建类动词"（generate、draw、create、illustrate 等）各出现多少次。
+2. 如果出现了操作类动词，**且**文本里有指向已提供素材的短语（"in the diagram"、"shown in"、"provided"、"starting from" 等），直接判为 `problem_solving`——因为这说明任务是在既有素材上做修改，而不是从零创建。
+3. 否则比较两类动词的出现次数，多者胜出。
+
+注意：判定只看**动词**，不看 diagram、figure 这类**名词**。因为两种任务类型都会频繁提到这些名词，把它们计入会导致误判（例如"complete the equation in the diagram"会因为"diagram"被误判成讲解型）。
 
 ---
 

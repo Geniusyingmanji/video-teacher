@@ -682,8 +682,70 @@ def timed_beats(beats: list[str]) -> list[dict[str, Any]]:
     return output
 
 
+# Task-type inference (improvement plan item 3).
+#
+# `task_type` previously came from the source dataset alone: every GRADE row
+# was `problem_solving` and every non-`edit_` DisciplineGen row was
+# `explanation`. That made the field a proxy for provenance rather than an
+# independent pedagogical dimension. The patterns below read the source text
+# instead, so both papers can contribute both task types.
+#
+# Verbs that act on, or derive an answer from, an artifact that already
+# exists. These presuppose a given starting state to change or resolve.
+SOLVE_VERB_PATTERN = re.compile(
+    r"\b("
+    r"complete|fill|connect|add|remove|delete|correct|fix|"
+    r"edit|modify|change|adjust|replace|rearrange|reorder|"
+    r"calculate|compute|solve|derive|determine|infer|deduce|"
+    r"mark|highlight|circle|color|colour|shade|"
+    r"predict|simulate|continue|extend|perform|apply|"
+    r"rotate|translate|reflect|scale|transform|"
+    r"missing|blank|empty|incomplete"
+    r")\b",
+    re.IGNORECASE,
+)
+
+# Verbs that create a self-contained explanatory artifact from scratch.
+# Nouns such as "diagram" are deliberately excluded: both task types mention
+# them routinely, so including them washes out the signal.
+EXPLAIN_VERB_PATTERN = re.compile(
+    r"\b(generate|draw|create|produce|render|illustrate|depict)\b",
+    re.IGNORECASE,
+)
+
+# An explicit reference to a supplied artifact implies the task operates on
+# it. "Draw the missing curve in the diagram" is solving, not explaining.
+EXISTING_ARTIFACT_PATTERN = re.compile(
+    r"("
+    r"in the (diagram|figure|image|chart|graph|picture)|"
+    r"shown in|provided|supplied|given|question image|"
+    r"starting from|based on the (diagram|figure|image)"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def infer_task_type(text: str) -> str:
+    """Classify a source annotation as problem solving or explanation.
+
+    Derived from the source text so the field stays independent of which
+    upstream paper supplied the row.
+    """
+    text = text or ""
+    solve = len(SOLVE_VERB_PATTERN.findall(text))
+    explain = len(EXPLAIN_VERB_PATTERN.findall(text))
+    if solve and EXISTING_ARTIFACT_PATTERN.search(text):
+        return "problem_solving"
+    if solve > explain:
+        return "problem_solving"
+    if explain:
+        return "explanation"
+    return "problem_solving" if solve else "explanation"
+
+
 def pedagogical_archetype(text: str, subdomain: str = "") -> str:
     """Infer a source-grounded teaching operation without inventing an answer."""
+
     joined = f"{subdomain} {text}".lower()
     rules = [
         ("quantitative_reasoning", r"calculate|equation|formula|graph|plot|curve|axis|scale|vector|angle|probability"),
@@ -781,7 +843,7 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "id": f"grade_{source_id}".lower(),
         "discipline": discipline,
         "subdomain": subdomain,
-        "task_type": "problem_solving",
+        "task_type": infer_task_type(instruction),
         "difficulty": "undergrad",
         "prompt_text": (
             "Generate a 5-second educational video using the supplied source diagram. "
@@ -835,10 +897,7 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         or clean_text(row.get("category"), 100)
         or Path(filename).stem
     )
-    is_edit = filename.startswith("edit_") or any(
-        key in row for key in ("instruction", "edit_instruction")
-    )
-    task_type = "problem_solving" if is_edit else "explanation"
+    task_type = infer_task_type(source_text)
     source_key = clean_text(row.get("_source_key"), 40) or stable_key(row)
     archetype = pedagogical_archetype(source_text, subdomain)
     visuals, beats, rubrics = archetype_spec(archetype, source_text)
@@ -980,6 +1039,13 @@ def validate_rows(
                     }
                 )
     issues.extend(source_share_issues)
+    # Task-type independence (improvement plan item 3): report how each source
+    # splits across task types. If one source supplied only one task type, the
+    # field is still acting as a proxy for provenance rather than pedagogy.
+    task_type_counts = Counter(row.get("task_type") for row in rows)
+    task_type_by_source = Counter(
+        (row.get("source", {}).get("dataset"), row.get("task_type")) for row in rows
+    )
     if expected_per_discipline is not None:
         for discipline in DISCIPLINES:
             actual = by_discipline[discipline]
@@ -1123,6 +1189,13 @@ def validate_rows(
         "source_balance": {
             "max_source_share_per_discipline": max_source_share_per_discipline,
             "violations": source_share_issues,
+        },
+        "task_type_balance": {
+            "totals": dict(sorted(task_type_counts.items())),
+            "by_source": {
+                f"{source}/{task_type}": count
+                for (source, task_type), count in sorted(task_type_by_source.items())
+            },
         },
         "diversity": {
             "pedagogical_archetypes": dict(sorted(archetype_counts.items())),
