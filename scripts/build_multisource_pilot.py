@@ -57,6 +57,19 @@ DG_FILES = [
     "edit_math_math_textedit.parquet",
     "edit_sports_data_soccer_formation_dots.parquet",
     "edit_sports_data_soccer_formation_jerseys.parquet",
+    # Added to widen the sports candidate pool beyond the two highly
+    # templated soccer-formation files (see improvement plan item 2): the
+    # original two files reduce to only ~7-8 diverse rows after near-duplicate
+    # filtering, which is why sports fell short of its DisciplineGen quota.
+    "edit_sports_data_chess_opening_2k.parquet",
+    "edit_sports_data_go_crucial_move_strong_2k.parquet",
+    "edit_sports_data_xiangqi_opening.parquet",
+    "edit_sports_data_xiangqi_bestmove_6k.parquet",
+    "edit_sports_data_sports_nutrition_classify_grouping_6k.parquet",
+    "edit_sports_data_sports_nutrition_high_gi_6k.parquet",
+    "edit_sports_data_sports_nutrition_high_protein_6k.parquet",
+    "edit_sports_data_sports_nutrition_pie_chart_6k.parquet",
+    "edit_sports_data_sports_nutrition_pyramid_6k.parquet",
 ]
 
 DISCIPLINES = [
@@ -122,6 +135,15 @@ REQUIRED_FIELDS = [
 ]
 
 RELEASE_STATUS = "reviewed_release_ready"
+
+# The --target-per-discipline build mode caps DisciplineGen at half of each
+# discipline's quota and backfills any shortfall from GRADE (see the
+# stratified selection loop in `build()`). When a discipline's DisciplineGen
+# pool runs short, GRADE ends up supplying most of that discipline's rows,
+# which skews the discipline's task style toward GRADE's editing tasks. This
+# default bounds how lopsided a single (discipline, source) split may become
+# before `validate_rows()` flags it.
+DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE = 0.65
 
 # Content-review rejects.  Keep reasons beside the IDs so a rebuild cannot
 # silently reintroduce known factual, timing, or near-duplicate failures.
@@ -606,7 +628,32 @@ def stratified_grade(rows: list[dict[str, Any]], per_discipline: int, seed: int)
     return output
 
 
-def stratified_dg(rows: list[dict[str, Any]], per_discipline: int, seed: int) -> list[dict[str, Any]]:
+# Per-source-file cap inside one discipline (improvement plan item 6).
+#
+# Some upstream partitions are large but highly templated (the history
+# timeline file has 10k rows but only ~20 distinct task templates), so an
+# unbounded partition can crowd out smaller yet topically broader files in
+# the same discipline. This replaces a `discipline == "history"` special case
+# with a general rule.
+#
+# The cap is expressed as a share of the discipline's quota rather than a
+# fixed row count: a fixed count tuned for one file (the original hardcoded
+# 5) starves disciplines whose quota is spread over several files. It also
+# only applies when a discipline draws from more than one file, since with a
+# single file there is nowhere to redistribute the quota and capping would
+# only shrink the pool (physics, biology, geography, economics, and music
+# each have exactly one source file).
+DEFAULT_MAX_SOURCE_FILE_SHARE = 0.5
+
+
+def stratified_dg(
+    rows: list[dict[str, Any]],
+    per_discipline: int,
+    seed: int,
+    *,
+    max_source_file_share: float = DEFAULT_MAX_SOURCE_FILE_SHARE,
+) -> list[dict[str, Any]]:
+
     pools: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in rows:
         discipline = infer_dg_discipline(row)
@@ -630,16 +677,22 @@ def stratified_dg(rows: list[dict[str, Any]], per_discipline: int, seed: int) ->
         # Prefer annotations that fit a short teaching video while retaining
         # deterministic random tie-breaking from the shuffle above.
         candidates.sort(key=lambda row: abs(len(" ".join(row_text_fields(row))) - 360))
-        # Cycle through upstream files so a large templated edit subset cannot
-        # crowd out a smaller but topically broader source partition. The
-        # history timeline partition is especially repetitive at task level.
+        # Cycle through upstream files so a large templated partition cannot
+        # crowd out a smaller but topically broader source partition.
         buckets: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for row in candidates:
             filename = clean_text(row.get("_source_file"), 200) or "unknown"
             buckets[filename].append(row)
-        if discipline == "history":
-            timeline_name = "edit_histrory_timeline_pairs.parquet"
-            buckets[timeline_name] = buckets.get(timeline_name, [])[:5]
+        # Cap each file's contribution only when the discipline has an
+        # alternative file to draw from; see the constant's comment above.
+        # The cap is generous enough to keep the pool viable while still
+        # preventing one templated partition from filling the whole quota.
+        if max_source_file_share > 0 and len(buckets) > 1:
+            cap = max(1, int(per_discipline * max_source_file_share))
+            for name in list(buckets):
+                buckets[name] = buckets[name][:cap]
+                if not buckets[name]:
+                    del buckets[name]
         ordered = []
         while buckets:
             for name in sorted(list(buckets)):
@@ -660,10 +713,152 @@ def timed_beats(beats: list[str]) -> list[dict[str, Any]]:
     return output
 
 
+# Difficulty inference (improvement plan item 4).
+#
+# All 300 rows previously carried a hardcoded "undergrad", so the field had no
+# discriminative value and could not support per-difficulty analysis. The
+# heuristics below derive a tier from the source text instead.
+#
+# Domain-advanced terminology: mechanisms, derivations, and quantitative or
+# molecular concepts that presuppose prior coursework.
+ADVANCED_TERM_PATTERN = re.compile(
+    r"\b(derive|prove|theorem|equilibrium|mechanism|pathway|catalys\w*|"
+    r"stoichiometr\w*|enthalp\w*|entropy|kinetic\w*|quantum|relativ\w*|eigen\w*|"
+    r"integral|derivative|logarithm\w*|probabilit\w*|regression|"
+    r"phylogen\w*|meiosis|mitosis|transcription|translation|enzym\w*|"
+    r"asymptotic|complexity|recursion|allele|genotype|"
+    r"marginal|elasticity|monetary|macroeconom\w*|"
+    r"reaction|equation|formula|curve|vector|angle)\b",
+    re.IGNORECASE,
+)
+
+# Naming/recognition verbs that indicate a recall-level task.
+BASIC_TERM_PATTERN = re.compile(
+    r"\b(label|labeled|labelled|name|color|colour|shade|circle|mark|match|count)\b",
+    re.IGNORECASE,
+)
+
+
+def infer_difficulty(text: str) -> str:
+    """Assign a difficulty tier from source-text complexity signals.
+
+    Uses source length as the primary signal (a longer specification means
+    more constraints to satisfy within a five-second clip) and adjusts with
+    domain terminology. Deterministic, so rebuilds are reproducible.
+    """
+    text = text or ""
+    length = len(text)
+    advanced = len(ADVANCED_TERM_PATTERN.findall(text))
+    basic = len(BASIC_TERM_PATTERN.findall(text))
+    score = 0
+    if length >= 400:
+        score += 2
+    elif length >= 180:
+        score += 1
+    if advanced >= 2:
+        score += 2
+    elif advanced == 1:
+        score += 1
+    # Pure naming/labeling with no advanced terminology stays introductory.
+    if basic >= 2 and advanced == 0:
+        score -= 1
+    if score >= 3:
+        return "professional"
+    if score >= 1:
+        return "undergrad"
+    return "k12"
+
+
+# Task-type inference (improvement plan item 3).
+#
+# `task_type` previously came from the source dataset alone: every GRADE row
+# was `problem_solving` and every non-`edit_` DisciplineGen row was
+# `explanation`. That made the field a proxy for provenance rather than an
+# independent pedagogical dimension. The patterns below read the source text
+# instead, so both papers can contribute both task types.
+#
+# Verbs that act on, or derive an answer from, an artifact that already
+# exists. These presuppose a given starting state to change or resolve.
+SOLVE_VERB_PATTERN = re.compile(
+    r"\b("
+    r"complete|fill|connect|add|remove|delete|correct|fix|"
+    r"edit|modify|change|adjust|replace|rearrange|reorder|"
+    r"calculate|compute|solve|derive|determine|infer|deduce|"
+    r"mark|highlight|circle|color|colour|shade|"
+    r"predict|simulate|continue|extend|perform|apply|"
+    r"rotate|translate|reflect|scale|transform|"
+    r"missing|blank|empty|incomplete"
+    r")\b",
+    re.IGNORECASE,
+)
+
+# Verbs that create a self-contained explanatory artifact from scratch.
+# Nouns such as "diagram" are deliberately excluded: both task types mention
+# them routinely, so including them washes out the signal.
+EXPLAIN_VERB_PATTERN = re.compile(
+    r"\b(generate|draw|create|produce|render|illustrate|depict)\b",
+    re.IGNORECASE,
+)
+
+# An explicit reference to a supplied artifact implies the task operates on
+# it. "Draw the missing curve in the diagram" is solving, not explaining.
+EXISTING_ARTIFACT_PATTERN = re.compile(
+    r"("
+    r"in the (diagram|figure|image|chart|graph|picture)|"
+    r"shown in|provided|supplied|given|question image|"
+    r"starting from|based on the (diagram|figure|image)"
+    r")",
+    re.IGNORECASE,
+)
+
+
+def infer_task_type(text: str) -> str:
+    """Classify a source annotation as problem solving or explanation.
+
+    Derived from the source text so the field stays independent of which
+    upstream paper supplied the row.
+    """
+    text = text or ""
+    solve = len(SOLVE_VERB_PATTERN.findall(text))
+    explain = len(EXPLAIN_VERB_PATTERN.findall(text))
+    if solve and EXISTING_ARTIFACT_PATTERN.search(text):
+        return "problem_solving"
+    if solve > explain:
+        return "problem_solving"
+    if explain:
+        return "explanation"
+    return "problem_solving" if solve else "explanation"
+
+
 def pedagogical_archetype(text: str, subdomain: str = "") -> str:
     """Infer a source-grounded teaching operation without inventing an answer."""
+
     joined = f"{subdomain} {text}".lower()
     rules = [
+        # Specific notation/construction families come first: they are highly
+        # recognizable and would otherwise be swallowed by the broader rules
+        # below (or fall through to the visual_transformation fallback).
+        # Added in improvement plan item 5, which found 87 fallback rows that
+        # were in fact dominated by these four task families.
+        ("symbolic_notation", r"sheet music|staff in|clef|time signature|\d/\d time|"
+                              r"quarter note|eighth note|sixteenth note|whole note|half note|"
+                              r"dotted (quarter|eighth|half)|"
+                              r"\b(major|minor)\b(?=[^.]{0,30}\b(key|scale|chord|staff|time)\b)|"
+                              r"suspended \d|inversion as stacked|"
+                              r"\b(sharp|flat|natural)\b(?=[^.]{0,20}\bnote\b)"),
+        ("structure_construction", r"molecul\w*|skeletal structure|resonance|"
+                                   r"smiles|inchi|isomer|functional group|benzene|aromatic ring|"
+                                   r"hydrogenation|protonation|oxidiz\w*|dehydrogenation|"
+                                   r"base pairing|pyrimidine|pyrrole|aldehyde|"
+                                   r"\bheap\b|linked list|binary tree|b-tree|\bdag\b|"
+                                   r"logic gate|and gate|xor gate|\badder\b|"
+                                   r"neural network|residual connection|circuit diagram"),
+        ("strategy_decision", r"\bchess\b|xiangqi|go problem|"
+                              r"(chess|opening|defense|defence) (diagram|variation)|"
+                              r"gambit|checkmate|"
+                              r"best (next )?move|legal moves|crucial (first )?move|"
+                              r"\d-\d-\d formation|soccer formation|basketball|"
+                              r"nutrition pyramid|glycemic index"),
         ("quantitative_reasoning", r"calculate|equation|formula|graph|plot|curve|axis|scale|vector|angle|probability"),
         ("comparison", r"compare|contrast|difference|versus| vs\.? |distinguish|before and after"),
         ("temporal_sequence", r"timeline|sequence|cycle|stages?|steps?|route|path|process|flow|progression"),
@@ -682,6 +877,21 @@ def pedagogical_archetype(text: str, subdomain: str = "") -> str:
 def archetype_spec(archetype: str, focus: str) -> tuple[list[str], list[str], list[str]]:
     short_focus = clean_text(focus, 420)
     specs = {
+        "symbolic_notation": (
+            ["the empty or partial notation frame with its governing conventions", "each symbol placed at its exact required position", "the completed notation with conventions still satisfied"],
+            [f"establish the notation frame and conventions stated by the source: {short_focus}", "fix the reference markers (clef, key, meter, or axis) before adding content", "place each required symbol in source order at its exact position", "verify the finished notation against the stated conventions"],
+            ["the governing conventions (clef, key, meter, or equivalent) match the source", "every symbol is the type and position the source specifies", "the completed notation is internally consistent and legible"],
+        ),
+        "structure_construction": (
+            ["the starting structure or component inventory", "the specific site or connection being built or altered", "the completed structure with its defining relations visible"],
+            [f"present the structure and the construction target from the source: {short_focus}", "isolate the site, node, or bond where the change applies", "carry out the construction or transformation in one inspectable step", "verify connectivity, valence, ordering, or the stated structural invariant"],
+            ["the starting structure matches the source specification", "only the source-sanctioned site is modified", "the final structure satisfies the stated structural rule and stays readable"],
+        ),
+        "strategy_decision": (
+            ["the unchanged position or configuration as supplied", "the candidate options or constraints under consideration", "the source-specified chosen action marked unambiguously"],
+            [f"show the position and the decision being asked for: {short_focus}", "surface the constraints or legal options that bound the choice", "mark the source-specified decision without altering unrelated elements", "confirm the marked action is legal and matches the source answer"],
+            ["the supplied position is reproduced without unintended changes", "the marked decision is exactly the one the source specifies", "option markings remain distinguishable and rule-legal"],
+        ),
         "quantitative_reasoning": (
             ["the given quantities, axes, or symbolic constraints", "a visible intermediate calculation or construction", "the source-specified quantitative result"],
             [f"frame the quantitative task from the source: {short_focus}", "highlight only the values, axes, or constraints needed", "show one checkable calculation or geometric operation", "reveal the result and verify units, scale, direction, or invariant"],
@@ -759,8 +969,8 @@ def grade_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "id": f"grade_{source_id}".lower(),
         "discipline": discipline,
         "subdomain": subdomain,
-        "task_type": "problem_solving",
-        "difficulty": "undergrad",
+        "task_type": infer_task_type(instruction),
+        "difficulty": infer_difficulty(instruction),
         "prompt_text": (
             "Generate a 5-second educational video using the supplied source diagram. "
             f"Teach this source-grounded {archetype.replace('_', ' ')} task without "
@@ -813,10 +1023,7 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         or clean_text(row.get("category"), 100)
         or Path(filename).stem
     )
-    is_edit = filename.startswith("edit_") or any(
-        key in row for key in ("instruction", "edit_instruction")
-    )
-    task_type = "problem_solving" if is_edit else "explanation"
+    task_type = infer_task_type(source_text)
     source_key = clean_text(row.get("_source_key"), 40) or stable_key(row)
     archetype = pedagogical_archetype(source_text, subdomain)
     visuals, beats, rubrics = archetype_spec(archetype, source_text)
@@ -830,7 +1037,7 @@ def dg_to_prompt(row: dict[str, Any]) -> dict[str, Any]:
         "discipline": discipline,
         "subdomain": subdomain,
         "task_type": task_type,
-        "difficulty": "undergrad",
+        "difficulty": infer_difficulty(source_text),
         "prompt_text": (
             "Generate a 5-second educational video from this DisciplineGen source "
             f"annotation as a {archetype.replace('_', ' ')} task. Use only relationships "
@@ -880,6 +1087,7 @@ def validate_rows(
     expected_per_source_discipline: int | None = None,
     expected_per_discipline: int | None = None,
     expected_total: int | None = None,
+    max_source_share_per_discipline: float = DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE,
 ) -> dict[str, Any]:
     issues: list[dict[str, Any]] = []
     ids = Counter(row.get("id") for row in rows)
@@ -934,6 +1142,42 @@ def validate_rows(
                             ],
                         }
                     )
+    # Independent of the equality check above (which only applies to the
+    # fixed-per-source-discipline build mode), always flag a discipline whose
+    # two-source split is heavily skewed toward one paper. This catches the
+    # --target-per-discipline mode, where no equality target is passed but a
+    # DisciplineGen shortfall can still let GRADE dominate a discipline.
+    source_share_issues: list[dict[str, Any]] = []
+    for discipline in DISCIPLINES:
+        discipline_total = by_discipline[discipline]
+        if discipline_total == 0:
+            continue
+        for source in ("GRADE", "DisciplineGen-1M"):
+            share = by_source_discipline[(source, discipline)] / discipline_total
+            if share > max_source_share_per_discipline:
+                source_share_issues.append(
+                    {
+                        "scope": f"{source}/{discipline}",
+                        "issues": [
+                            f"{source} supplies {share:.0%} of {discipline} rows, "
+                            f"exceeding the {max_source_share_per_discipline:.0%} cap"
+                        ],
+                    }
+                )
+    issues.extend(source_share_issues)
+    # Task-type independence (improvement plan item 3): report how each source
+    # splits across task types. If one source supplied only one task type, the
+    # field is still acting as a proxy for provenance rather than pedagogy.
+    task_type_counts = Counter(row.get("task_type") for row in rows)
+    task_type_by_source = Counter(
+        (row.get("source", {}).get("dataset"), row.get("task_type")) for row in rows
+    )
+    # Difficulty spread (improvement plan item 4): a single-tier dataset cannot
+    # support per-difficulty analysis, so surface the tier counts explicitly.
+    difficulty_counts = Counter(row.get("difficulty") for row in rows)
+    difficulty_by_source = Counter(
+        (row.get("source", {}).get("dataset"), row.get("difficulty")) for row in rows
+    )
     if expected_per_discipline is not None:
         for discipline in DISCIPLINES:
             actual = by_discipline[discipline]
@@ -1074,6 +1318,24 @@ def validate_rows(
         "issues": issues,
         "release_issues": release_issues,
         "curation_status": dict(sorted(status_counts.items())),
+        "source_balance": {
+            "max_source_share_per_discipline": max_source_share_per_discipline,
+            "violations": source_share_issues,
+        },
+        "task_type_balance": {
+            "totals": dict(sorted(task_type_counts.items())),
+            "by_source": {
+                f"{source}/{task_type}": count
+                for (source, task_type), count in sorted(task_type_by_source.items())
+            },
+        },
+        "difficulty_balance": {
+            "totals": dict(sorted(difficulty_counts.items())),
+            "by_source": {
+                f"{source}/{difficulty}": count
+                for (source, difficulty), count in sorted(difficulty_by_source.items())
+            },
+        },
         "diversity": {
             "pedagogical_archetypes": dict(sorted(archetype_counts.items())),
             "unique_narrative_plans": len(narrative_template_counts),
@@ -1098,7 +1360,12 @@ def build(args: argparse.Namespace) -> None:
         dg_rows.extend(jsonl_rows(Path(extra_path)))
     selection_quota = args.target_per_discipline or args.per_source_discipline
     selected_grade = stratified_grade(grade_rows, selection_quota, args.seed)
-    selected_dg = stratified_dg(dg_rows, selection_quota, args.seed)
+    selected_dg = stratified_dg(
+        dg_rows,
+        selection_quota,
+        args.seed,
+        max_source_file_share=args.max_source_file_share,
+    )
     prompts = [grade_to_prompt(row) for row in selected_grade]
     prompts.extend(dg_to_prompt(row) for row in selected_dg)
     replacement_paths = [Path(path) for path in args.replacements]
@@ -1195,6 +1462,7 @@ def build(args: argparse.Namespace) -> None:
             args.target_per_discipline * len(DISCIPLINES)
             if args.target_per_discipline is not None else None
         ),
+        max_source_share_per_discipline=args.max_source_share_per_discipline,
     )
     report["inputs"] = {
         "grade_metadata": str(Path(args.grade)),
@@ -1287,6 +1555,7 @@ def validate(args: argparse.Namespace) -> None:
     report = validate_rows(
         rows,
         expected_per_source_discipline=args.per_source_discipline,
+        max_source_share_per_discipline=args.max_source_share_per_discipline,
     )
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if not report["valid"] or (args.release and not report["release_ready"]):
@@ -1324,6 +1593,25 @@ def parser() -> argparse.ArgumentParser:
         type=int,
         help="build a fixed total per discipline; source shortages are backfilled",
     )
+    build_cmd.add_argument(
+        "--max-source-share-per-discipline",
+        type=float,
+        default=DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE,
+        help=(
+            "flag a discipline if one source dataset supplies more than this "
+            "fraction of its rows (default: %(default)s)"
+        ),
+    )
+    build_cmd.add_argument(
+        "--max-source-file-share",
+        type=float,
+        default=DEFAULT_MAX_SOURCE_FILE_SHARE,
+        help=(
+            "cap the share of one discipline's quota that a single upstream "
+            "file may supply, applied only when that discipline has more than "
+            "one source file; 0 disables the cap (default: %(default)s)"
+        ),
+    )
     build_cmd.add_argument("--seed", type=int, default=20260803)
     build_cmd.add_argument("--out", default=str(DEFAULT_OUT))
     build_cmd.add_argument("--report", default=str(DEFAULT_REPORT))
@@ -1337,6 +1625,15 @@ def parser() -> argparse.ArgumentParser:
     validate_cmd = sub.add_parser("validate")
     validate_cmd.add_argument("--input", default=str(DEFAULT_OUT))
     validate_cmd.add_argument("--per-source-discipline", type=int, default=5)
+    validate_cmd.add_argument(
+        "--max-source-share-per-discipline",
+        type=float,
+        default=DEFAULT_MAX_SOURCE_SHARE_PER_DISCIPLINE,
+        help=(
+            "flag a discipline if one source dataset supplies more than this "
+            "fraction of its rows (default: %(default)s)"
+        ),
+    )
     validate_cmd.add_argument(
         "--release",
         action="store_true",
