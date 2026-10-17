@@ -1,0 +1,19 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "math_exp_01",
+  "topic": "Geometric meaning of the derivative: a point moving on y=x\u00b2, its tangent line, and derivative as the slope of that tangent",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 470.5981810919475,
+  "token_usage": {
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
+    "total_tokens": 0
+  },
+  "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair calls",
+  "expected_sections": 5,
+  "rendered_sections": 5,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_exp_01/0-Geometric_meaning_of_the_derivative_a_point_moving_on_y=x_its_tangent_line_and_derivative_as_the_slope_of_that_tangent/Geometric_meaning_of_the_derivative_a_point_moving_on_y=x_its_tangent_line_and_derivative_as_the_slope_of_that_tangent.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_exp_01/0-Geometric_meaning_of_the_derivative_a_point_moving_on_y=x_its_tangent_line_and_derivative_as_the_slope_of_that_tangent",
+  "complete": true
+}

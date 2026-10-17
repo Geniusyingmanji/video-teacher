@@ -1,0 +1,72 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: The pH Scale and Logarithms",
+      "lecture_lines": [
+        "pH measures acidity from zero to fourteen.",
+        "Red means high hydrogen ion concentration.",
+        "Blue means low hydrogen ion concentration.",
+        "pH equals negative log base ten.",
+        "Logarithms shrink small numbers easily."
+      ],
+      "animations": [
+        "Animation step 1: A horizontal gradient bar fades in, transitioning from #FF0000 (left) to #0000FF (right). Labels '0' and '14' appear at ends in #FFFFFF.",
+        "Animation step 2: A red dot pulses at the left end. Text '[H+] = 1' appears in #FF0000 next to it.",
+        "Animation step 3: A blue dot pulses at the right end. Text '[H+] = 1e-14' appears in #0000FF next to it.",
+        "Animation step 4: The formula 'pH = -log10[H+]' slides down from the top in #FFFF00. The term '[H+]' highlights in #FF0000.",
+        "Animation step 5: A small number '0.0001' shrinks rapidly into a single digit '4' with a compression effect, illustrating the log concept."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: The Core Formula",
+      "lecture_lines": [
+        "The formula is pH equals negative log.",
+        "Concentration is measured in moles per liter.",
+        "Logarithms act like a compression tool.",
+        "Negative sign flips the result positive.",
+        "Higher acidity yields lower pH values."
+      ],
+      "animations": [
+        "Animation step 1: A central card appears with 'pH = -log10[H+]' in #FFFFFF. The '[H+]' part glows #FF0000.",
+        "Animation step 2: Text 'mol/L' appears below '[H+]' in #00FFFF to indicate units.",
+        "Animation step 3: A zipper icon animates over the number '0.001', compressing it into '3' in #FFFF00.",
+        "Animation step 4: A minus sign appears before the '3', turning it to '-3', then the outer negative sign cancels it to show '3' in #00FF00.",
+        "Animation step 5: An arrow points from high [H+] (left) to low pH number (bottom), emphasizing the inverse relationship."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Step-by-Step Calculation",
+      "lecture_lines": [
+        "Given concentration is one times ten power negative three.",
+        "Substitute this value into the formula.",
+        "Logarithm of ten power negative three is negative three.",
+        "Apply the negative sign to the result.",
+        "Final pH is three."
+      ],
+      "animations": [
+        "Animation step 1: Text '[H+] = 1 × 10⁻³ M' types out in #FFFFFF on the left side.",
+        "Animation step 2: The value '1 × 10⁻³' moves into the formula 'pH = -log10( )' in the center.",
+        "Animation step 3: The term 'log10(10⁻³)' highlights, and the result '-3' appears below it in #FF0000.",
+        "Animation step 4: The negative sign from the formula combines with '-3', showing '-(-3)' which transforms into '3' in #00FF00.",
+        "Animation step 5: The final equation 'pH = 3' glows bright green (#00FF00) and scales up slightly for emphasis."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Interpreting the Result",
+      "lecture_lines": [
+        "Place pH three on the scale.",
+        "This value indicates an acidic solution.",
+        "It is similar to lemon juice."
+      ],
+      "animations": [
+        "Animation step 1: The pH scale bar from Section 1 reappears. A marker drops onto the '3' position in #FF0000.",
+        "Animation step 2: The area from 0 to 7 highlights in red (#FF0000). Text 'ACIDIC' flashes in #FF0000 above the scale.",
+        "Animation step 3: An icon of a lemon appears next to the '3' marker. Text 'Lemon Juice ~ pH 2' appears in #FFFF00."
+      ]
+    }
+  ]
+}

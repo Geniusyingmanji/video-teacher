@@ -1,0 +1,37 @@
+{
+  "mode": "offline_handwritten_fixture",
+  "source_case": {
+    "id": "math_exp_01",
+    "discipline": "mathematics",
+    "subdomain": "calculus",
+    "task_type": "explanation",
+    "difficulty": "undergrad",
+    "prompt_text": "Generate a 10-second educational video explaining the geometric meaning of the derivative of a function at a point, using a smooth curve and a tangent line that slides along it. Show clear x-y axes, label the curve y=f(x), and highlight the tangent line touching one moving point. Narration should describe the derivative as the slope of the tangent line.",
+    "expected_concepts": [
+      "derivative as slope",
+      "tangent line",
+      "limit definition"
+    ],
+    "expected_visual_elements": [
+      "coordinate axes labeled x and y",
+      "smooth curve labeled f(x)",
+      "tangent line touching curve"
+    ],
+    "expected_narrative_order": [
+      "show curve",
+      "place point on curve",
+      "draw tangent at point",
+      "slide point and tangent together"
+    ],
+    "pedagogical_target_audience": "undergrad calculus student",
+    "discipline_specific_rubric": [
+      "axes are labeled",
+      "tangent line actually touches the curve at one point",
+      "tangent slope visually matches local curve slope"
+    ],
+    "audio_narration_required": true
+  },
+  "expected_sections": 2,
+  "rendered_sections": 0,
+  "videos": {}
+}

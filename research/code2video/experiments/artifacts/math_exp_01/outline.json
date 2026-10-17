@@ -1,0 +1,36 @@
+{
+  "topic": "The Geometric Meaning of the Derivative: Slope of the Tangent to y=x²",
+  "target_audience": "High school students (16-18 years old) or introductory calculus university students",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Prerequisite: The Concept of Slope",
+      "content": "Briefly recap the definition of slope as 'rise over run' (Δy/Δx). Show a static straight line with two points to visualize the constant rate of change. Establish that slope represents the steepness of a line.",
+      "example": "A simple animation of a car driving up a straight ramp. The speedometer (slope) stays constant. Label the rise and run clearly on the graph."
+    },
+    {
+      "id": "section_2",
+      "title": "The Problem: Changing Steepness on a Curve",
+      "content": "Introduce the function y = x². Unlike a straight line, the steepness changes at every point. Pose the question: 'How do we define the slope at a single specific point on a curve?' Introduce the concept of a 'tangent line' as the line that just touches the curve at one point and matches its direction.",
+      "example": "A roller coaster track shaped like a parabola (y=x²). A small ball is placed at the bottom. Ask the audience: 'If the ball rolls off exactly at x=1, which way does it initially go?'"
+    },
+    {
+      "id": "section_3",
+      "title": "Visualizing the Tangent Line",
+      "content": "Demonstrate the tangent line visually. Show a secant line connecting two points on the curve. Animate the second point moving closer to the first point. As the distance shrinks, the secant line rotates and approaches the tangent line. Emphasize that the tangent is the limit position of the secant.",
+      "example": "A zoom-in animation on the point (1,1) on y=x². A red secant line connects (1,1) and (1.1, 1.21). The point (1.1, 1.21) slides toward (1,1). The red line becomes a green tangent line."
+    },
+    {
+      "id": "section_4",
+      "title": "Derivative as the Slope of the Tangent",
+      "content": "Formally define the derivative f'(x) as the slope of this tangent line. For y = x², show that the derivative is f'(x) = 2x. Explain that plugging in the x-coordinate gives the exact slope of the tangent at that point. Connect the algebraic result to the geometric visual.",
+      "example": "At x=1, the tangent line has a slope of 2. Show a right triangle under the tangent line at (1,1) with a run of 1 and a rise of 2. Highlight the formula: Slope = dy/dx = 2x."
+    },
+    {
+      "id": "section_5",
+      "title": "Dynamic Application: The Moving Point",
+      "content": "Animate a point moving along the curve y=x². As the point moves, the tangent line rotates continuously, and the slope value (derivative) updates in real-time. Show how the slope is negative for x<0, zero at x=0, and positive for x>0. This reinforces the derivative as a function of position.",
+      "example": "A glowing dot moves from x=-2 to x=2. A tangent line sticks to the dot. A digital display next to the dot shows the current slope value changing from -4 to 0 to 4. The tangent line is horizontal at the vertex (0,0)."
+    }
+  ]
+}

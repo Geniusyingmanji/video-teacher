@@ -1,0 +1,36 @@
+{
+  "topic": "Ionic Bonding: The Electron Dance of NaCl",
+  "target_audience": "High school students (Grade 9-10)",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "The Prerequisite: Atomic Structure & Valence Electrons",
+      "content": "Introduce the concept of atoms as having a nucleus and electron shells. Focus specifically on the 'valence shell' (outermost layer). Explain that stability is achieved when an atom has a full outer shell (the Octet Rule). Briefly show the electron configurations of Sodium (Na) and Chlorine (Cl) to set the stage for why they interact.",
+      "example": "Visual: A simplified Bohr model animation. Sodium (Na) is shown with 11 protons and 3 shells (2, 8, 1). Chlorine (Cl) is shown with 17 protons and 3 shells (2, 8, 7). Highlight the single electron in Na's outer shell and the 'gap' of one electron in Cl's outer shell."
+    },
+    {
+      "id": "section_2",
+      "title": "The Transfer: Sodium Gives, Chlorine Takes",
+      "content": "Demonstrate the dynamic process of electron transfer. Show Sodium losing its single valence electron to achieve stability. Simultaneously, show Chlorine gaining that electron to complete its octet. Emphasize that this is a physical movement of a negatively charged particle from one atom to another.",
+      "example": "Animation: A glowing electron detaches from the Sodium atom and travels across a short gap to the Chlorine atom. As it leaves Na, the Na atom shrinks slightly and glows positive. As it joins Cl, the Cl atom expands slightly and glows negative."
+    },
+    {
+      "id": "section_3",
+      "title": "Ion Formation: Charge and Identity",
+      "content": "Define the resulting particles as ions. Explain that losing an electron creates a cation (positive ion, Na⁺) because protons now outnumber electrons. Gaining an electron creates an anion (negative ion, Cl⁻) because electrons now outnumber protons. Use a balance scale analogy to explain the charge imbalance.",
+      "example": "Visual: Split screen. Left side: Na atom becomes Na⁺ with a large red '+' sign. Right side: Cl atom becomes Cl⁻ with a large blue '-' sign. A digital counter shows the proton/electron count for each to prove the charge calculation (11p/10e = +1; 17p/18e = -1)."
+    },
+    {
+      "id": "section_4",
+      "title": "Electrostatic Attraction: The Ionic Bond",
+      "content": "Explain that opposite charges attract. The Na⁺ and Cl⁻ are no longer neutral atoms but charged ions. The electrostatic force of attraction between the positive sodium ion and negative chlorine ion is the ionic bond. This is not a shared pair of electrons (covalent), but a strong pull between opposites.",
+      "example": "Animation: The Na⁺ and Cl⁻ ions move toward each other. As they get close, magnetic field lines (visualized as connecting springs or glowing threads) appear between them, pulling them into a stable, locked position. Label this connection 'Ionic Bond'."
+    },
+    {
+      "id": "section_5",
+      "title": "The Result: The Crystal Lattice of NaCl",
+      "content": "Show that one Na⁺ and one Cl⁻ do not exist in isolation. They attract multiple other ions, creating a 3D grid structure known as a crystal lattice. Explain that this repeating pattern is what gives salt its solid, crystalline form. Conclude by linking the microscopic bond to the macroscopic substance (table salt).",
+      "example": "Visual: The single Na⁺-Cl⁻ pair expands. Other Na⁺ and Cl⁻ ions fly in from all directions, arranging themselves in a checkerboard pattern. The camera zooms out to reveal a small cube of salt crystals, labeled 'Sodium Chloride (NaCl)'. A fun character (a cartoon salt shaker) appears, shaking its head to indicate 'solid'."
+    }
+  ]
+}

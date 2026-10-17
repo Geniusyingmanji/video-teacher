@@ -1,0 +1,78 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: Prerequisite: The Concept of Slope",
+      "lecture_lines": [
+        "Slope is rise over run.",
+        "Straight lines have constant slope.",
+        "Slope measures steepness."
+      ],
+      "animations": [
+        "Animation step 1: Fade in a straight line from #000000 to #FFFFFF with two points marked in #FFD700.",
+        "Animation step 2: Draw a right triangle under the line with base #4169E1 and height #DC143C, labeling 'run' and 'rise'.",
+        "Animation step 3: Display text 'Slope = Δy/Δx' in #FFFFFF near the triangle, then fade out the triangle."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: The Problem: Changing Steepness on a Curve",
+      "lecture_lines": [
+        "Curves change steepness constantly.",
+        "What is slope at one point?",
+        "Tangent lines match curve direction."
+      ],
+      "animations": [
+        "Animation step 1: Draw the parabola y=x² in #FFFFFF, highlighting the vertex at (0,0).",
+        "Animation step 2: Place a glowing dot #FFD700 at (1,1) on the curve.",
+        "Animation step 3: Flash the dot and display text 'Slope at x=1?' in #FFFFFF."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Visualizing the Tangent Line",
+      "lecture_lines": [
+        "Start with a secant line.",
+        "Move the second point closer.",
+        "Secant becomes the tangent line.",
+        "Tangent is the limit position.",
+        "This defines the local slope."
+      ],
+      "animations": [
+        "Animation step 1: Draw a red secant line #FF0000 connecting (1,1) and (1.1,1.21) on y=x².",
+        "Animation step 2: Animate the point (1.1,1.21) sliding along the curve toward (1,1).",
+        "Animation step 3: As the point approaches, the red line rotates and changes color to green #00FF00.",
+        "Animation step 4: The green line stabilizes as the tangent at (1,1), labeled 'Tangent'.",
+        "Animation step 5: Fade out the moving point, leaving only the green tangent line and the point (1,1)."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Derivative as the Slope of the Tangent",
+      "lecture_lines": [
+        "Derivative is tangent slope.",
+        "For y=x², derivative is 2x.",
+        "At x=1, slope is 2."
+      ],
+      "animations": [
+        "Animation step 1: Display formula 'f'(x) = 2x' in #FFFFFF near the tangent line.",
+        "Animation step 2: Draw a right triangle under the tangent line at (1,1) with run 1 (#4169E1) and rise 2 (#DC143C).",
+        "Animation step 3: Label the slope '2' in #FFD700 at the midpoint of the tangent line."
+      ]
+    },
+    {
+      "id": "section_5",
+      "title": "Sec 5: Dynamic Application: The Moving Point",
+      "lecture_lines": [
+        "Point moves along the curve.",
+        "Tangent rotates continuously.",
+        "Slope updates in real-time."
+      ],
+      "animations": [
+        "Animation step 1: A glowing dot #FFD700 moves from x=-2 to x=2 along y=x².",
+        "Animation step 2: A green tangent line #00FF00 sticks to the dot, rotating as the dot moves.",
+        "Animation step 3: A digital display next to the dot shows the slope value changing from -4 to 4 in #FFFFFF."
+      ]
+    }
+  ]
+}

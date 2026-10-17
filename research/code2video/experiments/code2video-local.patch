@@ -1,0 +1,110 @@
+diff --git a/src/agent.py b/src/agent.py
+index 5af7742..9a5f629 100644
+--- a/src/agent.py
++++ b/src/agent.py
+@@ -87,7 +87,7 @@ class TeachingVideoAgent:
+         self.assets_dir.mkdir(exist_ok=True)
+ 
+         """3. ScopeRefine & Anchor Visual"""
+-        self.scope_refine_fixer = ScopeRefineFixer(api, self.max_code_token_length)
++        self.scope_refine_fixer = ScopeRefineFixer(self.API, self.max_code_token_length)
+         self.extractor = GridPositionExtractor()
+ 
+         """4. External Database"""
+@@ -358,8 +358,9 @@ class TeachingVideoAgent:
+         if section_id not in self.section_codes:
+             return False
+ 
+-        for fix_attempt in range(max_fix_attempts):
+-            print(f"🔧 {self.learning_topic} Debugging {section_id} (attempt {fix_attempt + 1}/{max_fix_attempts})")
++        # Each permitted fix needs a subsequent render to validate its result.
++        for fix_attempt in range(max_fix_attempts + 1):
++            print(f"🔧 {self.learning_topic} Debugging {section_id} (attempt {fix_attempt + 1}/{max_fix_attempts + 1})")
+ 
+             try:
+                 scene_name = f"{section_id.title().replace('_', '')}Scene"
+@@ -367,6 +368,9 @@ class TeachingVideoAgent:
+                 cmd = ["manim", "-ql", str(code_file), scene_name]
+ 
+                 result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.output_dir, timeout=180)
++                (self.output_dir / f"{section_id}_render.log").write_text(
++                    result.stdout + "\n" + result.stderr, encoding="utf-8"
++                )
+ 
+                 if result.returncode == 0:
+                     video_patterns = [
+@@ -380,6 +384,8 @@ class TeachingVideoAgent:
+                             print(f"✅ {self.learning_topic} {section_id} finished")
+                             return True
+ 
++                if fix_attempt == max_fix_attempts:
++                    break
+                 current_code = self.section_codes[section_id]
+                 fixed_code = self.scope_refine_fixer.fix_code_smart(section_id, current_code, result.stderr, self.output_dir)
+ 
+@@ -585,6 +591,10 @@ class TeachingVideoAgent:
+             section, agent_class, kwargs = section_data
+             section_id = section.id
+             agent = agent_class(**kwargs)
++            # Workers reconstruct the agent; restore the code saved by the coder.
++            code_file = agent.output_dir / f"{section_id}.py"
++            if code_file.exists():
++                agent.section_codes[section_id] = code_file.read_text(encoding="utf-8")
+             success = agent.render_section(section)
+             video_path = agent.section_videos.get(section.id) if success else None
+             return section_id, success, video_path
+@@ -809,6 +819,7 @@ def run_Code2Video(
+ 
+ def get_api_and_output(API_name):
+     mapping = {
++        "local": (request_local_token, "LOCAL"),
+         "gpt-41": (request_gpt41_token, "Chatgpt41"),
+         "claude": (request_claude_token, "CLAUDE"),
+         "gpt-5": (request_gpt5_token, "Chatgpt5"),
+@@ -828,7 +839,7 @@ def build_and_parse_args():
+     parser.add_argument(
+         "--API",
+         type=str,
+-        choices=["gpt-41", "claude", "gpt-5", "gpt-4o", "gpt-o4mini", "Gemini"],
++        choices=["local", "gpt-41", "claude", "gpt-5", "gpt-4o", "gpt-o4mini", "Gemini"],
+         default="gpt-41",
+     )
+     parser.add_argument(
+@@ -873,7 +884,7 @@ if __name__ == "__main__":
+     iconfinder_cfg = _CFG.get("iconfinder", {})
+     args.iconfinder_api_key = iconfinder_cfg.get("api_key")
+     if args.iconfinder_api_key:
+-        print(f"Iconfinder API Key: {args.iconfinder_api_key}")
++        print("Iconfinder API key configured")
+     else:
+         print("WARNING: Iconfinder API key not found in config file. Using default (None).")
+ 
+diff --git a/src/gpt_request.py b/src/gpt_request.py
+index 1251784..5e224d7 100644
+--- a/src/gpt_request.py
++++ b/src/gpt_request.py
+@@ -24,6 +24,24 @@ def generate_log_id():
+     return f"tkb{int(time.time() * 1000)}"
+ 
+ 
++def request_local_token(prompt, max_tokens=10000):
++    """OpenAI-compatible local inference, isolated from vendor API settings."""
++    client = OpenAI(
++        base_url=os.getenv("LOCAL_BASE_URL", "http://127.0.0.1:8000/v1"),
++        api_key=os.getenv("LOCAL_API_KEY", "local"),
++        timeout=600, max_retries=1,
++    )
++    response = client.chat.completions.create(
++        model=os.getenv("LOCAL_MODEL", "qwen3.8-27b"),
++        messages=[{"role": "user", "content": prompt}],
++        max_tokens=max_tokens, temperature=0.6,
++        extra_body={"chat_template_kwargs": {"enable_thinking": False}},
++    )
++    if response.choices[0].finish_reason == "length":
++        raise RuntimeError("Local model output truncated; increase max_tokens")
++    return response, response.usage.model_dump() if response.usage else {}
++
++
+ def request_claude(prompt, log_id=None, max_tokens=16384, max_retries=3):
+     base_url = cfg("claude", "base_url")
+     api_key = cfg("claude", "api_key")

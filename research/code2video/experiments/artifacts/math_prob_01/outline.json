@@ -1,0 +1,30 @@
+{
+  "topic": "Solving 2x + 5 = 17 with Visual Algebra",
+  "target_audience": "Middle school students (Grades 7-8)",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "The Balance Scale Analogy",
+      "content": "Introduce the concept of an equation as a balance scale. The left pan holds the expression '2x + 5' and the right pan holds the number '17'. Emphasize that the scale is currently balanced, and any action performed on one side must be mirrored on the other to maintain equilibrium. Visual cue: A golden scale with glowing weights.",
+      "example": "Imagine a magic scale. If you add a 1kg weight to the left, you must add a 1kg weight to the right to keep it level. This is the 'Golden Rule' of algebra."
+    },
+    {
+      "id": "section_2",
+      "title": "Isolating the Variable Group",
+      "content": "Step 1: Remove the constant term. Visually, the number '5' on the left side is a block attached to the two 'x' blocks. To isolate the 'x' group, we must subtract 5 from both sides. Animation shows a '-5' block appearing on both pans, causing the original '+5' and '-5' on the left to cancel out and disappear (turning into smoke or fading). The right side changes from 17 to 12.",
+      "example": "Left Side: [2x] + [5] - [5] = [2x]. Right Side: [17] - [5] = [12]. The equation simplifies to 2x = 12."
+    },
+    {
+      "id": "section_3",
+      "title": "Dividing to Find x",
+      "content": "Step 2: Isolate x. Now the left side has two identical 'x' blocks. To find the value of a single 'x', we divide both sides by 2. Visual representation: The two 'x' blocks on the left are separated, and the '12' on the right is split into two equal groups of 6. One group of 6 is highlighted as the value of one 'x'.",
+      "example": "Left Side: 2x / 2 = x. Right Side: 12 / 2 = 6. The scale now shows a single 'x' block on the left balancing a '6' block on the right."
+    },
+    {
+      "id": "section_4",
+      "title": "Verification and Conclusion",
+      "content": "Final Step: Check the solution. Substitute x = 6 back into the original equation. Visual animation shows the 'x' block being replaced by a '6' block. The left side becomes 2(6) + 5, which calculates to 12 + 5 = 17. The right side is already 17. The scale remains perfectly balanced, confirming the solution is correct.",
+      "example": "Check: 2(6) + 5 = 12 + 5 = 17. Since 17 = 17, the solution x = 6 is verified. A confetti animation celebrates the successful balance."
+    }
+  ]
+}

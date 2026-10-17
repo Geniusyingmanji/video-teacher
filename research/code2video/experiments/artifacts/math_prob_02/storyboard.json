@@ -1,0 +1,94 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: The Concept of the Derivative: Slope as a Function",
+      "lecture_lines": [
+        "Derivative is a slope detector.",
+        "Tangent line moves along the curve.",
+        "Slope changes at every single point.",
+        "We need a formula for any x.",
+        "Think of it as track steepness."
+      ],
+      "animations": [
+        "Animation step 1: Fade in a smooth cubic curve (color #00FFFF) on black background. A point (color #FFFF00) appears on the curve.",
+        "Animation step 2: Draw a tangent line (color #FF5555) at the point. The point moves slowly along the curve from left to right.",
+        "Animation step 3: As the point moves, the tangent line rotates to maintain tangency. Show the angle changing dynamically.",
+        "Animation step 4: Highlight the tangent line with a flashing effect when it becomes horizontal (slope 0) and steep (high slope).",
+        "Animation step 5: Fade out the curve and tangent. Display text 'Slope Function' (color #FFFFFF) in center, pulsing gently."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: Prerequisite: The Power Rule Formula",
+      "lecture_lines": [
+        "Power Rule: f(x) = x^n.",
+        "Derivative: f'(x) = n*x^(n-1).",
+        "Step 1: Bring exponent down front.",
+        "Step 2: Subtract 1 from exponent.",
+        "Example: x^5 becomes 5x^4."
+      ],
+      "animations": [
+        "Animation step 1: Display formula 'f(x) = x^n' (color #00FFFF) in center. Animate the 'n' turning yellow (#FFFF00).",
+        "Animation step 2: Transform formula to 'f'(x) = n*x^(n-1)'. The 'n' moves from exponent position to front multiplier position.",
+        "Animation step 3: The exponent 'n' changes to 'n-1'. Highlight the subtraction with a red (#FF0000) flash on the '-1'.",
+        "Animation step 4: Show specific example 'x^5'. Animate the '5' dropping down to become '5' in front.",
+        "Animation step 5: The exponent '5' changes to '4'. Final result '5x^4' glows green (#00FF00) briefly."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Handling Coefficients: The Constant Multiple Rule",
+      "lecture_lines": [
+        "Constant multiplier stays in place.",
+        "Rule: d/dx [c * x^n].",
+        "Result: c * n * x^(n-1).",
+        "Coefficient 'c' is not affected.",
+        "Example: 4x^2 becomes 8x."
+      ],
+      "animations": [
+        "Animation step 1: Display '4x^2' (color #00FFFF). The number '4' sits on a small grey (#888888) platform to signify it stays.",
+        "Animation step 2: Focus on 'x^2'. The exponent '2' drops down to join the '4', becoming '4 * 2'.",
+        "Animation step 3: The exponent '2' changes to '1'. The term becomes '4 * 2 * x^1'.",
+        "Animation step 4: Simplify '4 * 2' to '8'. The 'x^1' simplifies to 'x'. Result '8x' appears.",
+        "Animation step 5: Highlight the original '4' and the final '8' with a connecting line, showing the coefficient remained constant."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Applying the Rules: Step-by-Step Differentiation",
+      "lecture_lines": [
+        "Function: f(x) = x^3 + 2x.",
+        "Differentiate each term separately.",
+        "Term 1: x^3 becomes 3x^2.",
+        "Term 2: 2x becomes 2.",
+        "Sum: f'(x) = 3x^2 + 2."
+      ],
+      "animations": [
+        "Animation step 1: Display 'f(x) = x^3 + 2x'. Split into two groups: 'x^3' (blue #0000FF) and '2x' (red #FF0000).",
+        "Animation step 2: Animate 'x^3' transforming to '3x^2' using the power rule steps seen previously.",
+        "Animation step 3: Animate '2x' (seen as 2*x^1) transforming. Exponent 1 drops, becomes 2*1*x^0 = 2.",
+        "Animation step 4: Combine the results '3x^2' and '2' with a plus sign in the center.",
+        "Animation step 5: Display final equation 'f'(x) = 3x^2 + 2' (color #FFFFFF) with a checkmark animation."
+      ]
+    },
+    {
+      "id": "section_5",
+      "title": "Sec 5: Verification and Final Insight",
+      "lecture_lines": [
+        "Original: f(x) = x^3 + 2x.",
+        "Derivative: f'(x) = 3x^2 + 2.",
+        "Horizontal tangent means slope is zero.",
+        "Derivative crosses x-axis at these points.",
+        "Derivative describes rate of change."
+      ],
+      "animations": [
+        "Animation step 1: Plot original cubic curve 'f(x)' (color #00FFFF) and derivative quadratic curve 'f'(x)' (color #FF5555) on same axes.",
+        "Animation step 2: Highlight a point on the cubic curve where the tangent is horizontal. Draw the tangent line.",
+        "Animation step 3: Show a vertical line dropping from that point to the x-axis, intersecting the red derivative curve at y=0.",
+        "Animation step 4: Flash the intersection point on the derivative curve to emphasize the zero value.",
+        "Animation step 5: Fade out graphs. Display text 'Rate of Change' (color #00FF00) in center."
+      ]
+    }
+  ]
+}

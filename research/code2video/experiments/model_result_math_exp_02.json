@@ -1,0 +1,18 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "math_exp_02",
+  "topic": "Why the three interior angles of a triangle sum to 180 degrees",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 1229.9805584449787,
+  "token_usage": {
+    "prompt_tokens": 8353,
+    "completion_tokens": 15387,
+    "total_tokens": 23740
+  },
+  "expected_sections": 5,
+  "rendered_sections": 5,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_exp_02/0-Why_the_three_interior_angles_of_a_triangle_sum_to_180_degrees/Why_the_three_interior_angles_of_a_triangle_sum_to_180_degrees.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_exp_02/0-Why_the_three_interior_angles_of_a_triangle_sum_to_180_degrees",
+  "complete": true
+}

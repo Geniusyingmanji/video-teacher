@@ -1,0 +1,18 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "phys_exp_02",
+  "topic": "How a convex lens focuses parallel light rays at its focal point",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 928.8885175639298,
+  "token_usage": {
+    "prompt_tokens": 8542,
+    "completion_tokens": 13024,
+    "total_tokens": 21566
+  },
+  "expected_sections": 5,
+  "rendered_sections": 5,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-phys_exp_02/0-How_a_convex_lens_focuses_parallel_light_rays_at_its_focal_point/How_a_convex_lens_focuses_parallel_light_rays_at_its_focal_point.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-phys_exp_02/0-How_a_convex_lens_focuses_parallel_light_rays_at_its_focal_point",
+  "complete": true
+}

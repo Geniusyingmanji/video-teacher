@@ -1,5 +1,8 @@
 # rise-teacher
 
+Code2Video research, local Qwen inference, and trial scripts are in
+[`research/code2video/`](research/code2video/README.md).
+
 Benchmark for evaluating text-to-video models on **multi-discipline knowledge-explanation and problem-solving** tasks, with **two complementary metrics**:
 
 1. **Standard eval** — GPT-5.5 scores 6 pedagogy-aware dimensions (Conceptual Correctness, Narrative Structure, Visual Quality, Pedagogical Clarity, Didactic Affordances, Audience Appropriateness).

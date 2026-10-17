@@ -1,0 +1,18 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "math_prob_02",
+  "topic": "Differentiate f(x) = x^3 + 2x using the power rule",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 1183.657903400017,
+  "token_usage": {
+    "prompt_tokens": 8748,
+    "completion_tokens": 17395,
+    "total_tokens": 26143
+  },
+  "expected_sections": 5,
+  "rendered_sections": 5,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_prob_02/0-Differentiate_fx_=_x3_+_2x_using_the_power_rule/Differentiate_fx_=_x3_+_2x_using_the_power_rule.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_prob_02/0-Differentiate_fx_=_x3_+_2x_using_the_power_rule",
+  "complete": true
+}

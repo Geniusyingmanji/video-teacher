@@ -1,0 +1,22 @@
+{
+  "0": {
+    "samples": 135,
+    "mean_utilization_percent": 59.25925925925926,
+    "peak_utilization_percent": 100.0
+  },
+  "1": {
+    "samples": 135,
+    "mean_utilization_percent": 55.34074074074074,
+    "peak_utilization_percent": 100.0
+  },
+  "2": {
+    "samples": 135,
+    "mean_utilization_percent": 40.51851851851852,
+    "peak_utilization_percent": 100.0
+  },
+  "3": {
+    "samples": 135,
+    "mean_utilization_percent": 40.266666666666666,
+    "peak_utilization_percent": 100.0
+  }
+}
