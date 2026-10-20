@@ -21,6 +21,8 @@ import time
 import traceback
 from pathlib import Path
 
+from PIL import Image
+
 from eval.frame_extractor import extract_frames
 from eval.dimensions import (
     conceptual_correctness,
@@ -83,22 +85,60 @@ def load_jsonl(path: str) -> list[dict]:
     return out
 
 
+def latest_successful_manifest(records: list[dict]) -> list[dict]:
+    """Use the latest attempt per case, including failures that supersede old clips."""
+    latest: dict[str, dict] = {}
+    for record in records:
+        if record.get("id"):
+            latest[record["id"]] = record
+    return [record for record in latest.values() if record.get("status") == "ok"]
+
+
 def evaluate_one(
     case: dict, video_path: str, n_frames: int, frame_max_px: int,
     dims: dict, weights: dict,
+    detail_frame_max_px: int = 0,
 ) -> dict:
     """Returns dict of dim_name -> dim_output, plus aggregate score."""
     try:
-        frames = extract_frames(video_path, n=n_frames, resize_max=frame_max_px)
+        needs_detail = detail_frame_max_px > frame_max_px and any(
+            name in dims for name in ("pedagogical_clarity", "didactic_affordances")
+        )
+        detail_frames = extract_frames(
+            video_path, n=n_frames,
+            resize_max=detail_frame_max_px if needs_detail else frame_max_px,
+        )
+        if needs_detail:
+            frames = [
+                image.resize(
+                    (max(1, round(image.width * frame_max_px / max(image.size))),
+                     max(1, round(image.height * frame_max_px / max(image.size)))),
+                    Image.Resampling.LANCZOS,
+                ) if max(image.size) > frame_max_px else image
+                for image in detail_frames
+            ]
+        else:
+            frames = detail_frames
     except Exception as e:
         return {"error": f"frame_extract_failed: {e}", "id": case["id"]}
 
-    out: dict = {"id": case["id"]}
+    out: dict = {
+        "id": case["id"],
+        "evaluation_config": {
+            "n_frames": n_frames,
+            "frame_max_px": frame_max_px,
+            "detail_frame_max_px": detail_frame_max_px,
+            "dimensions": list(dims),
+        },
+    }
     weighted_sum = 0.0
     weight_sum = 0.0
     for dim_name, dim_mod in dims.items():
         try:
-            r = dim_mod.score(case, frames)
+            review_frames = detail_frames if needs_detail and dim_name in (
+                "pedagogical_clarity", "didactic_affordances"
+            ) else frames
+            r = dim_mod.score(case, review_frames)
             out[dim_name] = r
             s = dimension_score(r)
             if s is None:
@@ -122,20 +162,31 @@ def main() -> None:
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--n-frames", type=int, default=8)
-    ap.add_argument("--frame-max-px", type=int, default=384)
+    ap.add_argument("--frame-max-px", type=int, default=832,
+                    help="Source frame resolution for new evaluations; use 384 to reproduce old runs")
+    ap.add_argument("--detail-frame-max-px", type=int, default=832,
+                    help="Resolution for clarity/layout judges in --extended mode")
     ap.add_argument("--max-workers", type=int, default=4)
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--extended", action="store_true",
                     help="Include pedagogical_clarity and didactic_affordances dims.")
     args = ap.parse_args()
+    if args.frame_max_px <= 0 or args.detail_frame_max_px <= 0:
+        ap.error("frame resolution limits must be positive")
     dims = ALL_DIMS if args.extended else CORE_DIMS
     weights = EXTENDED_WEIGHTS if args.extended else CORE_WEIGHTS
+    evaluation_config = {
+        "n_frames": args.n_frames,
+        "frame_max_px": args.frame_max_px,
+        "detail_frame_max_px": args.detail_frame_max_px,
+        "dimensions": list(dims),
+    }
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     prompts = {c["id"]: c for c in load_jsonl(args.prompts)}
-    manifest = [m for m in load_jsonl(args.manifest) if m.get("status") == "ok"]
+    manifest = latest_successful_manifest(load_jsonl(args.manifest))
     if args.limit > 0:
         manifest = manifest[: args.limit]
 
@@ -151,7 +202,7 @@ def main() -> None:
                     rec = json.loads(line)
                     cid = rec["id"]
                     # Skip if top-level error or any dim has an error key
-                    if "error" in rec:
+                    if "error" in rec or rec.get("evaluation_config") != evaluation_config:
                         continue
                     if any("error" in rec.get(d, {}) for d in dims):
                         continue
@@ -187,7 +238,7 @@ def main() -> None:
                     continue
                 fut = ex.submit(
                     evaluate_one, case, m["video_path"], args.n_frames,
-                    args.frame_max_px, dims, weights,
+                    args.frame_max_px, dims, weights, args.detail_frame_max_px,
                 )
                 future_to_case[fut] = m["id"]
             for i, fut in enumerate(cf.as_completed(future_to_case)):

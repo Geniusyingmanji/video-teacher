@@ -5,6 +5,17 @@ from scripts import dim_correlation
 
 
 class RunEvalAggregationTest(unittest.TestCase):
+    def test_manifest_uses_latest_attempt(self):
+        records = [
+            {"id": "a", "status": "ok", "video_path": "old.mp4"},
+            {"id": "b", "status": "ok", "video_path": "first.mp4"},
+            {"id": "a", "status": "error"},
+            {"id": "b", "status": "ok", "video_path": "new.mp4"},
+        ]
+        self.assertEqual(run_eval.latest_successful_manifest(records), [
+            {"id": "b", "status": "ok", "video_path": "new.mp4"},
+        ])
+
     def test_correlation_score_extraction_preserves_zero(self):
         self.assertEqual(dim_correlation.extract_dim_score({"quality": {"score": 0}}, "quality"), 0.0)
         self.assertIsNone(dim_correlation.extract_dim_score({"quality": {"score": "nan"}}, "quality"))

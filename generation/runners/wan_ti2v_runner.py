@@ -57,6 +57,8 @@ def save_video_mp4(frames, path: str, fps: int = 16) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompts", required=True)
+    ap.add_argument("--contracts", default=None,
+                    help="Optional reviewed JSONL teaching contracts; validates all cases before model loading")
     ap.add_argument("--first-frames", required=True,
                     help="Directory containing <case_id>.png first-frame images")
     ap.add_argument("--out", required=True)
@@ -92,6 +94,12 @@ def main() -> None:
                 cases.append(json.loads(line))
     if args.limit > 0:
         cases = cases[:args.limit]
+    if args.contracts:
+        from generation.teaching_contract import load_contracts, prepare_cases
+        cases = prepare_cases(
+            cases, load_contracts(args.contracts), args.width, args.height,
+            args.num_frames, args.fps,
+        )
 
     # Filter to cases that have first-frame images
     valid_cases = []
@@ -107,13 +115,21 @@ def main() -> None:
 
     # Resume support
     done_ids = set()
+    latest_manifest = {}
     if manifest_path.exists():
         with manifest_path.open() as f:
             for line in f:
                 try:
-                    done_ids.add(json.loads(line)["id"])
+                    record = json.loads(line)
+                    latest_manifest[record["id"]] = record
                 except Exception:
                     pass
+    for case in valid_cases:
+        record = latest_manifest.get(case["id"], {})
+        if (record.get("status") == "ok"
+                and Path(record.get("video_path", "")).is_file()
+                and record.get("teaching_contract_sha256") == case.get("teaching_contract_sha256")):
+            done_ids.add(case["id"])
     print(f"[wan-ti2v] resume: {len(done_ids)} already generated")
 
     started_at = time.time()
@@ -134,7 +150,7 @@ def main() -> None:
             try:
                 result = pipe(
                     image=first_frame,
-                    prompt=case["prompt_text"],
+                    prompt=case.get("video_prompt", case["prompt_text"]),
                     height=args.height,
                     width=args.width,
                     num_frames=args.num_frames,
@@ -149,6 +165,9 @@ def main() -> None:
                 mf.write(json.dumps({
                     "id": cid,
                     "prompt_text": case["prompt_text"][:200],
+                    "generation_prompt": case.get("video_prompt", case["prompt_text"]),
+                    "teaching_contract_sha256": case.get("teaching_contract_sha256"),
+                    "target_duration_s": case.get("target_duration_s"),
                     "discipline": case.get("discipline"),
                     "task_type": case.get("task_type"),
                     "difficulty": case.get("difficulty"),

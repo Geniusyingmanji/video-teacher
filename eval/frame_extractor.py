@@ -11,7 +11,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Optional
 
-import imageio.v3 as iio
+import cv2
 import numpy as np
 from PIL import Image
 
@@ -25,29 +25,32 @@ def extract_frames(
 
     resize_max: if > 0, resize longest side to this many pixels (saves judge tokens).
     """
-    video_path = str(video_path)
-    arr = iio.imread(video_path, plugin="pyav")
-    # arr shape: (T, H, W, C)
-    T = arr.shape[0]
-    if T == 0:
-        raise RuntimeError(f"empty video: {video_path}")
-
-    if n >= T:
-        idx = list(range(T))
-    else:
-        # evenly spaced: include first and last
-        idx = np.linspace(0, T - 1, num=n).round().astype(int).tolist()
-
-    frames: list[Image.Image] = []
-    for i in idx:
-        f = arr[i]
-        img = Image.fromarray(f)
-        if resize_max > 0 and max(img.size) > resize_max:
-            scale = resize_max / max(img.size)
-            new_size = (int(img.size[0] * scale), int(img.size[1] * scale))
-            img = img.resize(new_size, Image.LANCZOS)
-        frames.append(img)
-    return frames
+    if n <= 0:
+        raise ValueError("n must be positive")
+    cap = cv2.VideoCapture(str(video_path))
+    try:
+        if not cap.isOpened():
+            raise RuntimeError(f"cannot open video: {video_path}")
+        total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        if total <= 0:
+            raise RuntimeError(f"empty video: {video_path}")
+        idx = (list(range(total)) if n >= total else
+               np.linspace(0, total - 1, num=n).round().astype(int).tolist())
+        frames: list[Image.Image] = []
+        for i in idx:
+            cap.set(cv2.CAP_PROP_POS_FRAMES, i)
+            ok, bgr = cap.read()
+            if not ok:
+                raise RuntimeError(f"cannot decode frame {i}: {video_path}")
+            img = Image.fromarray(cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB))
+            if resize_max > 0 and max(img.size) > resize_max:
+                scale = resize_max / max(img.size)
+                new_size = (max(1, round(img.width * scale)), max(1, round(img.height * scale)))
+                img = img.resize(new_size, Image.Resampling.LANCZOS)
+            frames.append(img)
+        return frames
+    finally:
+        cap.release()
 
 
 def frame_to_data_url(img: Image.Image, fmt: str = "JPEG", quality: int = 80) -> str:

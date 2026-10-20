@@ -57,6 +57,8 @@ def save_video_mp4(frames, path: str, fps: int = 16) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--prompts", required=True)
+    ap.add_argument("--contracts", default=None,
+                    help="Optional reviewed JSONL teaching contracts; validates all cases before model loading")
     ap.add_argument("--out", required=True)
     ap.add_argument("--model-path",
                     default="/data/zyf/rise-teacher/models/Wan2.2-TI2V-5B-Diffusers")
@@ -92,19 +94,33 @@ def main() -> None:
                 prompts.append(json.loads(line))
     if args.limit > 0:
         prompts = prompts[: args.limit]
+    if args.contracts:
+        from generation.teaching_contract import load_contracts, prepare_cases
+        prompts = prepare_cases(
+            prompts, load_contracts(args.contracts), args.width, args.height,
+            args.num_frames, args.fps,
+        )
     print(f"[wan] {len(prompts)} prompts to generate")
 
     pipe = load_pipe(args.model_path, dtype, device)
 
     # Resume support: skip already-generated
     done_ids = set()
+    latest_manifest = {}
     if manifest_path.exists():
         with manifest_path.open() as f:
             for line in f:
                 try:
-                    done_ids.add(json.loads(line)["id"])
+                    record = json.loads(line)
+                    latest_manifest[record["id"]] = record
                 except Exception:
                     pass
+    for prompt in prompts:
+        record = latest_manifest.get(prompt["id"], {})
+        if (record.get("status") == "ok"
+                and Path(record.get("video_path", "")).is_file()
+                and record.get("teaching_contract_sha256") == prompt.get("teaching_contract_sha256")):
+            done_ids.add(prompt["id"])
     print(f"[wan] resume: {len(done_ids)} already generated")
 
     started_at = time.time()
@@ -118,7 +134,7 @@ def main() -> None:
             gen = torch.Generator(device=device).manual_seed(args.seed)
             try:
                 result = pipe(
-                    prompt=p["prompt_text"],
+                    prompt=p.get("video_prompt", p["prompt_text"]),
                     height=args.height,
                     width=args.width,
                     num_frames=args.num_frames,
@@ -133,6 +149,9 @@ def main() -> None:
                 manifest_f.write(json.dumps({
                     "id": cid,
                     "prompt_text": p["prompt_text"][:200],
+                    "generation_prompt": p.get("video_prompt", p["prompt_text"]),
+                    "teaching_contract_sha256": p.get("teaching_contract_sha256"),
+                    "target_duration_s": p.get("target_duration_s"),
                     "discipline": p.get("discipline"),
                     "task_type": p.get("task_type"),
                     "video_path": str(out_mp4),
