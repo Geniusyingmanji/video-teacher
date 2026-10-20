@@ -55,3 +55,7 @@ python -m unittest discover -s tests -p test_interactive_lesson.py -v
 ```
 
 构建输出应报告 `60 prompts`、`7/7 evidence arms`、`3 validated contracts`。页面应能从文件系统直接打开，三条 MP4 应各为 120 帧、5 秒，逐帧诊断应检查全部 120 帧，交互页能完成“选择条件 → 预测 → 揭示 → 下载记录”。如果未来替换了评测数据，重新构建后检查 `manifest.json` 中每个配置的 `rows`、`aggregate_n`、`pilot_overlap` 与 `consistent`；不一致时先修复数据再做比较。
+
+## 逐帧审查
+
+生成后查看 results/v1/contract_video_audit.jsonl；也可按 docs/CONTRACT_VIDEO_AUDIT.md 单独复查任意一段契约视频。

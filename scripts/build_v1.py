@@ -17,6 +17,7 @@ from generation.contract_frame import render_first_frame
 from generation.contract_video import render_contract_video
 from generation.interactive_lesson import build_from_files
 from generation.teaching_contract import load_contracts, prepare_cases
+from eval.contract_video_audit import audit_contract_video
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -129,6 +130,7 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
     frame_dir.mkdir(exist_ok=True)
     contract_records = []
     video_diagnostics = []
+    video_audits = []
     generation_manifest = []
     for row in prepared:
         case_id = row["id"]
@@ -138,6 +140,11 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
         render_first_frame(contracts[case_id], phase="result").save(result)
         clip = frame_dir.parent / "videos" / f"{case_id}.mp4"
         clip_record = render_contract_video(contracts[case_id], prompts[case_id], clip)
+        audit = audit_contract_video(clip, contracts[case_id], prompts[case_id])
+        if audit["status"] != "pass":
+            raise ValueError(f"{case_id}: generated video failed timeline audit: {audit}")
+        audit["video_path"] = str(clip.relative_to(out))
+        video_audits.append(audit)
         generation_manifest.append({"id": case_id, "status": "ok",
                                     "video_path": str(clip.resolve()),
                                     "generation_mode": clip_record["generation_mode"],
@@ -157,6 +164,9 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
     diagnostics_path = out / "contract_video_diagnostics.jsonl"
     diagnostics_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
                                         for row in video_diagnostics), encoding="utf-8")
+    video_audit_path = out / "contract_video_audit.jsonl"
+    video_audit_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
+                                        for row in video_audits), encoding="utf-8")
     generation_manifest_path = out / "generated_video_manifest.jsonl"
     generation_manifest_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
                                                 for row in generation_manifest), encoding="utf-8")
@@ -191,6 +201,7 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
                          "missing_ids": sorted(pilot_ids - first_frames)},
         "contracts": {"count": len(contract_records), "source_sha256": digest(contracts_path),
                       "cases": contract_records, "diagnostics_path": diagnostics_path.name,
+                      "audit_path": video_audit_path.name,
                       "generation_manifest_path": generation_manifest_path.name,
                       "eval_prompts_path": eval_prompts_path.name},
         "interactive": {"path": lesson_path.name, "variants": len(lesson["variants"])},
@@ -256,6 +267,7 @@ figure{{margin:10px 0;width:min(100%,400px)}}img{{width:100%;border:1px solid #d
 <p>{link(out, root / PROMPTS, '查看冻结题目')} · {link(out, out / 'manifest.json', '下载证据清单')} · {link(out, root / 'docs/STATUS.md', '查看研究状态')}</p></section>
 <section><h2>教学状态、视频生成与交互</h2><p>同一份契约经校验后生成初始与结果画面及可播放的 5 秒代码视频。MP4 编码后会逐帧比对契约预期画面，检查时长、顺序和图像偏差；这不等于专家知识审核。交互样例含 {manifest['interactive']['variants']} 个分支。</p>
 <p>{link(out, out / manifest['contracts']['diagnostics_path'], '查看逐题成片诊断 JSONL')}</p>
+<p>{link(out, out / manifest['contracts']['audit_path'], '查看独立逐帧审查 JSONL')}</p>
 <p>{link(out, out / manifest['contracts']['generation_manifest_path'], '打开评测兼容的生成清单')}</p>
 <p>{link(out, out / manifest['contracts']['eval_prompts_path'], '打开三题原子步骤评测题目')}</p>
 <p><a class='button' href='interactive_lesson.html'>打开凸透镜交互实验</a></p>{contract_cards}</section>

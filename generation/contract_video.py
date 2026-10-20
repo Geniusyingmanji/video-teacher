@@ -146,10 +146,10 @@ def _checked_video(path: Path, expected: list[np.ndarray], motion_index: int, fp
         capture.release()
 
 
-def render_contract_video(contract: dict, case: dict, out_path: str | Path,
-                          *, width: int = 832, height: int = 480,
-                          fps: int = 24) -> dict:
-    """Validate a beat, encode setup/result holds, then verify the actual MP4."""
+def compile_contract_video_plan(contract: dict, case: dict,
+                                *, width: int = 832, height: int = 480,
+                                fps: int = 24) -> dict:
+    """Compile the checked teaching beat into reference frames and phase boundaries."""
     if width <= 0 or height <= 0 or fps <= 0:
         raise ContractError("video width, height and fps must be positive")
     target = contract.get("target_duration_s")
@@ -186,6 +186,22 @@ def render_contract_video(contract: dict, case: dict, out_path: str | Path,
                           for index in range(motion_frames)]
                        + [result] * result_frames)
 
+    return {"frames": expected_frames, "fps": fps, "width": width, "height": height,
+            "setup_frames": setup_frames, "motion_frames": motion_frames,
+            "result_frames": result_frames, "motion_index": motion_index,
+            "setup_frame": setup, "result_frame": result}
+
+
+def render_contract_video(contract: dict, case: dict, out_path: str | Path,
+                          *, width: int = 832, height: int = 480,
+                          fps: int = 24) -> dict:
+    """Encode setup, motion and result; decode and verify the actual MP4."""
+    plan = compile_contract_video_plan(contract, case, width=width, height=height, fps=fps)
+    expected_frames = plan["frames"]
+    setup_frames = plan["setup_frames"]
+    motion_frames = plan["motion_frames"]
+    result_frames = plan["result_frames"]
+    motion_index = plan["motion_index"]
     out_path = Path(out_path)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     pending = out_path.with_name(out_path.stem + ".partial.mp4")

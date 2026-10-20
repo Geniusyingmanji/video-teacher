@@ -30,6 +30,12 @@ class LocalV1Test(unittest.TestCase):
         self.assertEqual(manifest["prompts"]["count"], 60)
         self.assertEqual(len(manifest["prompts"]["disciplines"]), 12)
         self.assertEqual(manifest["contracts"]["count"], 3)
+        audit_rows = [json.loads(line) for line in
+                      (out / manifest["contracts"]["audit_path"])
+                      .read_text(encoding="utf-8").splitlines()]
+        self.assertEqual(len(audit_rows), 3)
+        self.assertTrue(all(row["status"] == "pass" and row["frames_checked"] == 120
+                            for row in audit_rows))
         generation_rows = [json.loads(line) for line in
                            (out / manifest["contracts"]["generation_manifest_path"])
                            .read_text(encoding="utf-8").splitlines()]
