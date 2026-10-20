@@ -74,8 +74,18 @@ def _draw_primitive(draw: ImageDraw.ImageDraw, primitive: dict, beat: dict,
         value = _value(primitive.get("text_path"), beat) if "text_path" in primitive else primitive.get("text")
         if not isinstance(value, str):
             raise ContractError("drawing text must resolve to a string")
-        draw.text(position, primitive.get("prefix", "") + value, fill=color,
-                  font=_font(round(primitive.get("font_px", 26) * scale)))
+        label = primitive.get("prefix", "") + value
+        font = _font(round(primitive.get("font_px", 26) * scale))
+        if primitive.get("align", "left") == "right":
+            position = (position[0] - round(draw.textlength(label, font=font)), position[1])
+        elif primitive.get("align", "left") != "left":
+            raise ContractError("drawing text align must be left or right")
+        draw.text(position, label, fill=color, font=font)
+    elif kind == "dot":
+        x, y = _point(primitive.get("center"), beat, width, height)
+        radius = max(1, round(primitive.get("radius_px", 8) * scale))
+        draw.ellipse((x - radius, y - radius, x + radius, y + radius),
+                     fill=primitive.get("fill", color), outline=color)
     elif kind == "radial_dots":
         center = _point(primitive.get("center"), beat, width, height)
         count = _value(primitive.get("count"), beat)

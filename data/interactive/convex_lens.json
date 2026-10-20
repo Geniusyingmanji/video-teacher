@@ -1,0 +1,56 @@
+{
+  "id": "lens_focus_prediction_v1",
+  "contract_id": "phys_exp_02",
+  "reference_variant_id": "baseline",
+  "title": "互动实验：凸透镜的焦点会移到哪里？",
+  "instruction": "以焦点位于中间的透镜为参照。先改变焦距，再预测三条平行光线的会聚位置。",
+  "question": "与初始位置相比，焦点 F 会在哪里？",
+  "answers": [
+    {"id": "closer", "label": "更靠近透镜"},
+    {"id": "same", "label": "位置不变"},
+    {"id": "farther", "label": "更远离透镜"}
+  ],
+  "hide_setup_primitives": ["diagram:8", "diagram:9"],
+  "animate_primitives": ["diagram:3", "diagram:5", "diagram:7"],
+  "animation_frames": 6,
+  "extra_checks": [
+    {"type": "equals", "left": {"path": "post.outgoing_endpoints.0.0"}, "right": {"path": "post.focus.x"}},
+    {"type": "equals", "left": {"path": "post.outgoing_endpoints.0.1"}, "right": {"path": "post.focus.y"}},
+    {"type": "equals", "left": {"path": "post.outgoing_endpoints.1.0"}, "right": {"path": "post.focus.x"}},
+    {"type": "equals", "left": {"path": "post.outgoing_endpoints.1.1"}, "right": {"path": "post.focus.y"}},
+    {"type": "equals", "left": {"path": "post.outgoing_endpoints.2.0"}, "right": {"path": "post.focus.x"}},
+    {"type": "equals", "left": {"path": "post.outgoing_endpoints.2.1"}, "right": {"path": "post.focus.y"}}
+  ],
+  "variants": [
+    {
+      "id": "short", "label": "缩短焦距", "answer": "closer",
+      "explanation": "焦距缩短后，三条平行光线仍在主光轴上的同一点会聚；这个点比初始焦点更靠近透镜。",
+      "overrides": {
+        "beat.pre_state.focus": {"x": 0.68, "y": 0.5},
+        "beat.post_state.focus": {"x": 0.68, "y": 0.5},
+        "beat.post_state.outgoing_endpoints": [[0.68, 0.5], [0.68, 0.5], [0.68, 0.5]],
+        "invariants.focus": {"x": 0.68, "y": 0.5}
+      }
+    },
+    {
+      "id": "baseline", "label": "保持焦距", "answer": "same",
+      "explanation": "透镜条件不变，三条平行光线仍在原来的轴上焦点会聚。",
+      "overrides": {
+        "beat.pre_state.focus": {"x": 0.82, "y": 0.5},
+        "beat.post_state.focus": {"x": 0.82, "y": 0.5},
+        "beat.post_state.outgoing_endpoints": [[0.82, 0.5], [0.82, 0.5], [0.82, 0.5]],
+        "invariants.focus": {"x": 0.82, "y": 0.5}
+      }
+    },
+    {
+      "id": "long", "label": "加长焦距", "answer": "farther",
+      "explanation": "焦距加长后，会聚点沿主光轴向右移动，比初始焦点更远离透镜。",
+      "overrides": {
+        "beat.pre_state.focus": {"x": 0.92, "y": 0.5},
+        "beat.post_state.focus": {"x": 0.92, "y": 0.5},
+        "beat.post_state.outgoing_endpoints": [[0.92, 0.5], [0.92, 0.5], [0.92, 0.5]],
+        "invariants.focus": {"x": 0.92, "y": 0.5}
+      }
+    }
+  ]
+}
