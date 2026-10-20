@@ -1,5 +1,12 @@
 # rise-teacher
 
+## 本地研究原型 v1
+
+在仓库根目录运行 `python -m scripts.build_v1`，然后打开生成的
+`results/v1/index.html`。该命令从三份已验证知识契约生成 5 秒代码视频，
+并整合 60 题数据、交互教学样例和仓库已有的自动评分与代理测验结果。
+范围、复现步骤与尚待收集的证据见[第一版说明](docs/V1_LOCAL.md)。
+
 Code2Video research, local Qwen inference, and trial scripts are in
 [`research/code2video/`](research/code2video/README.md).
 

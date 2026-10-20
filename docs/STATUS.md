@@ -1,4 +1,17 @@
-# Project status — 2026-08-21
+# Project status — local v1 assembled 2026-10-20
+
+The offline first version can be rebuilt with `python -m scripts.build_v1` and
+opened at the generated `results/v1/index.html`. Its manifest
+checks the 60 prompt IDs against five checked-in standard-evaluation arms and
+two checked-in Qwen3-VL proxy arms. It also renders three example contracts into
+five-second deterministic MP4 clips and
+the convex-lens interaction. See [`V1_LOCAL.md`](V1_LOCAL.md) for the exact
+scope and the steps requiring models or human raters. The checked-in visual
+probes were generated after seeing each model's output, so their proxy scores
+are diagnostic and cannot support cross-model learner comparisons.
+
+The historical status and submission audit below describes the earlier pilot;
+use the v1 manifest to inspect which artifacts are actually present locally.
 
 This is the canonical current-status page. Historical experiment details remain
 in `docs/reports/`, `docs/REPORT.md`, and the Git history. “Implemented” below

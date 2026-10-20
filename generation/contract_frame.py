@@ -72,9 +72,9 @@ def _draw_primitive(draw: ImageDraw.ImageDraw, primitive: dict, beat: dict,
     elif kind == "text":
         position = _point(primitive.get("position"), beat, width, height)
         value = _value(primitive.get("text_path"), beat) if "text_path" in primitive else primitive.get("text")
-        if not isinstance(value, str):
-            raise ContractError("drawing text must resolve to a string")
-        label = primitive.get("prefix", "") + value
+        if isinstance(value, bool) or not isinstance(value, (str, int, float)):
+            raise ContractError("drawing text must resolve to a string or number")
+        label = primitive.get("prefix", "") + str(value)
         font = _font(round(primitive.get("font_px", 26) * scale))
         if primitive.get("align", "left") == "right":
             position = (position[0] - round(draw.textlength(label, font=font)), position[1])

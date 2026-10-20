@@ -22,6 +22,8 @@ class InteractiveLessonTest(unittest.TestCase):
 
     def test_three_branches_compile_to_distinct_verified_results(self):
         lesson = compile_lesson(self.spec, self.contracts)
+        self.assertEqual(lesson["prediction_prompt"], "现在预测焦点位置。")
+        self.assertEqual(lesson["animation_prompt"], "观察光线的会聚位置。")
         self.assertEqual(lesson["reference_variant_id"], "baseline")
         self.assertEqual(len(lesson["variants"]), 3)
         self.assertEqual(len({v["result_image"] for v in lesson["variants"]}), 3)

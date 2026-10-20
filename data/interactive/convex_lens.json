@@ -5,6 +5,8 @@
   "title": "互动实验：凸透镜的焦点会移到哪里？",
   "instruction": "以焦点位于中间的透镜为参照。先改变焦距，再预测三条平行光线的会聚位置。",
   "question": "与初始位置相比，焦点 F 会在哪里？",
+  "prediction_prompt": "现在预测焦点位置。",
+  "animation_prompt": "观察光线的会聚位置。",
   "answers": [
     {"id": "closer", "label": "更靠近透镜"},
     {"id": "same", "label": "位置不变"},

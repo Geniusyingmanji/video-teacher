@@ -163,6 +163,8 @@ def compile_lesson(spec: dict, contracts: dict[str, dict], *, width: int = 832,
         "title": spec.get("title", contracts[contract_id]["learning_objective"]),
         "instruction": spec.get("instruction", "选择条件，预测结果，再查看解释。"),
         "question": spec.get("question", "结果会如何变化？"),
+        "prediction_prompt": spec.get("prediction_prompt", "请先选择条件，再预测结果。"),
+        "animation_prompt": spec.get("animation_prompt", "请观察状态如何变化。"),
         "answers": answers,
         "variants": compiled,
         "reference_variant_id": reference,
@@ -197,7 +199,7 @@ h1{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 0 8px}p{line-height:1.55}
 .card{background:#fff;border:1px solid #d7e3e9;border-radius:16px;padding:22px;margin:18px 0;box-shadow:0 8px 30px #1a476112}
 .stage{width:100%;aspect-ratio:832/480;object-fit:contain;border:1px solid #dde5e9;border-radius:10px;background:white}
 .row{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.choice{border:2px solid #beced8;border-radius:10px;padding:10px 16px;background:#fff;color:#173049;cursor:pointer;font:inherit}
-.choice[aria-pressed=true]{border-color:#147c8c;background:#e4f6f6}.choice:focus-visible,button:focus-visible{outline:3px solid #ffb44e;outline-offset:2px}
+.choice[aria-pressed=true]{border-color:#147c8c;background:#e4f6f6}.choice:disabled{opacity:.55;cursor:not-allowed}.choice:focus-visible,button:focus-visible{outline:3px solid #ffb44e;outline-offset:2px}
 .primary{background:#147c8c;color:#fff;border:0;border-radius:10px;padding:11px 20px;font:inherit;cursor:pointer}.primary:disabled{opacity:.45;cursor:not-allowed}
 .feedback{min-height:3rem;padding:12px 15px;border-radius:10px;background:#f1f6f8}.ok{background:#e2f5e9}.retry{background:#fff0e5}
 .muted{color:#526b7a;font-size:.94rem}.toolbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
@@ -210,25 +212,26 @@ h1{font-size:clamp(1.5rem,3vw,2.1rem);margin:0 0 8px}p{line-height:1.55}
 <button class="choice" id="download">下载本次交互记录</button></main>
 <script type="application/json" id="lesson-data">__LESSON_JSON__</script><script>
 const lesson=JSON.parse(document.getElementById('lesson-data').textContent);
-const $=id=>document.getElementById(id);let selected=null,prediction=null,revealed=false,animationToken=0;const events=[];
+const $=id=>document.getElementById(id);let selected=null,prediction=null,revealed=false,animating=false,animationToken=0;const events=[];
 $('title').textContent=lesson.title;$('instruction').textContent=lesson.instruction;$('question').textContent=lesson.question;
 function button(item,group,onClick){const b=document.createElement('button');b.className='choice';b.type='button';b.textContent=item.label;b.setAttribute('aria-pressed','false');b.onclick=()=>onClick(item.id);$(group).appendChild(b)}
 function pressed(group,id,items){[...$(group).children].forEach((b,i)=>b.setAttribute('aria-pressed',String(items[i].id===id)))}
 function refresh(){let v=lesson.variants.find(x=>x.id===selected);let reference=lesson.variants.find(x=>x.id===lesson.reference_variant_id);
  $('stage').src=v?(revealed?v.result_image:v.setup_image):reference.result_image;
  $('stage').alt=v?`${v.label}：${revealed?'结果':'预测前状态'}`:'初始状态';$('phase').textContent=!v?'初始状态':revealed?'已揭示结果':'预测结果';
- $('reveal').disabled=!selected||!prediction||revealed;}
-lesson.variants.forEach(v=>button(v,'variants',id=>{animationToken++;selected=id;prediction=null;revealed=false;pressed('variants',id,lesson.variants);pressed('answers',null,lesson.answers);$('feedback').className='feedback';$('feedback').textContent='现在预测焦点位置。';refresh()}));
-lesson.answers.forEach(a=>button(a,'answers',id=>{prediction=id;pressed('answers',id,lesson.answers);refresh()}));
-$('reveal').onclick=()=>{const v=lesson.variants.find(x=>x.id===selected),chosen=prediction,token=++animationToken;
- $('reveal').disabled=true;$('phase').textContent='光线传播中';$('feedback').textContent='观察光线的会聚位置。';
+ $('reveal').disabled=!selected||!prediction||revealed||animating;
+ [...$('answers').children].forEach(b=>b.disabled=animating||revealed);}
+lesson.variants.forEach(v=>button(v,'variants',id=>{animationToken++;selected=id;prediction=null;revealed=false;animating=false;pressed('variants',id,lesson.variants);pressed('answers',null,lesson.answers);$('feedback').className='feedback';$('feedback').textContent=lesson.prediction_prompt;refresh()}));
+lesson.answers.forEach(a=>button(a,'answers',id=>{if(animating||revealed)return;prediction=id;pressed('answers',id,lesson.answers);refresh()}));
+$('reveal').onclick=()=>{const v=lesson.variants.find(x=>x.id===selected),chosen=prediction;
+ if(!v||!chosen||revealed||animating)return;const token=++animationToken;animating=true;refresh();$('phase').textContent='变化进行中';$('feedback').textContent=lesson.animation_prompt;
  const images=v.animation_images.length?v.animation_images:[v.result_image];let step=0;
  function next(){if(token!==animationToken)return;if(step<images.length){$('stage').src=images[step++];setTimeout(next,110);return}
-  revealed=true;const correct=chosen===v.answer;$('feedback').className='feedback '+(correct?'ok':'retry');
+  animating=false;revealed=true;const correct=chosen===v.answer;$('feedback').className='feedback '+(correct?'ok':'retry');
   $('feedback').textContent=(correct?'预测正确。':'预测有偏差。')+v.explanation;
-  events.push({lesson_id:lesson.id,variant_id:v.id,prediction:chosen,answer:v.answer,correct,contract_sha256:v.contract_sha256,time:new Date().toISOString()});refresh()}
+  events.push({lesson_id:lesson.id,variant_id:v.id,prediction:chosen,answer:v.answer,correct,contract_sha256:v.contract_sha256,time:new Date().toISOString()});$('download').disabled=false;refresh()}
  next()};
 $('download').onclick=()=>{const blob=new Blob([JSON.stringify({lesson_id:lesson.id,events},null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='interactive-lesson-events.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
-refresh();
+$('download').disabled=true;refresh();
 </script></body></html>"""
