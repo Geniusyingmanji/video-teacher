@@ -1,0 +1,18 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "chem_prob_02",
+  "topic": "Calculate the pH of a solution with hydrogen ion concentration 1e-3 mol/L",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 509.91436389205046,
+  "token_usage": {
+    "prompt_tokens": 7272,
+    "completion_tokens": 11090,
+    "total_tokens": 18362
+  },
+  "expected_sections": 4,
+  "rendered_sections": 4,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-chem_prob_02/0-Calculate_the_pH_of_a_solution_with_hydrogen_ion_concentration_1e-3_molL/Calculate_the_pH_of_a_solution_with_hydrogen_ion_concentration_1e-3_molL.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-chem_prob_02/0-Calculate_the_pH_of_a_solution_with_hydrogen_ion_concentration_1e-3_molL",
+  "complete": true
+}

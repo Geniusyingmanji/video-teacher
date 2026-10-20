@@ -1,0 +1,10 @@
+# Keep third-party checkout, generated media, logs and model cards local.
+Code2Video/
+*.log
+experiments/*.log
+experiments/*.png
+experiments/Qwen3.8-model-card.md
+__pycache__/
+experiments/media/
+experiments/videos/
+experiments/replicas.json

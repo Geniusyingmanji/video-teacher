@@ -1,0 +1,42 @@
+[
+  {
+    "case_id": "math_exp_01",
+    "port": 8000,
+    "exit_code": 1
+  },
+  {
+    "case_id": "math_prob_01",
+    "port": 8000,
+    "exit_code": 0
+  },
+  {
+    "case_id": "math_exp_02",
+    "port": 8001,
+    "exit_code": 0
+  },
+  {
+    "case_id": "math_prob_02",
+    "port": 8001,
+    "exit_code": 0
+  },
+  {
+    "case_id": "phys_exp_02",
+    "port": 8002,
+    "exit_code": 0
+  },
+  {
+    "case_id": "phys_prob_01",
+    "port": 8002,
+    "exit_code": 0
+  },
+  {
+    "case_id": "chem_exp_01",
+    "port": 8003,
+    "exit_code": 0
+  },
+  {
+    "case_id": "chem_prob_02",
+    "port": 8003,
+    "exit_code": 0
+  }
+]

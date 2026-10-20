@@ -1,0 +1,94 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: Atomic Structure & Valence Electrons",
+      "lecture_lines": [
+        "Atoms have a nucleus and shells.",
+        "Outermost layer is the valence shell.",
+        "Stability means a full outer shell.",
+        "Sodium has one valence electron.",
+        "Chlorine needs one more electron."
+      ],
+      "animations": [
+        "Animation step 1: Fade in a central yellow circle (nucleus) labeled 'Nucleus'. Three concentric light gray circles (#CCCCCC) appear around it, labeled 'Shell 1', 'Shell 2', 'Shell 3'.",
+        "Animation step 2: Highlight the outermost circle with a pulsing bright white (#FFFFFF) stroke. Label it 'Valence Shell' in bright white text next to it.",
+        "Animation step 3: Display text 'Octet Rule: Full Outer Shell' at the top. Animate a generic atom filling its outer shell to 8 electrons, turning green (#00FF00) to indicate stability.",
+        "Animation step 4: Show Sodium (Na) model: 11 protons in nucleus. 2 electrons in Shell 1, 8 in Shell 2, 1 in Shell 3. The single outer electron glows bright red (#FF0000).",
+        "Animation step 5: Show Chlorine (Cl) model: 17 protons in nucleus. 2 electrons in Shell 1, 8 in Shell 2, 7 in Shell 3. Highlight the empty spot in Shell 3 with a dashed white circle labeled 'Missing 1'."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: The Transfer: Sodium Gives, Chlorine Takes",
+      "lecture_lines": [
+        "Sodium loses its outer electron.",
+        "Chlorine gains that electron.",
+        "This is physical electron movement.",
+        "Sodium becomes smaller and positive.",
+        "Chlorine becomes larger and negative."
+      ],
+      "animations": [
+        "Animation step 1: Display Na (left) and Cl (right) side-by-side. The single red electron on Na's outer shell pulses intensely, preparing to detach.",
+        "Animation step 2: The red electron detaches from Na and moves horizontally across the gap to Cl's outer shell, filling the missing spot.",
+        "Animation step 3: As the electron moves, a trail of red particles follows it, emphasizing the physical transfer of charge.",
+        "Animation step 4: The Na atom shrinks slightly (scale 0.9) and its nucleus glows bright red (#FF0000). A large red '+' sign appears above it.",
+        "Animation step 5: The Cl atom expands slightly (scale 1.1) and its nucleus glows bright blue (#0000FF). A large blue '-' sign appears above it."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Ion Formation: Charge and Identity",
+      "lecture_lines": [
+        "Losing electrons creates a cation.",
+        "Gaining electrons creates an anion.",
+        "Protons outnumber electrons in Na+.",
+        "Electrons outnumber protons in Cl-.",
+        "This imbalance defines the charge."
+      ],
+      "animations": [
+        "Animation step 1: Split the screen vertically. Left side shows Na, right side shows Cl. A digital counter box appears above each.",
+        "Animation step 2: On the left, the counter updates to '11 Protons' (red) and '10 Electrons' (blue). A large red '+' sign flashes next to Na.",
+        "Animation step 3: On the right, the counter updates to '17 Protons' (red) and '18 Electrons' (blue). A large blue '-' sign flashes next to Cl.",
+        "Animation step 4: A balance scale icon appears. On the Na side, the 'Proton' weight is heavier, tipping the scale, labeled 'Positive Charge'.",
+        "Animation step 5: On the Cl side, the 'Electron' weight is heavier, tipping the scale opposite, labeled 'Negative Charge'. Text 'Na+' and 'Cl-' appear below each atom."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Electrostatic Attraction: The Ionic Bond",
+      "lecture_lines": [
+        "Opposite charges attract each other.",
+        "This force is electrostatic attraction.",
+        "It is not electron sharing.",
+        "Ions pull into a stable bond.",
+        "This connection is the ionic bond."
+      ],
+      "animations": [
+        "Animation step 1: The Na+ (red glow) and Cl- (blue glow) ions start at opposite edges of the screen.",
+        "Animation step 2: The ions accelerate towards each other. Glowing yellow (#FFFF00) lines appear between them, representing force fields.",
+        "Animation step 3: The ions collide softly and lock together. The yellow lines solidify into a rigid, glowing bridge between the nuclei.",
+        "Animation step 4: Text 'Not Shared Electrons' appears with a red cross mark. Text 'Electrostatic Pull' appears with a green check mark.",
+        "Animation step 5: A label 'Ionic Bond' fades in above the connected ions, with an arrow pointing to the glowing bridge."
+      ]
+    },
+    {
+      "id": "section_5",
+      "title": "Sec 5: The Result: The Crystal Lattice of NaCl",
+      "lecture_lines": [
+        "Ions attract multiple other ions.",
+        "They form a 3D grid.",
+        "This is a crystal lattice.",
+        "The pattern creates solid salt.",
+        "Microscopic bonds make macroscopic salt."
+      ],
+      "animations": [
+        "Animation step 1: The central Na+-Cl- pair remains. New Na+ (red) and Cl- (blue) ions fly in from all four corners.",
+        "Animation step 2: The ions arrange themselves into a 2D checkerboard pattern, alternating red and blue squares.",
+        "Animation step 3: The camera zooms out slightly. More layers of ions appear above and below, suggesting a 3D cube structure.",
+        "Animation step 4: The grid solidifies into a white, crystalline cube shape. Label 'Crystal Lattice' appears next to it.",
+        "Animation step 5: The cube transforms into a simple cartoon salt shaker. Text 'Sodium Chloride (NaCl)' appears below. The shaker shakes its head 'no' to liquid, indicating solid state."
+      ]
+    }
+  ]
+}

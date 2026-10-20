@@ -1,0 +1,36 @@
+{
+  "topic": "Mastering the Power Rule: Differentiating Polynomials",
+  "target_audience": "High school students or introductory calculus university students",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "The Concept of the Derivative: Slope as a Function",
+      "content": "Introduce the derivative not just as a formula, but as the 'slope detector' of a function. Use an animation to show a tangent line moving along a curve, changing its angle (slope) at every point. Emphasize that we want a formula that tells us the slope at any x, not just at one specific point.",
+      "example": "Visualize a roller coaster track. The derivative is the steepness of the track at any given moment. If the track is flat, slope is 0; if it's a steep hill, slope is high."
+    },
+    {
+      "id": "section_2",
+      "title": "Prerequisite: The Power Rule Formula",
+      "content": "Present the core tool: The Power Rule. State clearly: If f(x) = x^n, then f'(x) = n*x^(n-1). Break this down into two steps: 1. Bring the exponent down to the front as a multiplier. 2. Subtract 1 from the exponent. Highlight that this applies to any real number n.",
+      "example": "Show x^5 transforming into 5x^4. Animate the '5' dropping down and the exponent changing from 5 to 4. Contrast with x^0 (constant) becoming 0."
+    },
+    {
+      "id": "section_3",
+      "title": "Handling Coefficients: The Constant Multiple Rule",
+      "content": "Explain that the Power Rule works on the variable part, while any constant multiplier stays in place. Introduce the rule: d/dx [c * x^n] = c * n * x^(n-1). Emphasize that the coefficient 'c' is not affected by the exponent subtraction.",
+      "example": "Differentiate 4x^2. The 4 stays, the 2 comes down to become 8, and the exponent becomes 1. Result: 8x. Visual: The number 4 sits on a platform while the x^2 transforms."
+    },
+    {
+      "id": "section_4",
+      "title": "Applying the Rules: Step-by-Step Differentiation",
+      "content": "Apply the rules to the specific function f(x) = x^3 + 2x. Break the function into two terms: Term 1 (x^3) and Term 2 (2x). Differentiate each term separately using the Power Rule and Constant Multiple Rule established in previous sections. Remind students that the derivative of a sum is the sum of the derivatives.",
+      "example": "Term 1: x^3 becomes 3x^2. Term 2: 2x (which is 2*x^1) becomes 2*1*x^0 = 2*1 = 2. Combine them: f'(x) = 3x^2 + 2."
+    },
+    {
+      "id": "section_5",
+      "title": "Verification and Final Insight",
+      "content": "Conclude by verifying the result. Show the original graph of f(x) = x^3 + 2x and the new graph of f'(x) = 3x^2 + 2. Highlight that where the original function has a horizontal tangent (slope 0), the derivative graph crosses the x-axis. Reinforce that the derivative is a new function describing the rate of change of the original.",
+      "example": "Overlay the original cubic curve and the quadratic derivative curve. At the inflection point of the cubic, the derivative reaches its minimum. This visual link confirms the mathematical correctness."
+    }
+  ]
+}

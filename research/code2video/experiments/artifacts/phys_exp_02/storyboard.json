@@ -1,0 +1,94 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: Understanding Refraction",
+      "lecture_lines": [
+        "Light travels straight until it hits water.",
+        "It slows down and bends at the boundary.",
+        "This bending is called refraction.",
+        "The angle determines how much it bends.",
+        "Understanding this is key to lenses."
+      ],
+      "animations": [
+        "Animation step 1: Draw a straight white line (#FFFFFF) representing light traveling from left to right on a black background (#000000).",
+        "Animation step 2: Fade in a blue rectangle (#4488CC) on the right side to represent water. The light line stops at the boundary.",
+        "Animation step 3: Animate the light line bending downwards as it enters the blue rectangle. Change the line color to light yellow (#FFFF99) to indicate speed change.",
+        "Animation step 4: Draw a dashed vertical line (#888888) at the boundary labeled 'Normal'. Show the angle between the incoming ray and normal, then the angle between the refracted ray and normal.",
+        "Animation step 5: Flash the word 'Refraction' in bright cyan (#00FFFF) at the center of the screen."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: The Shape of the Convex Lens",
+      "lecture_lines": [
+        "A convex lens is thick in the middle.",
+        "It is thin at the edges.",
+        "Light travels slower in glass.",
+        "Center light takes a longer path.",
+        "This path difference causes bending."
+      ],
+      "animations": [
+        "Animation step 1: Draw a biconvex lens shape using two curved lines meeting at points, filled with semi-transparent light blue (#ADD8E6).",
+        "Animation step 2: Draw a horizontal red line (#FF4444) through the center (optical axis) and a vertical green line (#44FF44) through the middle (center of lens).",
+        "Animation step 3: Highlight the central vertical section of the lens in bright orange (#FFA500) to show thickness. Label it 'Thick Center'.",
+        "Animation step 4: Highlight the top and bottom edges of the lens in bright purple (#9400D3). Label them 'Thin Edges'.",
+        "Animation step 5: Animate a white dot moving from the center of the lens to the edge, with a trail that gets shorter, illustrating the path length difference."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Bending the Rays: The Mechanism",
+      "lecture_lines": [
+        "Parallel rays enter the lens from the left.",
+        "Top rays bend downward toward the axis.",
+        "Bottom rays bend upward toward the axis.",
+        "The central ray goes straight through.",
+        "Curvature acts like angled mirrors."
+      ],
+      "animations": [
+        "Animation step 1: Draw three parallel horizontal white lines (#FFFFFF) entering the lens from the left: one top, one middle, one bottom.",
+        "Animation step 2: Animate the top ray hitting the left surface of the lens. It bends sharply downward as it crosses into the glass.",
+        "Animation step 3: Animate the bottom ray hitting the left surface of the lens. It bends sharply upward as it crosses into the glass.",
+        "Animation step 4: Animate the middle ray passing straight through the center without bending. Keep the middle ray white.",
+        "Animation step 5: As the rays exit the right side of the lens, they bend again (inward) to converge. Flash the lens outline in bright yellow (#FFFF00) to emphasize the curvature's role."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Convergence at the Focal Point",
+      "lecture_lines": [
+        "All refracted rays meet at one point.",
+        "This point is called the Focal Point.",
+        "It lies on the principal axis.",
+        "Distance from lens is the Focal Length.",
+        "We label this distance as f."
+      ],
+      "animations": [
+        "Animation step 1: Continue the ray paths from Section 3. Show the top, middle, and bottom rays intersecting at a single point on the right side of the lens.",
+        "Animation step 2: Place a bright red dot (#FF0000) at the intersection point. Label it 'F' in white text.",
+        "Animation step 3: Draw a double-headed arrow from the center of the lens to point F. Color the arrow cyan (#00FFFF).",
+        "Animation step 4: Label the arrow with the letter 'f' in large, bold white font.",
+        "Animation step 5: Flash the entire path of the rays in green (#00FF00) briefly to show the complete convergence process."
+      ]
+    },
+    {
+      "id": "section_5",
+      "title": "Sec 5: Real-World Application: The Magnifying Glass",
+      "lecture_lines": [
+        "Magnifying glasses focus sunlight to a point.",
+        "Energy concentrates at the focal point.",
+        "This high intensity can burn paper.",
+        "This is how real images form.",
+        "Understanding focus explains many optical tools."
+      ],
+      "animations": [
+        "Animation step 1: Draw a simple magnifying glass icon (circle with handle) in light gray (#D3D3D3) on the left.",
+        "Animation step 2: Animate parallel yellow rays (#FFFF00) entering the magnifying glass from the left, converging to a point on the right.",
+        "Animation step 3: Place a small brown square (#8B4513) at the focal point to represent paper. The rays converge exactly on this square.",
+        "Animation step 4: Animate a small puff of gray smoke (#A9A9A9) rising from the paper square, indicating burning.",
+        "Animation step 5: Fade out the rays and smoke, leaving the magnifying glass and the label 'Focus = Energy' in white text."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>rise-teacher 主计划</title>
+<style>
+:root{--bg:#f3f6f8;--paper:#fff;--ink:#213244;--muted:#5d7080;--line:#dbe4e9;--accent:#12647c;--soft:#edf5f6}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.76 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.layout{display:grid;grid-template-columns:225px minmax(0,1080px);gap:24px;max-width:1380px;margin:auto;padding:22px}
+aside{position:sticky;top:22px;align-self:start;max-height:calc(100vh - 44px);overflow:auto;padding:20px 8px 0 0}.nav-title{font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.09em;margin:0 0 12px 10px}nav{display:flex;flex-direction:column;gap:3px}nav a{display:block;padding:7px 10px;color:#476072;border-radius:6px;font-size:13px;line-height:1.4}nav a:hover{background:#e3eef1;text-decoration:none}
+main{min-width:0;background:var(--paper);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 28px #1f344008;overflow:hidden}header{padding:34px 46px 26px;background:linear-gradient(125deg,#ebf4f5,#fff 72%);border-bottom:1px solid var(--line)}h1{font-size:32px;line-height:1.25;margin:0}.sub{color:var(--muted);margin:8px 0 0;font-size:13px}article{padding:18px 46px 55px}article h2{font-size:22px;margin:32px 0 15px;padding:0 0 8px;border-bottom:2px solid var(--line);line-height:1.4}article h3{font-size:17px;margin:25px 0 10px}article p{margin:0 0 13px}article ul,article ol{padding-left:24px;margin:8px 0 17px}article li{margin:5px 0}article blockquote{margin:14px 0 24px;padding:12px 17px;background:var(--soft);border-left:4px solid var(--accent);color:#41596a}article blockquote p:last-child{margin:0}article strong{color:#193c50}.table-wrap{overflow-x:auto;margin:14px 0 22px;border:1px solid var(--line);border-radius:7px}table{border-collapse:collapse;width:100%;min-width:650px;font-size:12.5px;line-height:1.55}th,td{text-align:left;vertical-align:top;padding:9px 10px;border-bottom:1px solid var(--line)}th{background:#eaf1f3;font-weight:700;white-space:nowrap}tbody tr:nth-child(even){background:#fbfcfd}tr:last-child td{border-bottom:0}td:nth-child(n+2){font-variant-numeric:tabular-nums}code{font:0.88em/1.4 Consolas,"Cascadia Code",monospace;background:#edf1f3;padding:1px 4px;border-radius:3px}hr{border:0;border-top:1px solid var(--line);margin:30px 0}
+@media(max-width:950px){.layout{display:block;padding:0}aside{display:none}main{border:0;border-radius:0;box-shadow:none}header{padding:28px 22px}article{padding:12px 22px 45px}}@media(max-width:600px){h1{font-size:27px}article h2{font-size:19px}body{font-size:14px}}@media print{@page{size:A4;margin:15mm}body{background:white;font-size:10pt}.layout{display:block;padding:0}aside{display:none}main{border:0;box-shadow:none}header{padding:0 0 14px;background:none}article{padding:0}article h2,article h3{break-after:avoid}.table-wrap{overflow:visible}table{min-width:0;font-size:7.5pt}th,td{padding:4px}tr{break-inside:avoid}}
+</style>
+</head>
+<body><div class="layout"><aside><div class="nav-title">目录</div><nav><a href="#1">1. 项目定位</a><a href="#2">2. 现有证据与边界</a><a href="#3">3. 数据与任务</a><a href="#4">4. 当前流程与文件</a><a href="#5">5. 评测设计</a><a href="#6">6. 已有数值：按同一口径阅读</a><a href="#7">7. 执行顺序与交付门槛</a><a href="#8">8. 待回答的问题</a></nav></aside><main><header><h1>rise-teacher 主计划</h1><p class="sub">项目范围、已有证据、评测设计与执行顺序</p></header><article>
+<blockquote>
+<p>中文版整理：2026-10-12。本文对应 <a href="plan.md"><code>plan.md</code></a> 的项目范围与待办，并按 <a href="STATUS.md"><code>STATUS.md</code></a> 和 <a href="paper_stats.md"><code>paper_stats.md</code></a> 校正实验状态。研究方向的取舍见<a href="项目研究方向_相关工作综合建议.md">研究方向规划</a>。</p>
+</blockquote>
+<h2 id="1">1. 项目定位</h2>
+<p>rise-teacher 目前研究的是<strong>像素模型生成的 3–5 秒教学片段</strong>。任务覆盖 12 学科的概念讲解与解题步骤，重点检查生成视频是否把知识画对、把步骤按顺序展示，并区分“视频里确实画错”与“片段太短而没有展示”。</p>
+<p>近期论文拟聚焦两个问题：</p>
+<ol>
+<li><strong>诊断评测</strong>：能否把教学错误定位到具体知识步骤和证据帧；现有六维总分或教育视频评分会漏掉哪些错误？</li>
+<li><strong>测量效度</strong>：代理学生看完视频后的答题变化是否稳定，能否反映可迁移的知识，而不只是读到了画面中的答案？</li>
+</ol>
+<p>后续方法研究再测试“可执行教学状态 → 正确首帧 → 像素成片”和多镜头状态修复。<a href="教学视频生成_统计调研.html">新版相关工作调研</a>已收录 EduVideoBench、Code2Video、Video-MMMU、ALGOGEN 等先例，因此<strong>学科数量、双任务、TeachQuiz、多 Agent 或代码渲染</strong>均不单独作为“首次”贡献。Code2Video 是代码视频参照；它的分钟级成片不能与本项目的 3–5 秒像素片直接按总分排名。</p>
+<h2 id="2">2. 现有证据与边界</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>内容</th>
+<th>当前证据</th>
+<th>边界</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>题目</td>
+<td>12 学科、60 例 pilot；另有 22 例研究生难度压力题</td>
+<td>60 例是每学科 5 例，尚未证明 24 个“学科 × 任务”格子均衡。</td>
+</tr>
+<tr>
+<td>像素视频</td>
+<td>Wan 5B 与 1.3B 的 3 秒、5 秒结果；另有 Wan 5B 的 60 例首帧条件结果</td>
+<td>核心模型仍属 Wan 系列；TI2V 已有评分，匹配的因果对照和学习测验未完成。</td>
+</tr>
+<tr>
+<td>画面评测</td>
+<td>六个视频维度有实现；三维及扩展六维有 pilot 结果</td>
+<td>自动 judge 尚无已收集的真人评分验证。</td>
+</tr>
+<tr>
+<td>TeachQuiz-T</td>
+<td>两个 3 秒 Wan 配置有 Qwen3-VL-2B 的 pre/post/random 结果</td>
+<td>这是<strong>代理学生增益</strong>，不是人类学习增益；第二代理与冻结跨模型题包仍待完成。</td>
+</tr>
+<tr>
+<td>人工评估</td>
+<td>盲评导出、标注页面和一致性分析代码已具备</td>
+<td>真实评分尚未收集。</td>
+</tr>
+<tr>
+<td>教学视频 Agent</td>
+<td>尚无完整生成、检验、修复闭环的实证系统</td>
+<td>不能把方向 C、D 的方法设计写成已完成贡献。</td>
+</tr>
+</tbody>
+</table></div>
+<p>以 <a href="STATUS.md"><code>STATUS.md</code></a> 为项目事实口径。论文只可写成“在当前 60 例、两种 Wan 配置和一个代理学生中，自动画面评分与归一化代理增益的相关性较低”；不能据此断言人类学习效果、跨模型排名或 TI2V 的教学收益。</p>
+<h2 id="3">3. 数据与任务</h2>
+<h3 id="31">3.1 十二个学科</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>学科</th>
+<th>覆盖主题示例</th>
+<th>学科</th>
+<th>覆盖主题示例</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数学</td>
+<td>代数、几何、微积分、概率</td>
+<td>物理</td>
+<td>力学、电磁、光学</td>
+</tr>
+<tr>
+<td>化学</td>
+<td>原子结构、反应、有机化学</td>
+<td>生物</td>
+<td>细胞、遗传、生态</td>
+</tr>
+<tr>
+<td>医学</td>
+<td>解剖、生理、病理</td>
+<td>计算机科学</td>
+<td>算法、数据结构、系统</td>
+</tr>
+<tr>
+<td>经济与金融</td>
+<td>微观、宏观、金融</td>
+<td>公民与社会</td>
+<td>政体、宪制、法律</td>
+</tr>
+<tr>
+<td>语言文学</td>
+<td>语法、文本分析</td>
+<td>历史</td>
+<td>历史事件、时间线</td>
+</tr>
+<tr>
+<td>地理</td>
+<td>自然地理、气候、地图</td>
+<td>艺术与音乐</td>
+<td>色彩、作曲、乐理</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="32">3.2 两种任务</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>任务</th>
+<th>3–5 秒片段的判定单元</th>
+<th>后续长视频任务</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>讲解 <code>explanation</code></td>
+<td>一个概念或机制的可见变化：前提、现象、关键关系</td>
+<td>完整概念引入、例子、总结</td>
+</tr>
+<tr>
+<td>解题 <code>problem_solving</code></td>
+<td>一个可核验的解题步骤：题目、前态、下一态、该步正确性</td>
+<td>完整逐步解题与错误纠正</td>
+</tr>
+</tbody>
+</table></div>
+<p>现有 60 例先做逐题审计，记录学科、任务、难度、学习目标、目标步骤、正确状态、必须出现的视觉证据与“3–5 秒是否足够”。不能把完整解题过程塞进短片，再因视频没有讲完而直接判模型错误。拟议的冻结扩展集按 <strong>12 学科 × 2 任务 × 每格至少 5 题 = 至少 120 题</strong>设计；这是计划，不是现有数据。约 300 题的 v1.0 仍是后续目标，受人工评估与来源审核约束。</p>
+<p>题目来源需分别标注：课程/教材、专家设计的可观察机制、真人参考教学视频、可执行状态轨迹。每题保留来源、授权、正确答案、预期视觉元素、步骤顺序、目标受众、学科评分规则与可观察性预试结果。</p>
+<h2 id="4">4. 当前流程与文件</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>现有入口或资产</th>
+<th>本轮要补的记录</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据</td>
+<td><a href="../data/prompts/pilot_v0_1.jsonl"><code>data/prompts/pilot_v0_1.jsonl</code></a>、<code>pilot_v0_2.jsonl</code>；<code>data/teachquiz/</code></td>
+<td>学科 × 任务格子、原子步骤、题目来源、冻结测验版本</td>
+</tr>
+<tr>
+<td>生成</td>
+<td><a href="../generation/runners/wan_runner.py"><code>generation/runners/wan_runner.py</code></a>、<a href="../generation/runners/wan_ti2v_runner.py"><code>wan_ti2v_runner.py</code></a></td>
+<td>模型版本、提示、首帧、随机种子、时长、失败与重试、实际成片</td>
+</tr>
+<tr>
+<td>六维评测</td>
+<td><a href="../eval/run_eval.py"><code>eval/run_eval.py</code></a>、<code>eval/dimensions/</code></td>
+<td>每题原始分数、证据帧、人工分歧、无法判断原因</td>
+</tr>
+<tr>
+<td>代理测验</td>
+<td><a href="../eval/run_teachquiz.py"><code>eval/run_teachquiz.py</code></a>、<code>eval/students/</code></td>
+<td>冻结题包、pre/post/random 三轮、学生版本、有效题率</td>
+</tr>
+<tr>
+<td>分析</td>
+<td><a href="../scripts/gen_paper_stats.py"><code>scripts/gen_paper_stats.py</code></a>、<a href="../scripts/compare_standard_eval.py"><code>compare_standard_eval.py</code></a></td>
+<td>配对差值、95% 区间、多重比较、逐题排除日志</td>
+</tr>
+<tr>
+<td>人工评估</td>
+<td><a href="../scripts/human_eval.py"><code>scripts/human_eval.py</code></a>、<a href="HUMAN_EVAL_PROTOCOL.md"><code>HUMAN_EVAL_PROTOCOL.md</code></a></td>
+<td>60 视频 × 3 人评分与缺陷子集双人标注</td>
+</tr>
+</tbody>
+</table></div>
+<p>首帧生成与检查已有资产，但首帧正确不等于视频正确。60 例首帧条件视频已有自动评分；下一步是同题、同长度、同分辨率、同种子策略地与纯 T2V 比较，补最终成片的事实保持和代理测验。</p>
+<h2 id="5">5. 评测设计</h2>
+<h3 id="51">5.1 六个已实现的视频维度</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>测什么</th>
+<th>当前用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>概念正确性 CC</td>
+<td>概念、公式、现象是否正确</td>
+<td>视频事实基线</td>
+</tr>
+<tr>
+<td>叙事结构 NS</td>
+<td>步骤顺序与因果衔接</td>
+<td>顺序错误筛查</td>
+</tr>
+<tr>
+<td>视觉质量 VQ</td>
+<td>清晰度、伪影、稳定性</td>
+<td>画面质量基线</td>
+</tr>
+<tr>
+<td>教学清晰度 PC</td>
+<td>信息分块、强调、可读性</td>
+<td>扩展六维</td>
+</tr>
+<tr>
+<td>教学图示 DA</td>
+<td>标签、箭头、图表、公式是否帮助理解</td>
+<td>扩展六维</td>
+</tr>
+<tr>
+<td>受众适配 AA</td>
+<td>词汇、深度、先备知识是否匹配</td>
+<td>扩展六维</td>
+</tr>
+</tbody>
+</table></div>
+<p>当前自动评分由 GPT-5.5 judge 处理抽取的视频帧。六维总分、缺陷类型、证据帧和 TeachQuiz-T <strong>分别报告</strong>，不把不同量纲强行加权成“九维总分”。音频叙述对齐与语音/画面/屏幕文字三模态一致性仍为设计项，只在有声视频、专门协议及人工验证后启用。</p>
+<h3 id="52">5.2 诊断错误与代理学习</h3>
+<ul>
+<li><strong>专家缺陷标签</strong>：逐题写 <code>beat_id、错误类型、证据时间戳、严重度、可判断性</code>；分开记录“画错”“未展示”“任务超出片长”。</li>
+<li><strong>冻结分层测验</strong>：感知题问视频出现了什么，理解题问关系和步骤，迁移题用新数值或新情境；题包在生成和修复前固定，不向生成器泄露。</li>
+<li><strong>对照组</strong>：pre-test、post-video、random-video；在子集上加入静态首帧和镜头顺序打乱。若无关视频也提升成绩，不解释为教学收益。</li>
+<li><strong>效度检查</strong>：第二个能力不同的学生模型、真人前后测及迁移题；报告有效率、前测天花板、代理间一致性和与人的关联区间。</li>
+</ul>
+<h2 id="6">6. 已有数值：按同一口径阅读</h2>
+<h3 id="61">6.1 视频自动评分</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>配置</th>
+<th style="text-align: right;">题数</th>
+<th style="text-align: right;">聚合均分</th>
+<th style="text-align: right;">CC</th>
+<th style="text-align: right;">NS</th>
+<th style="text-align: right;">VQ</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wan5B T2V · 3 秒</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1.754</td>
+<td style="text-align: right;">1.450</td>
+<td style="text-align: right;">1.500</td>
+<td style="text-align: right;">2.896</td>
+<td>三维结果</td>
+</tr>
+<tr>
+<td>Wan5B T2V · 3 秒，扩展六维</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1.820</td>
+<td style="text-align: right;">1.567</td>
+<td style="text-align: right;">1.517</td>
+<td style="text-align: right;">2.946</td>
+<td>评分配置不同，不与三维总分直接比较</td>
+</tr>
+<tr>
+<td>Wan1.3B T2V · 3 秒</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1.823</td>
+<td style="text-align: right;">1.567</td>
+<td style="text-align: right;">1.450</td>
+<td style="text-align: right;">3.021</td>
+<td>三维结果</td>
+</tr>
+<tr>
+<td>Wan5B T2V · 5 秒</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1.789</td>
+<td style="text-align: right;">1.567</td>
+<td style="text-align: right;">1.700</td>
+<td style="text-align: right;">2.479</td>
+<td>三维结果</td>
+</tr>
+<tr>
+<td>Wan1.3B T2V · 5 秒</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">1.788</td>
+<td style="text-align: right;">1.517</td>
+<td style="text-align: right;">1.400</td>
+<td style="text-align: right;">3.050</td>
+<td>三维结果</td>
+</tr>
+<tr>
+<td>Wan5B TI2V 首帧 · 3 秒</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">2.017</td>
+<td style="text-align: right;">1.967</td>
+<td style="text-align: right;">1.733</td>
+<td style="text-align: right;">2.675</td>
+<td>已评分；缺少完整匹配对照</td>
+</tr>
+<tr>
+<td>Wan5B TI2V 首帧 · 5 秒</td>
+<td style="text-align: right;">60</td>
+<td style="text-align: right;">2.013</td>
+<td style="text-align: right;">1.917</td>
+<td style="text-align: right;">1.683</td>
+<td style="text-align: right;">2.688</td>
+<td>已评分；缺少完整匹配对照</td>
+</tr>
+<tr>
+<td>Wan1.3B 高难度 · 3 秒</td>
+<td style="text-align: right;">22</td>
+<td style="text-align: right;">1.486</td>
+<td style="text-align: right;">1.227</td>
+<td style="text-align: right;">1.091</td>
+<td style="text-align: right;">2.727</td>
+<td>压力集，非 60 例同分布样本</td>
+</tr>
+</tbody>
+</table></div>
+<p>这些数值来自 <a href="paper_stats.md"><code>paper_stats.md</code></a>，是<strong>自动评分均值</strong>。不同题集或维度组合不能简单按均值排序。现有配对分析显示：Wan5B-3 秒与 Wan1.3B-3 秒的聚合差为 −0.0683，95% 区间为 [−0.1775, 0.0425]，跨零；没有已确立的总体胜出者。Wan5B 从 3 秒延长到 5 秒时，视觉质量差为 −0.4167，95% 区间为 [−0.6000, −0.2417]；叙事结构的上升未通过 Holm 校正。</p>
+<h3 id="62-teachquiz-t">6.2 TeachQuiz-T 代理结果</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>配置</th>
+<th style="text-align: right;">有效题例</th>
+<th style="text-align: right;">归一化代理增益</th>
+<th style="text-align: right;">正增益率</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Wan5B · 3 秒</td>
+<td style="text-align: right;">52/60</td>
+<td style="text-align: right;">0.760</td>
+<td style="text-align: right;">88.5%</td>
+</tr>
+<tr>
+<td>Wan1.3B · 3 秒</td>
+<td style="text-align: right;">53/60</td>
+<td style="text-align: right;">0.730</td>
+<td style="text-align: right;">83.0%</td>
+</tr>
+</tbody>
+</table></div>
+<p>在该 60 例 pilot 中，自动总分与 Qwen3-VL-2B 代理增益的观察相关系数平方分别为 4.5% 和 0.9%。这不能推出通用评分无法预测<strong>真人</strong>学习，也不能以两个均值判断模型的教学能力高低。研究生难度 22 例目前只有 Wan1.3B 自动评分；匹配的 Wan5B 与标准代理测验尚待完成。</p>
+<h2 id="7">7. 执行顺序与交付门槛</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th style="text-align: right;">顺序</th>
+<th>工作</th>
+<th>交付与判据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td>审计现有 60 例</td>
+<td>逐题确认任务类型、原子步骤、证据、片长可完成性和来源；题目不足以判断时标注原因。</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td>人工证据</td>
+<td>收集 60 视频 × 3 人盲评；缺陷子集双人标注，公布一致性和无法判断率。</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td>测量效度</td>
+<td>冻结感知/理解/迁移题；加入第二代理；在受控小样本上做真人前后测。</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td>独立模型与配对分析</td>
+<td>至少加入一个非 Wan 模型族；同题运行六维、缺陷诊断和代理测验，报告配对区间。</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td>TI2V 与可执行首帧</td>
+<td>先以 8–12 个可观察状态变化题比较纯 T2V、普通首帧、人工正确首帧、代码正确首帧；以最终视频错误率为终点。</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td>Code2Video 参照</td>
+<td>同题试用作者实现，记录 Manim 可覆盖题数、渲染成功率、实际片长、耗时和测验结果；与像素实验分开报告。</td>
+</tr>
+<tr>
+<td style="text-align: right;">7</td>
+<td>扩展与多镜头</td>
+<td>通过前述证据门槛后，再冻结至少 120 题扩展集；15–30 秒镜头状态修复作为后续研究。</td>
+</tr>
+</tbody>
+</table></div>
+<p>投稿前还需完成：数据来源与图像授权核查、题目去重、人工标注和排除记录、生成配置与随机种子、原始逐题分数、测验题包版本及完整置信区间。更大的约 300 题版本须在题目质量与人工评分稳定后决定。音频维度、十模型覆盖和分钟级课程均不属于当前已完成的短片证据。</p>
+<h2 id="8">8. 待回答的问题</h2>
+<ol>
+<li>12 学科 × 双任务中，哪些题能在 3–5 秒内给出足够的可见证据？</li>
+<li>缺陷标签比现有六维评分和 EduVideoBench 类评分多发现了什么，专家能否一致定位？</li>
+<li>TeachQuiz-T 在第二代理、冻结迁移题和真人样本上是否保持方向一致？</li>
+<li>代码或人工首帧的正确性有多少被最终像素视频保留？</li>
+<li>若进入多镜头阶段，知识状态传播与局部修复能否在同预算下减少错误？</li>
+</ol>
+<p>本文是执行计划，不是实验完成声明。最新状态以 <a href="STATUS.md"><code>STATUS.md</code></a> 为准；具体研究假设与相关工作见<a href="项目研究方向_相关工作综合建议.md">研究方向规划</a>和<a href="教学视频生成_统计调研.html">统计调研</a>。</p></article></main></div></body></html>

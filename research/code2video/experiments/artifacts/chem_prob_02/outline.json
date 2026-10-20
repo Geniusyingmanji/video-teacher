@@ -1,0 +1,30 @@
+{
+  "topic": "Calculating pH from Hydrogen Ion Concentration",
+  "target_audience": "High School Chemistry Students",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Prerequisite: The pH Scale and Logarithms",
+      "content": "Introduce the pH scale as a measure of acidity, ranging from 0 to 14. Explain that pH is the negative logarithm (base 10) of the hydrogen ion concentration. Visually represent the pH scale as a gradient bar where red indicates high [H+] (low pH) and blue indicates low [H+] (high pH). Briefly define the logarithm: if 10^x = y, then log10(y) = x. Emphasize that because [H+] is usually a very small number, the logarithm helps us work with manageable numbers.",
+      "example": "Visual: A color-coded pH scale bar. Animation: A slider moving from left (pH 0, [H+] = 1) to right (pH 14, [H+] = 1e-14). Text overlay: 'pH = -log10[H+]'."
+    },
+    {
+      "id": "section_2",
+      "title": "The Core Formula",
+      "content": "Present the specific formula for this problem: pH = -log10([H+]). Highlight that [H+] is given in mol/L. Explain the two steps: 1) Identify the hydrogen ion concentration. 2) Apply the negative logarithm. Use a simple analogy: The 'log' is like a 'compression' tool that shrinks very small numbers into single-digit numbers for easier handling. The negative sign flips the result so that higher acidity (more H+) results in a lower pH number.",
+      "example": "Visual: A formula card appearing in the center: pH = -log10[H+]. Animation: A 'compression' icon (like a zipper) zipping up the number 0.001 into the number 3, then a negative sign flipping it to -3, but wait, the formula has the negative sign built-in, so the result is positive 3. Clarify: log10(0.001) is -3, so -(-3) = 3."
+    },
+    {
+      "id": "section_3",
+      "title": "Step-by-Step Calculation",
+      "content": "Apply the formula to the specific problem: [H+] = 1e-3 mol/L. Step 1: Write down the known value: [H+] = 1 × 10^-3 M. Step 2: Substitute into the formula: pH = -log10(1 × 10^-3). Step 3: Calculate the logarithm. Explain that log10(10^-3) is simply -3 because 10^-3 = 0.001. Step 4: Apply the negative sign: pH = -(-3) = 3. Show the calculation clearly on screen with each step appearing sequentially.",
+      "example": "Visual: A calculator interface. Animation: User types 'log(1e-3)'. The screen shows '-3'. Then a minus sign appears before the result, turning it into '3'. Final answer 'pH = 3' glows green."
+    },
+    {
+      "id": "section_4",
+      "title": "Interpreting the Result",
+      "content": "Interpret the calculated pH of 3. Place this value on the pH scale visual from Section 1. Explain that a pH of 3 is acidic (below 7). Compare it to common substances: lemon juice is around pH 2, vinegar is around pH 2.5-3, and rainwater is around pH 5.6. This helps students understand the real-world significance of the number. Emphasize that a pH of 3 means the solution is 1000 times more acidic than a neutral solution (pH 7) because each pH unit is a factor of 10.",
+      "example": "Visual: The pH scale bar again. A marker drops onto '3'. Icons of a lemon and a vinegar bottle appear next to the marker. Text: 'Acidic! Like Lemon Juice.' Animation: A small robot character tastes the solution and makes a sour face, saying 'Wow, that's acidic!'"
+    }
+  ]
+}

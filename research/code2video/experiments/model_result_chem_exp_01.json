@@ -1,0 +1,18 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "chem_exp_01",
+  "topic": "Ionic bonding: sodium transfers an electron to chlorine to form NaCl",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 926.1067892890424,
+  "token_usage": {
+    "prompt_tokens": 8770,
+    "completion_tokens": 19916,
+    "total_tokens": 28686
+  },
+  "expected_sections": 5,
+  "rendered_sections": 5,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-chem_exp_01/0-Ionic_bonding_sodium_transfers_an_electron_to_chlorine_to_form_NaCl/Ionic_bonding_sodium_transfers_an_electron_to_chlorine_to_form_NaCl.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-chem_exp_01/0-Ionic_bonding_sodium_transfers_an_electron_to_chlorine_to_form_NaCl",
+  "complete": true
+}

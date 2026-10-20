@@ -1,0 +1,36 @@
+{
+  "topic": "Unlocking the 180° Secret: Why Triangle Angles Sum to a Straight Line",
+  "target_audience": "Middle school students (Grades 7-9)",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "The Mystery of the Missing Piece",
+      "content": "Start with a visual hook: Show a triangle with three colored angles (Red, Blue, Green). Pose the question: 'If we cut these corners off and put them together, what shape do they form?' Introduce the concept of a 'straight line' as 180 degrees. Establish the prerequisite knowledge that angles on a straight line add up to 180°.",
+      "example": "Animation: A cute robot character named 'Geo-Bot' holds a physical triangle. It cuts off the three corners. The corners float in the air, waiting to be assembled."
+    },
+    {
+      "id": "section_2",
+      "title": "The Parallel Line Bridge (Prerequisite Setup)",
+      "content": "Introduce the key geometric tool: Parallel Lines. Draw a line through one vertex of the triangle parallel to the opposite side. Explain that parallel lines create 'Alternate Interior Angles' which are equal. This is the critical logical bridge that allows us to move angles around.",
+      "example": "Visual: A train track (parallel line) is drawn through the top vertex of a mountain-shaped triangle. Arrows indicate the tracks are parallel. The term 'Alternate Interior Angles' appears with a highlight effect on the Z-shaped angle relationships."
+    },
+    {
+      "id": "section_3",
+      "title": "The Transformation: Moving the Angles",
+      "content": "Step-by-step animation of the proof. 1. The bottom-left angle 'slides' up the parallel line to the top vertex (Alternate Interior Angle). 2. The bottom-right angle 'slides' up the other parallel line to the top vertex. 3. Now, all three angles are at the top vertex, sitting on the straight parallel line.",
+      "example": "Animation: The Red angle rotates and translates along the left parallel line to the top. The Green angle rotates and translates along the right parallel line to the top. The Blue angle stays in place. They fit perfectly together like puzzle pieces on the straight line."
+    },
+    {
+      "id": "section_4",
+      "title": "The Conclusion: A Straight Line is 180°",
+      "content": "Reinforce the result. The three angles now form a single straight angle on the parallel line. Since a straight line is 180°, the sum of the three interior angles must also be 180°. Summarize the logic: Parallel lines allow angle transfer -> Angles form a straight line -> Sum is 180°.",
+      "example": "Visual: The three angles merge into a single glowing bar labeled '180°'. Geo-Bot gives a thumbs up. Text appears: 'Sum of Interior Angles = 180°'."
+    },
+    {
+      "id": "section_5",
+      "title": "Real-World Application: The Bridge Builder",
+      "content": "Apply the concept to a real-world scenario. Show a triangular truss in a bridge structure. Explain that engineers rely on this property to calculate stress and angles for stability. If one angle is known, the others can be deduced because they must sum to 180°.",
+      "example": "Animation: A cartoon engineer character stands on a bridge. A triangular beam is highlighted. One angle is marked '60°', another '70°'. The third angle pulses and a calculation appears: '180 - 60 - 70 = 50°'. The bridge wobbles slightly if the angle is wrong, then stabilizes when correct."
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: The Balance Scale Analogy",
+      "lecture_lines": [
+        "An equation is a balanced scale.",
+        "Left side holds 2x plus 5.",
+        "Right side holds the number 17.",
+        "Both sides are currently equal.",
+        "Actions must mirror to stay balanced."
+      ],
+      "animations": [
+        "Animation step 1: Fade in a golden balance scale (#FFD700) centered on black background (#000000).",
+        "Animation step 2: Place two blue 'x' blocks (#4FC3F7) and one yellow '5' block (#FFEB3B) on the left pan.",
+        "Animation step 3: Place one large green '17' block (#4CAF50) on the right pan.",
+        "Animation step 4: Pulse the scale beam to indicate equilibrium; label left '2x + 5' and right '17' in white (#FFFFFF).",
+        "Animation step 5: Show a ghosted hand adding a weight to the left, then instantly mirroring it to the right, emphasizing the 'Golden Rule'."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: Isolating the Variable Group",
+      "lecture_lines": [
+        "We need to isolate the x.",
+        "Subtract 5 from both sides.",
+        "Left side: 5 cancels with -5.",
+        "Right side: 17 minus 5 is 12.",
+        "New equation: 2x equals 12."
+      ],
+      "animations": [
+        "Animation step 1: Highlight the yellow '5' block on the left pan with a red outline (#FF0000).",
+        "Animation step 2: Spawn a red '-5' block (#F44336) on both the left and right pans simultaneously.",
+        "Animation step 3: The yellow '5' and red '-5' on the left merge and fade out into smoke particles.",
+        "Animation step 4: The green '17' block on the right shrinks and changes to a smaller green '12' block (#8BC34A).",
+        "Animation step 5: Update the equation label above the scale to '2x = 12' in bright cyan (#00FFFF)."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Dividing to Find x",
+      "lecture_lines": [
+        "Divide both sides by 2.",
+        "Split the two x blocks.",
+        "Split the 12 into two 6s.",
+        "One x equals one 6.",
+        "Solution: x is equal to 6."
+      ],
+      "animations": [
+        "Animation step 1: Draw a vertical divider line through the left pan, separating the two blue 'x' blocks.",
+        "Animation step 2: Draw a vertical divider line through the right pan, splitting the green '12' block into two smaller green '6' blocks.",
+        "Animation step 3: Fade out the right 'x' block and the right '6' block, leaving one of each.",
+        "Animation step 4: Highlight the remaining blue 'x' and green '6' with a glowing pulse.",
+        "Animation step 5: Update the equation label to 'x = 6' in bright yellow (#FFFF00)."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Verification and Conclusion",
+      "lecture_lines": [
+        "Check: Substitute x with 6.",
+        "Calculate: 2 times 6 plus 5.",
+        "Result: 12 plus 5 is 17.",
+        "17 equals 17, balance holds.",
+        "Solution verified: x equals 6."
+      ],
+      "animations": [
+        "Animation step 1: Replace the blue 'x' block on the left with a green '6' block, then show '2(6)' label.",
+        "Animation step 2: Animate the calculation '12 + 5' appearing above the left pan, summing to '17'.",
+        "Animation step 3: The left pan now shows a single green '17' block, matching the right pan's '17' block.",
+        "Animation step 4: The scale glows gold (#FFD700) to confirm perfect balance.",
+        "Animation step 5: Confetti particles (#FF5722, #2196F3, #4CAF50) burst from the top of the scale."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: The Mystery of the Missing Piece",
+      "lecture_lines": [
+        "Look at this triangle.",
+        "We have three colored angles.",
+        "What happens if we cut them?",
+        "Let's put the corners together.",
+        "They form a straight line."
+      ],
+      "animations": [
+        "Animation step 1: Fade in a triangle with vertices labeled A, B, C. Color angle A Red (#FF5733), B Blue (#33A1FF), C Green (#33FF57).",
+        "Animation step 2: Highlight the three angles with a pulsing glow effect to emphasize their existence.",
+        "Animation step 3: Animate 'cuts' separating the three corner sectors from the main triangle body.",
+        "Animation step 4: The three separated angle sectors float and rotate to align adjacent to each other.",
+        "Animation step 5: The three angles snap together to form a straight horizontal line. Label '180°' appears below."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: The Parallel Line Bridge (Prerequisite Setup)",
+      "lecture_lines": [
+        "Draw a line through the top.",
+        "This line is parallel to the base.",
+        "Parallel lines create equal angles.",
+        "These are Alternate Interior Angles.",
+        "They allow us to move angles."
+      ],
+      "animations": [
+        "Animation step 1: Draw a horizontal line through the top vertex (A) of the triangle.",
+        "Animation step 2: Add parallel arrows to the new line and the base (BC) to indicate they are parallel.",
+        "Animation step 3: Highlight the angle between the left side (AB) and the new line. Flash it to show equality with angle B.",
+        "Animation step 4: Highlight the angle between the right side (AC) and the new line. Flash it to show equality with angle C.",
+        "Animation step 5: Label the newly highlighted angles as 'Alternate Interior Angles' with a subtle Z-path trace."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: The Transformation: Moving the Angles",
+      "lecture_lines": [
+        "Move the left angle up.",
+        "It fits perfectly at the top.",
+        "Now move the right angle up.",
+        "It fits on the other side.",
+        "All three sit on one line."
+      ],
+      "animations": [
+        "Animation step 1: The Red angle (A) remains static at the top. The Blue angle (B) slides up along the left side (AB) to the top vertex.",
+        "Animation step 2: The Blue angle rotates into position to the left of the Red angle on the parallel line.",
+        "Animation step 3: The Green angle (C) slides up along the right side (AC) to the top vertex.",
+        "Animation step 4: The Green angle rotates into position to the right of the Red angle on the parallel line.",
+        "Animation step 5: The three angles (Blue, Red, Green) align perfectly on the straight parallel line, forming a continuous 180-degree angle."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: The Conclusion: A Straight Line is 180°",
+      "lecture_lines": [
+        "The angles form a straight line.",
+        "A straight line is 180 degrees.",
+        "So, the sum is 180 degrees."
+      ],
+      "animations": [
+        "Animation step 1: The three individual angle sectors merge into a single glowing rectangular bar spanning the width of the parallel line.",
+        "Animation step 2: The bar pulses with a bright white light, emphasizing the total sum.",
+        "Animation step 3: Text 'Sum = 180°' appears below the bar in bold yellow (#FFFF00)."
+      ]
+    },
+    {
+      "id": "section_5",
+      "title": "Sec 5: Real-World Application: The Bridge Builder",
+      "lecture_lines": [
+        "Engineers use this for bridges.",
+        "One angle is 60 degrees.",
+        "Another angle is 70 degrees.",
+        "Find the missing third angle.",
+        "180 minus 60 minus 70 is 50."
+      ],
+      "animations": [
+        "Animation step 1: Fade in a simple triangular truss structure. Highlight the central triangle.",
+        "Animation step 2: Label the bottom-left angle '60°' in Red (#FF5733).",
+        "Animation step 3: Label the bottom-right angle '70°' in Blue (#33A1FF).",
+        "Animation step 4: The top angle pulses. A calculation box appears: '180 - 60 - 70 = 50°'.",
+        "Animation step 5: The top angle fills with Green (#33FF57) and is labeled '50°'. The bridge structure stabilizes with a slight bounce."
+      ]
+    }
+  ]
+}

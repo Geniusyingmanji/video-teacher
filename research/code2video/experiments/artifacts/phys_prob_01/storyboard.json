@@ -1,0 +1,76 @@
+{
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Sec 1: Prerequisite: Understanding Force and Mass",
+      "lecture_lines": [
+        "Mass represents inertia.",
+        "Force is a vector push.",
+        "Frictionless means no resistance.",
+        "Net force equals applied force.",
+        "Simpler calculations result."
+      ],
+      "animations": [
+        "Animation step 1: A white square block (2kg) fades in at center. Label 'm = 2 kg' in #FFFFFF appears above it.",
+        "Animation step 2: A red arrow (#FF0000) labeled 'F' slides in from the left, pointing at the block. Label 'F = 10 N' appears next to it.",
+        "Animation step 3: The background surface turns a light icy blue (#ADD8E6) to signify 'frictionless'. Text 'Friction = 0' fades in below.",
+        "Animation step 4: The red arrow pulses slightly to emphasize the push. The block remains stationary initially.",
+        "Animation step 5: A green checkmark (#00FF00) appears next to 'Net Force = F', confirming the simplification."
+      ]
+    },
+    {
+      "id": "section_2",
+      "title": "Sec 2: Introducing Newton's Second Law",
+      "lecture_lines": [
+        "Formula: F equals m times a.",
+        "Acceleration depends on force.",
+        "More force means faster speed.",
+        "More mass means slower speed.",
+        "Solve for acceleration a."
+      ],
+      "animations": [
+        "Animation step 1: The formula 'F = m * a' appears in the center in large white text (#FFFFFF).",
+        "Animation step 2: A small gray block moves slowly to the right. A small red arrow pushes it. Text 'Small F, Low a' appears.",
+        "Animation step 3: The red arrow grows larger and brighter. The block moves faster. Text 'Large F, High a' replaces the previous text.",
+        "Animation step 4: The block becomes larger (heavier). The same large red arrow is applied, but the block moves slower. Text 'Large m, Low a' appears.",
+        "Animation step 5: The variable 'a' in the central formula 'F = m * a' turns yellow (#FFFF00) and scales up slightly to highlight it as the target."
+      ]
+    },
+    {
+      "id": "section_3",
+      "title": "Sec 3: Step-by-Step Problem Solving",
+      "lecture_lines": [
+        "Knowns: m=2kg, F=10N.",
+        "Unknown: acceleration a.",
+        "Rearrange: a equals F over m.",
+        "Substitute: a equals 10 over 2.",
+        "Result: a is 5 m/s squared."
+      ],
+      "animations": [
+        "Animation step 1: Two boxes appear: one labeled 'm = 2 kg' and another 'F = 10 N' in white text on dark gray boxes.",
+        "Animation step 2: A question mark '?' appears in a yellow box labeled 'a = ?'. The formula 'F = ma' is shown below.",
+        "Animation step 3: The formula animates: 'a' moves to the left, 'm' moves to the denominator. It becomes 'a = F / m'.",
+        "Animation step 4: The numbers '10' and '2' slide into the formula. It becomes 'a = 10 / 2'.",
+        "Animation step 5: The result '5' flashes in green (#00FF00). The unit 'm/s²' appears next to it. The full equation 'a = 5 m/s²' is highlighted."
+      ]
+    },
+    {
+      "id": "section_4",
+      "title": "Sec 4: Real-World Application & Intuition Check",
+      "lecture_lines": [
+        "5 m/s squared is quick.",
+        "Like a car accelerating fast.",
+        "Zero to 18 km/h in one sec.",
+        "Answer makes physical sense.",
+        "Intuition confirms the calculation."
+      ],
+      "animations": [
+        "Animation step 1: A simple cartoon car icon appears. A speedometer gauge appears next to it.",
+        "Animation step 2: The speedometer needle moves rapidly from 0 to a mark labeled '18 km/h'.",
+        "Animation step 3: Text '1 second' appears with a timer icon counting down from 1 to 0.",
+        "Animation step 4: The car icon moves forward quickly. A green checkmark appears with text 'Reasonable? Yes'.",
+        "Animation step 5: The final answer 'a = 5 m/s²' reappears in the center, glowing softly to conclude the lesson."
+      ]
+    }
+  ]
+}

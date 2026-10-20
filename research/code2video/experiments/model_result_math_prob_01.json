@@ -1,0 +1,18 @@
+{
+  "model": "Qwen/Qwen3.8-27B",
+  "source_case_id": "math_prob_01",
+  "topic": "Solve 2x + 5 = 17 step by step with visual algebra",
+  "use_feedback": false,
+  "use_assets": false,
+  "elapsed_seconds": 1159.7142137370538,
+  "token_usage": {
+    "prompt_tokens": 7051,
+    "completion_tokens": 12456,
+    "total_tokens": 19507
+  },
+  "expected_sections": 4,
+  "rendered_sections": 4,
+  "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_prob_01/0-Solve_2x_+_5_=_17_step_by_step_with_visual_algebra/Solve_2x_+_5_=_17_step_by_step_with_visual_algebra.mp4",
+  "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/VIDEOTEACHER-qwen38-math_prob_01/0-Solve_2x_+_5_=_17_step_by_step_with_visual_algebra",
+  "complete": true
+}

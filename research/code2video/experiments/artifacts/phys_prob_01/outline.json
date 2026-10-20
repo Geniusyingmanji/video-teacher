@@ -1,0 +1,30 @@
+{
+  "topic": "Newton's Second Law: Calculating Acceleration",
+  "target_audience": "High School Physics Students (Grade 10-11)",
+  "sections": [
+    {
+      "id": "section_1",
+      "title": "Prerequisite: Understanding Force and Mass",
+      "content": "Briefly review the concepts of mass (inertia) and force (interaction). Introduce the idea that force is a vector quantity. Emphasize that 'frictionless' means no opposing forces, simplifying the net force calculation.",
+      "example": "Visual: A 2kg block sitting on a perfectly smooth ice surface. An arrow labeled 'F' appears, pushing the block. Text overlay: 'Mass = 2 kg', 'Force = 10 N', 'Friction = 0'."
+    },
+    {
+      "id": "section_2",
+      "title": "Introducing Newton's Second Law",
+      "content": "Present the core formula F_net = m * a. Explain the relationship: Acceleration is directly proportional to the net force and inversely proportional to mass. Use a graphical representation showing how increasing force increases acceleration, while increasing mass decreases it for the same force.",
+      "example": "Animation: A split-screen graph. Left side shows a small force on a light object moving slowly; right side shows a large force on the same object moving fast. Formula F = ma appears in the center, highlighting 'a' as the variable to solve for."
+    },
+    {
+      "id": "section_3",
+      "title": "Step-by-Step Problem Solving",
+      "content": "Apply the formula to the specific problem. Step 1: Identify knowns (m=2kg, F=10N). Step 2: Identify unknown (a). Step 3: Rearrange formula to a = F/m. Step 4: Substitute values. Step 5: Calculate result. Emphasize units (N/kg = m/s²).",
+      "example": "Visual: A digital whiteboard animation. \n1. 'm = 2 kg' and 'F = 10 N' appear in boxes.\n2. Formula transforms: F = ma -> a = F/m.\n3. Numbers slide into place: a = 10/2.\n4. Result flashes: a = 5 m/s²."
+    },
+    {
+      "id": "section_4",
+      "title": "Real-World Application & Intuition Check",
+      "content": "Contextualize the result. Explain what 5 m/s² feels like in a real-world scenario. Compare it to everyday experiences to build physical intuition. Verify if the answer makes sense (e.g., is 5 m/s² reasonable for a 10N push on a 2kg object?).",
+      "example": "Animation: A cartoon robot pushing a 2kg toolbox. The robot pushes with 10N of force. The toolbox accelerates at 5 m/s². A speedometer on the toolbox ticks up rapidly. Text: 'That's a quick start! Imagine a car accelerating at this rate for 1 second - it would go from 0 to 18 km/h.'"
+    }
+  ]
+}
