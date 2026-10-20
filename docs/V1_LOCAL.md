@@ -18,17 +18,28 @@ python -m scripts.build_v1
 | `results/v1/manifest.json` | 可机器读取的题数、分布、证据覆盖、输入 SHA-256 和边界。 |
 | `results/v1/contract_frames/` | 三份契约的初始与结果画面。 |
 | `results/v1/videos/` | 三条实际编码、重新解码核验的 5 秒无声 MP4。 |
+| `results/v1/contract_video_diagnostics.jsonl` | 逐题记录 120 帧比对结果、最大图像偏差和证据时间。 |
+| `results/v1/generated_video_manifest.jsonl` | 可直接传给现有视频评分入口的三条成片清单。 |
+| `results/v1/eval_prompts.jsonl` | 与三条 5 秒视频匹配的原子步骤评测题目，保留原题作溯源。 |
 | `results/v1/interactive_lesson.html` | 独立交互教学实验，可导出本次作答记录。 |
 
-该命令不调用云服务、不下载模型。它实际生成三条确定性代码视频，并检查 MP4 帧数、时长和首尾画面；不会重新运行 Wan 像素视频生成或模型评分。评测表读取仓库中已有的 `results/`，因此表格展示的是既有实验记录。对每个评分配置，构建器核对逐题文件、汇总文件和 60 题 ID 交集；缺失配置会在页面中显示，不会自动当作完成。
+该命令不调用云服务、不下载模型。它实际生成三条确定性代码视频，并在编码后逐帧解码，比对契约预期画面、时长和帧数；不会重新运行 Wan 像素视频生成或模型评分。评测表读取仓库中已有的 `results/`，因此表格展示的是既有实验记录。对每个评分配置，构建器核对逐题文件、汇总文件和 60 题 ID 交集；缺失配置会在页面中显示，不会自动当作完成。
 
 ## 研究流程与输入
 
 1. **题目与首帧**：`data/prompts/pilot_v0_1.jsonl` 有 60 个唯一题目，涵盖 12 学科；`data/first_frames/` 有相应的 60 张原始首帧。第一版还保留原始题目的课程内容范围，不能把 3–5 秒成片当作完整讲解。
-2. **知识约束与代码成片**：`data/teaching_contracts/examples.jsonl` 仅有 3 份示范契约。构建器验证断言、时长与画面布局后，输出前后态图像，并按约 40% 前态、60% 后态编码成 5 秒无声视频。这是可复现的代码视频基线，尚不是自动生成完整讲解的像素模型。契约内部自洽不等于外部科学真值已由专家认证。
+2. **知识约束与代码成片**：`data/teaching_contracts/examples.jsonl` 仅有 3 份示范契约。构建器验证断言、时长与画面布局后，输出前后态图像，并按约 20% 前态、60% 过程、20% 后态编码成 5 秒无声视频。数学分步揭示公式，物理逐步延伸光线，化学沿箭头移动一个电子。这是可复现的代码视频基线，尚不是自动生成完整讲解的像素模型。契约内部自洽和逐帧图像相符不等于外部科学真值已由专家认证。
 3. **交互教学**：`data/interactive/convex_lens.json` 基于凸透镜契约产生 3 个条件分支，学生先预测后揭示。作答记录只在浏览器中，可下载 JSON。
-4. **视频生成与评测**：Wan 生成入口为 `generation.runners.wan_runner` 和 `generation.runners.wan_ti2v_runner`，自动评分入口为 `eval.run_eval`，代理测验入口为 `eval.run_teachquiz`。这一步需要相应模型、视频产物及计算资源；离线构建器不会伪造这些产物。
+4. **视频生成与评测**：三条代码成片的清单可传给 `eval.run_eval`；Wan 像素生成入口为 `generation.runners.wan_runner` 和 `generation.runners.wan_ti2v_runner`，代理测验入口为 `eval.run_teachquiz`。模型评分需要相应 API 或本地模型与计算资源；离线构建器不会伪造评分。
 5. **人工审查**：人工评分导出与分析入口在 `scripts/human_eval.py`。已有的 8 条 Code2Video 长视频审查见 [`VIDEO_SAMPLE_AUDIT.md`](VIDEO_SAMPLE_AUDIT.md)，与短片 benchmark 分轨记录。
+
+若已配置评分模型，可对新生成的三条代码视频运行：
+
+```powershell
+python -m eval.run_eval --prompts results/v1/eval_prompts.jsonl --manifest results/v1/generated_video_manifest.jsonl --out results/v1/eval_contract_video --extended
+```
+
+这里使用三题专用的单步骤题目，避免拿原 pilot 的完整讲解要求直接处罚 5 秒片段。此命令需要评分模型访问能力；离线构建本身不会执行。
 
 ## 第一版能回答什么
 
@@ -43,4 +54,4 @@ python -m scripts.build_v1
 python -m unittest discover -s tests -p test_interactive_lesson.py -v
 ```
 
-构建输出应报告 `60 prompts`、`7/7 evidence arms`、`3 validated contracts`。页面应能从文件系统直接打开，三条 MP4 应各为 120 帧、5 秒，交互页能完成“选择条件 → 预测 → 揭示 → 下载记录”。如果未来替换了评测数据，重新构建后检查 `manifest.json` 中每个配置的 `rows`、`aggregate_n`、`pilot_overlap` 与 `consistent`；不一致时先修复数据再做比较。
+构建输出应报告 `60 prompts`、`7/7 evidence arms`、`3 validated contracts`。页面应能从文件系统直接打开，三条 MP4 应各为 120 帧、5 秒，逐帧诊断应检查全部 120 帧，交互页能完成“选择条件 → 预测 → 揭示 → 下载记录”。如果未来替换了评测数据，重新构建后检查 `manifest.json` 中每个配置的 `rows`、`aggregate_n`、`pilot_overlap` 与 `consistent`；不一致时先修复数据再做比较。

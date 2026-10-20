@@ -40,6 +40,8 @@ def _draw_primitive(contract: dict, selector: str) -> dict:
 def _hide_setup_primitives(contract: dict, selectors: list[str]) -> None:
     for selector in selectors:
         primitive = _draw_primitive(contract, selector)
+        if primitive.get("phase", "all") == "result":
+            continue
         if primitive.get("phase", "all") != "all":
             raise ContractError(f"hidden setup primitive is already phased: {selector}")
         primitive["phase"] = "result"

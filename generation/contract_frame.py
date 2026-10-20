@@ -91,10 +91,13 @@ def _draw_primitive(draw: ImageDraw.ImageDraw, primitive: dict, beat: dict,
         count = _value(primitive.get("count"), beat)
         if not isinstance(count, int) or isinstance(count, bool) or not 0 <= count <= 32:
             raise ContractError("radial_dots count must be an integer 0..32")
+        slots = primitive.get("slots", max(count, 1))
+        if not isinstance(slots, int) or isinstance(slots, bool) or not 1 <= slots <= 32 or count > slots:
+            raise ContractError("radial_dots slots must be an integer from count to 32")
         radius = round(_number(primitive.get("radius"), beat) * min(width, height))
         dot = max(2, round(primitive.get("dot_px", 6) * scale))
         for index in range(count):
-            angle = -math.pi / 2 + index * 2 * math.pi / count
+            angle = -math.pi / 2 + index * 2 * math.pi / slots
             x = round(center[0] + radius * math.cos(angle))
             y = round(center[1] + radius * math.sin(angle))
             draw.ellipse((x - dot, y - dot, x + dot, y + dot), fill=color)

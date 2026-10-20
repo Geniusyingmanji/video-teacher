@@ -107,9 +107,29 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
     contracts = load_contracts(contracts_path)
     contract_cases = [prompts[case_id] for case_id in sorted(pilot_ids & contracts.keys())]
     prepared = prepare_cases(contract_cases, contracts, 832, 480, 121, 24)
+    eval_prompts = []
+    for row in prepared:
+        contract = contracts[row["id"]]
+        evaluation_case = dict(row)
+        evaluation_case["original_prompt_text"] = evaluation_case["prompt_text"]
+        evaluation_case["prompt_text"] = row["video_prompt"]
+        evaluation_case["expected_concepts"] = [contract["beat"]["claim"]]
+        evaluation_case["expected_visual_elements"] = contract["beat"]["visible_evidence"]
+        evaluation_case["expected_narrative_order"] = [
+            "Show the checked initial state",
+            contract["beat"]["claim"],
+            "Hold the checked result state",
+        ]
+        evaluation_case["audio_narration_required"] = False
+        eval_prompts.append(evaluation_case)
+    eval_prompts_path = out / "eval_prompts.jsonl"
+    eval_prompts_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
+                                         for row in eval_prompts), encoding="utf-8")
     frame_dir = out / "contract_frames"
     frame_dir.mkdir(exist_ok=True)
     contract_records = []
+    video_diagnostics = []
+    generation_manifest = []
     for row in prepared:
         case_id = row["id"]
         setup = frame_dir / f"{case_id}_setup.png"
@@ -118,13 +138,28 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
         render_first_frame(contracts[case_id], phase="result").save(result)
         clip = frame_dir.parent / "videos" / f"{case_id}.mp4"
         clip_record = render_contract_video(contracts[case_id], prompts[case_id], clip)
+        generation_manifest.append({"id": case_id, "status": "ok",
+                                    "video_path": str(clip.resolve()),
+                                    "generation_mode": clip_record["generation_mode"],
+                                    "teaching_contract_sha256": clip_record["contract_sha256"],
+                                    "video_sha256": clip_record["video_sha256"]})
+        clip_record["video_path"] = str(clip.relative_to(out))
+        video_diagnostics.append(clip_record)
         contract_records.append({"id": case_id, "sha256": row["teaching_contract_sha256"],
                                  "setup": str(setup.relative_to(out)),
                                  "result": str(result.relative_to(out)),
                                  "video": str(clip.relative_to(out)),
                                  "video_sha256": clip_record["video_sha256"],
                                  "duration_s": clip_record["duration_s"],
-                                 "frame_count": clip_record["frame_count"]})
+                                 "frame_count": clip_record["frame_count"],
+                                 "frames_checked": clip_record["frames_checked"],
+                                 "worst_frame_mean_error": clip_record["worst_frame_mean_error"]})
+    diagnostics_path = out / "contract_video_diagnostics.jsonl"
+    diagnostics_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
+                                        for row in video_diagnostics), encoding="utf-8")
+    generation_manifest_path = out / "generated_video_manifest.jsonl"
+    generation_manifest_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n"
+                                                for row in generation_manifest), encoding="utf-8")
 
     lesson_path = out / "interactive_lesson.html"
     lesson = build_from_files(root / LESSON, contracts_path, lesson_path)
@@ -155,7 +190,9 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
         "first_frames": {"pilot_overlap": len(first_frames & pilot_ids),
                          "missing_ids": sorted(pilot_ids - first_frames)},
         "contracts": {"count": len(contract_records), "source_sha256": digest(contracts_path),
-                      "cases": contract_records},
+                      "cases": contract_records, "diagnostics_path": diagnostics_path.name,
+                      "generation_manifest_path": generation_manifest_path.name,
+                      "eval_prompts_path": eval_prompts_path.name},
         "interactive": {"path": lesson_path.name, "variants": len(lesson["variants"])},
         "probes": probes,
         "evidence_arms": arms,
@@ -164,7 +201,7 @@ def build(root: Path = ROOT, out: Path | None = None) -> dict:
             "本命令只生成三条确定性代码视频，没有运行 Wan 像素视频生成或模型评测。",
             "代理测验题由各模型输出生成，现有结果只能作为模型特定的感知性代理证据，不能解释为人类学习增益或跨模型公平排名。",
             "三份示范契约只覆盖 pilot 的三个案例；内部断言不代替学科专家真值审核。",
-            "契约生成的 MP4 是无声、前态到后态的确定性代码视频基线；尚未用像素视频模型做同题对照。",
+            "契约生成的 MP4 是无声、按声明动作播放的确定性代码视频基线；逐帧相符仍不证明科学真值，也尚未用像素视频模型做同题对照。",
             "本地八条 Code2Video 长视频与 3–5 秒 Wan 短片不是时长匹配的对照。",
             "人工评分、独立模型家族和完整匹配的 TI2V 对照尚未收集。",
         ],
@@ -217,7 +254,10 @@ figure{{margin:10px 0;width:min(100%,400px)}}img{{width:100%;border:1px solid #d
 <div class='stat'><b>{manifest['first_frames']['pilot_overlap']}/60</b>已有首帧</div>
 <div class='stat'><b>{manifest['contracts']['count']}</b>可执行示范契约</div></div>
 <p>{link(out, root / PROMPTS, '查看冻结题目')} · {link(out, out / 'manifest.json', '下载证据清单')} · {link(out, root / 'docs/STATUS.md', '查看研究状态')}</p></section>
-<section><h2>教学状态、视频生成与交互</h2><p>同一份契约经校验后生成初始与结果画面及可播放的 5 秒代码视频，MP4 编码后还会核对时长和首尾帧。交互样例含 {manifest['interactive']['variants']} 个分支。</p>
+<section><h2>教学状态、视频生成与交互</h2><p>同一份契约经校验后生成初始与结果画面及可播放的 5 秒代码视频。MP4 编码后会逐帧比对契约预期画面，检查时长、顺序和图像偏差；这不等于专家知识审核。交互样例含 {manifest['interactive']['variants']} 个分支。</p>
+<p>{link(out, out / manifest['contracts']['diagnostics_path'], '查看逐题成片诊断 JSONL')}</p>
+<p>{link(out, out / manifest['contracts']['generation_manifest_path'], '打开评测兼容的生成清单')}</p>
+<p>{link(out, out / manifest['contracts']['eval_prompts_path'], '打开三题原子步骤评测题目')}</p>
 <p><a class='button' href='interactive_lesson.html'>打开凸透镜交互实验</a></p>{contract_cards}</section>
 <section><h2>已存储的 60 题评测</h2><p>三维和六维均分使用不同评分配置；代理测验基于模型输出生成的题目，不用于跨模型排名。</p>
 <div class='scroll'><table><thead><tr><th>配置</th><th>题目覆盖</th><th>结果</th><th>原始汇总</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
