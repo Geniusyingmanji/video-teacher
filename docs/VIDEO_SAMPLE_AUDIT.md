@@ -1,6 +1,6 @@
 # `data/videos` sample audit
 
-Audited 2026-10-20. These eight MP4s are 854×480 at 15 fps and run **50.3–97.3 seconds**. Their source scene or rendering scripts are absent from this repository, so this pass does not claim to repair or regenerate the MP4s. The pilot prompts ask for short tasks, and the current research plan evaluates 3–5 second clips. Compare these long code-style videos only after selecting a duration-matched task or as a separate Code2Video reference.
+Audited 2026-10-20. These eight MP4s are 854×480 at 15 fps and run **50.3–97.3 seconds**. They are the local Code2Video trial described in [`research/code2video/experiments/实验结果.md`](../research/code2video/experiments/实验结果.md); generated section scripts are now available under `research/code2video/experiments/artifacts/`. This pass does not claim to repair or regenerate the MP4s. The current pixel-video research plan evaluates 3–5 second clips, so the long Code2Video outputs remain a separate reference rather than a duration-matched model comparison.
 
 Run `python scripts/audit_generated_videos.py --videos data/videos --out results/video_audit` to reproduce the metadata report and timestamped source-resolution frames. `results/video_audit/audit.jsonl` records machine-checkable facts; the observations below are manual and need expert confirmation before becoming benchmark labels.
 
@@ -23,7 +23,7 @@ Run `python scripts/audit_generated_videos.py --videos data/videos --out results
 
 ## Next implementation gates
 
-1. Recover or add the scene source for these eight MP4s before editing their animations. Require a per-scene state specification with fixed positions, minimum text size, safe margins, and no overlapping boxes. Render a still of every scene before the full video.
+1. Use the saved section scripts as a baseline when editing these animations. Require a per-scene state specification with fixed positions, minimum text size, safe margins, and no overlapping boxes. Render a still of every scene before the full video.
 2. Split long lessons into a separate track. For the 3–5 second benchmark, select one observable change or one checkable algebra step; reject prompts that imply a complete multi-scene lesson.
 3. Add expert-reviewed expected states for the target step (equation, charge count, ray intersection) and compare sampled final frames against them. Record `wrong`, `missing`, and `unobservable` separately with timestamps. Do not treat an attractive layout as correctness.
 4. After the scene source exists, rerender the affected clips and run the artifact audit, expert defect check, and then the established six-dimension evaluation. A duration fix by speeding up the existing 50–97 second videos would make the text less readable and is not a valid repair.
