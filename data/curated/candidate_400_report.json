@@ -1,0 +1,60 @@
+{
+  "candidate_count": 400,
+  "release_ready": false,
+  "by_source_file": {
+    "data/prompts/pilot_v0_2.jsonl": 82,
+    "data/prompts/multisource_pilot_300.jsonl": 291,
+    "data/prompts/candidates_subagent_medicine_cs_gaps.jsonl": 9,
+    "data/prompts/candidates_subagent_humanities_social.jsonl": 18
+  },
+  "by_discipline": {
+    "art_music": 13,
+    "biology": 37,
+    "chemistry": 37,
+    "civics": 13,
+    "computer_science": 37,
+    "economics": 37,
+    "geography": 37,
+    "history": 36,
+    "language_literature": 13,
+    "mathematics": 38,
+    "medicine": 14,
+    "music": 21,
+    "physics": 37,
+    "sports": 30
+  },
+  "by_task_type": {
+    "explanation": 162,
+    "problem_solving": 238
+  },
+  "by_curation_status": {
+    "draft_needs_subject_review": 277,
+    "draft_needs_visual_review": 119,
+    "reviewed_release_ready": 4
+  },
+  "quality_flags": {
+    "duration_wording_corrected_from_10_to_5": 2,
+    "manual_atomic_scope_required": 140,
+    "prompt_over_500_chars": 102,
+    "source_instruction_over_300_chars": 102
+  },
+  "excluded_source_ids": [
+    "disciplinegen_music_2ad2d505e0d64643",
+    "disciplinegen_music_88c21d03e4201ffa",
+    "disciplinegen_music_90251e36efa679df",
+    "disciplinegen_music_c80ec38538b2694a",
+    "disciplinegen_music_dc4a9194e2dafb28",
+    "disciplinegen_music_e53863cafe1d34ff",
+    "disciplinegen_music_e659c41c922d909c",
+    "disciplinegen_music_ebc11b723e10ec2a",
+    "disciplinegen_music_ec2f444553647eeb"
+  ],
+  "known_limitations": [
+    "Only the existing four reviewed multisource rows have completed visual and subject review.",
+    "GRADE redistribution rights remain unverified; keep upstream IDs and assets separate.",
+    "The 27 supplemental rows are earlier generated drafts, not new expert-authored items.",
+    "Sports and music remain separate taxonomy labels from the original 12-discipline pilot.",
+    "No videos, first frames, or frozen learner quizzes are provided for every item.",
+    "A 3-5 second task-feasibility and near-duplicate semantic review is still required."
+  ]
+}

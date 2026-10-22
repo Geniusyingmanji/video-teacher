@@ -14,7 +14,9 @@ import cv2
 from PIL import Image, ImageDraw
 
 
-SAMPLE_POSITIONS = (0.02, 0.25, 0.50, 0.75, 0.98)
+# Include 65%: several local Code2Video defects occurred between the old 50%
+# and 75% samples. These frames are review evidence, not a full-video proof.
+SAMPLE_POSITIONS = (0.02, 0.25, 0.50, 0.65, 0.75, 0.98)
 
 
 def load_prompts(path: Path | None) -> dict[str, dict]:
@@ -27,7 +29,7 @@ def load_prompts(path: Path | None) -> dict[str, dict]:
     }
 
 
-def inspect_video(path: Path, out_dir: Path, target_duration_s: float) -> dict:
+def inspect_video(path: Path, out_dir: Path, target_duration_s: float | None) -> dict:
     cap = cv2.VideoCapture(str(path))
     try:
         if not cap.isOpened():
@@ -53,9 +55,9 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float) -> dict:
         cap.release()
 
     flags = []
-    if duration > target_duration_s * 1.2:
+    if target_duration_s is not None and duration > target_duration_s * 1.2:
         flags.append("over_target_duration")
-    if duration < target_duration_s * 0.8:
+    if target_duration_s is not None and duration < target_duration_s * 0.8:
         flags.append("under_target_duration")
     if len(frames) != len(SAMPLE_POSITIONS):
         flags.append("frame_decode_failure")
@@ -64,6 +66,19 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float) -> dict:
     evidence_dir.mkdir(parents=True, exist_ok=True)
     for index, (seconds, frame) in enumerate(frames):
         frame.save(evidence_dir / f"{index:02d}_{seconds:.2f}s.png")
+        # VisualEDU-style render feedback: reviewers see the actual frame with
+        # fixed safe areas. This overlay is never used as generation evidence.
+        overlay = frame.copy()
+        pen = ImageDraw.Draw(overlay)
+        margin_x, margin_y = round(width * .04), round(height * .05)
+        title_bottom = round(height * .15)
+        pen.rectangle((margin_x, margin_y, width - margin_x, height - margin_y),
+                      outline="#00e5ff", width=2)
+        pen.line((margin_x, title_bottom, width - margin_x, title_bottom),
+                 fill="#ffb000", width=2)
+        overlay_dir = out_dir / "layout_overlays" / path.stem
+        overlay_dir.mkdir(parents=True, exist_ok=True)
+        overlay.save(overlay_dir / f"{index:02d}_{seconds:.2f}s.png")
 
     # The contact sheet is for navigation; source PNGs retain all text pixels.
     thumb_width = 480
@@ -92,6 +107,8 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float) -> dict:
         "sample_times_s": [round(t, 3) for t, _ in frames],
         "contact_sheet": str(sheet_path),
         "evidence_dir": str(evidence_dir),
+        "layout_overlay_dir": str(out_dir / "layout_overlays" / path.stem),
+        "layout_review_required": True,
     }
 
 
@@ -101,8 +118,10 @@ def main() -> None:
     parser.add_argument("--prompts", type=Path, default=Path("data/prompts/pilot_v0_1.jsonl"))
     parser.add_argument("--out", type=Path, default=Path("results/video_audit"))
     parser.add_argument("--target-duration-s", type=float, default=5.0)
+    parser.add_argument("--no-duration-check", action="store_true",
+                        help="Review long reference videos without a short-clip duration target")
     args = parser.parse_args()
-    if args.target_duration_s <= 0:
+    if args.target_duration_s <= 0 and not args.no_duration_check:
         parser.error("--target-duration-s must be positive")
     prompts = load_prompts(args.prompts if args.prompts.is_file() else None)
     videos = sorted(args.videos.glob("*.mp4"))
@@ -113,8 +132,8 @@ def main() -> None:
     records = []
     for video in videos:
         case = prompts.get(video.stem, {})
-        target = case.get("target_duration_s", args.target_duration_s)
-        record = inspect_video(video, args.out, float(target))
+        target = None if args.no_duration_check else float(case.get("target_duration_s", args.target_duration_s))
+        record = inspect_video(video, args.out, target)
         record["prompt_found"] = bool(case)
         record["task_type"] = case.get("task_type")
         records.append(record)

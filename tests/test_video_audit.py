@@ -29,9 +29,13 @@ class VideoAuditTest(unittest.TestCase):
 
             result = inspect_video(path, root / "audit", target_duration_s=5)
             self.assertEqual(result["flags"], ["under_target_duration"])
-            self.assertEqual(len(result["sample_times_s"]), 5)
+            self.assertEqual(len(result["sample_times_s"]), 6)
             self.assertTrue(Path(result["contact_sheet"]).is_file())
-            self.assertEqual(len(list(Path(result["evidence_dir"]).glob("*.png"))), 5)
+            self.assertEqual(len(list(Path(result["evidence_dir"]).glob("*.png"))), 6)
+            self.assertEqual(len(list(Path(result["layout_overlay_dir"]).glob("*.png"))), 6)
+            self.assertTrue(result["layout_review_required"])
+            long_result = inspect_video(path, root / "long_audit", target_duration_s=None)
+            self.assertEqual(long_result["flags"], [])
         finally:
             shutil.rmtree(root)
 

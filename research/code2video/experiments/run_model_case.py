@@ -7,8 +7,26 @@ import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'Code2Video/src'))
+sys.path.insert(0, str(ROOT.parents[1]))
 from agent import TeachingVideoAgent, RunConfig
 from gpt_request import request_local_token
+try:
+    from scripts.audit_generated_videos import inspect_video
+except ImportError:
+    inspect_video = None
+
+
+# Spatial anchors are sent to the planner before it writes section code. This
+# text-only run cannot use Code2Video's vision Critic, so final layout review is
+# still required after rendering.
+LAYOUT_POLICY = (
+    " At 854x480, reserve the top 15% for a short title. Keep a 4% horizontal "
+    "and 5% vertical safe margin. Use stable left notes and right diagram areas; "
+    "do not move a graph, axis, or symbol between sections without an explicit "
+    "transition. Show one worked step at a time. Remove old formula objects "
+    "before showing the next formula. Keep labels large enough to read at native "
+    "playback size, and never overlap labels, formulas, or the main diagram."
+)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -28,7 +46,7 @@ if __name__ == '__main__':
         'chem_exp_01': 'Ionic bonding: sodium transfers an electron to chlorine to form NaCl',
         'chem_prob_02': 'Calculate the pH of a solution with hydrogen ion concentration 1e-3 mol/L',
     }
-    topic = topics[args.case_id]
+    topic = topics[args.case_id] + LAYOUT_POLICY
     agent = TeachingVideoAgent(0, topic,
         folder=ROOT / f'Code2Video/src/CASES/VIDEOTEACHER-qwen38-{args.case_id}',
         cfg=RunConfig(api=request_local_token, use_feedback=False, use_assets=False,
@@ -36,12 +54,27 @@ if __name__ == '__main__':
     video = agent.GENERATE_VIDEO()
     result = dict(model='Qwen/Qwen3.8-27B', source_case_id=case['id'],
         topic=topic, use_feedback=False, use_assets=False,
+        layout_policy_version='safe_areas_v1',
         elapsed_seconds=time.monotonic()-started, token_usage=agent.token_usage,
         token_usage_scope='parent planner/storyboard/coder calls; excludes worker repair calls',
         expected_sections=len(agent.sections), rendered_sections=len(agent.section_videos),
         video=video, output_dir=str(agent.output_dir))
     result['complete'] = bool(video and Path(video).is_file() and agent.sections
                               and len(agent.sections)==len(agent.section_videos))
+    if result['complete'] and inspect_video is not None:
+        audit_dir = ROOT / 'experiments' / 'layout_review' / args.case_id
+        try:
+            result['layout_review'] = inspect_video(Path(video), audit_dir, None)
+            result['layout_review']['meaning'] = (
+                'Source-resolution frames and safe-area overlays require visual review; '
+                'successful rendering is not a layout pass.'
+            )
+        except Exception as exc:
+            result['layout_review'] = {'status': 'failed', 'reason': str(exc)}
+    elif result['complete']:
+        result['layout_review'] = {'status': 'unavailable', 'reason': 'OpenCV/Pillow audit dependencies missing'}
+    else:
+        result['layout_review'] = {'status': 'not_run_incomplete_video'}
     (ROOT / f'experiments/model_result_{args.case_id}.json').write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2), flush=True)
     if not result['complete']:
