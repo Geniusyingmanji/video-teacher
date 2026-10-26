@@ -20,7 +20,9 @@ import time
 from pathlib import Path
 
 import torch
-from PIL import Image
+from PIL import Image, ImageOps
+
+from generation.runners.provenance import can_resume, file_sha256, input_sha256
 
 
 def load_pipe(model_path: str, dtype: torch.dtype, device: str):
@@ -111,8 +113,6 @@ def main() -> None:
             print(f"[wan-ti2v] WARNING: no first-frame for {c['id']}, skipping")
     print(f"[wan-ti2v] {len(valid_cases)}/{len(cases)} cases have first-frame images")
 
-    pipe = load_pipe(args.model_path, dtype, device)
-
     # Resume support
     done_ids = set()
     latest_manifest = {}
@@ -126,11 +126,14 @@ def main() -> None:
                     pass
     for case in valid_cases:
         record = latest_manifest.get(case["id"], {})
-        if (record.get("status") == "ok"
-                and Path(record.get("video_path", "")).is_file()
-                and record.get("teaching_contract_sha256") == case.get("teaching_contract_sha256")):
+        ff_path = ff_dir / f"{case['id']}.png"
+        if can_resume(record, out_dir / f"{case['id']}.mp4",
+                      input_sha256(case, args, ff_path)):
             done_ids.add(case["id"])
     print(f"[wan-ti2v] resume: {len(done_ids)} already generated")
+    if len(done_ids) == len(valid_cases):
+        return
+    pipe = load_pipe(args.model_path, dtype, device)
 
     started_at = time.time()
     with manifest_path.open("a") as mf:
@@ -141,9 +144,18 @@ def main() -> None:
 
             ff_path = ff_dir / f"{cid}.png"
             first_frame = Image.open(ff_path).convert("RGB")
-            first_frame = first_frame.resize((args.width, args.height), Image.LANCZOS)
+            # Preserve charts, boards, and geometry. Directly stretching square
+            # benchmark inputs to 16:9 visibly deforms axes and playing grids.
+            first_frame = ImageOps.pad(
+                first_frame,
+                (args.width, args.height),
+                method=Image.Resampling.LANCZOS,
+                color=(245, 245, 245),
+                centering=(0.5, 0.5),
+            )
 
             out_mp4 = out_dir / f"{cid}.mp4"
+            temporary_mp4 = out_dir / f"{cid}.partial.mp4"
             t0 = time.time()
             gen = torch.Generator(device=device).manual_seed(args.seed)
 
@@ -159,13 +171,19 @@ def main() -> None:
                     generator=gen,
                 )
                 frames = result.frames[0] if hasattr(result, "frames") else result[0]
-                save_video_mp4(frames, str(out_mp4), fps=args.fps)
+                save_video_mp4(frames, str(temporary_mp4), fps=args.fps)
+                video_hash = file_sha256(temporary_mp4)
+                temporary_mp4.replace(out_mp4)
                 elapsed = time.time() - t0
 
                 mf.write(json.dumps({
                     "id": cid,
                     "prompt_text": case["prompt_text"][:200],
                     "generation_prompt": case.get("video_prompt", case["prompt_text"]),
+                    "input_sha256": input_sha256(case, args, ff_path),
+                    "video_sha256": video_hash,
+                    "model_path": args.model_path,
+                    "first_frame_sha256": file_sha256(ff_path),
                     "teaching_contract_sha256": case.get("teaching_contract_sha256"),
                     "target_duration_s": case.get("target_duration_s"),
                     "discipline": case.get("discipline"),
@@ -186,6 +204,7 @@ def main() -> None:
                 print(f"[wan-ti2v] [{i+1}/{len(valid_cases)}] {cid}: ok in {elapsed:.1f}s (wall {wall:.1f}m)")
 
             except torch.cuda.OutOfMemoryError as e:
+                temporary_mp4.unlink(missing_ok=True)
                 torch.cuda.empty_cache()
                 mf.write(json.dumps({
                     "id": cid, "status": "oom", "error": str(e)[:200],
@@ -194,6 +213,7 @@ def main() -> None:
                 print(f"[wan-ti2v] [{i+1}/{len(valid_cases)}] {cid}: OOM")
 
             except Exception as e:
+                temporary_mp4.unlink(missing_ok=True)
                 mf.write(json.dumps({
                     "id": cid, "status": "error", "error": str(e)[:300],
                 }) + "\n")

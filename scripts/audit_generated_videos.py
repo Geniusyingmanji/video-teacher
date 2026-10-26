@@ -11,12 +11,45 @@ import json
 from pathlib import Path
 
 import cv2
+import numpy as np
 from PIL import Image, ImageDraw
 
 
 # Include 65%: several local Code2Video defects occurred between the old 50%
 # and 75% samples. These frames are review evidence, not a full-video proof.
 SAMPLE_POSITIONS = (0.02, 0.25, 0.50, 0.65, 0.75, 0.98)
+
+
+def adaptive_frame_numbers(cap: cv2.VideoCapture, count: int, fps: float,
+                           fixed: set[int], limit: int = 4) -> list[int]:
+    """Select large visual transitions missed by evenly spaced stills.
+
+    Changes are only review locations; they do not imply a layout defect.
+    """
+    if count < max(60, fps * 4):
+        return []
+    stride = max(1, round(fps / 2))
+    previous = None
+    changes = []
+    for number in range(0, count, stride):
+        cap.set(cv2.CAP_PROP_POS_FRAMES, number)
+        ok, frame = cap.read()
+        if not ok:
+            continue
+        gray = cv2.resize(cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY), (96, 54))
+        if previous is not None:
+            score = float(np.mean(cv2.absdiff(gray, previous)))
+            if score >= 2:
+                changes.append((score, number))
+        previous = gray
+    selected = []
+    separation = max(1, round(fps * 0.75))
+    for _, number in sorted(changes, reverse=True):
+        if all(abs(number - other) > separation for other in fixed | set(selected)):
+            selected.append(number)
+            if len(selected) == limit:
+                break
+    return sorted(selected)
 
 
 def load_prompts(path: Path | None) -> dict[str, dict]:
@@ -42,9 +75,10 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float | None) ->
             return {"id": path.stem, "video_path": str(path), "status": "invalid_metadata"}
 
         duration = count / fps
+        fixed = {round((count - 1) * position) for position in SAMPLE_POSITIONS}
+        adaptive = adaptive_frame_numbers(cap, count, fps, fixed)
         frames: list[tuple[float, Image.Image]] = []
-        for position in SAMPLE_POSITIONS:
-            frame_number = round((count - 1) * position)
+        for frame_number in sorted(fixed | set(adaptive)):
             cap.set(cv2.CAP_PROP_POS_FRAMES, frame_number)
             ok, bgr = cap.read()
             if not ok:
@@ -59,7 +93,7 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float | None) ->
         flags.append("over_target_duration")
     if target_duration_s is not None and duration < target_duration_s * 0.8:
         flags.append("under_target_duration")
-    if len(frames) != len(SAMPLE_POSITIONS):
+    if len(frames) != len(fixed | set(adaptive)):
         flags.append("frame_decode_failure")
 
     evidence_dir = out_dir / "frames" / path.stem
@@ -105,6 +139,7 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float | None) ->
         "target_duration_s": target_duration_s,
         "flags": flags,
         "sample_times_s": [round(t, 3) for t, _ in frames],
+        "adaptive_sample_times_s": [round(n / fps, 3) for n in adaptive],
         "contact_sheet": str(sheet_path),
         "evidence_dir": str(evidence_dir),
         "layout_overlay_dir": str(out_dir / "layout_overlays" / path.stem),

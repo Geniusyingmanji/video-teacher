@@ -63,6 +63,25 @@ class VideoAuditTest(unittest.TestCase):
         self.assertEqual(layout.widths, [832])
         mocked.assert_called_once_with("unused.mp4", n=1, resize_max=832)
 
+    def test_adaptive_sampling_catches_unscheduled_scene_change(self):
+        from scripts.audit_generated_videos import adaptive_frame_numbers
+
+        root = Path(__file__).parent / "_adaptive_audit_test_output"
+        root.mkdir(exist_ok=True)
+        try:
+            path = root / "scene.mp4"
+            frames = np.zeros((100, 64, 96, 3), dtype=np.uint8)
+            frames[40:55] = 255
+            iio.imwrite(path, frames, fps=10, codec="libx264")
+            cap = cv2.VideoCapture(str(path))
+            try:
+                chosen = adaptive_frame_numbers(cap, 100, 10, {0, 25, 50, 65, 75, 98})
+            finally:
+                cap.release()
+            self.assertIn(40, chosen)
+        finally:
+            shutil.rmtree(root)
+
 
 if __name__ == "__main__":
     unittest.main()

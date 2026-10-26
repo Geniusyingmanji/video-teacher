@@ -1,23 +1,25 @@
 # rise-teacher — Project Plan
 
-> Last updated: 2026-05-16.
-> Companion docs: [`STATUS.md`](STATUS.md) (live state), [`survey.md`](survey.md) (related work), [`REPORT.md`](REPORT.md) (paper narrative), [`TEACHQUIZ.md`](TEACHQUIZ.md) (learning-gain design).
+> Research direction updated: 2026-10-12. [`STATUS.md`](STATUS.md) is the evidence ledger; [研究方向规划](项目研究方向_相关工作综合建议.md) is the current decision document; [new survey](教学视频生成_统计调研.html) is the related-work table. The implementation inventory below is historical and must be checked against `STATUS.md` before use.
+
+> Execution audit (2026-10-26): [`PAPER_EXECUTION_GATES.md`](PAPER_EXECUTION_GATES.md) gives the current acceptance criteria for item review, layout evidence, human validation, and matched experiments. The 400 rows are a candidate pool, with zero items passing the new independent-review export gate so far. Older checkmarks below describe infrastructure or pilot observations, not a submission-ready benchmark.
 
 ---
 
 ## 1. Positioning
 
-**rise-teacher** is a benchmark for evaluating text-to-video models on **multi-discipline knowledge-explanation and problem-solving** tasks. Three novelty levers:
+**rise-teacher** currently evaluates short instructional clips on knowledge-explanation and problem-solving tasks. The research position after the October 2026 survey is:
 
-- **A. Discipline breadth** — first pixel-T2V edu benchmark to cover STEM + humanities + social sciences + medicine + CS (12 disciplines).
-- **B. Joint task design** — each discipline contributes both *explanation* and *problem-solving* prompts under one unified protocol.
-- **C. Two-metric pedagogy evaluation** — 6 GPT-5.5 dimensions + **TeachQuiz-T learning gain** (the headline contribution).
+- **A. Diagnostic evidence** — localize visible knowledge errors by step and frame, with explicit unobservable cases. Breadth alone is insufficient: EduVideoBench already spans seven subjects and five grade bands.
+- **B. Measurement validity** — test whether a frozen proxy-student quiz measures transferable learning, beyond Code2Video's TeachQuiz and Video-MMMU's perception/comprehension/adaptation questions.
+- **C. Conditional generation** — test whether verified executable teaching states improve the *final pixel video*, beyond correct code or a correct first frame. Code2Video and ALGOGEN are code-side references, not duration-matched pixel-T2V baselines.
+- **D. Multi-shot state repair** — a later-stage method question; compare with existing storyboard, repair, and memory systems, including PIVOT and ManimAgent.
 
-**One-line pitch.** *"PhyEduVideo + VideoScience-Bench, broadened from physics/chemistry to a 12-discipline pedagogy stress test, with both explanation and problem-solving tracks, and a complementary learning-gain metric that exposes a <5% r² gap between standard eval scores and actual student improvement."*
+**Near-term paper scope.** A diagnostic benchmark for 3–5 s instructional clips, with expert defect labels and an independently validated proxy-learning analysis. The pilot's low rubric/proxy correlation does not establish a gap with human learning.
 
-**Must-cite competitors.** RISE-Video, PhyEduVideo (5-axis pedagogy overlap), VideoScience-Bench, CODE2VIDEO (TeachQuiz idea ported to pixel-T2V), VABench (audio protocols, pending).
+**Direct comparisons.** PhyEduVideo, VideoScience-Bench, Sci-VBench, EduVideoBench (educational scoring); Code2Video and Video-MMMU (quiz protocols); Code2Video, ALGOGEN, ManimAgent, and PIVOT (method positioning). See the [survey](教学视频生成_统计调研.html) for task scale, prompt source, and duration definitions.
 
-**Target venue.** ICLR 2027 (deadline Oct 2026). Backup: NeurIPS 2027 D&B (May 2027).
+**Venue and claim language.** Recheck deadlines and current related work before submission. Do not claim a first multi-discipline educational-video benchmark, first TeachQuiz, or human learning gains from current proxy data.
 
 ---
 
@@ -57,10 +59,12 @@ See [`STATUS.md`](STATUS.md) for the always-live snapshot. See [`paper_stats.md`
 | 11 | geography | physical geography, cartography |
 | 12 | art_music | color theory, music notation |
 
-### 3.2 Task types (5 cases × 2 types per discipline)
+### 3.2 Task types (both represented across the 12 disciplines)
 
 - **explanation** — concept introduction (e.g., "what are interior angles of a triangle").
-- **problem_solving** — worked solution (e.g., "solve 2x + 5 = 17").
+- **problem_solving** — for 3–5 s clips, one checkable step of a worked solution, with the full problem, prior state, expected next state, and answer recorded. Full step-by-step solutions belong to the later multi-shot study.
+
+The 60-case pilot contains five prompts per discipline, not five prompts per discipline-task cell. Audit its 24 discipline × task cells before using it to claim balanced joint-task coverage. A proposed frozen extension is at least five cases per cell (120 total), subject to source and expert review.
 
 Per case: `id, discipline, subdomain, task_type, difficulty (k12/undergrad/professional/graduate), prompt_text, expected_concepts, expected_visual_elements, expected_narrative_order, pedagogical_target_audience, discipline_specific_rubric, audio_narration_required`.
 
@@ -118,7 +122,9 @@ DATA ─► GENERATION ─► EVAL ─► ANALYSIS
 
 ---
 
-## 5. Evaluation framework (9 dimensions)
+## 5. Evaluation framework (six video dimensions, one proxy metric, two planned audio dimensions)
+
+The six implemented video-only rubric dimensions form the current scorecard. TeachQuiz-T is a separate proxy-student outcome on a different scale and must not be added to the rubric aggregate. Audio–Narration Alignment and Triple-Modal Alignment remain designs until audio-capable outputs and human validation exist.
 
 | # | Dim | Status | Notes |
 |---|---|---|---|
@@ -160,15 +166,12 @@ DATA ─► GENERATION ─► EVAL ─► ANALYSIS
 | **Wan5B** | 52/60 | **0.760** | 88.5% |
 | Wan1.3B | 53/60 | 0.730 | 83.0% |
 
-### 6.3 Key claims (all data-backed)
+### 6.3 Pilot observations and limits
 
-1. **Standard eval doesn't predict learning gain** — r²(5B)=4.5%, r²(1.3B)=0.9%.
-2. **5s helps at professional difficulty** — +0.20 for both models.
-3. **CC↔VQ orthogonality strengthens with difficulty** — 3s=+0.12, 5s=+0.49, graduate=+0.03 (NS↔VQ becomes negative at graduate level).
-4. **5B teaches better than 1.3B** despite losing on standard eval (1.823 vs 1.754).
-5. **Task-type specialization** — 5B better at explanations (NG=0.807), 1.3B better at problem-solving (NG=0.746).
-6. **Difficulty interaction** — 5B leads at k12 + professional, 1.3B leads at undergrad.
-7. **Graduate-level NS collapse** — 1.09 vs VQ holding at 2.73; concept failure not visual failure.
+1. In the 60-case pilot, rubric score and Qwen3-VL-2B normalized proxy gain have low observed correlation: r²=4.5% for Wan5B and 0.9% for Wan1.3B. This is not a human-learning result.
+2. The paired aggregate difference between Wan5B-3s and Wan1.3B-3s is -0.0683; its 95% CI [-0.1775, 0.0425] includes zero. There is no established aggregate winner.
+3. Wan5B 5s versus 3s shows a visual-quality decrease of 0.4167 (95% CI [-0.6000, -0.2417]); the narrative-structure increase does not survive Holm correction. Other subgroup patterns remain exploratory.
+4. The 22-case graduate stress result covers Wan1.3B only. Matched Wan5B generation and canonical proxy evaluation are still required.
 
 ---
 
@@ -177,14 +180,19 @@ DATA ─► GENERATION ─► EVAL ─► ANALYSIS
 ### 7.1 Must-have for paper submission
 
 - [x] **Paired uncertainty machinery for existing standard-eval comparisons** — case-level effect size, 95% bootstrap CI, paired sign-flip test, and Holm correction are implemented in `scripts/compare_standard_eval.py`; all future final comparisons must run it too.
+- [ ] **Freeze diagnostic evidence** — define visible teaching steps, error types, evidence timestamps, and an explicit unobservable label; double-rate the defect subset. Compare error localization with the existing six dimensions and EduVideoBench-style educational scoring.
+- [ ] **Independent model family** — evaluate the same frozen prompts with at least one non-Wan T2V system; report paired results by error type, discipline, task, and difficulty.
+- [ ] **Frozen learning questions** — separate perception, comprehension, and transfer questions, following Video-MMMU's structure; keep the final quiz unavailable to generation and repair systems.
 
 - [ ] **TI2V vs T2V comparison** — run `wan_ti2v_runner.py` with current 60 GPT-Image-1 first frames; eval; compare to pure T2V on standard + TeachQuiz-T. *Hypothesis: TI2V improves CC/NS even when first frames are imperfect.*
 - [ ] **v0.2 high-difficulty TeachQuiz-T** — re-run TeachQuiz on the 22 graduate cases (we only have standard eval for these so far).
 - [ ] **Wan5B v0.2 high-difficulty** — only Wan1.3B has been evaluated at graduate level; missing a 5B baseline.
-- [ ] **Human rater study** — small (≤200 ratings) human validation of GPT-5.5 dimension scores; report inter-rater agreement and judge-vs-human correlation.
+- [ ] **Human rater study** — collect the planned 60-video × 3-rater packet; report agreement, unobservable rates, and judge-vs-human correlation. Infrastructure alone is not validation.
 
 ### 7.2 Should-have
 
+- [ ] **Code2Video feasibility check** — run the author's implementation on 8–12 matching, Manim-expressible tasks; record task coverage, actual video duration, render success, time, tokens, and quiz outcomes. Treat it as a separate code-video reference because current pixel clips last 3–5 s.
+- [ ] **Executable-state pixel test** — on the same tasks, compare pure T2V, ordinary first-frame TI2V, verified human/template first-frame TI2V, and verified code-rendered first-frame TI2V. Measure final-video fact retention and cost; keep ALGOGEN-style trace correctness separate from pixel correctness.
 - [ ] **Improve first-frame PASS rate** — current 25/60 with GPT-Image-1 medium quality. Options: re-run FAIL set at high quality (~$3, expected 40+ PASS), or accept current state and proceed.
 - [ ] **Audio-narration alignment dim** — adapt VABench protocol; needs Wan model variant with audio (or post-hoc TTS + sync judge).
 - [ ] **Triple-modal alignment dim** — combines text + visual + audio.
@@ -193,7 +201,7 @@ DATA ─► GENERATION ─► EVAL ─► ANALYSIS
 ### 7.3 Nice-to-have
 
 - [ ] **Expand to 300-case v1.0** — gated on human-rater feedback validating prompt quality.
-- [ ] **30–60s long video study** — current 5s max is well below real teaching content length; show how dimensions degrade with duration.
+- [ ] **15–30s multi-shot study** — after the short-clip diagnostic gate, test knowledge-state transfer and dependency-aware repair against equal-budget storyboard, whole-video retry, and ManimAgent-style memory controls.
 - [ ] **Ablation: visual probe quality** — does varying the number of probe questions (3 → 5 → 10) move learning gain estimates?
 - [ ] **More student models** — currently Qwen3-VL-2B; add a second student (e.g. PaliGemma 2-3B) to test learner-dependence of TeachQuiz-T.
 
@@ -222,7 +230,7 @@ DATA ─► GENERATION ─► EVAL ─► ANALYSIS
 
 ## 9. Open questions
 
-1. **Should TeachQuiz-T use multiple student models** in the final paper to show metric robustness, or stick with Qwen3-VL-2B for clean reporting?
+1. **Does TeachQuiz-T remain stable across student models and transfer questions, and does it track blinded human learning?** Until measured, report it as proxy gain.
 2. **How to handle the "GPT-Image-1 frames are ours, MMMU frames are theirs" attribution** in the dataset release? Probably distribute the auto-probes + checkpoints, not the raw first-frame PNGs.
-3. **Should 30–60s long videos be a separate paper or a section** of the main paper? Current 5s data is solid; longer videos need much more compute / API budget.
+3. **Can a verified executable state survive pixel rendering?** First-frame success and code render success are intermediate checks; the final video is the outcome.
 4. **Do we cite the negative MMMU finding** as a main contribution or as appendix material? Suggested: appendix + one paragraph in main text on dataset design choices.

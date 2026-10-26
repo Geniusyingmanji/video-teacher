@@ -1,117 +1,76 @@
-#!/bin/bash
-# Full pipeline: TI2V video generation + evaluation with first-frame images
-# NOTE: Only Wan2.2-TI2V-5B supports image conditioning.
-#       Wan2.1-T2V-1.3B is text-only (VAE channel mismatch for TI2V).
-#       Existing T2V results in wan2_2_ti2v_5b/ and wan2_1_t2v_1_3b/ serve as baselines.
-# Usage: bash scripts/run_full_pipeline.sh
+#!/usr/bin/env bash
+# Matched Wan5B T2V/TI2V research run. Requires a reviewed shared quiz and GPU.
 set -euo pipefail
 
-cd /home/azureuser/workspace-gzy/zyf/rise-teacher
-source .venv/bin/activate
-source .envrc 2>/dev/null || true
+PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$PROJECT_DIR"
 
-PROMPTS=data/prompts/pilot_v0_1.jsonl
-FIRST_FRAMES=data/first_frames
-GEN_BASE=/data/zyf/rise-teacher/generations
-EVAL_BASE=/data/zyf/rise-teacher/outputs
-QUIZ=data/teachquiz/pilot_v0_1_quiz.jsonl
+PROMPTS="${PROMPTS:-data/prompts/pilot_v0_1.jsonl}"
+FIRST_FRAMES="${FIRST_FRAMES:-data/first_frames}"
+QUIZ="${QUIZ:-data/teachquiz/pilot_v0_1_quiz.jsonl}"
+RUN_ID="${RUN_ID:-$(date -u +%Y%m%dT%H%M%SZ)}"
+GEN_BASE="${GEN_BASE:-$PROJECT_DIR/results/new_generations/$RUN_ID}"
+EVAL_BASE="${EVAL_BASE:-$PROJECT_DIR/results/new_evaluations/$RUN_ID}"
+WAN_MODEL_PATH="${WAN_MODEL_PATH:-$PROJECT_DIR/models/Wan2.2-TI2V-5B-Diffusers}"
+STUDENT_MODEL_PATH="${STUDENT_MODEL_PATH:-$PROJECT_DIR/models/Qwen3-VL-2B-Instruct}"
+SEED="${SEED:-42}"
+STEPS="${STEPS:-30}"
 
-echo "=========================================="
-echo "  rise-teacher full pipeline (TI2V)"
-echo "=========================================="
+python -m scripts.pipeline_preflight \
+    --prompts "$PROMPTS" --first-frames "$FIRST_FRAMES" --quiz "$QUIZ" \
+    --model "$WAN_MODEL_PATH" --student-model "$STUDENT_MODEL_PATH" --strict
 
-# ---- Phase 3: Wan2.2-5B TI2V 3s ----
-echo ""
-echo "[PHASE 3] Wan2.2-5B TI2V 3s (49 frames @ fps=16)"
-CUDA_VISIBLE_DEVICES=1 python -m generation.runners.wan_ti2v_runner \
-    --prompts $PROMPTS \
-    --first-frames $FIRST_FRAMES \
-    --out $GEN_BASE/wan2_2_ti2v_5b_ff/pilot_v0_1 \
-    --model-path /data/zyf/rise-teacher/models/Wan2.2-TI2V-5B-Diffusers \
-    --num-frames 49 --height 480 --width 832 --steps 30 \
-    --fps 16 --seed 42
-
-# ---- Phase 4: Wan2.2-5B TI2V 5s ----
-echo ""
-echo "[PHASE 4] Wan2.2-5B TI2V 5s (81 frames @ fps=16)"
-CUDA_VISIBLE_DEVICES=1 python -m generation.runners.wan_ti2v_runner \
-    --prompts $PROMPTS \
-    --first-frames $FIRST_FRAMES \
-    --out $GEN_BASE/wan2_2_ti2v_5b_ff_5s/pilot_v0_1 \
-    --model-path /data/zyf/rise-teacher/models/Wan2.2-TI2V-5B-Diffusers \
-    --num-frames 81 --height 480 --width 832 --steps 30 \
-    --fps 16 --seed 42
-
-echo ""
-echo "=========================================="
-echo "  TI2V video generation complete!"
-echo "=========================================="
-
-# ---- Phase 5: Standard evaluation (6 dims, extended) on new TI2V configs ----
-echo ""
-echo "[PHASE 5] Running standard evaluation (6 dims) on 2 TI2V configs"
-
-for config in wan2_2_ti2v_5b_ff wan2_2_ti2v_5b_ff_5s; do
-    echo ""
-    echo "  Evaluating: $config"
-    python -m eval.run_eval \
-        --prompts $PROMPTS \
-        --manifest $GEN_BASE/$config/pilot_v0_1/manifest.jsonl \
-        --out $EVAL_BASE/eval_${config} \
-        --extended \
-        --n-frames 8 --frame-max-px 384
-done
-
-echo ""
-echo "=========================================="
-echo "  Standard evaluations complete!"
-echo "=========================================="
-
-# ---- Phase 6: TeachQuiz-T evaluation ----
-echo ""
-echo "[PHASE 6] Running TeachQuiz-T (Qwen3-VL-2B) on TI2V 3s config"
-
-if [ ! -f "$QUIZ" ]; then
-    echo "  Quiz file not found, building..."
-    python scripts/build_teachquiz_pilot.py
+if [[ "${1:-}" == "--check" ]]; then exit 0; fi
+if [[ $# -gt 0 ]]; then
+    echo "Usage: bash scripts/run_full_pipeline.sh [--check]" >&2
+    exit 2
 fi
 
-for config in wan2_2_ti2v_5b_ff; do
-    echo ""
-    echo "  Building visual probes for $config..."
-    python scripts/build_visual_probe_from_frames.py \
-        --prompts $PROMPTS \
-        --manifest $GEN_BASE/$config/pilot_v0_1/manifest.jsonl \
-        --out data/teachquiz/visual_probe_auto_${config}.jsonl \
-        --n-frames 4 --frame-max-px 256 \
-        2>/dev/null || echo "  (visual probe build skipped or failed)"
+mkdir -p "$GEN_BASE" "$EVAL_BASE"
+for duration in 3 5; do
+    if [[ "$duration" == 3 ]]; then frames=73; else frames=121; fi
+    for arm in t2v ti2v; do
+        out="$GEN_BASE/wan5b_${arm}_${duration}s"
+        if [[ "$arm" == ti2v ]]; then
+            python -m generation.runners.wan_ti2v_runner \
+                --prompts "$PROMPTS" --first-frames "$FIRST_FRAMES" \
+                --out "$out" --model-path "$WAN_MODEL_PATH" \
+                --num-frames "$frames" --fps 24 --height 480 --width 832 \
+                --steps "$STEPS" --seed "$SEED"
+        else
+            python -m generation.runners.wan_runner \
+                --prompts "$PROMPTS" --out "$out" --model-path "$WAN_MODEL_PATH" \
+                --num-frames "$frames" --fps 24 --height 480 --width 832 \
+                --steps "$STEPS" --seed "$SEED"
+        fi
+        python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
+            --manifest "$out/manifest.jsonl" --kind generation
 
-    PROBE=data/teachquiz/visual_probe_auto_${config}.jsonl
-    if [ ! -f "$PROBE" ]; then
-        PROBE=$QUIZ
-    fi
-    echo ""
-    echo "  TeachQuiz: $config"
-    CUDA_VISIBLE_DEVICES=3 python -m eval.run_teachquiz \
-        --prompts $PROMPTS \
-        --quiz $PROBE \
-        --probe-origin output_adaptive \
-        --manifest $GEN_BASE/$config/pilot_v0_1/manifest.jsonl \
-        --student qwen3vl \
-        --out $EVAL_BASE/teachquiz_qwen3vl_${config} \
-        --n-frames 8 --frame-max-px 384
+        scored="$EVAL_BASE/wan5b_${arm}_${duration}s"
+        python -m eval.run_eval --prompts "$PROMPTS" \
+            --manifest "$out/manifest.jsonl" --out "$scored/standard" \
+            --extended --n-frames 8 --frame-max-px 832 --detail-frame-max-px 832
+        python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
+            --manifest "$scored/standard/per_case.jsonl" --kind standard
+
+        python -m eval.run_teachquiz --prompts "$PROMPTS" --quiz "$QUIZ" \
+            --probe-origin frozen_shared --manifest "$out/manifest.jsonl" \
+            --student qwen3vl --student-model-path "$STUDENT_MODEL_PATH" \
+            --out "$scored/teachquiz" --n-frames 8 --frame-max-px 832
+        python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
+            --manifest "$scored/teachquiz/per_case.jsonl" --kind teachquiz
+    done
+    python scripts/compare_standard_eval.py \
+        --left "$EVAL_BASE/wan5b_ti2v_${duration}s/standard/per_case.jsonl" \
+        --right "$EVAL_BASE/wan5b_t2v_${duration}s/standard/per_case.jsonl" \
+        --left-label "TI2V-${duration}s" --right-label "T2V-${duration}s" \
+        --out "$EVAL_BASE/paired_ti2v_vs_t2v_${duration}s.md"
+    python scripts/compare_teachquiz.py \
+        --left "$EVAL_BASE/wan5b_ti2v_${duration}s/teachquiz/per_case.jsonl" \
+        --right "$EVAL_BASE/wan5b_t2v_${duration}s/teachquiz/per_case.jsonl" \
+        --left-label "TI2V-${duration}s" --right-label "T2V-${duration}s" \
+        --out "$EVAL_BASE/paired_teachquiz_${duration}s.md"
 done
 
-echo ""
-echo "=========================================="
-echo "  TeachQuiz evaluation complete!"
-echo "=========================================="
-
-# ---- Phase 7: Generate reports ----
-echo ""
-echo "[PHASE 7] Generating analysis reports"
-python scripts/gen_paper_stats.py 2>/dev/null || echo "  (paper stats skipped)"
-echo ""
-echo "=========================================="
-echo "  FULL PIPELINE COMPLETE"
-echo "=========================================="
+echo "Matched generation, scoring, shared TeachQuiz, and paired standard analysis complete."
+echo "Human validity and release review remain separate gates."

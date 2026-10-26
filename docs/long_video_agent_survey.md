@@ -1,5 +1,7 @@
 # Long-Video Agent Survey Notes
 
+For the full video-generation Agent framework review and Method design memo (updated 2026-10-09), see [video_generation_agent_framework_survey.md](video_generation_agent_framework_survey.md).
+
 _Updated: 2026-06-03. Scope: recent long-form video generation and agent/planner workflows, with emphasis on failure modes that rise-teacher can turn into educational-video tests._
 
 ## Verified Recent Threads

@@ -61,6 +61,12 @@ class TeachingContractTest(unittest.TestCase):
         with self.assertRaisesRegex(ContractError, "differs from requested"):
             validate_contract(contract, case, 832, 480, 49 / 24)
 
+    def test_rejects_low_contrast_text(self):
+        contract = copy.deepcopy(self.contracts["math_prob_02"])
+        contract["layout"][0]["color"] = "#eeeeee"
+        with self.assertRaisesRegex(ContractError, "contrast"):
+            validate_contract(contract, self.prompts["math_prob_02"], 832, 480, 121 / 24)
+
     def test_schema_is_not_tied_to_subject_or_case_id(self):
         contract = {
             "id": "new_history_case", "target_duration_s": 5,

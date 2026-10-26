@@ -109,7 +109,8 @@ def render_first_frame(contract: dict, width: int = 832, height: int = 480,
                        phase: str = "setup", scale: int = 2) -> Image.Image:
     if width <= 0 or height <= 0 or scale < 1:
         raise ValueError("width, height, and scale must be positive")
-    _validate_layout(contract.get("layout"), width, height)
+    _validate_layout(contract.get("layout"), width, height,
+                     contract.get("background", "#ffffff"))
     canvas = Image.new("RGB", (width * scale, height * scale),
                        contract.get("background", "#ffffff"))
     draw = ImageDraw.Draw(canvas)

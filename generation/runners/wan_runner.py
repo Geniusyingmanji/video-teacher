@@ -20,6 +20,8 @@ from pathlib import Path
 
 import torch
 
+from generation.runners.provenance import can_resume, file_sha256, input_sha256
+
 
 def load_pipe(model_path: str, dtype: torch.dtype, device: str):
     """Load Wan2.2-TI2V-5B as a text-to-video pipeline."""
@@ -102,8 +104,6 @@ def main() -> None:
         )
     print(f"[wan] {len(prompts)} prompts to generate")
 
-    pipe = load_pipe(args.model_path, dtype, device)
-
     # Resume support: skip already-generated
     done_ids = set()
     latest_manifest = {}
@@ -117,11 +117,12 @@ def main() -> None:
                     pass
     for prompt in prompts:
         record = latest_manifest.get(prompt["id"], {})
-        if (record.get("status") == "ok"
-                and Path(record.get("video_path", "")).is_file()
-                and record.get("teaching_contract_sha256") == prompt.get("teaching_contract_sha256")):
+        if can_resume(record, out_dir / f"{prompt['id']}.mp4", input_sha256(prompt, args)):
             done_ids.add(prompt["id"])
     print(f"[wan] resume: {len(done_ids)} already generated")
+    if len(done_ids) == len(prompts):
+        return
+    pipe = load_pipe(args.model_path, dtype, device)
 
     started_at = time.time()
     with manifest_path.open("a") as manifest_f:
@@ -130,6 +131,7 @@ def main() -> None:
             if cid in done_ids:
                 continue
             out_mp4 = out_dir / f"{cid}.mp4"
+            temporary_mp4 = out_dir / f"{cid}.partial.mp4"
             t0 = time.time()
             gen = torch.Generator(device=device).manual_seed(args.seed)
             try:
@@ -144,12 +146,17 @@ def main() -> None:
                 )
                 # diffusers conventions: result.frames is a list-of-list of PIL
                 frames = result.frames[0] if hasattr(result, "frames") else result[0]
-                save_video_mp4(frames, str(out_mp4), fps=args.fps)
+                save_video_mp4(frames, str(temporary_mp4), fps=args.fps)
+                video_hash = file_sha256(temporary_mp4)
+                temporary_mp4.replace(out_mp4)
                 elapsed = time.time() - t0
                 manifest_f.write(json.dumps({
                     "id": cid,
                     "prompt_text": p["prompt_text"][:200],
                     "generation_prompt": p.get("video_prompt", p["prompt_text"]),
+                    "input_sha256": input_sha256(p, args),
+                    "video_sha256": video_hash,
+                    "model_path": args.model_path,
                     "teaching_contract_sha256": p.get("teaching_contract_sha256"),
                     "target_duration_s": p.get("target_duration_s"),
                     "discipline": p.get("discipline"),
@@ -166,6 +173,7 @@ def main() -> None:
                 wall = (time.time() - started_at) / 60.0
                 print(f"[wan] [{i+1}/{len(prompts)}] {cid}: ok in {elapsed:.1f}s (wall {wall:.1f}m)")
             except torch.cuda.OutOfMemoryError as e:
+                temporary_mp4.unlink(missing_ok=True)
                 torch.cuda.empty_cache()
                 manifest_f.write(json.dumps({
                     "id": cid, "status": "oom", "error": str(e)[:200],
@@ -173,6 +181,7 @@ def main() -> None:
                 manifest_f.flush()
                 print(f"[wan] [{i+1}/{len(prompts)}] {cid}: OOM (continuing)")
             except Exception as e:
+                temporary_mp4.unlink(missing_ok=True)
                 manifest_f.write(json.dumps({
                     "id": cid, "status": "error", "error": str(e)[:300],
                 }) + "\n")

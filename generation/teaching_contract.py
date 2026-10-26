@@ -14,7 +14,7 @@ from copy import deepcopy
 from pathlib import Path
 from typing import Callable
 
-from PIL import ImageFont
+from PIL import ImageColor, ImageFont
 
 
 class ContractError(ValueError):
@@ -53,7 +53,19 @@ def _nonempty_strings(value: object, name: str) -> list[str]:
     return value
 
 
-def _validate_layout(layout: object, width: int, height: int) -> None:
+def _contrast_ratio(foreground: str, background: str) -> float:
+    def luminance(color: str) -> float:
+        channels = [value / 255 for value in ImageColor.getrgb(color)[:3]]
+        linear = [v / 12.92 if v <= 0.04045 else ((v + 0.055) / 1.055) ** 2.4
+                  for v in channels]
+        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2]
+
+    a, b = sorted((luminance(foreground), luminance(background)), reverse=True)
+    return (a + 0.05) / (b + 0.05)
+
+
+def _validate_layout(layout: object, width: int, height: int,
+                     background: str = "#ffffff") -> None:
     if not isinstance(layout, list) or not layout:
         raise ContractError("layout must contain at least one element")
     boxes: list[tuple[str, str, tuple[float, float, float, float]]] = []
@@ -74,6 +86,12 @@ def _validate_layout(layout: object, width: int, height: int) -> None:
         if not (0.025 <= left < right <= 0.975 and 0.025 <= top < bottom <= 0.975):
             raise ContractError(f"{name}: rect is outside safe margins or inverted")
         if element.get("kind") == "text":
+            try:
+                contrast = _contrast_ratio(element.get("color", "#162331"), background)
+            except (ValueError, TypeError) as exc:
+                raise ContractError(f"{name}: invalid text or background color") from exc
+            if contrast < 4.5:
+                raise ContractError(f"{name}: text contrast is below 4.5:1")
             font_px = element.get("font_px")
             if not isinstance(font_px, (int, float)) or font_px < max(20, height * 0.045):
                 raise ContractError(f"{name}: text is below minimum readable size")
@@ -196,7 +214,8 @@ def validate_contract(contract: dict, case: dict, width: int, height: int,
     ):
         raise ContractError(f"{case_id}: invariant changed or is absent from state")
     _validate_checks(contract.get("checks"), beat)
-    _validate_layout(contract.get("layout"), width, height)
+    _validate_layout(contract.get("layout"), width, height,
+                     contract.get("background", "#ffffff"))
     for element in contract["layout"]:
         if "text_path" in element:
             value = _operand(element["text_path"], beat)

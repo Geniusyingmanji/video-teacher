@@ -7,6 +7,15 @@
 并整合 60 题数据、交互教学样例和仓库已有的自动评分与代理测验结果。
 范围、复现步骤与尚待收集的证据见[第一版说明](docs/V1_LOCAL.md)。
 
+The current code and 400-candidate audit is in
+[`docs/CODE_AND_400_AUDIT.md`](docs/CODE_AND_400_AUDIT.md).
+For a read-only check of the matched model experiment, run
+`python -m scripts.pipeline_preflight`. The offline v1 build and the model
+experiment have different prerequisites; see
+[`docs/PAPER_EXECUTION_GATES.md`](docs/PAPER_EXECUTION_GATES.md).
+Current verified progress is summarized in
+[`docs/PROJECT_PROGRESS_2026-10-26.md`](docs/PROJECT_PROGRESS_2026-10-26.md).
+
 Code2Video research, local Qwen inference, and trial scripts are in
 [`research/code2video/`](research/code2video/README.md).
 
