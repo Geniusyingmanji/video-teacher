@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 from scripts.pipeline_preflight import read_jsonl
@@ -14,10 +15,15 @@ STANDARD_DIMS = {"conceptual_correctness", "narrative_structure", "visual_qualit
                  "pedagogical_clarity", "didactic_affordances", "audience_appropriateness"}
 
 
+def finite_number(value: object) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool) and math.isfinite(value)
+
+
 def check_artifacts(prompt_rows: list[dict], records: list[dict], kind: str) -> dict:
     expected = {row["id"] for row in prompt_rows}
     latest = {row["id"]: row for row in records if isinstance(row.get("id"), str)}
     missing = sorted(expected - set(latest))
+    unexpected = sorted(set(latest) - expected)
     failed = []
     for case_id in sorted(expected & set(latest)):
         row = latest[case_id]
@@ -29,19 +35,20 @@ def check_artifacts(prompt_rows: list[dict], records: list[dict], kind: str) -> 
         elif kind == "standard":
             bad = ("error" in row or any(
                 isinstance(value, dict) and "error" in value for value in row.values()) or
-                not STANDARD_DIMS.issubset(row) or "aggregate_score" not in row)
+                not finite_number(row.get("aggregate_score")) or
+                any(not isinstance(row.get(dim), dict) or
+                    not finite_number(row[dim].get("score")) for dim in STANDARD_DIMS))
         else:
             bad = ("error" in row or
-                   not isinstance(row.get("pre"), dict) or "score" not in row["pre"] or
-                   not isinstance(row.get("post_video"), dict) or
-                   "score" not in row["post_video"] or
-                   not isinstance(row.get("random_video"), dict) or
-                   "score" not in row["random_video"])
+                   any(not isinstance(row.get(part), dict) or
+                       not finite_number(row[part].get("score"))
+                       for part in ("pre", "post_video", "random_video")) or
+                   not finite_number(row.get("normalized_gain")))
         if bad:
             failed.append(case_id)
     return {"kind": kind, "expected": len(expected), "present": len(expected) - len(missing),
-            "missing": missing, "failed": failed,
-            "complete": bool(expected) and not missing and not failed}
+            "missing": missing, "unexpected": unexpected, "failed": failed,
+            "complete": bool(expected) and not missing and not unexpected and not failed}
 
 
 def main() -> None:

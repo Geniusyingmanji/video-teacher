@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from scripts.pipeline_artifacts import check_artifacts
-from scripts.pipeline_preflight import ROOT, check
+from scripts.pipeline_preflight import ROOT, check, quiz_defects
 
 
 class PipelineGateTest(unittest.TestCase):
@@ -32,8 +32,24 @@ class PipelineGateTest(unittest.TestCase):
                                                     {"id": "b", "error": "failure"}],
                                          "teachquiz")["complete"])
         complete = [{"id": cid, "pre": {"score": 0.1}, "post_video": {"score": 0.3},
-                     "random_video": {"score": 0.1}} for cid in ("a", "b")]
+                     "random_video": {"score": 0.1}, "normalized_gain": 0.2}
+                    for cid in ("a", "b")]
         self.assertTrue(check_artifacts(prompts, complete, "teachquiz")["complete"])
+        self.assertFalse(check_artifacts(prompts, complete + [{"id": "other"}],
+                                         "teachquiz")["complete"])
+        complete[0]["normalized_gain"] = float("nan")
+        self.assertEqual(check_artifacts(prompts, complete, "teachquiz")["failed"], ["a"])
+
+    def test_preflight_rejects_empty_and_duplicate_quiz_questions(self):
+        rows = [{"case_id": "a", "quiz": []},
+                {"case_id": "b", "quiz": [{"id": "q", "choices": ["yes", "no"],
+                                             "answer": "C"},
+                                            {"id": "q", "choices": ["yes", "no"],
+                                             "answer": "A"}]}]
+        defects = quiz_defects(rows, {"a", "b"})
+        self.assertTrue(any("no questions" in defect for defect in defects))
+        self.assertTrue(any("duplicate question" in defect for defect in defects))
+        self.assertTrue(any("invalid choices" in defect for defect in defects))
 
 
 if __name__ == "__main__":

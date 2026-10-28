@@ -22,21 +22,55 @@ def read_jsonl(path: Path) -> list[dict]:
             if line.strip()]
 
 
+def quiz_defects(rows: list[dict], expected_ids: set[str]) -> list[str]:
+    defects: list[str] = []
+    seen_questions: set[str] = set()
+    for row in rows:
+        case_id = row.get("case_id")
+        if case_id not in expected_ids:
+            defects.append(f"unexpected quiz case_id: {case_id!r}")
+        questions = row.get("quiz")
+        if not isinstance(questions, list) or not questions:
+            defects.append(f"quiz has no questions: {case_id!r}")
+            continue
+        for question in questions:
+            if not isinstance(question, dict):
+                defects.append(f"invalid quiz question in {case_id!r}")
+                continue
+            question_id = question.get("id")
+            choices = question.get("choices")
+            answer = question.get("answer")
+            if not isinstance(question_id, str) or not question_id or question_id in seen_questions:
+                defects.append(f"missing or duplicate question id: {question_id!r}")
+            seen_questions.add(question_id)
+            if (not isinstance(choices, list) or not 2 <= len(choices) <= 26 or
+                    not isinstance(answer, str) or
+                    answer not in "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[:len(choices)]):
+                defects.append(f"invalid choices/answer: {question_id!r}")
+    return defects
+
+
 def check(prompts: Path, first_frames: Path, quiz: Path, model: Path,
           student_model: Path, *, check_runtime: bool = True) -> dict:
     blockers: list[str] = []
     cases = read_jsonl(prompts)
     ids = [row.get("id") for row in cases]
-    if not cases or len(ids) != len(set(ids)):
+    if (not cases or any(not isinstance(cid, str) or not cid for cid in ids) or
+            len(ids) != len(set(ids))):
         blockers.append("prompt file missing, empty, or contains duplicate IDs")
-    missing_frames = [cid for cid in ids if not (first_frames / f"{cid}.png").is_file()]
+    valid_ids = {cid for cid in ids if isinstance(cid, str) and cid}
+    missing_frames = [cid for cid in valid_ids if not (first_frames / f"{cid}.png").is_file()]
     if missing_frames:
         blockers.append(f"first frames missing: {len(missing_frames)}/{len(ids)}")
     quiz_rows = read_jsonl(quiz)
     quiz_ids = [row.get("case_id") for row in quiz_rows]
-    missing_quiz = sorted(set(ids) - set(quiz_ids))
-    if not quiz_rows or len(quiz_ids) != len(set(quiz_ids)) or missing_quiz:
-        blockers.append(f"frozen shared quiz missing or incomplete: {len(set(ids) & set(quiz_ids))}/{len(ids)}")
+    present_quiz_ids = {cid for cid in quiz_ids if isinstance(cid, str) and cid}
+    missing_quiz = sorted(valid_ids - present_quiz_ids)
+    if not quiz_rows or len(quiz_ids) != len(present_quiz_ids) or missing_quiz:
+        blockers.append(f"frozen shared quiz missing or incomplete: {len(valid_ids & present_quiz_ids)}/{len(ids)}")
+    defects = quiz_defects(quiz_rows, valid_ids)
+    if defects:
+        blockers.append(f"frozen shared quiz invalid: {len(defects)} defect(s); first: {defects[0]}")
     if not model.is_dir():
         blockers.append(f"Wan model directory missing: {model}")
     if not student_model.is_dir():
@@ -63,8 +97,8 @@ def check(prompts: Path, first_frames: Path, quiz: Path, model: Path,
             blockers.append("Azure CLI (az) unavailable for judge authentication")
     return {
         "ready": not blockers, "prompt_count": len(ids),
-        "first_frame_count": len(ids) - len(missing_frames),
-        "shared_quiz_count": len(set(ids) & set(quiz_ids)),
+        "first_frame_count": len(valid_ids) - len(missing_frames),
+        "shared_quiz_count": len(valid_ids & present_quiz_ids),
         "blockers": blockers,
     }
 

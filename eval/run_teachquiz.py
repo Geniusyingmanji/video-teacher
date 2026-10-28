@@ -231,12 +231,17 @@ def main() -> None:
     student = load_student(args, quiz_rows)
     protocol = protocol_metadata(args, student.name)
     ensure_protocol(out_dir / "protocol.json", protocol)
-    rng = random.Random(args.seed)
-
     done_ids = set()
     if per_case_path.exists():
-        for row in load_jsonl(per_case_path):
-            done_ids.add(row.get("id"))
+        latest_rows = {row.get("id"): row for row in load_jsonl(per_case_path)}
+        per_case_path.write_text(
+            "".join(json.dumps(row, ensure_ascii=False) + "\n" for row in latest_rows.values()),
+            encoding="utf-8",
+        )
+        for row in latest_rows.values():
+            if "error" not in row and isinstance(row.get("pre"), dict) and \
+                    isinstance(row.get("post_video"), dict):
+                done_ids.add(row.get("id"))
 
     todo = [row for row in quiz_rows if row["case_id"] not in done_ids]
     print(f"[teachquiz] student={student.name} cases={len(quiz_rows)} todo={len(todo)}")
@@ -256,7 +261,7 @@ def main() -> None:
                 frames = extract_frames(video_path, n=args.n_frames, resize_max=args.frame_max_px)
 
                 random_entry = None if args.skip_random else choose_random_manifest(
-                    manifest, cid, rng, prompts
+                    manifest, cid, random.Random(f"{args.seed}:{cid}"), prompts
                 )
                 random_frames = None
                 random_id = None

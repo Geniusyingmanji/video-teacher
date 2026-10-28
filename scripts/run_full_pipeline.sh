@@ -16,15 +16,16 @@ STUDENT_MODEL_PATH="${STUDENT_MODEL_PATH:-$PROJECT_DIR/models/Qwen3-VL-2B-Instru
 SEED="${SEED:-42}"
 STEPS="${STEPS:-30}"
 
+if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--check" ) ]]; then
+    echo "Usage: bash scripts/run_full_pipeline.sh [--check]" >&2
+    exit 2
+fi
+
 python -m scripts.pipeline_preflight \
     --prompts "$PROMPTS" --first-frames "$FIRST_FRAMES" --quiz "$QUIZ" \
     --model "$WAN_MODEL_PATH" --student-model "$STUDENT_MODEL_PATH" --strict
 
 if [[ "${1:-}" == "--check" ]]; then exit 0; fi
-if [[ $# -gt 0 ]]; then
-    echo "Usage: bash scripts/run_full_pipeline.sh [--check]" >&2
-    exit 2
-fi
 
 mkdir -p "$GEN_BASE" "$EVAL_BASE"
 for duration in 3 5; do
@@ -66,10 +67,10 @@ for duration in 3 5; do
         --left-label "TI2V-${duration}s" --right-label "T2V-${duration}s" \
         --out "$EVAL_BASE/paired_ti2v_vs_t2v_${duration}s.md"
     python scripts/compare_teachquiz.py \
-        --left "$EVAL_BASE/wan5b_ti2v_${duration}s/teachquiz/per_case.jsonl" \
-        --right "$EVAL_BASE/wan5b_t2v_${duration}s/teachquiz/per_case.jsonl" \
+        --left "$EVAL_BASE/wan5b_ti2v_${duration}s/teachquiz" \
+        --right "$EVAL_BASE/wan5b_t2v_${duration}s/teachquiz" \
         --left-label "TI2V-${duration}s" --right-label "T2V-${duration}s" \
-        --out "$EVAL_BASE/paired_teachquiz_${duration}s.md"
+        --out "$EVAL_BASE/paired_teachquiz_${duration}s.json"
 done
 
 echo "Matched generation, scoring, shared TeachQuiz, and paired standard analysis complete."
