@@ -1,0 +1,374 @@
+{
+  "grade": [
+    {
+      "image_path": "image/before/math/math_math_1.jpg",
+      "gt": "image/gt/math/math_math_1.jpg",
+      "text": "Replace x in the figure with its actual numerical value. Keep it in the simplest radical form.",
+      "task_id": "math_math_1",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Has the variable label 'x' been removed and replaced with a numeric expression on the lower slanted side?",
+          "score": 0.2
+        },
+        {
+          "id": "Q2",
+          "question": "Does the shown value for the lower slanted side equal the length computed from the right triangle with legs 17 and 6, i.e., sqrt(17^2 + 6^2) = 5√13 (accept mathematically equivalent forms)?",
+          "score": 0.6
+        },
+        {
+          "id": "Q3",
+          "question": "Is the displayed value in simplest radical form (no reducible square factors inside the radical), e.g., 5√13 rather than √325?",
+          "score": 0.2
+        }
+      ],
+      "consistency": "overall",
+      "sub_task": "2d",
+      "domain": "math"
+    },
+    {
+      "image_path": "image/before/math/math_math_4.jpg",
+      "gt": "image/gt/math/math_math_4.jpg",
+      "text": "Given that the two triangles are similar, mark the value of x and y in the figure.",
+      "task_id": "math_math_4",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Is the side originally labeled x in the small triangle now marked with the value 10?",
+          "score": 0.5
+        },
+        {
+          "id": "Q2",
+          "question": "Is the side originally labeled y in the large triangle now marked with the value 18?",
+          "score": 0.5
+        }
+      ],
+      "consistency": "overall",
+      "sub_task": "2d",
+      "domain": "math"
+    },
+    {
+      "image_path": "image/before/ComputerScience/17_before.png",
+      "gt": "image/gt/ComputerScience/17_after.png",
+      "text": "The diagram shows a Markov chain. Please complete the image by filling in the missing probability values.",
+      "task_id": "ComputerScience_task_17",
+      "sub_task": "Computer-AI & Computer Vision",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Is the probability on the directed edge from S1 to S2 labeled as 0.8?",
+          "score": 0.35
+        },
+        {
+          "id": "Q2",
+          "question": "Is the probability on the self-loop at state S2 labeled as 0.4?",
+          "score": 0.35
+        },
+        {
+          "id": "Q3",
+          "question": "Do the outgoing transition probabilities from S1 sum to 1 (0.2 + the S1→S2 value = 1)?",
+          "score": 0.15
+        },
+        {
+          "id": "Q4",
+          "question": "Do the outgoing transition probabilities from S2 sum to 1 (0.6 + the S2 self-loop value = 1)?",
+          "score": 0.15
+        }
+      ],
+      "consistency": "overall",
+      "domain": "ComputerScience"
+    },
+    {
+      "image_path": "image/before/physics/68_before.png",
+      "gt": "image/gt/physics/physics_task_68.jpg",
+      "text": "Edit the r–B plot so it represents the physics relation for the radius r of a charged particle moving at constant speed v in a uniform magnetic field B (with q and m fixed). Keep the axes, origin O, and the labels r (vertical) and B (horizontal) unchanged.",
+      "task_id": "physics_task_68",
+      "sub_task": "physics-electromagnetism",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Are the axes and labels kept unchanged with r on the vertical axis, B on the horizontal axis, and origin O at their intersection?",
+          "score": 0.1
+        },
+        {
+          "id": "Q2",
+          "question": "Is r plotted as a monotonically decreasing function of B (dr/dB < 0 for B > 0), consistent with r = mv/(|q|B)?",
+          "score": 0.25
+        },
+        {
+          "id": "Q3",
+          "question": "Does the curve lie entirely in the first quadrant for B > 0, i.e., r > 0 and B > 0?",
+          "score": 0.1
+        },
+        {
+          "id": "Q4",
+          "question": "Does the curve avoid passing through the origin O (r = 0 at B = 0 is not shown), as r diverges when B → 0+?",
+          "score": 0.09
+        },
+        {
+          "id": "Q5",
+          "question": "Does the curve approach the vertical axis B = 0 as an asymptote (r → ∞) without touching or crossing it?",
+          "score": 0.18
+        },
+        {
+          "id": "Q6",
+          "question": "As B increases, does the curve approach the horizontal axis r = 0 asymptotically without crossing it (r → 0 as B → ∞)?",
+          "score": 0.18
+        },
+        {
+          "id": "Q7",
+          "question": "Is the curve concave upward (slope becomes less negative as B increases), consistent with r = K/B having d2r/dB2 > 0?",
+          "score": 0.1
+        }
+      ],
+      "consistency": "overall",
+      "domain": "physics"
+    },
+    {
+      "image_path": "image/before/biology/Biology_mmmu_14_question.png",
+      "gt": "image/gt/biology/Biology_mmmu_14_gt.png",
+      "text": "Starting from the question image, convert an obligate-anaerobe pattern (growth only at the bottom) into a facultative-anaerobe pattern.",
+      "task_id": "biology_task_57",
+      "consistency": "overall",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Is microbial growth visible in the upper region near the surface of the medium?",
+          "score": 0.25
+        },
+        {
+          "id": "Q2",
+          "question": "Is microbial growth also present in deeper/lower parts of the medium (i.e., not absent below the surface)?",
+          "score": 0.2
+        },
+        {
+          "id": "Q3",
+          "question": "Is growth distributed across multiple depths of the tube rather than confined only to the bottom or only to the top?",
+          "score": 0.25
+        },
+        {
+          "id": "Q4",
+          "question": "Is the growth noticeably denser in the upper oxygenated region than in the lower region, consistent with a facultative anaerobe?",
+          "score": 0.3
+        }
+      ],
+      "sub_task": "Molecular Biology",
+      "domain": "biology"
+    },
+    {
+      "image_path": "image/before/physics/12_before.JPEG",
+      "text": "According to the information of the incident ray, angle of incidence, interface and normal line in the figure, draw the reflected ray and mark the angle of reflection.",
+      "task_id": "physics_task_12",
+      "gt": "image/gt/physics/12_after.JPEG",
+      "sub_task": "physics-optics",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Is a reflected ray drawn starting exactly from the point of incidence O on the interface?",
+          "score": 0.15
+        },
+        {
+          "id": "Q2",
+          "question": "Is the reflected ray located on the opposite side of the normal N from the incident ray?",
+          "score": 0.15
+        },
+        {
+          "id": "Q3",
+          "question": "Does the reflected ray make an angle with the normal that is equal to the incident angle (law of reflection)?",
+          "score": 0.3
+        },
+        {
+          "id": "Q4",
+          "question": "Is the angle of reflection explicitly marked between the reflected ray and the normal (not with the surface)?",
+          "score": 0.15
+        },
+        {
+          "id": "Q5",
+          "question": "Is the marked angle of reflection 60°, matching the given 60° angle of incidence?",
+          "score": 0.15
+        },
+        {
+          "id": "Q6",
+          "question": "Is the reflected ray drawn with an arrow pointing away from O (outgoing from the surface)?",
+          "score": 0.1
+        }
+      ],
+      "consistency": "overall",
+      "domain": "physics"
+    },
+    {
+      "image_path": "image/before/chemistry/2_before.png",
+      "gt": "image/gt/chemistry/2_after.png",
+      "text": "The reaction equation for the esterification of ethanol and acetic acid is shown in the diagram. Please complete the product section of the equation.",
+      "task_id": "chemistry_task_2",
+      "sub_task": "Organic Acid",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Is the product on the right side shown as an ester rather than a carboxylic acid or alcohol?",
+          "score": 0.15
+        },
+        {
+          "id": "Q2",
+          "question": "Does the ester correspond to ethyl acetate, i.e., an acetyl group (CH3CO–) bonded through oxygen to an ethyl group (–OCH2CH3)?",
+          "score": 0.35
+        },
+        {
+          "id": "Q3",
+          "question": "Is water (H2O) included as a coproduct on the right side?",
+          "score": 0.2
+        },
+        {
+          "id": "Q4",
+          "question": "Is a carbonyl (C=O) present in the ester product structure on the right side?",
+          "score": 0.1
+        },
+        {
+          "id": "Q5",
+          "question": "Is the ethyl group attached to the acyl fragment via an oxygen atom (–COO–CH2CH3), not directly to the carbonyl carbon?",
+          "score": 0.1
+        },
+        {
+          "id": "Q6",
+          "question": "Are exactly one ester molecule and one water molecule shown as products (no extra products)?",
+          "score": 0.1
+        }
+      ],
+      "consistency": "overall",
+      "domain": "chemistry"
+    },
+    {
+      "image_path": "image/before/math/math_math_40.png",
+      "gt": "image/gt/math/math_math_40.png",
+      "text": "The figure in the diagram is centrally symmetric about the point (0, 0). Generate the image containing the original and transformed figure",
+      "task_id": "math_math_40",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Is the original polygon from the diagram still present at its original location?",
+          "score": 0.05
+        },
+        {
+          "id": "Q2",
+          "question": "Does the edited image include an additional polygon that is the central symmetry (180-degree rotation) of the original about the point (0, 0)?",
+          "score": 0.25
+        },
+        {
+          "id": "Q3",
+          "question": "Does the transformed polygon include a vertex at (-1, 0), the reflection of the original vertex (1, 0) about (0, 0)?",
+          "score": 0.1
+        },
+        {
+          "id": "Q4",
+          "question": "Does the transformed polygon include a vertex at (-2, -1), the reflection of the original vertex (2, 1) about (0, 0)?",
+          "score": 0.1
+        },
+        {
+          "id": "Q5",
+          "question": "Does the transformed polygon include a vertex at (0, -1), the reflection of the original vertex (0, 1) about (0, 0)?",
+          "score": 0.1
+        },
+        {
+          "id": "Q6",
+          "question": "Do both polygons pass through the point (0, 0), consistent with central symmetry of that vertex?",
+          "score": 0.1
+        },
+        {
+          "id": "Q7",
+          "question": "Is there a slanted edge on the transformed polygon connecting (-1, 0) to (-2, -1), mirroring the original edge from (1, 0) to (2, 1)?",
+          "score": 0.15
+        },
+        {
+          "id": "Q8",
+          "question": "Is there a horizontal edge on the transformed polygon along y = -1 from x = -2 to x = 0, mirroring the original top edge along y = 1 from x = 0 to x = 2?",
+          "score": 0.15
+        }
+      ],
+      "consistency": "overall",
+      "sub_task": "2d",
+      "domain": "math"
+    },
+    {
+      "image_path": "image/before/math/math_math_41.png",
+      "gt": "image/gt/math/math_math_41.png",
+      "text": "The figure in the diagram is axisymmetric about the line 1x + 0y = 0. Generate the image containing the original and transformed figure",
+      "task_id": "math_math_41",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Does the image show both the original figure and an additional transformed copy of it?",
+          "score": 0.1
+        },
+        {
+          "id": "Q2",
+          "question": "Is the transformation a reflection about the line x = 0 (i.e., each point (x, y) maps to (-x, y))?",
+          "score": 0.5
+        },
+        {
+          "id": "Q3",
+          "question": "For corresponding vertices of the two figures, do the y-coordinates match (same vertical level across the axis x = 0)?",
+          "score": 0.15
+        },
+        {
+          "id": "Q4",
+          "question": "For corresponding vertices, are the horizontal distances to the line x = 0 equal and on opposite sides of the axis?",
+          "score": 0.15
+        },
+        {
+          "id": "Q5",
+          "question": "Is the transformed figure congruent to the original (all side lengths and angles preserved)?",
+          "score": 0.1
+        }
+      ],
+      "consistency": "overall",
+      "sub_task": "2d",
+      "domain": "math"
+    },
+    {
+      "image_path": "image/before/math/math_math_95.png",
+      "gt": "image/gt/math/math_math_95.png",
+      "text": "Draw the zeros of the function in the figure.",
+      "task_id": "math_math_95",
+      "questions": [
+        {
+          "id": "Q1",
+          "question": "Are all zeros of the plotted function (every x-intercept where the graph meets the x-axis) marked with points?",
+          "score": 0.5
+        },
+        {
+          "id": "Q2",
+          "question": "Are there no extra points on the x-axis at locations where the function does not intersect or touch the x-axis?",
+          "score": 0.3
+        },
+        {
+          "id": "Q3",
+          "question": "Are the drawn markers placed exactly on the x-axis (y = 0), not above or below it?",
+          "score": 0.2
+        }
+      ],
+      "consistency": "overall",
+      "sub_task": "func",
+      "domain": "math"
+    }
+  ],
+  "disciplinegen": [
+    {
+      "id": 22500028539,
+      "conversations": "[{\"from\": \"human\", \"value\": \"Generate a labeled diagram of human blood after centrifugation or static settling with anticoagulant, showing three distinct layers. Label the top layer as plasma, the middle thin layer as the buffy coat containing white blood cells and platelets, and the bottom layer as red blood cells. Use shading or color differentiation to distinguish the layers clearly, and include numerical labels \\u2460, \\u2461, and \\u2462 pointing to the plasma, buffy coat, and red blood cell layers respectively.\"}, {\"from\": \"gpt\", \"value\": \"<image>\"}]",
+      "metadata": "{\"subject\": \"Biology\", \"level\": \"high-school\", \"data_id\": null}",
+      "_source_file": "science_t2i.parquet",
+      "_row_group": 0,
+      "_row_index": 252,
+      "_source_key": "cf797d51a318cd19"
+    },
+    {
+      "id": 17893,
+      "conversations": "[{\"from\": \"human\", \"value\": \"Generate a diagram of a human somatic cell nucleus showing a pair of homologous chromosomes representing a gene locus for skin pigmentation. Label the alleles as 'B' (dominant, normal pigment) and 'b' (recessive, albinism). The chromosome carrying 'B' should be mostly white with a black band at the middle, and the chromosome carrying 'b' should be mostly black with a white band at the middle. Both chromosomes should be enclosed within a circular nucleus outline, with the alleles labeled clearly next to each chromosome.\"}, {\"from\": \"gpt\", \"value\": \"<image>\"}]",
+      "metadata": "{\"subject\": \"Biology\", \"level\": \"secondary-school\", \"data_id\": null}",
+      "_source_file": "science_t2i.parquet",
+      "_row_group": 0,
+      "_row_index": 1306,
+      "_source_key": "d463e086c0d85b7b"
+    }
+  ]
+}

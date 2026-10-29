@@ -44,6 +44,8 @@ def review_errors(row: dict, reviews: list[dict]) -> list[str]:
     adjudications = [r for r in reviews if r.get("case_id") == case_id
                      and r.get("role") == "adjudicator" and r.get("item_sha256") == digest]
     errors = []
+    if row.get("curation", {}).get("status") in {"exclude_content_quality", "draft_needs_content_repair"}:
+        errors.append("content_repair_required")
     reviewers = {r.get("reviewer_id") for r in independent if r.get("reviewer_id")}
     if len(independent) != 2 or len(reviewers) != 2:
         errors.append("two_independent_reviews_required")

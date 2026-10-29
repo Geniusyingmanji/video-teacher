@@ -2,41 +2,138 @@
   "candidate_count": 400,
   "release_ready": false,
   "by_source_file": {
-    "data/prompts/pilot_v0_2.jsonl": 82,
-    "data/prompts/multisource_pilot_300.jsonl": 291,
-    "data/prompts/candidates_subagent_medicine_cs_gaps.jsonl": 9,
-    "data/prompts/candidates_subagent_humanities_social.jsonl": 18
+    "data/prompts/pilot_v0_2.jsonl": 75,
+    "data/prompts/multisource_pilot_300.jsonl": 282,
+    "data/prompts/candidates_subagent_medicine_cs_gaps.jsonl": 14,
+    "data/prompts/candidates_subagent_humanities_social.jsonl": 17,
+    "data/sources/grade/data/sources/grade/full/data.json": 10,
+    "data/sources/disciplinegen/metadata/sampled_rows.jsonl": 2
   },
   "by_discipline": {
     "art_music": 13,
     "biology": 37,
     "chemistry": 37,
-    "civics": 13,
+    "civics": 12,
     "computer_science": 37,
     "economics": 37,
     "geography": 37,
     "history": 36,
     "language_literature": 13,
-    "mathematics": 38,
-    "medicine": 14,
+    "mathematics": 39,
+    "medicine": 19,
     "music": 21,
     "physics": 37,
-    "sports": 30
+    "sports": 25
   },
+  "by_difficulty_label": {
+    "high": 13,
+    "k12": 6,
+    "low": 41,
+    "medium": 50,
+    "undergrad": 290
+  },
+  "difficulty_label_note": "undergrad and k12 are audience levels in inherited rows, not calibrated task difficulty; do not combine them with low/medium/high.",
+  "difficulty_review_required_count": 296,
+  "discipline_count_range": [
+    12,
+    39
+  ],
   "by_task_type": {
-    "explanation": 162,
-    "problem_solving": 238
+    "explanation": 155,
+    "problem_solving": 245
+  },
+  "by_pedagogical_archetype": {
+    "causal_mechanism": 11,
+    "classification": 12,
+    "comparison": 1,
+    "evidence_inference": 1,
+    "labeling": 25,
+    "quantitative_reasoning": 89,
+    "spatial_reasoning": 26,
+    "temporal_sequence": 40,
+    "unlabeled": 121,
+    "visual_transformation": 74
+  },
+  "by_discipline_and_task_type": {
+    "art_music": {
+      "explanation": 5,
+      "problem_solving": 8
+    },
+    "biology": {
+      "explanation": 18,
+      "problem_solving": 19
+    },
+    "chemistry": {
+      "explanation": 18,
+      "problem_solving": 19
+    },
+    "civics": {
+      "explanation": 5,
+      "problem_solving": 7
+    },
+    "computer_science": {
+      "explanation": 18,
+      "problem_solving": 19
+    },
+    "economics": {
+      "explanation": 14,
+      "problem_solving": 23
+    },
+    "geography": {
+      "explanation": 19,
+      "problem_solving": 18
+    },
+    "history": {
+      "explanation": 11,
+      "problem_solving": 25
+    },
+    "language_literature": {
+      "explanation": 5,
+      "problem_solving": 8
+    },
+    "mathematics": {
+      "explanation": 7,
+      "problem_solving": 32
+    },
+    "medicine": {
+      "explanation": 11,
+      "problem_solving": 8
+    },
+    "music": {
+      "explanation": 6,
+      "problem_solving": 15
+    },
+    "physics": {
+      "explanation": 18,
+      "problem_solving": 19
+    },
+    "sports": {
+      "problem_solving": 25
+    }
   },
   "by_curation_status": {
-    "draft_needs_subject_review": 277,
-    "draft_needs_visual_review": 119,
-    "reviewed_release_ready": 4
+    "draft_needs_subject_review": 286,
+    "draft_needs_visual_review": 111,
+    "reviewed_release_ready": 3
   },
   "quality_flags": {
-    "duration_wording_corrected_from_10_to_5": 2,
-    "manual_atomic_scope_required": 140,
-    "prompt_over_500_chars": 102,
-    "source_instruction_over_300_chars": 102
+    "atomic_step_rewrite": 44,
+    "authored_history_rewrite_from_source_theme": 7,
+    "brinton_j_curve_misattribution_corrected": 1,
+    "cap_theorem_claim_corrected": 1,
+    "difficulty_recalibrated_from_high": 17,
+    "duration_wording_corrected_from_10_to_5": 1,
+    "heap_result_explicitly_verified": 3,
+    "manual_atomic_scope_required": 81,
+    "meiosis_source_claim_repaired": 1,
+    "prompt_over_500_chars": 76,
+    "source_factual_inconsistency_repaired": 27,
+    "source_instruction_over_300_chars": 76,
+    "source_instruction_typo_repaired_in_prompt": 1,
+    "source_target_extra_edit_rejected": 2,
+    "source_target_food_chain_corrected": 1,
+    "source_verified_replacement": 12,
+    "unresolved_image_token_removed_from_text_prompt": 8
   },
   "excluded_source_ids": [
     "disciplinegen_music_2ad2d505e0d64643",
@@ -47,8 +144,27 @@
     "disciplinegen_music_e53863cafe1d34ff",
     "disciplinegen_music_e659c41c922d909c",
     "disciplinegen_music_ebc11b723e10ec2a",
-    "disciplinegen_music_ec2f444553647eeb"
+    "disciplinegen_music_ec2f444553647eeb",
+    "disciplinegen_sports_12ac8cd6e1a56581",
+    "disciplinegen_sports_19a4eabd156f5bf0",
+    "disciplinegen_sports_34c255cd54821563",
+    "disciplinegen_sports_34ffec53916b1a0a",
+    "disciplinegen_sports_generated_soccer_formation_dots"
   ],
+  "replaced_draft_ids": {
+    "math_exp_01": "grade_math_math_95",
+    "math_high_01": "grade_math_math_1",
+    "phys_high_01": "grade_physics_task_68",
+    "cs_high_01": "grade_ComputerScience_task_17",
+    "bio_high_01": "disciplinegen_biology_cf797d51a318cd19",
+    "cand_hs_civ_06": "grade_math_math_4",
+    "bio_exp_01": "grade_biology_task_57",
+    "phys_prob_02": "grade_physics_task_12",
+    "disciplinegen_chemistry_055480afd7ffa6eb": "grade_chemistry_task_2",
+    "disciplinegen_mathematics_2e453c1dd037c7a3": "grade_math_math_41",
+    "disciplinegen_mathematics_78168b247580660d": "grade_math_math_40",
+    "disciplinegen_biology_cf74ce3ea6ace9e5": "disciplinegen_biology_d463e086c0d85b7b"
+  },
   "known_limitations": [
     "Only the existing four reviewed multisource rows have completed visual and subject review.",
     "GRADE redistribution rights remain unverified; keep upstream IDs and assets separate.",

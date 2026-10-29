@@ -29,6 +29,11 @@ class PaperItemCurationTest(unittest.TestCase):
         self.assertEqual(audit([row], reviews[:1] + reviews[2:])[0]["accepted_count"], 0)
         self.assertEqual(audit([row], reviews[:2] + [{**final, "license": "unknown"}])[0]["accepted_count"], 0)
         self.assertEqual(audit([row], reviews[:2] + [{**final, "expected_final_state": ""}])[0]["accepted_count"], 0)
+        excluded = {**row, "curation": {"status": "draft_needs_content_repair"}}
+        excluded_reviews = [{**review, "item_sha256": item_hash(excluded)} for review in reviews]
+        report, queue, _ = audit([excluded], excluded_reviews)
+        self.assertEqual(report["accepted_count"], 0)
+        self.assertIn("content_repair_required", queue[0]["gates"])
 
 
 if __name__ == "__main__":

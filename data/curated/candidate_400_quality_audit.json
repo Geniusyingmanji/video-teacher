@@ -4,15 +4,15 @@
   "threshold": 0.7,
   "near_duplicate_pairs": [
     {
-      "id_a": "disciplinegen_computer_science_a40d5924f269867b",
-      "id_b": "disciplinegen_computer_science_d46008cac268401f",
-      "similarity": 0.73,
+      "id_a": "grade_math_math_97",
+      "id_b": "grade_math_math_95",
+      "similarity": 1.0,
       "same_discipline": true
     },
     {
-      "id_a": "disciplinegen_sports_12ac8cd6e1a56581",
-      "id_b": "disciplinegen_sports_34c255cd54821563",
-      "similarity": 0.723,
+      "id_a": "disciplinegen_computer_science_a40d5924f269867b",
+      "id_b": "disciplinegen_computer_science_d46008cac268401f",
+      "similarity": 0.731,
       "same_discipline": true
     },
     {
@@ -24,22 +24,35 @@
     {
       "id_a": "disciplinegen_computer_science_b2e601bd851dd0eb",
       "id_b": "disciplinegen_computer_science_d46008cac268401f",
-      "similarity": 0.701,
+      "similarity": 0.7,
       "same_discipline": true
     }
   ],
   "near_duplicate_pair_count": 4,
   "quality_flag_counts": {
-    "domain_expert_review_required": 27,
-    "duration_wording_corrected_from_10_to_5": 2,
-    "manual_atomic_scope_required": 140,
-    "manual_content_review_required": 396,
+    "atomic_step_rewrite": 44,
+    "authored_history_rewrite_from_source_theme": 7,
+    "brinton_j_curve_misattribution_corrected": 1,
+    "cap_theorem_claim_corrected": 1,
+    "difficulty_recalibrated_from_high": 17,
+    "domain_expert_review_required": 31,
+    "duration_wording_corrected_from_10_to_5": 1,
+    "heap_result_explicitly_verified": 3,
+    "manual_atomic_scope_required": 81,
+    "manual_content_review_required": 397,
+    "meiosis_source_claim_repaired": 1,
     "near_duplicate_topic_review": 7,
-    "prompt_over_500_chars": 102,
-    "source_instruction_over_300_chars": 102,
-    "source_license_unverified": 168,
-    "source_text_over_300_chars": 12,
-    "too_many_story_beats_for_short_clip": 61
+    "prompt_over_500_chars": 76,
+    "source_factual_inconsistency_repaired": 27,
+    "source_instruction_over_300_chars": 76,
+    "source_instruction_typo_repaired_in_prompt": 1,
+    "source_license_unverified": 178,
+    "source_target_extra_edit_rejected": 2,
+    "source_target_food_chain_corrected": 1,
+    "source_text_over_300_chars": 26,
+    "source_verified_replacement": 12,
+    "too_many_story_beats_for_short_clip": 17,
+    "unresolved_image_token_removed_from_text_prompt": 8
   },
   "release_ready": false
 }
