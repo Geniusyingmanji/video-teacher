@@ -46,7 +46,7 @@ if __name__ == '__main__':
     agent = TeachingVideoAgent(0, topic,
         folder=ROOT / f'Code2Video/src/CASES/VIDEOTEACHER-qwen38-{args.case_id}',
         cfg=RunConfig(api=request_local_token, use_feedback=False, use_assets=False,
-            max_code_token_length=10000, max_fix_bug_tries=2, max_regenerate_tries=2))
+            max_code_token_length=4096, max_fix_bug_tries=2, max_regenerate_tries=2))
     video = agent.GENERATE_VIDEO()
     result = dict(model='Qwen/Qwen3.8-27B', source_case_id=case['id'],
         topic=topic, use_feedback=False, use_assets=False,
