@@ -20,12 +20,8 @@ except ImportError:
 # text-only run cannot use Code2Video's vision Critic, so final layout review is
 # still required after rendering.
 LAYOUT_POLICY = (
-    " At 854x480, reserve the top 15% for a short title. Keep a 4% horizontal "
-    "and 5% vertical safe margin. Use stable left notes and right diagram areas; "
-    "do not move a graph, axis, or symbol between sections without an explicit "
-    "transition. Show one worked step at a time. Remove old formula objects "
-    "before showing the next formula. Keep labels large enough to read at native "
-    "playback size, and never overlap labels, formulas, or the main diagram."
+    " At 854x480: title in top 15%; margins 4%/5%; stable notes and diagram; "
+    "one step at a time; remove old formulas; large labels; no overlaps."
 )
 
 if __name__ == '__main__':
