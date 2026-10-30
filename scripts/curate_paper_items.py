@@ -22,6 +22,13 @@ CORE_DISCIPLINES = ("mathematics", "physics", "chemistry", "biology", "medicine"
                     "computer_science", "economics", "civics", "language_literature",
                     "history", "geography", "art_music")
 TASK_TYPES = ("explanation", "problem_solving")
+TEACHING_TASKS = {"concept_mechanism", "worked_step", "evidence_interpretation",
+                  "procedure_strategy"}
+
+
+def normalized_discipline(label: str) -> str:
+    """Keep source labels intact while using one frozen reporting vocabulary."""
+    return "art_music" if label == "music" else label
 
 
 def read_jsonl(path: Path) -> list[dict]:
@@ -54,6 +61,8 @@ def review_errors(row: dict, reviews: list[dict]) -> list[str]:
             errors.append("review_gate_failed")
         if review.get("difficulty") not in DIFFICULTIES or review.get("cognitive_skill") not in COGNITIVE_SKILLS:
             errors.append("review_scale_missing")
+        if review.get("teaching_task") not in TEACHING_TASKS:
+            errors.append("review_teaching_task_missing")
     if len(adjudications) != 1:
         errors.append("one_adjudication_required")
     else:
@@ -72,9 +81,15 @@ def review_errors(row: dict, reviews: list[dict]) -> list[str]:
             errors.append("license_unverified")
         if final.get("difficulty") not in DIFFICULTIES or final.get("cognitive_skill") not in COGNITIVE_SKILLS:
             errors.append("final_scale_missing")
+        if final.get("teaching_task") not in TEACHING_TASKS:
+            errors.append("final_teaching_task_missing")
+        for field in ("target_audience", "observable_evidence"):
+            if not isinstance(final.get(field), str) or not final[field].strip():
+                errors.append(f"missing_{field}")
         if len(independent) == 2 and any(
             r.get("difficulty") != final.get("difficulty") or
-            r.get("cognitive_skill") != final.get("cognitive_skill") for r in independent
+            r.get("cognitive_skill") != final.get("cognitive_skill") or
+            r.get("teaching_task") != final.get("teaching_task") for r in independent
         ) and not str(final.get("disagreement_resolution", "")).strip():
             errors.append("disagreement_resolution_required")
     return sorted(set(errors))
@@ -96,11 +111,16 @@ def audit(rows: list[dict], reviews: list[dict]) -> tuple[dict, list[dict], list
         errors = review_errors(row, by_case[row["id"]])
         queue.append({"id": row["id"], "item_sha256": item_hash(row),
                       "discipline": row["discipline"], "task_type": row["task_type"],
+                      "normalized_discipline": normalized_discipline(row["discipline"]),
                       "original_difficulty": row["difficulty"], "gates": errors})
         if not errors:
             final = next(r for r in by_case[row["id"]] if r["role"] == "adjudicator")
             accepted.append({**row, "reviewed_difficulty": final["difficulty"],
                              "cognitive_skill": final["cognitive_skill"],
+                             "normalized_discipline": normalized_discipline(row["discipline"]),
+                             "teaching_task": final["teaching_task"],
+                             "target_audience": final["target_audience"],
+                             "observable_evidence": final["observable_evidence"],
                              "atomic_target": final["atomic_target"],
                              "expected_final_state": final["expected_final_state"],
                              "reference_answer": final["reference_answer"],
@@ -109,10 +129,13 @@ def audit(rows: list[dict], reviews: list[dict]) -> tuple[dict, list[dict], list
     report = {
         "candidate_count": len(rows), "accepted_count": len(accepted),
         "original_difficulty": dict(Counter(r["difficulty"] for r in rows)),
+        "normalized_disciplines": dict(sorted(Counter(
+            normalized_discipline(r["discipline"]) for r in rows).items())),
         "discipline_task_cells": {f"{d}/{t}": n for (d, t), n in sorted(
             Counter((r["discipline"], r["task_type"]) for r in rows).items())},
         "accepted_difficulty": dict(Counter(r["reviewed_difficulty"] for r in accepted)),
         "accepted_cognitive_skill": dict(Counter(r["cognitive_skill"] for r in accepted)),
+        "accepted_teaching_task": dict(Counter(r["teaching_task"] for r in accepted)),
         "core_cell_minimum": 5,
         "candidate_core_cell_gaps": {f"{d}/{t}": max(0, 5 - sum(
             r["discipline"] == d and r["task_type"] == t for r in rows))

@@ -10,10 +10,14 @@ class PaperItemCurationTest(unittest.TestCase):
         digest = item_hash(row)
         reviewer = {"case_id": "case", "role": "reviewer", "item_sha256": digest,
                     "difficulty": "intermediate", "cognitive_skill": "application",
+                    "teaching_task": "worked_step",
                     **{field: True for field in DIMENSIONS}}
         final = {"case_id": "case", "role": "adjudicator", "item_sha256": digest,
                  "reviewer_id": "expert-c", "decision": "accept", "difficulty": "intermediate",
-                 "cognitive_skill": "application", "source_url": "https://example.org/source",
+                 "cognitive_skill": "application", "teaching_task": "worked_step",
+                 "target_audience": "introductory algebra students",
+                 "observable_evidence": "the sign changes when the term moves",
+                 "source_url": "https://example.org/source",
                  "license": "CC BY 4.0", "reference_answer": "x = 2",
                  "atomic_target": "Move one term", "expected_final_state": "x = 2",
                  "failure_criteria": "Wrong sign", "difficulty_rationale": "One algebraic step"}
@@ -22,6 +26,7 @@ class PaperItemCurationTest(unittest.TestCase):
         report, queue, accepted = audit([row], reviews)
         self.assertEqual(report["accepted_count"], 1)
         self.assertEqual(accepted[0]["reviewed_difficulty"], "intermediate")
+        self.assertEqual(accepted[0]["teaching_task"], "worked_step")
         self.assertEqual(queue[0]["gates"], [])
 
         changed = {**row, "prompt_text": "Different equation step"}
@@ -29,11 +34,22 @@ class PaperItemCurationTest(unittest.TestCase):
         self.assertEqual(audit([row], reviews[:1] + reviews[2:])[0]["accepted_count"], 0)
         self.assertEqual(audit([row], reviews[:2] + [{**final, "license": "unknown"}])[0]["accepted_count"], 0)
         self.assertEqual(audit([row], reviews[:2] + [{**final, "expected_final_state": ""}])[0]["accepted_count"], 0)
+        self.assertEqual(audit([row], reviews[:2] + [{**final, "observable_evidence": ""}])[0]["accepted_count"], 0)
+        self.assertEqual(audit([row], reviews[:2] + [{**final, "teaching_task": "unknown"}])[0]["accepted_count"], 0)
         excluded = {**row, "curation": {"status": "draft_needs_content_repair"}}
         excluded_reviews = [{**review, "item_sha256": item_hash(excluded)} for review in reviews]
         report, queue, _ = audit([excluded], excluded_reviews)
         self.assertEqual(report["accepted_count"], 0)
         self.assertIn("content_repair_required", queue[0]["gates"])
+
+    def test_music_normalizes_without_changing_source_label(self):
+        row = {"id": "music-case", "discipline": "music", "task_type": "explanation",
+               "difficulty": "undergrad"}
+        report, queue, accepted = audit([row], [])
+        self.assertEqual(report["normalized_disciplines"], {"art_music": 1})
+        self.assertEqual(queue[0]["discipline"], "music")
+        self.assertEqual(queue[0]["normalized_discipline"], "art_music")
+        self.assertEqual(accepted, [])
 
 
 if __name__ == "__main__":
