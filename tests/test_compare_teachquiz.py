@@ -13,7 +13,7 @@ def protocol(**overrides):
         "random_seed": 7,
         "match_priority": ["discipline", "task_type", "difficulty"],
         "max_baseline_score": 0.8,
-        "n_frames": 8,
+        "sample_fps": 2,
         "frame_max_px": 384,
         "max_questions": None,
     }
@@ -25,6 +25,8 @@ class CompareTeachQuizTest(unittest.TestCase):
     def test_rejects_protocol_difference(self):
         with self.assertRaisesRegex(ValueError, "random_seed"):
             validate_comparable(protocol(), protocol(random_seed=8))
+        with self.assertRaisesRegex(ValueError, "sample_fps"):
+            validate_comparable(protocol(sample_fps=2), protocol(sample_fps=1))
 
     def test_rejects_model_specific_probes(self):
         with self.assertRaisesRegex(ValueError, "frozen_shared"):

@@ -8,7 +8,7 @@ Usage:
         --prompts data/prompts/pilot_v0_1.jsonl \
         --manifest generation/outputs_data/wan2_2_ti2v_5b/pilot_v0_1/manifest.jsonl \
         --out outputs/eval_pilot_v0_1 \
-        --n-frames 8 --frame-max-px 384
+        --sample-fps 2 --frame-max-px 384
 """
 
 from __future__ import annotations
@@ -95,7 +95,7 @@ def latest_successful_manifest(records: list[dict]) -> list[dict]:
 
 
 def evaluate_one(
-    case: dict, video_path: str, n_frames: int, frame_max_px: int,
+    case: dict, video_path: str, sample_fps: float, frame_max_px: int,
     dims: dict, weights: dict,
     detail_frame_max_px: int = 0,
     rubric_version: str = "legacy",
@@ -106,7 +106,7 @@ def evaluate_one(
             name in dims for name in ("pedagogical_clarity", "didactic_affordances")
         )
         detail_frames = extract_frames(
-            video_path, n=n_frames,
+            video_path, sample_fps=sample_fps,
             resize_max=detail_frame_max_px if needs_detail else frame_max_px,
         )
         if needs_detail:
@@ -125,8 +125,9 @@ def evaluate_one(
 
     out: dict = {
         "id": case["id"],
+        "sampled_frame_count": len(frames),
         "evaluation_config": {
-            "n_frames": n_frames,
+            "sample_fps": sample_fps,
             "frame_max_px": frame_max_px,
             "detail_frame_max_px": detail_frame_max_px,
             "dimensions": list(dims),
@@ -166,7 +167,7 @@ def main() -> None:
     ap.add_argument("--prompts", required=True)
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--n-frames", type=int, default=8)
+    ap.add_argument("--sample-fps", type=float, default=2.0)
     ap.add_argument("--frame-max-px", type=int, default=832,
                     help="Source frame resolution for new evaluations; use 384 to reproduce old runs")
     ap.add_argument("--detail-frame-max-px", type=int, default=832,
@@ -178,6 +179,8 @@ def main() -> None:
     ap.add_argument("--rubric-6x6", action="store_true",
                     help="Score 36 evidence-backed criteria across all six teaching dimensions")
     args = ap.parse_args()
+    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0:
+        ap.error("sample FPS must be positive and finite")
     if args.frame_max_px <= 0 or args.detail_frame_max_px <= 0:
         ap.error("frame resolution limits must be positive")
     if args.rubric_6x6:
@@ -188,7 +191,7 @@ def main() -> None:
         dims = ALL_DIMS if args.extended else CORE_DIMS
         weights = EXTENDED_WEIGHTS if args.extended else CORE_WEIGHTS
     evaluation_config = {
-        "n_frames": args.n_frames,
+        "sample_fps": args.sample_fps,
         "frame_max_px": args.frame_max_px,
         "detail_frame_max_px": args.detail_frame_max_px,
         "dimensions": list(dims),
@@ -251,7 +254,7 @@ def main() -> None:
                 if not case:
                     continue
                 fut = ex.submit(
-                    evaluate_one, case, m["video_path"], args.n_frames,
+                    evaluate_one, case, m["video_path"], args.sample_fps,
                     args.frame_max_px, dims, weights, args.detail_frame_max_px,
                     evaluation_config.get("rubric_version", "legacy"),
                 )

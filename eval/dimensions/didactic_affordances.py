@@ -42,7 +42,7 @@ Expected visual elements:
 {visuals}
 Original prompt excerpt: {prompt_excerpt}
 
-8 frames follow. Return JSON only."""
+{frame_count} frames follow. Return JSON only."""
 
 
 def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
@@ -51,6 +51,7 @@ def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
         discipline=case["discipline"],
         visuals=visuals,
         prompt_excerpt=case["prompt_text"][:300],
+        frame_count=len(frames),
     )
     content = frames_as_multimodal_content(frames, user_text)
     raw = chat(

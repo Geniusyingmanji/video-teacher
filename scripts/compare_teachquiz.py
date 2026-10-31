@@ -17,7 +17,7 @@ from typing import Any
 
 COMPARABILITY_FIELDS = (
     "student", "quiz_sha256", "probe_origin", "random_control",
-    "random_seed", "match_priority", "max_baseline_score", "n_frames",
+    "random_seed", "match_priority", "max_baseline_score", "n_frames", "sample_fps",
     "frame_max_px", "max_questions",
 )
 

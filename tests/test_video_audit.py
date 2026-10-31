@@ -7,7 +7,7 @@ import cv2
 import imageio.v3 as iio
 import numpy as np
 
-from eval.frame_extractor import extract_frames
+from eval.frame_extractor import extract_frames, sample_frame_indices
 from eval.run_eval import evaluate_one
 from scripts.audit_generated_videos import inspect_video
 
@@ -24,6 +24,7 @@ class VideoAuditTest(unittest.TestCase):
 
             frames = extract_frames(path, n=3, resize_max=48)
             self.assertEqual(len(frames), 3)
+            self.assertEqual(len(extract_frames(path, resize_max=48)), 2)
             self.assertEqual(frames[0].size, (48, 32))
             self.assertLess(np.asarray(frames[0]).mean(), np.asarray(frames[-1]).mean())
 
@@ -53,7 +54,7 @@ class VideoAuditTest(unittest.TestCase):
         core, layout = Judge(), Judge()
         with patch("eval.run_eval.extract_frames", return_value=[Image.new("RGB", (832, 480))]) as mocked:
             result = evaluate_one(
-                {"id": "sample"}, "unused.mp4", 1, 384,
+                {"id": "sample"}, "unused.mp4", 2, 384,
                 {"conceptual_correctness": core, "pedagogical_clarity": layout},
                 {"conceptual_correctness": 1, "pedagogical_clarity": 1},
                 detail_frame_max_px=832,
@@ -61,7 +62,13 @@ class VideoAuditTest(unittest.TestCase):
         self.assertEqual(result["aggregate_score"], 3)
         self.assertEqual(core.widths, [384])
         self.assertEqual(layout.widths, [832])
-        mocked.assert_called_once_with("unused.mp4", n=1, resize_max=832)
+        mocked.assert_called_once_with("unused.mp4", sample_fps=2, resize_max=832)
+
+    def test_fixed_rate_sampling_depends_on_duration(self):
+        self.assertEqual(sample_frame_indices(49, 16, 2), [0, 8, 16, 24, 32, 40, 48])
+        self.assertEqual(sample_frame_indices(121, 24, 2), list(range(0, 121, 12)))
+        with self.assertRaisesRegex(ValueError, "source FPS"):
+            sample_frame_indices(49, 0, 2)
 
     def test_adaptive_sampling_catches_unscheduled_scene_change(self):
         from scripts.audit_generated_videos import adaptive_frame_numbers

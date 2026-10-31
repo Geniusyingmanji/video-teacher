@@ -45,7 +45,7 @@ Original prompt:
 {prompt_text}
 \"\"\"
 
-8 frames follow. Return JSON only."""
+{frame_count} frames follow. Return JSON only."""
 
 
 def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
@@ -53,6 +53,7 @@ def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
         audience=case["pedagogical_target_audience"],
         discipline=case["discipline"],
         prompt_text=case["prompt_text"],
+        frame_count=len(frames),
     )
     content = frames_as_multimodal_content(frames, user_text)
     raw = chat(

@@ -17,12 +17,12 @@ EVAL13=/data/zyf/rise-teacher/outputs/eval_pilot_v0_1_wan13b_5s
 echo "[rerun] 5B 5s eval -> $EVAL5B"
 PYTHONUNBUFFERED=1 python -m eval.run_eval \
   --prompts "$PROMPTS" --manifest "$GEN5B" --out "$EVAL5B" \
-  --n-frames 8 --frame-max-px 384 --max-workers 2
+  --sample-fps 2 --frame-max-px 384 --max-workers 2
 
 echo "[rerun] 1.3B 5s eval -> $EVAL13"
 PYTHONUNBUFFERED=1 python -m eval.run_eval \
   --prompts "$PROMPTS" --manifest "$GEN13" --out "$EVAL13" \
-  --n-frames 8 --frame-max-px 384 --max-workers 2
+  --sample-fps 2 --frame-max-px 384 --max-workers 2
 
 echo "[rerun] rendering per-model reports"
 python scripts/render_report.py --prompts "$PROMPTS" --manifest "$GEN5B" \

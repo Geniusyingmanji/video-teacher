@@ -1,13 +1,13 @@
 """Frame extraction for video evaluation.
 
-Extracts N evenly-spaced frames from an MP4 and returns them as PIL.Image
-list. Used by every dimension judge.
+Samples an MP4 at a fixed temporal rate and returns PIL images.
 """
 
 from __future__ import annotations
 
 import base64
 from io import BytesIO
+import math
 from pathlib import Path
 from typing import Optional
 
@@ -16,16 +16,27 @@ import numpy as np
 from PIL import Image
 
 
+def sample_frame_indices(total: int, source_fps: float, sample_fps: float = 2.0) -> list[int]:
+    """Return distinct source indices at 0, 1/sample_fps, ... through the last frame."""
+    if total <= 0 or not math.isfinite(source_fps) or source_fps <= 0:
+        raise ValueError("video must have frames and a valid source FPS")
+    if not math.isfinite(sample_fps) or sample_fps <= 0:
+        raise ValueError("sample_fps must be positive and finite")
+    last_sample = math.floor((total - 1) * sample_fps / source_fps)
+    return sorted({round(k * source_fps / sample_fps) for k in range(last_sample + 1)})
+
+
 def extract_frames(
     video_path: str | Path,
-    n: int = 8,
+    n: int | None = None,
     resize_max: int = 512,
+    sample_fps: float = 2.0,
 ) -> list[Image.Image]:
-    """Sample N evenly-spaced frames from video_path. Returns PIL.Images.
+    """Sample at 2 FPS by default. Explicit n retains legacy count sampling.
 
     resize_max: if > 0, resize longest side to this many pixels (saves judge tokens).
     """
-    if n <= 0:
+    if n is not None and n <= 0:
         raise ValueError("n must be positive")
     cap = cv2.VideoCapture(str(video_path))
     try:
@@ -34,8 +45,11 @@ def extract_frames(
         total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
         if total <= 0:
             raise RuntimeError(f"empty video: {video_path}")
-        idx = (list(range(total)) if n >= total else
-               np.linspace(0, total - 1, num=n).round().astype(int).tolist())
+        if n is None:
+            idx = sample_frame_indices(total, cap.get(cv2.CAP_PROP_FPS), sample_fps)
+        else:
+            idx = (list(range(total)) if n >= total else
+                   np.linspace(0, total - 1, num=n).round().astype(int).tolist())
         frames: list[Image.Image] = []
         for i in idx:
             cap.set(cv2.CAP_PROP_POS_FRAMES, i)
@@ -77,5 +91,5 @@ def frames_as_multimodal_content(
 if __name__ == "__main__":
     import sys
     p = sys.argv[1]
-    frames = extract_frames(p, n=8)
+    frames = extract_frames(p, sample_fps=2)
     print(f"extracted {len(frames)} frames, sizes={[f.size for f in frames]}")

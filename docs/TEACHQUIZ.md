@@ -57,7 +57,7 @@ python -m eval.run_teachquiz \
   --manifest /data/zyf/rise-teacher/generations/wan2_2_ti2v_5b/pilot_v0_1/manifest.jsonl \
   --student dummy \
   --out outputs/teachquiz_smoke_dummy_5b \
-  --limit 3 --n-frames 2 --frame-max-px 256
+  --limit 3 --sample-fps 2 --frame-max-px 256
 
 python scripts/render_teachquiz_report.py \
   --eval-dir outputs/teachquiz_smoke_dummy_5b \
@@ -80,7 +80,7 @@ python -m eval.run_teachquiz \
   --student smolvlm2 \
   --student-model-path models_students/SmolVLM2-2.2B-Instruct \
   --out outputs/teachquiz_smolvlm2_5b \
-  --n-frames 8 --frame-max-px 384
+  --sample-fps 2 --frame-max-px 384
 
 python scripts/render_teachquiz_report.py \
   --eval-dir outputs/teachquiz_smolvlm2_5b \
@@ -99,7 +99,7 @@ python -m eval.run_teachquiz \
   --student-model-path models_students/SmolVLM2-2.2B-Instruct \
   --out outputs/teachquiz_smolvlm2_smoke \
   --limit 1 --max-questions 1 --skip-random \
-  --n-frames 1 --frame-max-px 128 --max-new-tokens 4 \
+  --sample-fps 2 --frame-max-px 128 --max-new-tokens 4 \
   --torch-dtype float32
 ```
 
@@ -115,7 +115,7 @@ python -m eval.run_teachquiz \
   --student qwen25vl \
   --student-model-path /path/to/Qwen2.5-VL-3B-Instruct \
   --out outputs/teachquiz_qwen25vl3b_5b \
-  --n-frames 8 --frame-max-px 384
+  --sample-fps 2 --frame-max-px 384
 
 python scripts/render_teachquiz_report.py \
   --eval-dir outputs/teachquiz_qwen25vl3b_5b \

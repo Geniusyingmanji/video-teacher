@@ -84,7 +84,7 @@ python -m eval.run_eval \
     --prompts data/prompts/pilot_v0_1.jsonl \
     --manifest /data/zyf/rise-teacher/generations/wan2_1_t2v_1_3b/pilot_v0_1/manifest.jsonl \
     --out /data/zyf/rise-teacher/outputs/eval_pilot_v0_1 \
-    --n-frames 8 --frame-max-px 384
+    --sample-fps 2 --frame-max-px 384
 # Produces per_case.jsonl + aggregate.json (per_dim_mean, per_discipline,
 # per_task_type, per_difficulty)
 ```

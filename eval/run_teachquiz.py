@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import random
 import time
 import traceback
@@ -77,7 +78,7 @@ def protocol_metadata(args: argparse.Namespace, student_name: str) -> dict[str, 
     be resumed with a different quiz, learner, or scoring configuration.
     """
     return {
-        "schema_version": 1,
+        "schema_version": 2,
         "student": student_name,
         "quiz_path": str(Path(args.quiz).resolve()),
         "quiz_sha256": file_sha256(args.quiz),
@@ -87,7 +88,7 @@ def protocol_metadata(args: argparse.Namespace, student_name: str) -> dict[str, 
         "random_seed": args.seed,
         "match_priority": ["discipline", "task_type", "difficulty"],
         "max_baseline_score": args.max_baseline_score,
-        "n_frames": args.n_frames,
+        "sample_fps": args.sample_fps,
         "frame_max_px": args.frame_max_px,
         "max_questions": args.max_questions,
     }
@@ -201,7 +202,7 @@ def main() -> None:
     ap.add_argument("--torch-dtype", default="bfloat16",
                     choices=["bfloat16", "float16", "float32", "auto"])
     ap.add_argument("--max-new-tokens", type=int, default=16)
-    ap.add_argument("--n-frames", type=int, default=8)
+    ap.add_argument("--sample-fps", type=float, default=2.0)
     ap.add_argument("--frame-max-px", type=int, default=384)
     ap.add_argument("--max-questions", type=int, default=0,
                     help="If >0, evaluate only the first N quiz items per case.")
@@ -212,6 +213,8 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--seed", type=int, default=123)
     args = ap.parse_args()
+    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0:
+        ap.error("sample FPS must be positive and finite")
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -258,7 +261,8 @@ def main() -> None:
                     raise RuntimeError(f"missing video in manifest for {cid}")
                 case = prompts.get(cid, {})
                 video_path = videos[cid]["video_path"]
-                frames = extract_frames(video_path, n=args.n_frames, resize_max=args.frame_max_px)
+                frames = extract_frames(video_path, sample_fps=args.sample_fps,
+                                        resize_max=args.frame_max_px)
 
                 random_entry = None if args.skip_random else choose_random_manifest(
                     manifest, cid, random.Random(f"{args.seed}:{cid}"), prompts
@@ -269,7 +273,7 @@ def main() -> None:
                     random_id = random_entry["id"]
                     random_frames = extract_frames(
                         random_entry["video_path"],
-                        n=args.n_frames,
+                        sample_fps=args.sample_fps,
                         resize_max=args.frame_max_px,
                     )
 

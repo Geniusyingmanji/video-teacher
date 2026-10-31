@@ -29,7 +29,7 @@ print(f'  {ok} ok, {err} failed')
 echo "[finalize_v0_2_high] running eval -> $EVAL_DIR"
 PYTHONUNBUFFERED=1 python -m eval.run_eval \
   --prompts "$PROMPTS" --manifest "$MANIFEST" --out "$EVAL_DIR" \
-  --n-frames 8 --frame-max-px 384 --max-workers 2
+  --sample-fps 2 --frame-max-px 384 --max-workers 2
 
 echo "[finalize_v0_2_high] rendering report"
 python scripts/render_report.py \

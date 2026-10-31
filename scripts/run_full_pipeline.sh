@@ -64,14 +64,14 @@ for duration in 3 5; do
         scored="$EVAL_BASE/wan5b_${arm}_${duration}s"
         python -m eval.run_eval --prompts "$PROMPTS" \
             --manifest "$out/manifest.jsonl" --out "$scored/standard" \
-            --extended --n-frames 8 --frame-max-px 832 --detail-frame-max-px 832
+            --extended --sample-fps 2 --frame-max-px 832 --detail-frame-max-px 832
         python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
             --manifest "$scored/standard/per_case.jsonl" --kind standard
 
         python -m eval.run_teachquiz --prompts "$PROMPTS" --quiz "$QUIZ" \
             --probe-origin frozen_shared --manifest "$out/manifest.jsonl" \
             --student qwen3vl --student-model-path "$STUDENT_MODEL_PATH" \
-            --out "$scored/teachquiz" --n-frames 8 --frame-max-px 832
+            --out "$scored/teachquiz" --sample-fps 2 --frame-max-px 832
         python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
             --manifest "$scored/teachquiz/per_case.jsonl" --kind teachquiz
     done

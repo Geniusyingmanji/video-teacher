@@ -31,7 +31,7 @@ You will be shown:
 Procedure (think step-by-step but only write the final JSON):
 1. Restate the central concept the video is supposed to teach.
 2. For each rubric check, decide whether the frames provide visual evidence \
-that satisfies it. Cite the frame index(es) (1..8) that support your verdict.
+that satisfies it. Cite the frame index(es) shown in the user message that support your verdict.
 3. Score 1..5 where 1=concept entirely wrong/absent, 3=partial/ambiguous, 5=fully correct \
 and unambiguous.
 4. Mark binary verdict: PASS if score>=4 AND every rubric check passes; otherwise FAIL.
@@ -59,7 +59,7 @@ Expected visual elements (should appear):
 Discipline-specific rubric checks:
 {rubric_checks}
 
-8 frames from the generated video follow. Indices 1..8.
+{frame_count} frames from the generated video follow. Indices 1..{frame_count}.
 Return JSON only."""
 
 
@@ -80,6 +80,7 @@ def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
         expected_concepts=concepts_str,
         expected_visual_elements=visuals_str,
         rubric_checks=rubric_str,
+        frame_count=len(frames),
     )
 
     content = frames_as_multimodal_content(frames, user_text)

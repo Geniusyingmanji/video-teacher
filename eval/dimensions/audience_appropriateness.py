@@ -51,7 +51,7 @@ Original prompt:
 {prompt_text}
 \"\"\"
 
-8 frames follow. Assess whether the video content is appropriately pitched \
+{frame_count} frames follow. Assess whether the video content is appropriately pitched \
 for the stated audience. Return JSON only."""
 
 
@@ -60,6 +60,7 @@ def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
         audience=case.get("pedagogical_target_audience", "general"),
         discipline=case.get("discipline", ""),
         subdomain=case.get("subdomain", ""),
+        frame_count=len(frames),
         difficulty=case.get("difficulty", "medium"),
         prompt_text=case.get("prompt_text", ""),
     )

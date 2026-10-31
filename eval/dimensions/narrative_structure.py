@@ -24,7 +24,7 @@ each step must visibly follow from the previous.
 You will be shown:
 - the original prompt,
 - the expected narrative order (an ordered list of beats),
-- 8 evenly-spaced frames (indices 1..8).
+- frames sampled at a fixed temporal rate, indexed from 1.
 
 Procedure:
 1. For each expected beat, identify the earliest frame that depicts it.
@@ -49,7 +49,7 @@ Original prompt:
 Expected narrative order (the video should hit these beats in this order):
 {expected_order}
 
-8 frames follow. Indices 1..8.
+{frame_count} frames follow. Indices 1..{frame_count}.
 Return JSON only."""
 
 
@@ -58,7 +58,7 @@ def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
     beats = case.get("narrative_beats")
     if beats:
         order_str = "\n".join(
-            f"  {i+1}. {b['beat']} (expected around frames {b['expected_frame_range'][0]}-{b['expected_frame_range'][1]})"
+            f"  {i+1}. {b['beat']}"
             for i, b in enumerate(beats)
         )
     else:
@@ -68,6 +68,7 @@ def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
         task_type=case["task_type"],
         prompt_text=case["prompt_text"],
         expected_order=order_str,
+        frame_count=len(frames),
     )
     content = frames_as_multimodal_content(frames, user_text)
     raw = chat(

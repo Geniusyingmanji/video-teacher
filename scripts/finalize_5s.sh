@@ -29,11 +29,11 @@ EVAL13=/data/zyf/rise-teacher/outputs/eval_pilot_v0_1_wan13b_5s
 
 echo "[finalize_5s] running 5B eval -> $EVAL5B"
 python -m eval.run_eval --prompts "$PROMPTS" --manifest "$GEN5B" --out "$EVAL5B" \
-  --n-frames 8 --frame-max-px 384 --max-workers 4
+  --sample-fps 2 --frame-max-px 384 --max-workers 4
 
 echo "[finalize_5s] running 1.3B eval -> $EVAL13"
 python -m eval.run_eval --prompts "$PROMPTS" --manifest "$GEN13" --out "$EVAL13" \
-  --n-frames 8 --frame-max-px 384 --max-workers 4
+  --sample-fps 2 --frame-max-px 384 --max-workers 4
 
 echo "[finalize_5s] rendering per-model reports"
 python scripts/render_report.py --prompts "$PROMPTS" --manifest "$GEN5B" \
@@ -53,10 +53,10 @@ python scripts/render_comparison.py \
 echo "[finalize_5s] saving sample frames at 5s (for visual inspection of long-form drift)"
 python scripts/save_sample_frames.py \
   --manifest "$GEN5B" --out /data/zyf/rise-teacher/outputs/sample_frames_5b_5s \
-  --n-frames 6 --frame-max-px 512 || true
+  --sample-fps 2 --frame-max-px 512 || true
 python scripts/save_sample_frames.py \
   --manifest "$GEN13" --out /data/zyf/rise-teacher/outputs/sample_frames_13b_5s \
-  --n-frames 6 --frame-max-px 512 || true
+  --sample-fps 2 --frame-max-px 512 || true
 
 echo "[finalize_5s] DONE at $(date -Is)"
 echo "  PILOT_REPORT_5s.md"

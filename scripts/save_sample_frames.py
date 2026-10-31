@@ -1,4 +1,4 @@
-"""Save evenly-spaced sample frames as JPGs for human inspection.
+"""Save frames sampled at a temporal rate as JPGs for human inspection.
 
 Useful for spot-checking what the model actually produced after a generation run.
 """
@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -19,9 +20,11 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--n-frames", type=int, default=4)
+    ap.add_argument("--sample-fps", type=float, default=2.0)
     ap.add_argument("--frame-max-px", type=int, default=512)
     args = ap.parse_args()
+    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0:
+        ap.error("sample FPS must be positive and finite")
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -38,7 +41,8 @@ def main() -> None:
             continue
         cid = r["id"]
         try:
-            frames = extract_frames(r["video_path"], n=args.n_frames, resize_max=args.frame_max_px)
+            frames = extract_frames(r["video_path"], sample_fps=args.sample_fps,
+                                    resize_max=args.frame_max_px)
         except Exception as e:
             print(f"[skip] {cid}: {e}")
             continue

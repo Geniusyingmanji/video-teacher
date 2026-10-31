@@ -1,6 +1,6 @@
 """Auto-generate visual probe questions from video frames using GPT-5.5.
 
-For each case, samples 8 frames, asks GPT-5.5 to generate 3 questions that:
+For each case, samples at 2 FPS and asks GPT-5.5 to generate 3 questions that:
 1. Require seeing the specific frames to answer correctly
 2. Cannot be guessed from the prompt text alone
 3. Are multiple-choice (A-D) with one correct answer
@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
@@ -30,7 +31,7 @@ from eval.judges.gpt55 import chat
 
 
 SYSTEM_PROMPT = """You are designing evaluation questions for an educational video benchmark.
-Given 8 frames from a generated educational video, create 3 multiple-choice questions that:
+Given sampled frames from a generated educational video, create 3 multiple-choice questions that:
 
 1. REQUIRE seeing these specific frames to answer correctly
 2. CANNOT be answered by just knowing the topic — they must test visual grounding
@@ -50,7 +51,7 @@ def generate_probe_questions(case: dict, frames: list, max_retries: int = 2) -> 
     user_text = (
         f"Case: {case['id']} — {case['discipline']}\n"
         f"Topic: {case['prompt_text'][:200]}\n\n"
-        "Generate 3 visual grounding questions about these 8 frames. "
+        f"Generate 3 visual grounding questions about these {len(frames)} frames. "
         "Return JSON only."
     )
     content = frames_as_multimodal_content(frames, user_text)
@@ -82,10 +83,12 @@ def main() -> None:
     ap.add_argument("--manifest", required=True)
     ap.add_argument("--prompts", required=True)
     ap.add_argument("--out", required=True)
-    ap.add_argument("--n-frames", type=int, default=8)
+    ap.add_argument("--sample-fps", type=float, default=2.0)
     ap.add_argument("--frame-max-px", type=int, default=384)
     ap.add_argument("--limit", type=int, default=0)
     args = ap.parse_args()
+    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0:
+        ap.error("sample FPS must be positive and finite")
 
     prompts = {}
     with open(args.prompts) as f:
@@ -130,7 +133,8 @@ def main() -> None:
                 print(f"[probe-gen] [{i+1}/{len(manifest)}] {cid}: no prompt, skip")
                 continue
             try:
-                frames = extract_frames(m["video_path"], n=args.n_frames, resize_max=args.frame_max_px)
+                frames = extract_frames(m["video_path"], sample_fps=args.sample_fps,
+                                        resize_max=args.frame_max_px)
             except Exception as e:
                 print(f"[probe-gen] [{i+1}/{len(manifest)}] {cid}: frame extract failed: {e}")
                 continue

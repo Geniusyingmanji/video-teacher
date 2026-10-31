@@ -13,7 +13,7 @@ from eval.judges.gpt55 import chat
 from eval.frame_extractor import frames_as_multimodal_content
 
 
-SYSTEM_PROMPT = """You are a video quality judge. Given 8 frames from a \
+SYSTEM_PROMPT = """You are a video quality judge. Given sampled frames from a \
 generated video, rate four sub-axes on 1..5:
 
 - aesthetic: composition / color balance / overall appeal
@@ -33,12 +33,13 @@ Return ONLY a JSON object with keys: \
 
 
 USER_TEMPLATE = """Discipline: {discipline} / {subdomain}
-8 frames follow (indices 1..8). Return JSON only."""
+{frame_count} frames follow (indices 1..{frame_count}). Return JSON only."""
 
 
 def score(case: dict[str, Any], frames: list) -> dict[str, Any]:
     user_text = USER_TEMPLATE.format(
-        discipline=case["discipline"], subdomain=case["subdomain"]
+        discipline=case["discipline"], subdomain=case["subdomain"],
+        frame_count=len(frames)
     )
     content = frames_as_multimodal_content(frames, user_text)
     raw = chat(

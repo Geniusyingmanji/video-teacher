@@ -30,7 +30,7 @@ SYSTEM_NO_VIDEO = (
 )
 
 SYSTEM_WITH_VIDEO = (
-    "You are a student who has just watched an educational video (8 frames shown). "
+    "You are a student who has just watched sampled frames from an educational video. "
     "Answer the multiple-choice question using both what you see in the frames and your knowledge. "
     "Reply with ONLY the letter of the correct answer (A, B, C, or D) — nothing else."
 )
