@@ -8,12 +8,6 @@ cd "$code"
 "$py" scripts/pipeline_preflight.py \
   --prompts "$base/prompts.jsonl" --first-frames "$base/first_frames" \
   --model "$model" --generation-only --strict
-while :; do
-  free=$(nvidia-smi --id=1 --query-gpu=memory.free --format=csv,noheader,nounits | head -1)
-  if [ "$free" -ge 50000 ]; then break; fi
-  printf 'waiting for GPU 1: free=%s MiB, need 50000 MiB\n' "$free"
-  sleep 120
-done
 export CUDA_VISIBLE_DEVICES=1
 exec "$py" -u -m generation.runners.wan_ti2v_runner \
   --prompts "$base/prompts.jsonl" --first-frames "$base/first_frames" \
