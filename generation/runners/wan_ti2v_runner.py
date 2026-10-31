@@ -25,13 +25,18 @@ from PIL import Image, ImageOps
 from generation.runners.provenance import can_resume, file_sha256, input_sha256
 
 
-def load_pipe(model_path: str, dtype: torch.dtype, device: str):
+def load_pipe(model_path: str, dtype: torch.dtype, device: str, cpu_offload: bool = False):
     """Load Wan2.2-TI2V as an image-to-video pipeline."""
     from diffusers import WanImageToVideoPipeline
 
     print(f"[wan-ti2v] loading pipeline from {model_path} ...")
     pipe = WanImageToVideoPipeline.from_pretrained(model_path, torch_dtype=dtype)
-    pipe.to(device)
+    if cpu_offload:
+        if device != "cuda":
+            raise RuntimeError("CPU offload requires CUDA")
+        pipe.enable_model_cpu_offload(gpu_id=0)
+    else:
+        pipe.to(device)
     if hasattr(pipe, "enable_attention_slicing"):
         pipe.enable_attention_slicing()
     if hasattr(pipe, "enable_vae_tiling"):
@@ -76,6 +81,8 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--dtype", default="bfloat16",
                     choices=["bfloat16", "float16", "float32"])
+    ap.add_argument("--cpu-offload", action="store_true",
+                    help="Offload model components to host RAM to reduce GPU memory use")
     ap.add_argument("--prompt-mode", choices=["source", "focused"], default="source",
                     help="focused: one visible change while preserving first-frame labels")
     ap.add_argument("--negative-prompt", default="",
@@ -143,7 +150,7 @@ def main() -> None:
     print(f"[wan-ti2v] resume: {len(done_ids)} already generated")
     if len(done_ids) == len(valid_cases):
         return
-    pipe = load_pipe(args.model_path, dtype, device)
+    pipe = load_pipe(args.model_path, dtype, device, args.cpu_offload)
 
     started_at = time.time()
     with manifest_path.open("a") as mf:
@@ -207,6 +214,7 @@ def main() -> None:
                     "guidance_scale": args.guidance_scale, "seed": args.seed,
                     "negative_prompt": args.negative_prompt,
                     "fps": args.fps, "dtype": args.dtype,
+                    "cpu_offload": args.cpu_offload,
                     "elapsed_s": round(elapsed, 2),
                     "status": "ok",
                 }) + "\n")

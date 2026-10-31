@@ -12,4 +12,5 @@ export CUDA_VISIBLE_DEVICES=1
 exec "$py" -u -m generation.runners.wan_ti2v_runner \
   --prompts "$base/prompts.jsonl" --first-frames "$base/first_frames" \
   --out "$base/videos" --model-path "$model" \
-  --num-frames 81 --fps 16 --height 480 --width 832 --steps 30 --seed 42
+  --num-frames 81 --fps 16 --height 480 --width 832 --steps 30 --seed 42 \
+  --cpu-offload --limit 1
