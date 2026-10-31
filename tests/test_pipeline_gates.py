@@ -1,4 +1,6 @@
 import unittest
+import json
+import tempfile
 from pathlib import Path
 from unittest.mock import patch
 
@@ -37,6 +39,21 @@ class PipelineGateTest(unittest.TestCase):
                        "check_report_gpt_retry2_20260601_185724.jsonl")
         self.assertTrue(any("first-frame quality review not passed: 11/60"
                             in blocker for blocker in report["blockers"]))
+
+    def test_review_hash_rejects_changed_first_frame(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            (directory / "a.png").write_bytes(b"changed image")
+            prompts = directory / "prompts.jsonl"
+            prompts.write_text('{"id":"a"}\n', encoding="utf-8")
+            review = directory / "review.jsonl"
+            review.write_text(json.dumps({"id": "a", "verdict": "PASS",
+                                          "sha256": "0" * 64}) + "\n", encoding="utf-8")
+            report = check(prompts, directory, directory / "quiz.jsonl", directory,
+                           directory, check_runtime=False, require_quiz=False,
+                           first_frame_review=review)
+            self.assertTrue(any("first-frame changed after review" in blocker
+                                for blocker in report["blockers"]))
 
     def test_artifact_gate_uses_latest_attempt_and_rejects_errors(self):
         prompts = [{"id": "a"}, {"id": "b"}]

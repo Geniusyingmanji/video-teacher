@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 import os
@@ -73,6 +74,16 @@ def check(prompts: Path, first_frames: Path, quiz: Path, model: Path,
             blockers.append(f"first-frame quality review not passed: "
                             f"{len(not_approved)}/{len(valid_ids)}; "
                             f"first: {not_approved[0]}")
+        changed = []
+        for cid in sorted(valid_ids - set(missing_frames) - set(not_approved)):
+            expected_hash = reviewed[cid].get("sha256")
+            if expected_hash:
+                actual_hash = hashlib.sha256((first_frames / f"{cid}.png").read_bytes()).hexdigest()
+                if actual_hash != expected_hash:
+                    changed.append(cid)
+        if changed:
+            blockers.append(f"first-frame changed after review: {len(changed)}/{len(valid_ids)}; "
+                            f"first: {changed[0]}")
     quiz_rows = read_jsonl(quiz) if require_quiz else []
     quiz_ids = [row.get("case_id") for row in quiz_rows]
     present_quiz_ids = {cid for cid in quiz_ids if isinstance(cid, str) and cid}
