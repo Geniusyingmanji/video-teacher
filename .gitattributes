@@ -1,2 +1,3 @@
 data/round2_image_batch24/run_remote.sh text eol=lf
 data/round2_grade_probe11/run_remote.sh text eol=lf
+scripts/run_round2_grade_probe.sh text eol=lf

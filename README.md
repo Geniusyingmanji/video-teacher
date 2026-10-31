@@ -1,5 +1,7 @@
 # rise-teacher
 
+Round-two portable image probe: [setup and run guide](docs/ROUND2_PORTABLE.md).
+
 ## 本地研究原型 v1
 
 在仓库根目录运行 `python -m scripts.build_v1`，然后打开生成的
