@@ -51,7 +51,9 @@ def quiz_defects(rows: list[dict], expected_ids: set[str]) -> list[str]:
 
 
 def check(prompts: Path, first_frames: Path, quiz: Path, model: Path,
-          student_model: Path, *, check_runtime: bool = True) -> dict:
+          student_model: Path, *, check_runtime: bool = True,
+          require_quiz: bool = True,
+          first_frame_review: Path | None = None) -> dict:
     blockers: list[str] = []
     cases = read_jsonl(prompts)
     ids = [row.get("id") for row in cases]
@@ -62,21 +64,33 @@ def check(prompts: Path, first_frames: Path, quiz: Path, model: Path,
     missing_frames = [cid for cid in valid_ids if not (first_frames / f"{cid}.png").is_file()]
     if missing_frames:
         blockers.append(f"first frames missing: {len(missing_frames)}/{len(ids)}")
-    quiz_rows = read_jsonl(quiz)
+    if first_frame_review is not None:
+        reviews = read_jsonl(first_frame_review)
+        reviewed = {row.get("id"): row for row in reviews}
+        not_approved = sorted(cid for cid in valid_ids
+                              if reviewed.get(cid, {}).get("verdict") != "PASS")
+        if not_approved:
+            blockers.append(f"first-frame quality review not passed: "
+                            f"{len(not_approved)}/{len(valid_ids)}; "
+                            f"first: {not_approved[0]}")
+    quiz_rows = read_jsonl(quiz) if require_quiz else []
     quiz_ids = [row.get("case_id") for row in quiz_rows]
     present_quiz_ids = {cid for cid in quiz_ids if isinstance(cid, str) and cid}
     missing_quiz = sorted(valid_ids - present_quiz_ids)
-    if not quiz_rows or len(quiz_ids) != len(present_quiz_ids) or missing_quiz:
+    if require_quiz and (not quiz_rows or len(quiz_ids) != len(present_quiz_ids) or missing_quiz):
         blockers.append(f"frozen shared quiz missing or incomplete: {len(valid_ids & present_quiz_ids)}/{len(ids)}")
-    defects = quiz_defects(quiz_rows, valid_ids)
-    if defects:
+    defects = quiz_defects(quiz_rows, valid_ids) if require_quiz else []
+    if require_quiz and defects:
         blockers.append(f"frozen shared quiz invalid: {len(defects)} defect(s); first: {defects[0]}")
     if not model.is_dir():
         blockers.append(f"Wan model directory missing: {model}")
-    if not student_model.is_dir():
+    if require_quiz and not student_model.is_dir():
         blockers.append(f"student model directory missing: {student_model}")
     if check_runtime:
-        for package in ("torch", "diffusers", "transformers", "cv2", "openai"):
+        packages = ("torch", "diffusers", "transformers", "cv2")
+        if require_quiz:
+            packages += ("openai",)
+        for package in packages:
             if importlib.util.find_spec(package) is None:
                 blockers.append(f"Python package missing: {package}")
         if importlib.util.find_spec("torch") is not None:
@@ -90,11 +104,12 @@ def check(prompts: Path, first_frames: Path, quiz: Path, model: Path,
                     blockers.append("CUDA GPU unavailable")
             except subprocess.TimeoutExpired:
                 blockers.append("torch/CUDA runtime probe timed out")
-        endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT", "")
-        if not endpoint or "YOUR-ENDPOINT" in endpoint:
-            blockers.append("AZURE_OPENAI_ENDPOINT not configured")
-        if not shutil.which("az"):
-            blockers.append("Azure CLI (az) unavailable for judge authentication")
+        if require_quiz:
+            endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT", "")
+            if not endpoint or "YOUR-ENDPOINT" in endpoint:
+                blockers.append("AZURE_OPENAI_ENDPOINT not configured")
+            if not shutil.which("az"):
+                blockers.append("Azure CLI (az) unavailable for judge authentication")
     return {
         "ready": not blockers, "prompt_count": len(ids),
         "first_frame_count": len(valid_ids) - len(missing_frames),
@@ -111,8 +126,14 @@ def main() -> None:
     parser.add_argument("--model", type=Path, default=ROOT / "models/Wan2.2-TI2V-5B-Diffusers")
     parser.add_argument("--student-model", type=Path, default=ROOT / "models/Qwen3-VL-2B-Instruct")
     parser.add_argument("--strict", action="store_true", help="exit nonzero if any blocker remains")
+    parser.add_argument("--generation-only", action="store_true",
+                        help="check 60-case generation without requiring the shared quiz or student model")
+    parser.add_argument("--first-frame-review", type=Path,
+                        help="require PASS in a reviewed per-case first-frame report")
     args = parser.parse_args()
-    report = check(args.prompts, args.first_frames, args.quiz, args.model, args.student_model)
+    report = check(args.prompts, args.first_frames, args.quiz, args.model, args.student_model,
+                   require_quiz=not args.generation_only,
+                   first_frame_review=args.first_frame_review)
     print(json.dumps(report, ensure_ascii=False, indent=2))
     if args.strict and not report["ready"]:
         raise SystemExit(2)

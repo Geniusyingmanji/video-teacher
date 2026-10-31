@@ -31,6 +31,9 @@ def input_sha256(case: dict, args: object, first_frame: Path | None = None) -> s
         "dtype": args.dtype,
         "first_frame_sha256": file_sha256(first_frame) if first_frame else None,
     }
+    negative_prompt = getattr(args, "negative_prompt", "")
+    if negative_prompt:
+        payload["negative_prompt"] = negative_prompt
     encoded = json.dumps(payload, sort_keys=True, ensure_ascii=False).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 

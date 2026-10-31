@@ -18,6 +18,26 @@ class PipelineGateTest(unittest.TestCase):
         self.assertEqual(report["shared_quiz_count"], 10)
         self.assertFalse(report["ready"])
 
+    def test_generation_gate_keeps_all_60_cases_without_quiz(self):
+        model = ROOT / "data/first_frames"
+        report = check(ROOT / "data/prompts/pilot_v0_1.jsonl",
+                       model, ROOT / "data/teachquiz/pilot_v0_1_quiz.jsonl",
+                       model, ROOT / "models/nonexistent-student",
+                       check_runtime=False, require_quiz=False)
+        self.assertEqual(report["prompt_count"], 60)
+        self.assertEqual(report["first_frame_count"], 60)
+        self.assertTrue(report["ready"])
+
+    def test_first_frame_review_rejects_known_failed_sources(self):
+        model = ROOT / "data/first_frames"
+        report = check(ROOT / "data/prompts/pilot_v0_1.jsonl", model,
+                       ROOT / "data/teachquiz/pilot_v0_1_quiz.jsonl", model,
+                       model, check_runtime=False, require_quiz=False,
+                       first_frame_review=ROOT / "data/first_frames/"
+                       "check_report_gpt_retry2_20260601_185724.jsonl")
+        self.assertTrue(any("first-frame quality review not passed: 11/60"
+                            in blocker for blocker in report["blockers"]))
+
     def test_artifact_gate_uses_latest_attempt_and_rejects_errors(self):
         prompts = [{"id": "a"}, {"id": "b"}]
         records = [{"id": "a", "status": "ok", "video_path": "a.mp4"},

@@ -15,15 +15,27 @@ WAN_MODEL_PATH="${WAN_MODEL_PATH:-$PROJECT_DIR/models/Wan2.2-TI2V-5B-Diffusers}"
 STUDENT_MODEL_PATH="${STUDENT_MODEL_PATH:-$PROJECT_DIR/models/Qwen3-VL-2B-Instruct}"
 SEED="${SEED:-42}"
 STEPS="${STEPS:-30}"
+RUN_MODE="${RUN_MODE:-full}"
+
+if [[ "$RUN_MODE" != "full" && "$RUN_MODE" != "generation-only" ]]; then
+    echo "RUN_MODE must be full or generation-only" >&2
+    exit 2
+fi
 
 if [[ $# -gt 1 || ( $# -eq 1 && "$1" != "--check" ) ]]; then
     echo "Usage: bash scripts/run_full_pipeline.sh [--check]" >&2
     exit 2
 fi
 
+preflight_args=()
+if [[ "$RUN_MODE" == "generation-only" ]]; then preflight_args+=(--generation-only); fi
+if [[ -n "${FIRST_FRAME_REVIEW:-}" ]]; then
+    preflight_args+=(--first-frame-review "$FIRST_FRAME_REVIEW")
+fi
 python -m scripts.pipeline_preflight \
     --prompts "$PROMPTS" --first-frames "$FIRST_FRAMES" --quiz "$QUIZ" \
-    --model "$WAN_MODEL_PATH" --student-model "$STUDENT_MODEL_PATH" --strict
+    --model "$WAN_MODEL_PATH" --student-model "$STUDENT_MODEL_PATH" \
+    "${preflight_args[@]}" --strict
 
 if [[ "${1:-}" == "--check" ]]; then exit 0; fi
 
@@ -47,6 +59,8 @@ for duration in 3 5; do
         python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
             --manifest "$out/manifest.jsonl" --kind generation
 
+        if [[ "$RUN_MODE" == "generation-only" ]]; then continue; fi
+
         scored="$EVAL_BASE/wan5b_${arm}_${duration}s"
         python -m eval.run_eval --prompts "$PROMPTS" \
             --manifest "$out/manifest.jsonl" --out "$scored/standard" \
@@ -61,6 +75,7 @@ for duration in 3 5; do
         python -m scripts.pipeline_artifacts --prompts "$PROMPTS" \
             --manifest "$scored/teachquiz/per_case.jsonl" --kind teachquiz
     done
+    if [[ "$RUN_MODE" == "generation-only" ]]; then continue; fi
     python scripts/compare_standard_eval.py \
         --left "$EVAL_BASE/wan5b_ti2v_${duration}s/standard/per_case.jsonl" \
         --right "$EVAL_BASE/wan5b_t2v_${duration}s/standard/per_case.jsonl" \
@@ -73,5 +88,9 @@ for duration in 3 5; do
         --out "$EVAL_BASE/paired_teachquiz_${duration}s.json"
 done
 
+if [[ "$RUN_MODE" == "generation-only" ]]; then
+    echo "60-case matched generation complete; evaluation and shared TeachQuiz are pending."
+    exit 0
+fi
 echo "Matched generation, scoring, shared TeachQuiz, and paired standard analysis complete."
 echo "Human validity and release review remain separate gates."

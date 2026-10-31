@@ -24,6 +24,9 @@ class GenerationProvenanceTest(unittest.TestCase):
             self.assertNotEqual(fingerprint, input_sha256({**case, "video_prompt": "other"}, args, first_frame))
             args.fps = 16
             self.assertNotEqual(fingerprint, input_sha256(case, args, first_frame))
+            args.fps = 24
+            args.negative_prompt = "extra hands"
+            self.assertNotEqual(fingerprint, input_sha256(case, args, first_frame))
         with patch("generation.runners.provenance.file_sha256", return_value="frame-b"):
             self.assertNotEqual(fingerprint, input_sha256(case, args, first_frame))
         with patch("generation.runners.provenance.file_sha256", return_value="corrupted"), patch.object(Path, "is_file", return_value=True):

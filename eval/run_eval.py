@@ -98,6 +98,7 @@ def evaluate_one(
     case: dict, video_path: str, n_frames: int, frame_max_px: int,
     dims: dict, weights: dict,
     detail_frame_max_px: int = 0,
+    rubric_version: str = "legacy",
 ) -> dict:
     """Returns dict of dim_name -> dim_output, plus aggregate score."""
     try:
@@ -131,6 +132,8 @@ def evaluate_one(
             "dimensions": list(dims),
         },
     }
+    if rubric_version != "legacy":
+        out["evaluation_config"]["rubric_version"] = rubric_version
     weighted_sum = 0.0
     weight_sum = 0.0
     for dim_name, dim_mod in dims.items():
@@ -149,8 +152,10 @@ def evaluate_one(
         except Exception as e:
             out[dim_name] = {"error": str(e)[:300]}
     out["aggregate_score"] = (
-        round(weighted_sum / weight_sum, 3) if weight_sum > 0 else 0
+        round(weighted_sum / weight_sum, 3) if weight_sum > 0 else None
     )
+    if weight_sum == 0:
+        out["error"] = "all_dimensions_failed"
     binaries = [out[d].get("binary", "FAIL") for d in dims if d in out]
     out["strict_pass"] = all(b == "PASS" for b in binaries)
     return out
@@ -170,17 +175,26 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--extended", action="store_true",
                     help="Include pedagogical_clarity and didactic_affordances dims.")
+    ap.add_argument("--rubric-6x6", action="store_true",
+                    help="Score 36 evidence-backed criteria across all six teaching dimensions")
     args = ap.parse_args()
     if args.frame_max_px <= 0 or args.detail_frame_max_px <= 0:
         ap.error("frame resolution limits must be positive")
-    dims = ALL_DIMS if args.extended else CORE_DIMS
-    weights = EXTENDED_WEIGHTS if args.extended else CORE_WEIGHTS
+    if args.rubric_6x6:
+        from eval.rubric_6x6 import DIMENSIONS
+        dims = DIMENSIONS
+        weights = EXTENDED_WEIGHTS
+    else:
+        dims = ALL_DIMS if args.extended else CORE_DIMS
+        weights = EXTENDED_WEIGHTS if args.extended else CORE_WEIGHTS
     evaluation_config = {
         "n_frames": args.n_frames,
         "frame_max_px": args.frame_max_px,
         "detail_frame_max_px": args.detail_frame_max_px,
         "dimensions": list(dims),
     }
+    if args.rubric_6x6:
+        evaluation_config["rubric_version"] = "6x6-v1"
 
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -239,6 +253,7 @@ def main() -> None:
                 fut = ex.submit(
                     evaluate_one, case, m["video_path"], args.n_frames,
                     args.frame_max_px, dims, weights, args.detail_frame_max_px,
+                    evaluation_config.get("rubric_version", "legacy"),
                 )
                 future_to_case[fut] = m["id"]
             for i, fut in enumerate(cf.as_completed(future_to_case)):
@@ -266,6 +281,7 @@ def main() -> None:
 def aggregate(results: list[dict], prompts: dict[str, dict], dims: dict) -> dict:
     rep: dict = {"n_total": len(results)}
     scores_by_dim: dict[str, list[float]] = {d: [] for d in dims}
+    scores_by_criterion: dict[str, dict[str, list[float]]] = {}
     aggregates: list[float] = []
     strict_pass = 0
     per_discipline: dict[str, dict] = {}
@@ -291,6 +307,11 @@ def aggregate(results: list[dict], prompts: dict[str, dict], dims: dict) -> dict
             strict_pass += 1
         for dim, value in dim_scores.items():
             scores_by_dim[dim].append(value)
+            rows = r[dim].get("criteria", [])
+            for row in rows if isinstance(rows, list) else []:
+                if isinstance(row, dict) and row.get("applicable") is True:
+                    scores_by_criterion.setdefault(dim, {}).setdefault(
+                        str(row.get("id")), []).append(float(row["score"]))
         case = prompts.get(r["id"], {})
         d = case.get("discipline", "unknown")
         t = case.get("task_type", "unknown")
@@ -313,6 +334,13 @@ def aggregate(results: list[dict], prompts: dict[str, dict], dims: dict) -> dict
     rep["mean_aggregate"] = round(sum(aggregates) / max(1, len(aggregates)), 3)
     rep["strict_accuracy"] = round(strict_pass / max(1, len(aggregates)), 3)
     rep["per_dim_mean"] = {d: round(sum(v) / max(1, len(v)), 3) for d, v in scores_by_dim.items()}
+    if scores_by_criterion:
+        rep["per_criterion"] = {
+            dim: {key: {"n": len(values), "mean": round(sum(values) / len(values), 3),
+                        "low_1_or_2": sum(score <= 2 for score in values)}
+                  for key, values in criteria.items()}
+            for dim, criteria in scores_by_criterion.items()
+        }
     rep["per_discipline"] = {
         d: {
             "n": v["n"],

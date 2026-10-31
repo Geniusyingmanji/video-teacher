@@ -76,7 +76,13 @@ def main() -> None:
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--dtype", default="bfloat16",
                     choices=["bfloat16", "float16", "float32"])
+    ap.add_argument("--prompt-mode", choices=["source", "focused"], default="source",
+                    help="focused: one visible change while preserving first-frame labels")
+    ap.add_argument("--negative-prompt", default="",
+                    help="Optional visual defects to suppress; recorded in the input fingerprint")
     args = ap.parse_args()
+    if args.contracts and args.prompt_mode == "focused":
+        ap.error("focused prompt mode cannot override reviewed teaching contracts")
 
     dtype_map = {"bfloat16": torch.bfloat16, "float16": torch.float16, "float32": torch.float32}
     dtype = dtype_map[args.dtype]
@@ -102,6 +108,10 @@ def main() -> None:
             cases, load_contracts(args.contracts), args.width, args.height,
             args.num_frames, args.fps,
         )
+    if args.prompt_mode == "focused":
+        from generation.short_clip_prompt import focused_prompt
+        for case in cases:
+            case["video_prompt"] = focused_prompt(case, args.num_frames / args.fps)
 
     # Filter to cases that have first-frame images
     valid_cases = []
@@ -163,6 +173,7 @@ def main() -> None:
                 result = pipe(
                     image=first_frame,
                     prompt=case.get("video_prompt", case["prompt_text"]),
+                    negative_prompt=args.negative_prompt or None,
                     height=args.height,
                     width=args.width,
                     num_frames=args.num_frames,
@@ -194,6 +205,7 @@ def main() -> None:
                     "height": args.height, "width": args.width,
                     "num_frames": args.num_frames, "steps": args.steps,
                     "guidance_scale": args.guidance_scale, "seed": args.seed,
+                    "negative_prompt": args.negative_prompt,
                     "fps": args.fps, "dtype": args.dtype,
                     "elapsed_s": round(elapsed, 2),
                     "status": "ok",

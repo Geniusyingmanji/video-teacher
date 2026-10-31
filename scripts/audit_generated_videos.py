@@ -89,6 +89,16 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float | None) ->
         cap.release()
 
     flags = []
+    motion_score = None
+    if len(frames) >= 2:
+        gray = [cv2.cvtColor(cv2.resize(np.asarray(frame), (160, 90)),
+                                cv2.COLOR_RGB2GRAY) for _, frame in frames]
+        motion_score = float(max(np.mean(cv2.absdiff(gray[0], other))
+                                 for other in gray[1:]))
+        # This is a review flag, not a semantic motion verdict. Small diagrams
+        # can move meaningfully within a small fraction of the frame.
+        if motion_score < 5.0:
+            flags.append("low_motion_review")
     if target_duration_s is not None and duration > target_duration_s * 1.2:
         flags.append("over_target_duration")
     if target_duration_s is not None and duration < target_duration_s * 0.8:
@@ -136,6 +146,7 @@ def inspect_video(path: Path, out_dir: Path, target_duration_s: float | None) ->
         "fps": fps,
         "frame_count": count,
         "duration_s": round(duration, 3),
+        "motion_score": None if motion_score is None else round(motion_score, 3),
         "target_duration_s": target_duration_s,
         "flags": flags,
         "sample_times_s": [round(t, 3) for t, _ in frames],
