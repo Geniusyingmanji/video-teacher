@@ -1,0 +1,680 @@
+{
+  "status": "provisional_do_not_generate",
+  "source": "data\\prompts\\candidate_400.jsonl",
+  "count": 60,
+  "by_discipline": {
+    "mathematics": 5,
+    "physics": 5,
+    "chemistry": 5,
+    "biology": 5,
+    "medicine": 5,
+    "computer_science": 5,
+    "economics": 5,
+    "civics": 5,
+    "language_literature": 5,
+    "history": 5,
+    "geography": 5,
+    "art_music": 5
+  },
+  "by_task_type": {
+    "problem_solving": 32,
+    "explanation": 28
+  },
+  "source_dataset": {
+    "GRADE": 14,
+    "DisciplineGen-1M": 12,
+    "authored": 34
+  },
+  "previous_pilot_overlap": 10,
+  "retained_old_ids": [
+    "math_exp_03",
+    "cs_exp_02",
+    "geo_exp_02",
+    "hist_exp_02",
+    "med_prob_01",
+    "lang_exp_03",
+    "econ_prob_02",
+    "bio_prob_01",
+    "civ_exp_03",
+    "phys_exp_03"
+  ],
+  "existing_pilot_first_frames": 10,
+  "grade_source_images_missing": [],
+  "first_frames_to_create": [
+    "grade_math_math_1",
+    "grade_math_math_95",
+    "disciplinegen_mathematics_1ace1e12820c6491",
+    "grade_math_math_4",
+    "phys_high_02",
+    "disciplinegen_physics_3df388cfbe3545a0",
+    "grade_physics_task_68",
+    "disciplinegen_physics_b3612167a11a8e53",
+    "chem_high_02",
+    "disciplinegen_chemistry_92d1b4b062ce0eff",
+    "grade_chemistry_task_2",
+    "disciplinegen_chemistry_c9bc0cd452324a2a",
+    "disciplinegen_chemistry_3bcd4ee6511b0b2d",
+    "bio_high_02",
+    "disciplinegen_biology_ed3f36ac8bfdaf80",
+    "disciplinegen_biology_27714bd42547f185",
+    "grade_biology_task_57",
+    "cand_med_cs_gap_03",
+    "cand_med_cs_gap_13",
+    "cand_med_cs_gap_02",
+    "cand_med_cs_gap_11",
+    "disciplinegen_computer_science_b2e601bd851dd0eb",
+    "disciplinegen_computer_science_d46008cac268401f",
+    "disciplinegen_computer_science_a40d5924f269867b",
+    "grade_ComputerScience_task_17",
+    "econ_high_02",
+    "econ_high_01",
+    "grade_eco_task_158",
+    "grade_eco_task_140",
+    "civ_high_01",
+    "civ_high_02",
+    "cand_hs_civ_04",
+    "cand_hs_civ_02",
+    "lang_high_02",
+    "cand_hs_lang_06",
+    "cand_hs_lang_02",
+    "cand_hs_lang_04",
+    "grade_his_task_19",
+    "grade_his_task_17",
+    "grade_his_task_16",
+    "hist_high_01",
+    "grade_geography_task_3",
+    "disciplinegen_geography_a2c1b9b869ca9c5e",
+    "geo_high_01",
+    "grade_geography_task_13",
+    "art_high_01",
+    "art_high_02",
+    "cand_hs_art_03",
+    "cand_hs_art_05",
+    "cand_hs_art_01"
+  ],
+  "unresolved_gates": [
+    "independent source and answer review",
+    "one observable five-second action per case",
+    "source/target image inspection where applicable",
+    "answer-free first frame for every case",
+    "protected exact text and equations",
+    "five-case paired generation and visual acceptance before full run"
+  ],
+  "items": [
+    {
+      "id": "grade_math_math_1",
+      "discipline": "mathematics",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "grade_math_math_95",
+      "discipline": "mathematics",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "disciplinegen_mathematics_1ace1e12820c6491",
+      "discipline": "mathematics",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "grade_math_math_4",
+      "discipline": "mathematics",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "phys_high_02",
+      "discipline": "physics",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "disciplinegen_physics_3df388cfbe3545a0",
+      "discipline": "physics",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "grade_physics_task_68",
+      "discipline": "physics",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "disciplinegen_physics_b3612167a11a8e53",
+      "discipline": "physics",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "chem_high_02",
+      "discipline": "chemistry",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "disciplinegen_chemistry_92d1b4b062ce0eff",
+      "discipline": "chemistry",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "grade_chemistry_task_2",
+      "discipline": "chemistry",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "disciplinegen_chemistry_c9bc0cd452324a2a",
+      "discipline": "chemistry",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "disciplinegen_chemistry_3bcd4ee6511b0b2d",
+      "discipline": "chemistry",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "bio_high_02",
+      "discipline": "biology",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "disciplinegen_biology_ed3f36ac8bfdaf80",
+      "discipline": "biology",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "disciplinegen_biology_27714bd42547f185",
+      "discipline": "biology",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "grade_biology_task_57",
+      "discipline": "biology",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "cand_med_cs_gap_03",
+      "discipline": "medicine",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "cand_med_cs_gap_13",
+      "discipline": "medicine",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite",
+        "difficulty_recalibrated_from_high"
+      ]
+    },
+    {
+      "id": "cand_med_cs_gap_02",
+      "discipline": "medicine",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "cand_med_cs_gap_11",
+      "discipline": "medicine",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite",
+        "difficulty_recalibrated_from_high"
+      ]
+    },
+    {
+      "id": "disciplinegen_computer_science_b2e601bd851dd0eb",
+      "discipline": "computer_science",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "heap_result_explicitly_verified"
+      ]
+    },
+    {
+      "id": "disciplinegen_computer_science_d46008cac268401f",
+      "discipline": "computer_science",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "heap_result_explicitly_verified"
+      ]
+    },
+    {
+      "id": "disciplinegen_computer_science_a40d5924f269867b",
+      "discipline": "computer_science",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "heap_result_explicitly_verified"
+      ]
+    },
+    {
+      "id": "grade_ComputerScience_task_17",
+      "discipline": "computer_science",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "source_verified_replacement"
+      ]
+    },
+    {
+      "id": "econ_high_02",
+      "discipline": "economics",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "econ_high_01",
+      "discipline": "economics",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "grade_eco_task_158",
+      "discipline": "economics",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": []
+    },
+    {
+      "id": "grade_eco_task_140",
+      "discipline": "economics",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": []
+    },
+    {
+      "id": "civ_high_01",
+      "discipline": "civics",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "civ_high_02",
+      "discipline": "civics",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "cand_hs_civ_04",
+      "discipline": "civics",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "cand_hs_civ_02",
+      "discipline": "civics",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "lang_high_02",
+      "discipline": "language_literature",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "cand_hs_lang_06",
+      "discipline": "language_literature",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "cand_hs_lang_02",
+      "discipline": "language_literature",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "cand_hs_lang_04",
+      "discipline": "language_literature",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "grade_his_task_19",
+      "discipline": "history",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "authored_history_rewrite_from_source_theme"
+      ]
+    },
+    {
+      "id": "grade_his_task_17",
+      "discipline": "history",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "authored_history_rewrite_from_source_theme"
+      ]
+    },
+    {
+      "id": "grade_his_task_16",
+      "discipline": "history",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": [
+        "authored_history_rewrite_from_source_theme"
+      ]
+    },
+    {
+      "id": "hist_high_01",
+      "discipline": "history",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "grade_geography_task_3",
+      "discipline": "geography",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": []
+    },
+    {
+      "id": "disciplinegen_geography_a2c1b9b869ca9c5e",
+      "discipline": "geography",
+      "task_type": "explanation",
+      "source_dataset": "DisciplineGen-1M",
+      "curation_status": "draft_needs_visual_review",
+      "quality_flags": [
+        "source_factual_inconsistency_repaired"
+      ]
+    },
+    {
+      "id": "geo_high_01",
+      "discipline": "geography",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "grade_geography_task_13",
+      "discipline": "geography",
+      "task_type": "problem_solving",
+      "source_dataset": "GRADE",
+      "curation_status": "draft_needs_subject_review",
+      "quality_flags": []
+    },
+    {
+      "id": "art_high_01",
+      "discipline": "art_music",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "art_high_02",
+      "discipline": "art_music",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high",
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "cand_hs_art_03",
+      "discipline": "art_music",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "cand_hs_art_05",
+      "discipline": "art_music",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "cand_hs_art_01",
+      "discipline": "art_music",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "math_exp_03",
+      "discipline": "mathematics",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "cs_exp_02",
+      "discipline": "computer_science",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "geo_exp_02",
+      "discipline": "geography",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "hist_exp_02",
+      "discipline": "history",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "med_prob_01",
+      "discipline": "medicine",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "difficulty_recalibrated_from_high"
+      ]
+    },
+    {
+      "id": "lang_exp_03",
+      "discipline": "language_literature",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "econ_prob_02",
+      "discipline": "economics",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "bio_prob_01",
+      "discipline": "biology",
+      "task_type": "problem_solving",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": []
+    },
+    {
+      "id": "civ_exp_03",
+      "discipline": "civics",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    },
+    {
+      "id": "phys_exp_03",
+      "discipline": "physics",
+      "task_type": "explanation",
+      "source_dataset": "authored",
+      "curation_status": "unreviewed",
+      "quality_flags": [
+        "atomic_step_rewrite"
+      ]
+    }
+  ]
+}
