@@ -39,6 +39,7 @@ data/first_frames/check_report_gpt_image1.jsonl
 data/sources/grade/selected_assets/before/
 data/sources/grade/selected_assets/gt/
 data/round2_image_batch24/first_frames/
+data/round2_grade_probe11/first_frames/
 
 # OS
 .DS_Store

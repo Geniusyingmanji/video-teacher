@@ -4,14 +4,13 @@ from __future__ import annotations
 
 import subprocess
 import tarfile
+import argparse
 from pathlib import Path
 
 from scripts.download_remote_60 import ssh_command
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCE = ROOT / "data/round2_image_batch24"
-DEST = "/mnt/data1/azureuser/video_teacher_round2_image_batch24"
 
 
 def remote(command: str, *, input_file=None) -> subprocess.CompletedProcess:
@@ -21,19 +20,25 @@ def remote(command: str, *, input_file=None) -> subprocess.CompletedProcess:
 
 
 def main() -> None:
-    archive = SOURCE / "transfer.tar"
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--batch", choices=("round2_image_batch24", "round2_grade_probe11"),
+                    default="round2_image_batch24")
+    args = ap.parse_args()
+    source = ROOT / "data" / args.batch
+    dest = "/mnt/data1/azureuser/video_teacher_" + args.batch
+    archive = source / "transfer.tar"
     with tarfile.open(archive, "w") as tf:
-        for path in sorted(SOURCE.rglob("*")):
+        for path in sorted(source.rglob("*")):
             if path.is_file() and path != archive:
-                tf.add(path, arcname=path.relative_to(SOURCE).as_posix())
+                tf.add(path, arcname=path.relative_to(source).as_posix())
     try:
         with archive.open("rb") as stream:
-            remote(f"mkdir -p {DEST} && tar -C {DEST} -xf -", input_file=stream)
+            remote(f"mkdir -p {dest} && tar -C {dest} -xf -", input_file=stream)
     finally:
         archive.unlink(missing_ok=True)
-    check = remote(f"wc -l {DEST}/prompts.jsonl {DEST}/image_manifest.jsonl")
+    check = remote(f"wc -l {dest}/prompts.jsonl")
     print(check.stdout.decode(errors="replace").strip())
-    launch = remote(f"nohup bash {DEST}/run_remote.sh > {DEST}/run.log 2>&1 < /dev/null & echo $!")
+    launch = remote(f"nohup bash {dest}/run_remote.sh > {dest}/run.log 2>&1 < /dev/null & echo $!")
     print("remote_pid=" + launch.stdout.decode(errors="replace").strip())
 
 
