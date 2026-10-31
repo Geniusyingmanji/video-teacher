@@ -1,5 +1,17 @@
 # rise-teacher
 
+## Benchmark scoring (2x8-v3)
+
+The current benchmark implementation groups eight subcategories under **video
+quality** and **teaching quality**, with equal category weight, evidence-backed
+VLM rubrics, full-frame signal operators, strict gates, complete-case ranking,
+and paired model comparisons. Run `python -m eval.run_benchmark_v2 --prompts
+PROMPTS.jsonl --manifest MANIFEST.jsonl --out OUTPUT_DIR`; see
+[the scoring protocol](docs/BENCHMARK_V2.md) for every algorithm, threshold,
+output field, and validation limit. TeachQuiz-T remains a separate learner
+proxy. All scores and tables below this section are historical pilot results
+from the earlier rubric, not 2x8-v3 results.
+
 Round-two portable image probe: [setup and run guide](docs/ROUND2_PORTABLE.md).
 
 ## 本地研究原型 v1

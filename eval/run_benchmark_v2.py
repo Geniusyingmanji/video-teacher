@@ -1,0 +1,255 @@
+"""Two-category educational video benchmark, version 2x8-v3.
+
+Run from repository root: python -m eval.run_benchmark_v2 --prompts P.jsonl
+--manifest M.jsonl --out OUTPUT_DIR. Requires the existing Azure judge for the
+six semantic axes. It never emits a publishable ranking for incomplete runs.
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import math
+import random
+import shutil
+from pathlib import Path
+
+from eval import benchmark_operators as operators
+from eval import benchmark_scoring as scoring
+from eval.frame_extractor import extract_frames
+from eval.rubric_6x6 import DIMENSIONS
+from eval.benchmark_video_rubric import DIMENSIONS as VIDEO_DIMENSIONS
+
+MAX_JUDGE_FRAMES = 24
+
+
+def read_jsonl(path: str | Path) -> list[dict]:
+    rows = []
+    for number, line in enumerate(Path(path).read_text(encoding="utf-8").splitlines(), 1):
+        if line.strip():
+            row = json.loads(line)
+            if not isinstance(row, dict) or not isinstance(row.get("id"), str) or not row["id"]:
+                raise ValueError(f"{path}:{number}: expected nonempty id")
+            rows.append(row)
+    return rows
+
+
+def unique_by_id(rows: list[dict], *, latest: bool = False) -> dict[str, dict]:
+    out = {}
+    for row in rows:
+        if row["id"] in out and not latest:
+            raise ValueError(f"duplicate prompt ID: {row['id']}")
+        out[row["id"]] = row
+    return out
+
+
+def _semantic_score(raw: dict) -> float:
+    score = raw.get("score")
+    if isinstance(score, bool) or not isinstance(score, (int, float)) or not math.isfinite(score) or not 1 <= score <= 5:
+        raise ValueError("invalid 1..5 rubric score")
+    return round((float(score) - 1) * 25, 4)
+
+
+def file_sha256(path: str | Path) -> str:
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
+             frame_max_px: int = 832, ffmpeg: str = "ffmpeg") -> dict:
+    result = {"id": case["id"], "axes": {}, "errors": [],
+              "narration_required": case.get("audio_narration_required") is True,
+              "video_path": manifest.get("video_path"), "version": scoring.VERSION,
+              "case_sha256": hashlib.sha256(json.dumps(case, ensure_ascii=False, sort_keys=True,
+                                                    separators=(",", ":")).encode("utf-8")).hexdigest(),
+              "evaluation_config": {"sample_fps": sample_fps,
+                                    "frame_max_px": frame_max_px,
+                                    "max_judge_frames": MAX_JUDGE_FRAMES}}
+    if manifest.get("status") != "ok" or not manifest.get("video_path"):
+        result["errors"].append("generation_missing_or_failed")
+        result["scoring"] = scoring.score_case({})
+        return result
+    path = str(manifest["video_path"])
+    try:
+        video = Path(path)
+        if not video.is_file():
+            raise FileNotFoundError(path)
+        result["video_sha256"] = file_sha256(video)
+        frames, fps = operators.decode_video(path)
+        result["source_fps"] = fps
+        result["source_frame_count"] = len(frames)
+        expected_steps = len(case.get("expected_narrative_order") or [])
+        result["operators"] = {
+            "signal_quality": operators.signal_quality(frames),
+            "temporal_consistency": operators.temporal_consistency(frames, fps, expected_steps),
+        }
+        if result["narration_required"]:
+            try:
+                result["narration"] = operators.narration_presence(path, ffmpeg)
+            except Exception as exc:
+                result["narration"] = {"detected": None,
+                                        "reason": f"audio_probe_failed: {type(exc).__name__}: {exc}"[:300]}
+        else:
+            result["narration"] = {"detected": None, "reason": "not_required"}
+        sampled = extract_frames(path, sample_fps=sample_fps, resize_max=frame_max_px)
+        if len(sampled) > MAX_JUDGE_FRAMES:
+            selected = sorted({round(i * (len(sampled) - 1) / (MAX_JUDGE_FRAMES - 1))
+                               for i in range(MAX_JUDGE_FRAMES)})
+            result["judge_frame_indices_in_sample"] = selected
+            sampled = [sampled[i] for i in selected]
+        else:
+            result["judge_frame_indices_in_sample"] = list(range(len(sampled)))
+        result["sampled_frame_count"] = len(sampled)
+        for name, dimension in DIMENSIONS.items():
+            try:
+                judged = dimension.score(case, sampled)
+                result["axes"][name] = {**judged, "score": _semantic_score(judged),
+                                         "rubric_score_1_to_5": judged["score"],
+                                         "method": "evidence_backed_6x6_vlm_v1"}
+            except Exception as exc:
+                result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
+                result["errors"].append(f"{name}_failed")
+        for name, dimension in VIDEO_DIMENSIONS.items():
+            try:
+                judged = dimension.score(case, sampled)
+                if name == "signal_quality":
+                    diagnostic = result["operators"][name]
+                    if diagnostic["exposure_penalty_applicable"] and diagnostic["clipped_fraction_p90"] >= 0.95:
+                        judged["score"] = min(judged["score"], 40.0)
+                        judged["operator_cap"] = "near_blank_or_clipped_frames"
+                result["axes"][name] = judged
+            except Exception as exc:
+                result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
+                result["errors"].append(f"{name}_failed")
+    except Exception as exc:
+        result["errors"].append(f"video_decode_or_operator_failed: {type(exc).__name__}: {exc}"[:400])
+    flat = {name: value.get("score") for name, value in result["axes"].items()}
+    freeze = result.get("operators", {}).get("temporal_consistency", {}).get(
+        "longest_duplicate_run_seconds", 0.0)
+    result["defects"] = scoring.evidence_defects(result["axes"],
+                                                 expected_steps=len(case.get("expected_narrative_order") or []),
+                                                 freeze_seconds=freeze)
+    result["scoring"] = scoring.score_case(
+        flat, narration_required=result["narration_required"],
+        narration_detected=result.get("narration", {}).get("detected"),
+        defects=result["defects"])
+    return result
+
+
+def bootstrap_ci(values: list[float], *, seed: int = 20261031,
+                 iterations: int = 2000) -> list[float] | None:
+    if len(values) < 2:
+        return None
+    rng = random.Random(seed)
+    means = sorted(sum(rng.choices(values, k=len(values))) / len(values)
+                   for _ in range(iterations))
+    return [round(means[int(0.025 * iterations)], 4),
+            round(means[min(iterations - 1, int(0.975 * iterations))], 4)]
+
+
+def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
+    rep = scoring.aggregate(rows)
+    valid = [r for r in rows if r["scoring"]["valid"]]
+    rep["bootstrap_95_ci_case_mean"] = (bootstrap_ci([r["scoring"]["score"] for r in valid])
+                                         if rep["ranking_publishable"] else None)
+    rep["bootstrap_seed"] = 20261031
+    rep["bootstrap_iterations"] = 2000
+    rep["strata"] = {}
+    for field in ("discipline", "task_type", "difficulty", "audio_narration_required"):
+        groups: dict[str, list[float]] = {}
+        for row in valid:
+            value = str(prompts[row["id"]].get(field, "unknown"))
+            groups.setdefault(value, []).append(row["scoring"]["score"])
+        rep["strata"][field] = {k: {"n": len(v), "mean_valid_only": round(sum(v)/len(v), 4)}
+                                 for k, v in sorted(groups.items())}
+    return rep
+
+
+def reusable(previous: dict | None, case: dict, manifest: dict,
+             sample_fps: float, frame_max_px: int) -> bool:
+    """Reuse only complete results for exactly the same task, clip and protocol."""
+    if not previous or previous.get("version") != scoring.VERSION:
+        return False
+    if previous.get("scoring", {}).get("valid") is not True:
+        return False
+    expected_case = hashlib.sha256(json.dumps(case, ensure_ascii=False, sort_keys=True,
+                                              separators=(",", ":")).encode("utf-8")).hexdigest()
+    if previous.get("case_sha256") != expected_case:
+        return False
+    if previous.get("evaluation_config") != {"sample_fps": sample_fps,
+                                               "frame_max_px": frame_max_px,
+                                               "max_judge_frames": MAX_JUDGE_FRAMES}:
+        return False
+    video = Path(str(manifest.get("video_path") or ""))
+    return (manifest.get("status") == "ok" and video.is_file()
+            and previous.get("video_sha256") == file_sha256(video))
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--prompts", required=True)
+    parser.add_argument("--manifest", required=True)
+    parser.add_argument("--out", required=True)
+    parser.add_argument("--sample-fps", type=float, default=2.0)
+    parser.add_argument("--frame-max-px", type=int, default=832)
+    parser.add_argument("--ffmpeg", default="ffmpeg")
+    parser.add_argument("--limit", type=int, default=0, help="Debug only; output is never ranking-publishable")
+    args = parser.parse_args()
+    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0 or args.frame_max_px <= 0 or args.limit < 0:
+        parser.error("invalid sampling or limit")
+    if shutil.which("az") is None:
+        parser.error("Azure CLI 'az' is required by the configured GPT judge; install and sign in before scoring")
+    if args.ffmpeg == "ffmpeg" and shutil.which("ffmpeg") is None:
+        try:
+            import imageio_ffmpeg
+            args.ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+        except ImportError:
+            pass
+    prompts = unique_by_id(read_jsonl(args.prompts))
+    manifest = unique_by_id(read_jsonl(args.manifest), latest=True)
+    ids = list(prompts)[:args.limit] if args.limit else list(prompts)
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    per_case = out / "per_case.jsonl"
+    previous = unique_by_id(read_jsonl(per_case), latest=True) if per_case.is_file() else {}
+    rows = []
+    # Persist each completed case, so interruption loses at most the active case.
+    with per_case.open("a", encoding="utf-8") as f:
+        for id in ids:
+            item = manifest.get(id, {"id": id})
+            row = previous.get(id)
+            if not reusable(row, prompts[id], item, args.sample_fps, args.frame_max_px):
+                row = evaluate(prompts[id], item, sample_fps=args.sample_fps,
+                               frame_max_px=args.frame_max_px, ffmpeg=args.ffmpeg)
+                f.write(json.dumps(row, ensure_ascii=False) + "\n")
+                f.flush()
+            rows.append(row)
+    # Compact historical attempts after a successful traversal.
+    per_case.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+                        encoding="utf-8")
+    aggregate = report(rows, prompts)
+    if args.limit:
+        aggregate["ranking_publishable"] = False
+        aggregate["ranking_score"] = None
+        aggregate["bootstrap_95_ci_case_mean"] = None
+        aggregate["debug_subset"] = True
+    aggregate["config"] = {"sample_fps": args.sample_fps, "frame_max_px": args.frame_max_px,
+                           "max_judge_frames": MAX_JUDGE_FRAMES,
+                           "prompt_sha256": hashlib.sha256(Path(args.prompts).read_bytes()).hexdigest(),
+                           "manifest_sha256": hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest(),
+                           "scoring_code_sha256": hashlib.sha256(
+                               b"".join(Path(__file__).with_name(name).read_bytes() for name in
+                                        ("benchmark_scoring.py", "benchmark_operators.py",
+                                         "benchmark_video_rubric.py", "rubric_6x6.py",
+                                         "run_benchmark_v2.py"))).hexdigest()}
+    (out / "aggregate.json").write_text(json.dumps(aggregate, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(json.dumps({"n_total": aggregate["n_total"], "n_valid": aggregate["n_valid"],
+                      "ranking_publishable": aggregate["ranking_publishable"],
+                      "out": str(out)}, ensure_ascii=False))
+
+
+if __name__ == "__main__":
+    main()
