@@ -19,6 +19,20 @@ python scripts/run_benchmark_once.py --manifest '你的视频清单/manifest.jso
 
 脚本默认评测 `data/prompts/pilot_v0_1.jsonl` 的 60 题，先检查输入与本地视频，再运行全部八维评分。清单中每条 `video_path` 必须指向运行机器上真实存在的视频；其他题集可加 `--prompts 路径`，输出目录可加 `--out 路径`。结果写入 `results/benchmark_v2/{per_case.jsonl,aggregate.json}`。中断后原命令可直接续跑；预检查失败时不会调用 API。只想预检查可加 `--check-only`。完整维度、评分规则和结果解释见 [评测协议](docs/BENCHMARK_V2.md)。
 
+评测 400 题时使用下面的命令。`--full-400` 自动选择 400 题候选集，并检查题目恰好有 400 个唯一 ID；只有清单也包含这 400 个 ID 且视频文件齐全，才开始调用 API。
+
+```powershell
+python scripts/run_benchmark_once.py --full-400 --manifest '400个视频的manifest.jsonl'
+```
+
+当前仓库有 400 题候选文件，但**没有 400 个已生成视频的清单**，所以目前无法在本机实际完成 400 条 API 评分。候选题仍需人工内容审核。取得视频清单后，上述命令会输出 `results/benchmark_400/per_case.jsonl`（每题一行）和 `results/benchmark_400/aggregate.json`（总体结果）：
+
+```json
+{"id":"题目ID","version":"video-teacher-2x8-v3","axes":{"visual_quality":{"score":75,"criteria":[{"id":"legibility","score":4,"applicable":true,"evidence_frames":[1],"finding":"具体观察"}]}},"scoring":{"valid":true,"score":75,"groups":{"video_quality":75,"teaching_quality":75},"strict_pass":true,"errors":[],"gates":[]},"errors":[]}
+```
+
+上例省略了其余七个维度和视频诊断字段；实际文件会包含完整记录。汇总文件中重点看 `n_total`、`n_valid`、`n_failed`、`failed_ids`、`ranking_publishable`、`ranking_score`、`axis_means`、`group_means`。只有 400 题全部有效时 `ranking_publishable` 才为 `true`；失败题修复后可原命令续跑。
+
 ## Benchmark scoring (2x8-v3)
 
 The current benchmark implementation groups eight subcategories under **video
