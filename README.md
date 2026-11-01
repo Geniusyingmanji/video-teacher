@@ -1,5 +1,24 @@
 # rise-teacher
 
+## 一键运行视频评测
+
+在仓库根目录安装评测所需依赖（Python 3.10+）：
+
+```powershell
+python -m pip install openai httpx opencv-python-headless numpy pillow imageio-ffmpeg
+```
+
+配置支持图片输入及 Chat Completions JSON 模式的 API，然后执行一条命令：
+
+```powershell
+$env:VIDEO_TEACHER_API_KEY = '你的 API Key'
+$env:VIDEO_TEACHER_BASE_URL = 'https://你的接口地址/v1'
+$env:VIDEO_TEACHER_MODEL = '你的视觉模型名'
+python scripts/run_benchmark_once.py --manifest '你的视频清单/manifest.jsonl'
+```
+
+脚本默认评测 `data/prompts/pilot_v0_1.jsonl` 的 60 题，先检查输入与本地视频，再运行全部八维评分。清单中每条 `video_path` 必须指向运行机器上真实存在的视频；其他题集可加 `--prompts 路径`，输出目录可加 `--out 路径`。结果写入 `results/benchmark_v2/{per_case.jsonl,aggregate.json}`。中断后原命令可直接续跑；预检查失败时不会调用 API。只想预检查可加 `--check-only`。完整维度、评分规则和结果解释见 [评测协议](docs/BENCHMARK_V2.md)。
+
 ## Benchmark scoring (2x8-v3)
 
 The current benchmark implementation groups eight subcategories under **video
