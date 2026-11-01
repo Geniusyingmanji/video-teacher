@@ -19,8 +19,23 @@ from eval import benchmark_scoring as scoring
 from eval.frame_extractor import extract_frames
 from eval.rubric_6x6 import DIMENSIONS
 from eval.benchmark_video_rubric import DIMENSIONS as VIDEO_DIMENSIONS
+from eval.judges.gpt55 import judge_config
 
 MAX_JUDGE_FRAMES = 24
+
+
+def scoring_code_sha256() -> str:
+    root = Path(__file__).parent
+    return hashlib.sha256(b"".join((root / name).read_bytes() for name in
+                                    ("benchmark_scoring.py", "benchmark_operators.py",
+                                     "benchmark_video_rubric.py", "rubric_6x6.py",
+                                     "run_benchmark_v2.py", "judges/gpt55.py"))).hexdigest()
+
+
+def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
+    return {"sample_fps": sample_fps, "frame_max_px": frame_max_px,
+            "max_judge_frames": MAX_JUDGE_FRAMES, "judge": judge_config(),
+            "scoring_code_sha256": scoring_code_sha256()}
 
 
 def read_jsonl(path: str | Path) -> list[dict]:
@@ -65,9 +80,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
               "video_path": manifest.get("video_path"), "version": scoring.VERSION,
               "case_sha256": hashlib.sha256(json.dumps(case, ensure_ascii=False, sort_keys=True,
                                                     separators=(",", ":")).encode("utf-8")).hexdigest(),
-              "evaluation_config": {"sample_fps": sample_fps,
-                                    "frame_max_px": frame_max_px,
-                                    "max_judge_frames": MAX_JUDGE_FRAMES}}
+              "evaluation_config": evaluation_config(sample_fps, frame_max_px)}
     if manifest.get("status") != "ok" or not manifest.get("video_path"):
         result["errors"].append("generation_missing_or_failed")
         result["scoring"] = scoring.score_case({})
@@ -179,9 +192,7 @@ def reusable(previous: dict | None, case: dict, manifest: dict,
                                               separators=(",", ":")).encode("utf-8")).hexdigest()
     if previous.get("case_sha256") != expected_case:
         return False
-    if previous.get("evaluation_config") != {"sample_fps": sample_fps,
-                                               "frame_max_px": frame_max_px,
-                                               "max_judge_frames": MAX_JUDGE_FRAMES}:
+    if previous.get("evaluation_config") != evaluation_config(sample_fps, frame_max_px):
         return False
     video = Path(str(manifest.get("video_path") or ""))
     return (manifest.get("status") == "ok" and video.is_file()
@@ -197,11 +208,16 @@ def main() -> None:
     parser.add_argument("--frame-max-px", type=int, default=832)
     parser.add_argument("--ffmpeg", default="ffmpeg")
     parser.add_argument("--limit", type=int, default=0, help="Debug only; output is never ranking-publishable")
+    parser.add_argument("--preflight", action="store_true", help="Validate inputs and local dependencies without calling the judge")
     args = parser.parse_args()
     if not math.isfinite(args.sample_fps) or args.sample_fps <= 0 or args.frame_max_px <= 0 or args.limit < 0:
         parser.error("invalid sampling or limit")
-    if shutil.which("az") is None:
-        parser.error("Azure CLI 'az' is required by the configured GPT judge; install and sign in before scoring")
+    try:
+        config = evaluation_config(args.sample_fps, args.frame_max_px)
+    except ValueError as exc:
+        parser.error(str(exc))
+    if config["judge"]["provider"] == "azure_cli" and shutil.which("az") is None:
+        parser.error("Azure CLI 'az' is required; alternatively configure VIDEO_TEACHER_API_KEY, VIDEO_TEACHER_BASE_URL and VIDEO_TEACHER_MODEL")
     if args.ffmpeg == "ffmpeg" and shutil.which("ffmpeg") is None:
         try:
             import imageio_ffmpeg
@@ -211,6 +227,21 @@ def main() -> None:
     prompts = unique_by_id(read_jsonl(args.prompts))
     manifest = unique_by_id(read_jsonl(args.manifest), latest=True)
     ids = list(prompts)[:args.limit] if args.limit else list(prompts)
+    if not ids:
+        parser.error("prompt file contains no cases")
+    if any(prompts[id].get("audio_narration_required") is True for id in ids) and not Path(args.ffmpeg).is_file() and shutil.which(args.ffmpeg) is None:
+        parser.error("ffmpeg is required for narration checks")
+    if args.preflight:
+        unavailable = [id for id in ids if manifest.get(id, {}).get("status") != "ok"]
+        missing = [id for id in ids if manifest.get(id, {}).get("status") == "ok"
+                   and not Path(str(manifest[id].get("video_path") or "")).is_file()]
+        print(json.dumps({"preflight": "ok" if not missing and not unavailable else "incomplete_inputs",
+                          "n_cases": len(ids), "n_manifest_entries": len(manifest),
+                          "missing_video_ids": missing, "unavailable_generation_ids": unavailable,
+                          "judge": config["judge"]}, ensure_ascii=False))
+        if missing or unavailable:
+            parser.exit(2)
+        return
     out = Path(args.out)
     out.mkdir(parents=True, exist_ok=True)
     per_case = out / "per_case.jsonl"
@@ -236,15 +267,10 @@ def main() -> None:
         aggregate["ranking_score"] = None
         aggregate["bootstrap_95_ci_case_mean"] = None
         aggregate["debug_subset"] = True
-    aggregate["config"] = {"sample_fps": args.sample_fps, "frame_max_px": args.frame_max_px,
-                           "max_judge_frames": MAX_JUDGE_FRAMES,
+    aggregate["config"] = {**config,
                            "prompt_sha256": hashlib.sha256(Path(args.prompts).read_bytes()).hexdigest(),
                            "manifest_sha256": hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest(),
-                           "scoring_code_sha256": hashlib.sha256(
-                               b"".join(Path(__file__).with_name(name).read_bytes() for name in
-                                        ("benchmark_scoring.py", "benchmark_operators.py",
-                                         "benchmark_video_rubric.py", "rubric_6x6.py",
-                                         "run_benchmark_v2.py"))).hexdigest()}
+                           "scoring_code_sha256": config["scoring_code_sha256"]}
     (out / "aggregate.json").write_text(json.dumps(aggregate, ensure_ascii=False, indent=2), encoding="utf-8")
     print(json.dumps({"n_total": aggregate["n_total"], "n_valid": aggregate["n_valid"],
                       "ranking_publishable": aggregate["ranking_publishable"],

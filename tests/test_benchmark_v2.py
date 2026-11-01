@@ -1,7 +1,10 @@
 import tempfile
 import unittest
+import json
+import os
+import sys
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import cv2
 import numpy as np
@@ -11,6 +14,7 @@ from eval import benchmark_scoring as scoring
 from eval import compare_benchmark_v2 as comparison
 from eval import benchmark_video_rubric as video_rubric
 from eval import run_benchmark_v2 as runner
+from eval.judges import gpt55
 
 
 class ScoringPolicyTests(unittest.TestCase):
@@ -140,6 +144,68 @@ class OperatorTests(unittest.TestCase):
                                             {"status": "ok", "video_path": path}, 2.0, 832))
             self.assertFalse(runner.reusable(row, {"id": "x", "expected_narrative_order": ["changed"]},
                                              {"status": "ok", "video_path": path}, 2.0, 832))
+
+    def test_complete_cli_flow_and_resume_with_api_key(self):
+        with tempfile.TemporaryDirectory(dir=Path(__file__).parents[1]) as tmp:
+            root = Path(tmp)
+            video = root / "clip.avi"
+            writer = cv2.VideoWriter(str(video), cv2.VideoWriter_fourcc(*"MJPG"), 10, (64, 48))
+            self.assertTrue(writer.isOpened())
+            for i in range(12):
+                writer.write(np.full((48, 64, 3), 90 + i, dtype=np.uint8))
+            writer.release()
+            prompts = root / "prompts.jsonl"
+            manifest = root / "manifest.jsonl"
+            prompts.write_text(json.dumps({"id": "case1", "prompt_text": "show a process"}) + "\n", encoding="utf-8")
+            manifest.write_text(json.dumps({"id": "case1", "status": "ok", "video_path": str(video)}) + "\n", encoding="utf-8")
+            args = ["run_benchmark_v2", "--prompts", str(prompts), "--manifest", str(manifest),
+                    "--out", str(root / "out")]
+            env = {"VIDEO_TEACHER_API_KEY": "test-only", "VIDEO_TEACHER_BASE_URL": "https://example.test/v1",
+                   "VIDEO_TEACHER_MODEL": "vision-model"}
+            def judged(case, frames):
+                return {"score": 4, "binary": "PASS", "criteria": [], "summary": "mock"}
+            def video_judged(case, frames):
+                return {"score": 75, "criteria": [], "summary": "mock"}
+            with patch.dict(os.environ, env), patch.object(sys, "argv", args), \
+                 patch.object(runner, "DIMENSIONS", {a: type("Judge", (), {"score": lambda self, c, f: judged(c, f)})()
+                                                      for a in runner.DIMENSIONS}), \
+                 patch.object(runner, "VIDEO_DIMENSIONS", {a: type("Judge", (), {"score": lambda self, c, f: video_judged(c, f)})()
+                                                            for a in runner.VIDEO_DIMENSIONS}):
+                runner.main()
+                row = runner.read_jsonl(root / "out" / "per_case.jsonl")[0]
+                self.assertTrue(row["scoring"]["valid"])
+                self.assertEqual(row["evaluation_config"]["judge"]["model"], "vision-model")
+                aggregate = json.loads((root / "out" / "aggregate.json").read_text(encoding="utf-8"))
+                self.assertTrue(aggregate["ranking_publishable"])
+                self.assertEqual(aggregate["n_valid"], 1)
+                with patch.object(runner, "evaluate", side_effect=AssertionError("resume called judge")):
+                    runner.main()
+                self.assertEqual(len(runner.read_jsonl(root / "out" / "per_case.jsonl")), 1)
+                with patch.dict(os.environ, {"VIDEO_TEACHER_MODEL": "changed-model"}):
+                    self.assertFalse(runner.reusable(row, {"id": "case1", "prompt_text": "show a process"},
+                                                     {"status": "ok", "video_path": str(video)}, 2.0, 832))
+
+    def test_api_key_configuration_requires_base_url_and_model(self):
+        with patch.dict(os.environ, {"VIDEO_TEACHER_API_KEY": "secret", "VIDEO_TEACHER_BASE_URL": "",
+                                     "VIDEO_TEACHER_MODEL": ""}):
+            with self.assertRaises(ValueError):
+                gpt55.judge_config()
+
+    def test_api_key_client_sends_configured_model_and_json_mode(self):
+        env = {"VIDEO_TEACHER_API_KEY": "test-only", "VIDEO_TEACHER_BASE_URL": "https://example.test/v1",
+               "VIDEO_TEACHER_MODEL": "vision-model"}
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value.choices = [
+            type("Choice", (), {"message": type("Message", (), {"content": '{"ok":true}'})()})()]
+        with patch.dict(os.environ, env), patch.object(gpt55, "OpenAI", return_value=fake_client) as factory:
+            response = gpt55.chat([{"role": "user", "content": "test"}],
+                                  response_format={"type": "json_object"})
+        self.assertEqual(response, '{"ok":true}')
+        factory.assert_called_once()
+        self.assertEqual(factory.call_args.kwargs["base_url"], "https://example.test/v1")
+        self.assertEqual(fake_client.chat.completions.create.call_args.kwargs["model"], "vision-model")
+        self.assertEqual(fake_client.chat.completions.create.call_args.kwargs["response_format"],
+                         {"type": "json_object"})
 
 
 if __name__ == "__main__":

@@ -53,15 +53,38 @@ python -m eval.run_benchmark_v2 \
   --out results/benchmark_v2
 ```
 
-The Azure judge access used by `eval.rubric_6x6` must be configured. `ffmpeg`
-must be on PATH for cases requiring narration. The runner writes
+The judge must support vision input and Chat Completions JSON mode. For an
+OpenAI-compatible API, set these environment variables in the same shell:
+
+```powershell
+$env:VIDEO_TEACHER_API_KEY = '<API key>'
+$env:VIDEO_TEACHER_BASE_URL = 'https://your-provider.example/v1'
+$env:VIDEO_TEACHER_MODEL = 'your-vision-model'
+python -m eval.run_benchmark_v2 --prompts data/prompts/pilot_v0_1.jsonl --manifest path/to/manifest.jsonl --out results/benchmark_v2 --preflight
+python -m eval.run_benchmark_v2 --prompts data/prompts/pilot_v0_1.jsonl --manifest path/to/manifest.jsonl --out results/benchmark_v2_probe --limit 1
+python -m eval.run_benchmark_v2 --prompts data/prompts/pilot_v0_1.jsonl --manifest path/to/manifest.jsonl --out results/benchmark_v2
+```
+
+`--preflight` checks the input files, local video paths, judge configuration,
+and local dependencies without spending API calls. It exits with code 2 when
+a requested case has no successful generation or its video is missing. The one-case run exercises
+all eight vision judgments and should report `n_valid: 1`; its ranking is
+intentionally not publishable. If an API call or rubric validation fails,
+inspect that case's `errors` and `axes.*.error` in `per_case.jsonl`, fix the
+cause, and rerun the same full command. Valid cases are reused; failed cases
+are retried. Do not put the API key in command arguments or output files.
+
+Without `VIDEO_TEACHER_API_KEY`, the existing Azure CLI login and Azure endpoint
+configuration are used. `ffmpeg` must be available for cases requiring
+narration; `imageio-ffmpeg` is accepted when installed. The runner writes
 `per_case.jsonl` with criterion evidence, operator diagnostics, video digest,
 errors and category scores; `aggregate.json` contains counts, means, strata and
 a seeded case-bootstrap 95% interval. The latest manifest attempt per ID wins.
 Missing/failed generations remain in the denominator. Any failed case or
 `--limit` debug run sets `ranking_publishable=false` and `ranking_score=null`.
 Completed case results are saved immediately and reused only when the case,
-video hash, rubric version and sampling configuration match. Failed cases are
+video hash, scoring code, rubric version, judge provider/model/endpoint and sampling
+configuration match. Failed cases are
 retried on the next invocation.
 
 For matched models, run `python -m eval.compare_benchmark_v2 --left

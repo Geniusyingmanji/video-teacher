@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import httpx
-from openai import AzureOpenAI
+from openai import AzureOpenAI, OpenAI
 
 
 AZURE_DEFAULT_SCOPE = "https://cognitiveservices.azure.com/.default"
@@ -111,6 +111,28 @@ def make_client(
     )
 
 
+def judge_config() -> dict[str, str]:
+    """Public, secret-free identity of the configured vision judge."""
+    if os.environ.get("VIDEO_TEACHER_API_KEY"):
+        base_url = os.environ.get("VIDEO_TEACHER_BASE_URL", "").strip()
+        model = os.environ.get("VIDEO_TEACHER_MODEL", "").strip()
+        if not base_url or not model:
+            raise ValueError("VIDEO_TEACHER_BASE_URL and VIDEO_TEACHER_MODEL are required with VIDEO_TEACHER_API_KEY")
+        return {"provider": "openai_compatible", "base_url": base_url.rstrip("/"), "model": model}
+    return {"provider": "azure_cli", "endpoint": os.environ.get(
+        "AZURE_OPENAI_ENDPOINT", "https://t2vgoaigpt4o3.openai.azure.com/").rstrip("/"),
+        "api_version": os.environ.get("AZURE_OPENAI_API_VERSION", "2025-01-01-preview"),
+        "model": os.environ.get("VIDEO_TEACHER_MODEL", "gpt-5.5")}
+
+
+def configured_client():
+    config = judge_config()
+    if config["provider"] == "openai_compatible":
+        return OpenAI(api_key=os.environ["VIDEO_TEACHER_API_KEY"],
+                      base_url=config["base_url"], timeout=300.0, max_retries=3)
+    return make_client()
+
+
 def chat(
     messages: list[dict[str, Any]],
     model: str = "gpt-5.5",
@@ -123,8 +145,9 @@ def chat(
     **kwargs: Any,
 ) -> str:
     import random
-    from openai import RateLimitError
-    client = client or make_client()
+    from openai import APIConnectionError, APITimeoutError, InternalServerError, RateLimitError
+    client = client or configured_client()
+    model = os.environ.get("VIDEO_TEACHER_MODEL", model)
     extra: dict[str, Any] = {}
     if response_format is not None:
         extra["response_format"] = response_format
@@ -140,7 +163,7 @@ def chat(
                 **extra,
             )
             return completion.choices[0].message.content or ""
-        except RateLimitError:
+        except (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError):
             if attempt == max_retries - 1:
                 raise
             jitter = random.uniform(0.8, 1.2)
