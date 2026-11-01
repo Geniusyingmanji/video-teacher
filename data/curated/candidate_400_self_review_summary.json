@@ -1,0 +1,8 @@
+{
+  "items": 400,
+  "pass_assistant_preflight": 400,
+  "needs_fix": 0,
+  "items_with_tracked_optional_frame": 211,
+  "release_ready": false,
+  "limit": "Automated per-item preflight plus assistant review of flagged and high-risk cases; not independent specialist or visual-content certification."
+}

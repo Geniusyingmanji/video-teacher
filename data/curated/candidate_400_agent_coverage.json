@@ -1,0 +1,137 @@
+{
+  "candidate_count": 400,
+  "release_ready": false,
+  "first_frame_policy": {
+    "available_optional": 238,
+    "none": 162
+  },
+  "by_discipline": {
+    "art_music": {
+      "knowledge_point": 5,
+      "solve_problem": 8,
+      "total": 13,
+      "gap_to_14_each": {
+        "knowledge_point": 9,
+        "solve_problem": 6
+      }
+    },
+    "biology": {
+      "knowledge_point": 18,
+      "solve_problem": 19,
+      "total": 37,
+      "gap_to_14_each": {
+        "knowledge_point": 0,
+        "solve_problem": 0
+      }
+    },
+    "chemistry": {
+      "knowledge_point": 18,
+      "solve_problem": 19,
+      "total": 37,
+      "gap_to_14_each": {
+        "knowledge_point": 0,
+        "solve_problem": 0
+      }
+    },
+    "civics": {
+      "knowledge_point": 5,
+      "solve_problem": 7,
+      "total": 12,
+      "gap_to_14_each": {
+        "knowledge_point": 9,
+        "solve_problem": 7
+      }
+    },
+    "computer_science": {
+      "knowledge_point": 18,
+      "solve_problem": 19,
+      "total": 37,
+      "gap_to_14_each": {
+        "knowledge_point": 0,
+        "solve_problem": 0
+      }
+    },
+    "economics": {
+      "knowledge_point": 14,
+      "solve_problem": 23,
+      "total": 37,
+      "gap_to_14_each": {
+        "knowledge_point": 0,
+        "solve_problem": 0
+      }
+    },
+    "geography": {
+      "knowledge_point": 19,
+      "solve_problem": 18,
+      "total": 37,
+      "gap_to_14_each": {
+        "knowledge_point": 0,
+        "solve_problem": 0
+      }
+    },
+    "history": {
+      "knowledge_point": 11,
+      "solve_problem": 25,
+      "total": 36,
+      "gap_to_14_each": {
+        "knowledge_point": 3,
+        "solve_problem": 0
+      }
+    },
+    "language_literature": {
+      "knowledge_point": 5,
+      "solve_problem": 8,
+      "total": 13,
+      "gap_to_14_each": {
+        "knowledge_point": 9,
+        "solve_problem": 6
+      }
+    },
+    "mathematics": {
+      "knowledge_point": 7,
+      "solve_problem": 32,
+      "total": 39,
+      "gap_to_14_each": {
+        "knowledge_point": 7,
+        "solve_problem": 0
+      }
+    },
+    "medicine": {
+      "knowledge_point": 11,
+      "solve_problem": 8,
+      "total": 19,
+      "gap_to_14_each": {
+        "knowledge_point": 3,
+        "solve_problem": 6
+      }
+    },
+    "music": {
+      "knowledge_point": 6,
+      "solve_problem": 15,
+      "total": 21,
+      "gap_to_14_each": {
+        "knowledge_point": 8,
+        "solve_problem": 0
+      }
+    },
+    "physics": {
+      "knowledge_point": 18,
+      "solve_problem": 19,
+      "total": 37,
+      "gap_to_14_each": {
+        "knowledge_point": 0,
+        "solve_problem": 0
+      }
+    },
+    "sports": {
+      "knowledge_point": 0,
+      "solve_problem": 25,
+      "total": 25,
+      "gap_to_14_each": {
+        "knowledge_point": 14,
+        "solve_problem": 0
+      }
+    }
+  },
+  "note": "Coverage gaps are selection targets, not fabricated tasks. Source truth and image rights still require human review."
+}

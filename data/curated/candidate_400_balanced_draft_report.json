@@ -1,0 +1,781 @@
+{
+  "count": 400,
+  "image_optional_count": 211,
+  "adapted_count": 87,
+  "retired_count": 87,
+  "adaptations": [
+    {
+      "id": "adapt_art_music_concept_01",
+      "anchor": "art_prob_01"
+    },
+    {
+      "id": "adapt_art_music_concept_02",
+      "anchor": "art_prob_02"
+    },
+    {
+      "id": "adapt_art_music_concept_03",
+      "anchor": "art_high_02"
+    },
+    {
+      "id": "adapt_art_music_concept_04",
+      "anchor": "cand_hs_art_01"
+    },
+    {
+      "id": "adapt_art_music_concept_05",
+      "anchor": "cand_hs_art_02"
+    },
+    {
+      "id": "adapt_art_music_concept_06",
+      "anchor": "cand_hs_art_03"
+    },
+    {
+      "id": "adapt_art_music_concept_07",
+      "anchor": "cand_hs_art_04"
+    },
+    {
+      "id": "adapt_art_music_concept_08",
+      "anchor": "cand_hs_art_06"
+    },
+    {
+      "id": "adapt_art_music_concept_09",
+      "anchor": "art_prob_01"
+    },
+    {
+      "id": "adapt_art_music_problem_01",
+      "anchor": "art_exp_01"
+    },
+    {
+      "id": "adapt_art_music_problem_02",
+      "anchor": "art_exp_02"
+    },
+    {
+      "id": "adapt_art_music_problem_03",
+      "anchor": "art_exp_03"
+    },
+    {
+      "id": "adapt_art_music_problem_04",
+      "anchor": "art_high_01"
+    },
+    {
+      "id": "adapt_art_music_problem_05",
+      "anchor": "cand_hs_art_05"
+    },
+    {
+      "id": "adapt_art_music_problem_06",
+      "anchor": "art_exp_01"
+    },
+    {
+      "id": "adapt_civics_concept_01",
+      "anchor": "civ_prob_01"
+    },
+    {
+      "id": "adapt_civics_concept_02",
+      "anchor": "civ_prob_02"
+    },
+    {
+      "id": "adapt_civics_concept_03",
+      "anchor": "cand_hs_civ_01"
+    },
+    {
+      "id": "adapt_civics_concept_04",
+      "anchor": "cand_hs_civ_02"
+    },
+    {
+      "id": "adapt_civics_concept_05",
+      "anchor": "cand_hs_civ_03"
+    },
+    {
+      "id": "adapt_civics_concept_06",
+      "anchor": "cand_hs_civ_05"
+    },
+    {
+      "id": "adapt_civics_concept_07",
+      "anchor": "civ_high_02"
+    },
+    {
+      "id": "adapt_civics_concept_08",
+      "anchor": "civ_prob_01"
+    },
+    {
+      "id": "adapt_civics_concept_09",
+      "anchor": "civ_prob_02"
+    },
+    {
+      "id": "adapt_civics_problem_01",
+      "anchor": "civ_exp_01"
+    },
+    {
+      "id": "adapt_civics_problem_02",
+      "anchor": "civ_exp_02"
+    },
+    {
+      "id": "adapt_civics_problem_03",
+      "anchor": "civ_exp_03"
+    },
+    {
+      "id": "adapt_civics_problem_04",
+      "anchor": "cand_hs_civ_04"
+    },
+    {
+      "id": "adapt_civics_problem_05",
+      "anchor": "civ_high_01"
+    },
+    {
+      "id": "adapt_civics_problem_06",
+      "anchor": "civ_exp_01"
+    },
+    {
+      "id": "adapt_civics_problem_07",
+      "anchor": "civ_exp_02"
+    },
+    {
+      "id": "adapt_history_concept_01",
+      "anchor": "grade_his_task_18"
+    },
+    {
+      "id": "adapt_history_concept_02",
+      "anchor": "grade_his_task_19"
+    },
+    {
+      "id": "adapt_history_concept_03",
+      "anchor": "grade_his_task_22"
+    },
+    {
+      "id": "adapt_language_literature_concept_01",
+      "anchor": "lang_prob_01"
+    },
+    {
+      "id": "adapt_language_literature_concept_02",
+      "anchor": "lang_prob_02"
+    },
+    {
+      "id": "adapt_language_literature_concept_03",
+      "anchor": "cand_hs_lang_01"
+    },
+    {
+      "id": "adapt_language_literature_concept_04",
+      "anchor": "cand_hs_lang_02"
+    },
+    {
+      "id": "adapt_language_literature_concept_05",
+      "anchor": "cand_hs_lang_03"
+    },
+    {
+      "id": "adapt_language_literature_concept_06",
+      "anchor": "cand_hs_lang_04"
+    },
+    {
+      "id": "adapt_language_literature_concept_07",
+      "anchor": "cand_hs_lang_06"
+    },
+    {
+      "id": "adapt_language_literature_concept_08",
+      "anchor": "lang_high_02"
+    },
+    {
+      "id": "adapt_language_literature_concept_09",
+      "anchor": "lang_prob_01"
+    },
+    {
+      "id": "adapt_language_literature_problem_01",
+      "anchor": "lang_exp_01"
+    },
+    {
+      "id": "adapt_language_literature_problem_02",
+      "anchor": "lang_exp_02"
+    },
+    {
+      "id": "adapt_language_literature_problem_03",
+      "anchor": "lang_exp_03"
+    },
+    {
+      "id": "adapt_language_literature_problem_04",
+      "anchor": "cand_hs_lang_05"
+    },
+    {
+      "id": "adapt_language_literature_problem_05",
+      "anchor": "lang_high_01"
+    },
+    {
+      "id": "adapt_language_literature_problem_06",
+      "anchor": "lang_exp_01"
+    },
+    {
+      "id": "adapt_mathematics_concept_01",
+      "anchor": "math_prob_01"
+    },
+    {
+      "id": "adapt_mathematics_concept_02",
+      "anchor": "math_prob_02"
+    },
+    {
+      "id": "adapt_mathematics_concept_03",
+      "anchor": "grade_math_math_43"
+    },
+    {
+      "id": "adapt_mathematics_concept_04",
+      "anchor": "grade_math_math_56"
+    },
+    {
+      "id": "adapt_mathematics_concept_05",
+      "anchor": "grade_math_math_90"
+    },
+    {
+      "id": "adapt_mathematics_concept_06",
+      "anchor": "grade_math_math_92"
+    },
+    {
+      "id": "adapt_mathematics_concept_07",
+      "anchor": "grade_math_math_97"
+    },
+    {
+      "id": "adapt_medicine_concept_01",
+      "anchor": "med_prob_01"
+    },
+    {
+      "id": "adapt_medicine_concept_02",
+      "anchor": "med_prob_02"
+    },
+    {
+      "id": "adapt_medicine_concept_03",
+      "anchor": "cand_med_cs_gap_01"
+    },
+    {
+      "id": "adapt_medicine_problem_01",
+      "anchor": "med_exp_01"
+    },
+    {
+      "id": "adapt_medicine_problem_02",
+      "anchor": "med_exp_02"
+    },
+    {
+      "id": "adapt_medicine_problem_03",
+      "anchor": "med_exp_03"
+    },
+    {
+      "id": "adapt_medicine_problem_04",
+      "anchor": "cand_med_cs_gap_02"
+    },
+    {
+      "id": "adapt_medicine_problem_05",
+      "anchor": "cand_med_cs_gap_03"
+    },
+    {
+      "id": "adapt_medicine_problem_06",
+      "anchor": "cand_med_cs_gap_04"
+    },
+    {
+      "id": "adapt_music_concept_01",
+      "anchor": "grade_music_task_10"
+    },
+    {
+      "id": "adapt_music_concept_02",
+      "anchor": "grade_music_task_11"
+    },
+    {
+      "id": "adapt_music_concept_03",
+      "anchor": "grade_music_task_14"
+    },
+    {
+      "id": "adapt_music_concept_04",
+      "anchor": "grade_music_task_15"
+    },
+    {
+      "id": "adapt_music_concept_05",
+      "anchor": "grade_music_task_22"
+    },
+    {
+      "id": "adapt_music_concept_06",
+      "anchor": "grade_music_task_28"
+    },
+    {
+      "id": "adapt_music_concept_07",
+      "anchor": "grade_music_task_34"
+    },
+    {
+      "id": "adapt_music_concept_08",
+      "anchor": "grade_music_task_36"
+    },
+    {
+      "id": "adapt_sports_concept_01",
+      "anchor": "disciplinegen_sports_generated_glucose_curve_low_gi"
+    },
+    {
+      "id": "adapt_sports_concept_02",
+      "anchor": "disciplinegen_sports_generated_go_crucial_move"
+    },
+    {
+      "id": "adapt_sports_concept_03",
+      "anchor": "disciplinegen_sports_generated_xiangqi_central_cannon"
+    },
+    {
+      "id": "adapt_sports_concept_04",
+      "anchor": "grade_board_games_task_1"
+    },
+    {
+      "id": "adapt_sports_concept_05",
+      "anchor": "grade_board_games_task_10"
+    },
+    {
+      "id": "adapt_sports_concept_06",
+      "anchor": "grade_board_games_task_13"
+    },
+    {
+      "id": "adapt_sports_concept_07",
+      "anchor": "grade_board_games_task_15"
+    },
+    {
+      "id": "adapt_sports_concept_08",
+      "anchor": "grade_board_games_task_2"
+    },
+    {
+      "id": "adapt_sports_concept_09",
+      "anchor": "grade_board_games_task_4"
+    },
+    {
+      "id": "adapt_sports_concept_10",
+      "anchor": "grade_board_games_task_5"
+    },
+    {
+      "id": "adapt_sports_concept_11",
+      "anchor": "grade_board_games_task_6"
+    },
+    {
+      "id": "adapt_sports_concept_12",
+      "anchor": "grade_board_games_task_7"
+    },
+    {
+      "id": "adapt_sports_concept_13",
+      "anchor": "grade_sports_task_1"
+    },
+    {
+      "id": "adapt_sports_concept_14",
+      "anchor": "grade_sports_task_12"
+    }
+  ],
+  "scope_replacement_count": 68,
+  "scope_replacements": [
+    {
+      "id": "authored_disciplinegen_biology_4d1e4940f2abe85e",
+      "replaces": "disciplinegen_biology_4d1e4940f2abe85e"
+    },
+    {
+      "id": "authored_disciplinegen_biology_637de7c74ec514f2",
+      "replaces": "disciplinegen_biology_637de7c74ec514f2"
+    },
+    {
+      "id": "authored_disciplinegen_biology_79da49549e98a464",
+      "replaces": "disciplinegen_biology_79da49549e98a464"
+    },
+    {
+      "id": "authored_disciplinegen_biology_952aab9e8232729f",
+      "replaces": "disciplinegen_biology_952aab9e8232729f"
+    },
+    {
+      "id": "authored_disciplinegen_biology_b290038d86b5cafa",
+      "replaces": "disciplinegen_biology_b290038d86b5cafa"
+    },
+    {
+      "id": "authored_disciplinegen_biology_bb55c260cbb06ae5",
+      "replaces": "disciplinegen_biology_bb55c260cbb06ae5"
+    },
+    {
+      "id": "authored_disciplinegen_biology_ce413ce67a202d21",
+      "replaces": "disciplinegen_biology_ce413ce67a202d21"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_01d8d25b5366ecac",
+      "replaces": "disciplinegen_chemistry_01d8d25b5366ecac"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_2a09233f42ac1f88",
+      "replaces": "disciplinegen_chemistry_2a09233f42ac1f88"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_32e43cbfb37a3402",
+      "replaces": "disciplinegen_chemistry_32e43cbfb37a3402"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_468a9d07e19cf12f",
+      "replaces": "disciplinegen_chemistry_468a9d07e19cf12f"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_562b6e95adba05e9",
+      "replaces": "disciplinegen_chemistry_562b6e95adba05e9"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_5fcd578e1af170cd",
+      "replaces": "disciplinegen_chemistry_5fcd578e1af170cd"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_79af68e72f1b30e5",
+      "replaces": "disciplinegen_chemistry_79af68e72f1b30e5"
+    },
+    {
+      "id": "authored_disciplinegen_chemistry_80331889a6d3bba0",
+      "replaces": "disciplinegen_chemistry_80331889a6d3bba0"
+    },
+    {
+      "id": "authored_disciplinegen_computer_science_0967044c1bfd815d",
+      "replaces": "disciplinegen_computer_science_0967044c1bfd815d"
+    },
+    {
+      "id": "authored_disciplinegen_computer_science_1edea8b7f06880dd",
+      "replaces": "disciplinegen_computer_science_1edea8b7f06880dd"
+    },
+    {
+      "id": "authored_disciplinegen_computer_science_490debc3152493dd",
+      "replaces": "disciplinegen_computer_science_490debc3152493dd"
+    },
+    {
+      "id": "authored_disciplinegen_computer_science_561891bc6c49662f",
+      "replaces": "disciplinegen_computer_science_561891bc6c49662f"
+    },
+    {
+      "id": "authored_disciplinegen_computer_science_96fbc663397760c3",
+      "replaces": "disciplinegen_computer_science_96fbc663397760c3"
+    },
+    {
+      "id": "authored_disciplinegen_computer_science_c5c9a0d7b19fbd93",
+      "replaces": "disciplinegen_computer_science_c5c9a0d7b19fbd93"
+    },
+    {
+      "id": "authored_grade_computerscience_task_25",
+      "replaces": "grade_computerscience_task_25"
+    },
+    {
+      "id": "authored_grade_computerscience_task_28",
+      "replaces": "grade_computerscience_task_28"
+    },
+    {
+      "id": "authored_disciplinegen_economics_0819ba4a660a3763",
+      "replaces": "disciplinegen_economics_0819ba4a660a3763"
+    },
+    {
+      "id": "authored_disciplinegen_economics_1190ce84671598ac",
+      "replaces": "disciplinegen_economics_1190ce84671598ac"
+    },
+    {
+      "id": "authored_disciplinegen_economics_185fdca5585db7f2",
+      "replaces": "disciplinegen_economics_185fdca5585db7f2"
+    },
+    {
+      "id": "authored_disciplinegen_economics_32b1334f690f014e",
+      "replaces": "disciplinegen_economics_32b1334f690f014e"
+    },
+    {
+      "id": "authored_disciplinegen_economics_4cd6b1c328554c42",
+      "replaces": "disciplinegen_economics_4cd6b1c328554c42"
+    },
+    {
+      "id": "authored_disciplinegen_economics_8a4535f2faca5fb1",
+      "replaces": "disciplinegen_economics_8a4535f2faca5fb1"
+    },
+    {
+      "id": "authored_disciplinegen_economics_975cabeddeaa33cf",
+      "replaces": "disciplinegen_economics_975cabeddeaa33cf"
+    },
+    {
+      "id": "authored_disciplinegen_economics_cdc891c498dc38be",
+      "replaces": "disciplinegen_economics_cdc891c498dc38be"
+    },
+    {
+      "id": "authored_disciplinegen_economics_ded93b574a5fdcef",
+      "replaces": "disciplinegen_economics_ded93b574a5fdcef"
+    },
+    {
+      "id": "authored_disciplinegen_economics_e0cacf813edf1b27",
+      "replaces": "disciplinegen_economics_e0cacf813edf1b27"
+    },
+    {
+      "id": "authored_disciplinegen_geography_00a1cf5a294cf1b8",
+      "replaces": "disciplinegen_geography_00a1cf5a294cf1b8"
+    },
+    {
+      "id": "authored_disciplinegen_geography_18945e67fc8db21f",
+      "replaces": "disciplinegen_geography_18945e67fc8db21f"
+    },
+    {
+      "id": "authored_disciplinegen_geography_1f57885f113a0ba5",
+      "replaces": "disciplinegen_geography_1f57885f113a0ba5"
+    },
+    {
+      "id": "authored_disciplinegen_geography_5ba66674f646caca",
+      "replaces": "disciplinegen_geography_5ba66674f646caca"
+    },
+    {
+      "id": "authored_disciplinegen_geography_90daa73d9ca2c9f8",
+      "replaces": "disciplinegen_geography_90daa73d9ca2c9f8"
+    },
+    {
+      "id": "authored_disciplinegen_geography_91b713bb2ee9a5fb",
+      "replaces": "disciplinegen_geography_91b713bb2ee9a5fb"
+    },
+    {
+      "id": "authored_disciplinegen_geography_981ff5156323a36a",
+      "replaces": "disciplinegen_geography_981ff5156323a36a"
+    },
+    {
+      "id": "authored_disciplinegen_geography_a13429c7351affc6",
+      "replaces": "disciplinegen_geography_a13429c7351affc6"
+    },
+    {
+      "id": "authored_disciplinegen_geography_aa76bb3dbf866ac2",
+      "replaces": "disciplinegen_geography_aa76bb3dbf866ac2"
+    },
+    {
+      "id": "authored_disciplinegen_geography_c76346b7db6cf48d",
+      "replaces": "disciplinegen_geography_c76346b7db6cf48d"
+    },
+    {
+      "id": "authored_disciplinegen_history_07d7b2f3c161f465",
+      "replaces": "disciplinegen_history_07d7b2f3c161f465"
+    },
+    {
+      "id": "authored_disciplinegen_history_2cbc861dd47f8ffb",
+      "replaces": "disciplinegen_history_2cbc861dd47f8ffb"
+    },
+    {
+      "id": "authored_disciplinegen_history_573128b2c78b23f9",
+      "replaces": "disciplinegen_history_573128b2c78b23f9"
+    },
+    {
+      "id": "authored_disciplinegen_history_637fc955e54ea50d",
+      "replaces": "disciplinegen_history_637fc955e54ea50d"
+    },
+    {
+      "id": "authored_disciplinegen_history_a7f8cbc9d1c13d41",
+      "replaces": "disciplinegen_history_a7f8cbc9d1c13d41"
+    },
+    {
+      "id": "authored_disciplinegen_history_ddcc840535edfe7f",
+      "replaces": "disciplinegen_history_ddcc840535edfe7f"
+    },
+    {
+      "id": "authored_disciplinegen_history_ecdaf4d7b09d5c30",
+      "replaces": "disciplinegen_history_ecdaf4d7b09d5c30"
+    },
+    {
+      "id": "authored_disciplinegen_mathematics_576f4fbe1fcd2318",
+      "replaces": "disciplinegen_mathematics_576f4fbe1fcd2318"
+    },
+    {
+      "id": "authored_disciplinegen_mathematics_8072bef9acb20801",
+      "replaces": "disciplinegen_mathematics_8072bef9acb20801"
+    },
+    {
+      "id": "authored_disciplinegen_physics_3b49b27202274eda",
+      "replaces": "disciplinegen_physics_3b49b27202274eda"
+    },
+    {
+      "id": "authored_disciplinegen_physics_4b92d5de28214e18",
+      "replaces": "disciplinegen_physics_4b92d5de28214e18"
+    },
+    {
+      "id": "authored_disciplinegen_physics_4f12bc877215ca4d",
+      "replaces": "disciplinegen_physics_4f12bc877215ca4d"
+    },
+    {
+      "id": "authored_disciplinegen_physics_7ad5137fa0595b33",
+      "replaces": "disciplinegen_physics_7ad5137fa0595b33"
+    },
+    {
+      "id": "authored_disciplinegen_physics_80342783f66ba211",
+      "replaces": "disciplinegen_physics_80342783f66ba211"
+    },
+    {
+      "id": "authored_disciplinegen_physics_8d6d7d6f54474f79",
+      "replaces": "disciplinegen_physics_8d6d7d6f54474f79"
+    },
+    {
+      "id": "authored_disciplinegen_physics_8e4654cb886b9747",
+      "replaces": "disciplinegen_physics_8e4654cb886b9747"
+    },
+    {
+      "id": "authored_grade_engineering_task_2",
+      "replaces": "grade_engineering_task_2"
+    },
+    {
+      "id": "authored_grade_engineering_task_3",
+      "replaces": "grade_engineering_task_3"
+    },
+    {
+      "id": "authored_grade_physics_task_37",
+      "replaces": "grade_physics_task_37"
+    },
+    {
+      "id": "authored_grade_physics_task_46",
+      "replaces": "grade_physics_task_46"
+    },
+    {
+      "id": "authored_grade_physics_task_48",
+      "replaces": "grade_physics_task_48"
+    },
+    {
+      "id": "authored_grade_physics_task_59",
+      "replaces": "grade_physics_task_59"
+    },
+    {
+      "id": "authored_disciplinegen_sports_generated_glucose_curve_low_gi",
+      "replaces": "disciplinegen_sports_generated_glucose_curve_low_gi"
+    },
+    {
+      "id": "authored_disciplinegen_sports_generated_go_crucial_move",
+      "replaces": "disciplinegen_sports_generated_go_crucial_move"
+    },
+    {
+      "id": "authored_disciplinegen_sports_generated_xiangqi_central_cannon",
+      "replaces": "disciplinegen_sports_generated_xiangqi_central_cannon"
+    }
+  ],
+  "adaptation_review_flags": {},
+  "retired_ids": [
+    "disciplinegen_biology_d463e086c0d85b7b",
+    "disciplinegen_biology_d6ed47031da2cc68",
+    "disciplinegen_biology_e97ef16f968fb8b8",
+    "disciplinegen_biology_ed3f36ac8bfdaf80",
+    "grade_biology_task_6",
+    "grade_biology_task_64",
+    "grade_biology_task_85",
+    "bio_high_02",
+    "disciplinegen_chemistry_92d1b4b062ce0eff",
+    "disciplinegen_chemistry_b384e7c13abca75c",
+    "disciplinegen_chemistry_baa50786444c1e7b",
+    "disciplinegen_chemistry_c9bc0cd452324a2a",
+    "grade_chemistry_task_75",
+    "grade_chemistry_task_78",
+    "grade_chemistry_task_87",
+    "chem_high_02",
+    "disciplinegen_computer_science_e296d3f109abced1",
+    "disciplinegen_computer_science_e5b15fb07c093c74",
+    "disciplinegen_computer_science_f697389cb24a5d43",
+    "disciplinegen_computer_science_f73061acf3ec8ee7",
+    "grade_computerscience_task_5",
+    "grade_computerscience_task_7",
+    "grade_computerscience_task_9",
+    "cs_high_02",
+    "grade_eco_task_48",
+    "grade_eco_task_50",
+    "grade_eco_task_52",
+    "grade_eco_task_56",
+    "grade_eco_task_60",
+    "grade_eco_task_64",
+    "grade_eco_task_70",
+    "econ_high_02",
+    "disciplinegen_geography_c90ab9573803dd15",
+    "disciplinegen_geography_c9a3377ba4d92309",
+    "disciplinegen_geography_f583f5d369325958",
+    "disciplinegen_geography_fc01adde3cd13518",
+    "geo_high_01",
+    "grade_geography_task_37",
+    "grade_geography_task_4",
+    "grade_geography_task_7",
+    "geo_high_02",
+    "grade_his_task_4",
+    "grade_his_task_5",
+    "grade_his_task_6",
+    "grade_his_task_7",
+    "grade_his_task_8",
+    "hist_prob_01",
+    "hist_prob_02",
+    "disciplinegen_history_42b369a6f02c6308",
+    "disciplinegen_history_e1d7a98eb3650c4a",
+    "hist_high_02",
+    "grade_math_math_92",
+    "grade_math_math_95",
+    "grade_math_math_96",
+    "grade_math_math_97",
+    "grade_math_static_7",
+    "grade_math_static_9",
+    "math_prob_01",
+    "math_prob_02",
+    "disciplinegen_mathematics_458d454f91a90f5d",
+    "disciplinegen_mathematics_562a6136f7d12bc1",
+    "disciplinegen_mathematics_5d2a93904a350e35",
+    "disciplinegen_mathematics_7285340c79474c51",
+    "disciplinegen_mathematics_810e253bdc5e3ed0",
+    "disciplinegen_mathematics_b051d0d762621905",
+    "disciplinegen_mathematics_cc15056c24b91cf7",
+    "disciplinegen_mathematics_ce42031b97a18712",
+    "math_high_02",
+    "grade_music_task_48",
+    "disciplinegen_physics_bc4a12fab626e154",
+    "disciplinegen_physics_ce93670dfb80f5bb",
+    "disciplinegen_physics_f8ca238256e36047",
+    "disciplinegen_physics_f9250a33ef890468",
+    "grade_physics_task_68",
+    "grade_physics_task_70",
+    "phys_prob_01",
+    "phys_high_02",
+    "grade_sports_task_14",
+    "grade_sports_task_15",
+    "grade_sports_task_22",
+    "grade_sports_task_23",
+    "grade_sports_task_26",
+    "grade_sports_task_28",
+    "grade_sports_task_29",
+    "grade_sports_task_30",
+    "grade_sports_task_7",
+    "grade_sports_task_8"
+  ],
+  "by_discipline_and_task": {
+    "art_music": {
+      "explanation": 14,
+      "problem_solving": 14
+    },
+    "biology": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "chemistry": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "civics": {
+      "explanation": 14,
+      "problem_solving": 14
+    },
+    "computer_science": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "economics": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "geography": {
+      "explanation": 14,
+      "problem_solving": 14
+    },
+    "history": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "language_literature": {
+      "explanation": 14,
+      "problem_solving": 14
+    },
+    "mathematics": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "medicine": {
+      "explanation": 14,
+      "problem_solving": 14
+    },
+    "music": {
+      "explanation": 14,
+      "problem_solving": 14
+    },
+    "physics": {
+      "explanation": 14,
+      "problem_solving": 15
+    },
+    "sports": {
+      "explanation": 14,
+      "problem_solving": 15
+    }
+  },
+  "release_ready": false,
+  "review_warning": "Adaptations are source-linked drafts. Subject truth, answer specificity, near duplicates and visual assets need item-level review before evaluation."
+}
