@@ -86,7 +86,11 @@ def main():
     assert completion['generated'] == sum(e['status'] == 'ok' for e in evidence)
     assert completion['quality_passed'] == sum(e['quality_passed'] for e in evidence)
     aggregate = report([evaluations[cid] for cid in ids], {c['id']: c for c in cases})
-    assert aggregate == json.loads((args.run / 'video-teacher-2x8-v4/aggregate.json').read_text())
+    archived = json.loads((args.run / 'video-teacher-2x8-v4/aggregate.json').read_text())
+    # Aggregating archived scores preserves their original scoring identity.
+    assert {row['version'] for row in evaluations.values()} == {archived['version']}
+    aggregate['version'] = archived['version']
+    assert aggregate == archived
     write(args.out / 'completion.json', completion)
     write(args.out / 'cases.json', evidence)
     write(args.out / 'attempts.json', attempts)

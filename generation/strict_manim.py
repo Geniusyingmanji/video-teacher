@@ -128,6 +128,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
     recorded = []
     measured_weights = []
     paths = []
+    layout_reports = []
     for phase in ('measure', 'final'):
         options = dict(pixel_width=854, pixel_height=480, frame_rate=15,
                        media_dir=str(code.parent / 'media'), disable_caching=True,
@@ -148,9 +149,23 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 from generation.source_primitives import SourcePrimitives
                 primitives = SourcePrimitives(source, source_regions)
                 scene.source_text, scene.source_curve, scene.source_highlight = primitives.text, primitives.curve, primitives.highlight
+            verified_calls = set()
+            if contract.get('verified_assets'):
+                def verified_structure(highlighted=False):
+                    key = 'classified' if highlighted else 'initial'
+                    verified_calls.add(key)
+                    return ImageMobject(contract['verified_assets']['paths'][key]).scale_to_fit_width(9).move_to([0, -.25, 0])
+                scene.verified_structure = verified_structure
             old_setup, old_construct = scene.setup, scene.construct
             old_play, old_wait = scene.play, scene.wait
             index, nested = 0, False
+            if phase == 'final':
+                from tqdm import tqdm
+                def exact_progression(run_time, description, n_iterations=None, override_skip_animations=False):
+                    count = scene._strict_event_frames
+                    return tqdm((i/15 for i in range(count)), total=count, disable=True)
+                scene.get_time_progression = exact_progression
+                scene.renderer.freeze_current_frame = lambda duration: scene.renderer.add_frame(scene.renderer.get_frame(), num_frames=scene._strict_event_frames)
             observed = []
             def setup(self):
                 old_setup()
@@ -170,6 +185,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 if phase == 'final':
                     if index >= len(recorded) or recorded[index][0] != kind:
                         raise ValueError('non-deterministic timeline; event sequence changed')
+                    scene._strict_event_frames = measured_weights[index]
                     duration = measured_weights[index] / 15
                     if kind == 'wait':
                         args, kwargs = (duration,), {'frozen_frame': True}
@@ -180,6 +196,9 @@ def render(code: Path, scene_name: str, contract_path: Path):
                     result = function(*args, **kwargs)
                 finally:
                     nested = False
+                if phase == 'final' and not source:
+                    from generation.layout_guard import check_layout
+                    layout_reports.append(check_layout(scene))
                 observed.append((kind, max(1/15, scene.time-start)))
                 index += 1
                 return result
@@ -193,6 +212,8 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 self.wait(1)
             scene.construct = types.MethodType(construct, scene)
             scene.render()
+            if contract.get('verified_assets') and verified_calls != {'initial', 'classified'}:
+                raise ValueError('Verified molecule must be shown with self.verified_structure(False) then self.verified_structure(True); never redraw a guessed structure')
             paths.append(Path(scene.renderer.file_writer.movie_file_path))
             if phase == 'measure':
                 recorded = observed
@@ -209,13 +230,18 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 raise ValueError('non-deterministic timeline; missing events')
     diagnostics = {'timing': inspect_exact(paths[-1]), 'event_frames': measured_weights,
                    'events': [dict(kind=kind, frames=n) for (kind,_),n in zip(recorded, measured_weights)]}
+    diagnostics['layout'] = {'valid': all(r['valid'] for r in layout_reports),
+                             'checks': layout_reports}
     if source:
         diagnostics['source_preservation'] = check_source(paths[-1], source, regions)
         diagnostics['source_preservation']['pre_encoding'] = guard.report()
         diagnostics['source_preservation']['valid'] &= guard.report()['valid']
+    diagnostics['rendered_video'] = str(paths[-1])
     (code.parent / 'strict_diagnostics.json').write_text(json.dumps(diagnostics, indent=2))
-    if not diagnostics['timing']['valid'] or not diagnostics.get('source_preservation', {'valid': True})['valid']:
-        raise ValueError('strict video contract failed: ' + json.dumps(diagnostics))
+    if (not diagnostics['timing']['valid'] or not diagnostics['layout']['valid']
+            or not diagnostics.get('source_preservation', {'valid': True})['valid']):
+        from generation.repair_feedback import compact
+        raise ValueError('strict video contract failed: ' + json.dumps(compact(diagnostics)))
     print(json.dumps(diagnostics))
 
 

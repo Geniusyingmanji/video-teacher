@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 
-VERSION = "video-teacher-2x8-v4"
+VERSION = "video-teacher-2x8-v5"
 VIDEO_AXES = ("visual_quality", "temporal_consistency", "signal_quality")
 TEACHING_AXES = (
     "conceptual_correctness", "narrative_structure", "pedagogical_clarity",
@@ -70,11 +70,13 @@ CRITICAL_CRITERIA = {
 
 
 def evidence_defects(axis_results: dict, *, expected_steps: int = 0,
-                     freeze_seconds: float = 0.0) -> list[dict]:
+                     freeze_seconds: float = 0.0, progression_verified: bool = False) -> list[dict]:
     """Turn documented failures into non-compensatory caps.
 
     A low criterion requires a judge finding; cited frame indices are retained
-    when present. The CV freeze trigger is task-aware and separately reported.
+    when present. A global CV freeze is not a failure when a separate grounded
+    observation and consistent rubric review verify the requested progression
+    and completion. Thresholds and content-defect caps remain unchanged.
     """
     out = []
     for axis, keys in CRITICAL_CRITERIA.items():
@@ -86,7 +88,7 @@ def evidence_defects(axis_results: dict, *, expected_steps: int = 0,
                             "reason": f"critical_{axis}_{row['id']}",
                             "evidence_frames": row.get("evidence_frames", []),
                             "finding": row.get("finding", "")})
-    if expected_steps > 1 and freeze_seconds >= 1.5:
+    if expected_steps > 1 and freeze_seconds >= 1.5 and not progression_verified:
         out.append({"axis": "temporal_consistency", "axis_cap": 50.0,
                     "overall_cap": 60.0, "reason": "requested_multistep_action_frozen",
                     "freeze_seconds": freeze_seconds})

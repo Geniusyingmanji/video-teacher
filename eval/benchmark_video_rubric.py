@@ -27,7 +27,8 @@ RUBRIC = {
     ),
 }
 
-SYSTEM = """Evaluate only the named video-quality axis using the ordered sampled frames.
+SYSTEM = """Use the shared literal grounded_observations to keep values, positions and completion facts consistent across axes. Recheck uncertain facts against frames; do not guess unsupported domain identities. If a consistency_correction is provided, correct the cited factual observation while keeping the original rubric and actual evidence.
+Evaluate only the named video-quality axis using the ordered sampled frames.
 For each of its six criteria return id, applicable (boolean), score (integer 1..5
 or null when inapplicable), evidence_frames (1-based indices), and a concrete
 finding. 1=severe failure, 2=clear defect, 3=partial/uncertain, 4=good,
@@ -83,7 +84,7 @@ class VideoDimension:
         axis = self.name
         spec = "\n".join(f"- {k}: {description}" for k, description in RUBRIC[axis])
         task = {key: case.get(key) for key in ("prompt_text", "expected_visual_elements",
-                                                "expected_narrative_order", "task_type")}
+                                                "expected_narrative_order", "task_type", "grounded_observations", "consistency_correction")}
         content = frames_as_multimodal_content(
             frames, f"Axis: {axis}\nTask: {json.dumps(task, ensure_ascii=False)}\n"
                     f"Criteria:\n{spec}\nFrames: 1..{len(frames)}")

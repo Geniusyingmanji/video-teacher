@@ -16,6 +16,7 @@ def work(gpu,ids):
     from generation.strict_video_contract import VERSION
     from generation.strict_manim import inspect_exact
     from generation.quality_gate import assess
+    from generation.repair_feedback import validated_frozen
     from eval.run_benchmark_v2 import evaluate
     from eval.frame_extractor import extract_frames
     import urllib.request
@@ -55,7 +56,7 @@ def work(gpu,ids):
                 result['quality_gate']=assess(result,evaluation); dump(ep,evaluation); dump(rp,result); evidence=ad
             gate=result['quality_gate']
             feedback={'gate':gate,'render_diagnostics':result.get('strict_diagnostics',{}),'generation_error':result.get('error'),'instruction':'Repair the evidenced failures while preserving the original task and target boxes.'}
-            if frozen is None and result.get('source_edit_regions'): frozen=result['source_edit_regions']
+            frozen = validated_frozen(result, frozen)
             if frozen is not None: feedback['frozen_source_edit_regions']=frozen
             if result.get('complete') and pathlib.Path(result.get('video') or '').is_file():
                 feedback['review_frames']=[]
@@ -67,6 +68,9 @@ def work(gpu,ids):
         dump(final,dict(entry=entry,evaluation=evaluation)); print(cid,'finished',entry['status'],'quality',gate['passed'],flush=True)
 
 def main():
+    from generation.strict_video_contract import VERSION
+    if json.loads((OLD/'run_config.json').read_text()).get('contract_version') != VERSION:
+        raise RuntimeError('Historical contract differs; use run_qwen_multigpu.py with a fresh output directory')
     OUT.mkdir(exist_ok=True)
     prior=json.loads((OLD/'generation_summary.json').read_text()); done={x['id'] for x in prior}
     ids=[json.loads(x)['id'] for x in (OLD/'prompts.jsonl').read_text().splitlines()]; pending=[x for x in ids if x not in done]

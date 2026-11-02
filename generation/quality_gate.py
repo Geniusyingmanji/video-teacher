@@ -17,13 +17,17 @@ def assess(generation, evaluation):
             contract_source.get('valid') is True
             and contract_source.get('pre_encoding', {}).get('valid') is True),
         'rubric_valid': evaluation.get('scoring', {}).get('valid') is True,
-        'v4_strict_pass': evaluation.get('scoring', {}).get('strict_pass') is True,
+        ('benchmark_strict_pass' if generation.get('contract_version') == 'strict-five-seconds-v4' else 'v4_strict_pass'): evaluation.get('scoring', {}).get('strict_pass') is True,
         'task_coverage': supported('conceptual_correctness', ['final_state']),
         'correctness': supported('conceptual_correctness', ['core_fact', 'no_contradiction']),
         'readability': supported('pedagogical_clarity', ['readability', 'takeaway']),
         'engagement_report_valid': evaluation.get('supplementary', {}).get(
             'teaching_engagement', {}).get('valid') is True,
     }
+    if generation.get('contract_version') == 'strict-five-seconds-v4':
+        checks['layout'] = diagnostics.get('layout', {}).get('valid') is True
+        checks['source_plan'] = not generation.get('source_required') or generation.get('source_plan_validation', {}).get('valid') is True
+        checks['consistent_evidence'] = evaluation.get('consistency_review', {}).get('valid') is True
     # Engagement is reported separately; its numeric score never affects acceptance.
     failures = [name for name, passed in checks.items() if not passed]
     return {'passed': not failures, 'checks': checks, 'failures': failures,

@@ -45,8 +45,21 @@ def rectangle_candidates(source):
     for contour in contours:
         polygon = cv2.approxPolyDP(contour, .02*cv2.arcLength(contour, True), True)
         x, y, w, h = cv2.boundingRect(contour)
-        if len(polygon) == 4 and w >= 16 and h >= 12 and w*h < gray.size*.2:
-            box = [x, y, x+w, y+h]
+        # Arrows touching an answer box can notch an inner contour, so a
+        # four-vertex approximation alone misses a real target. Verify edges.
+        ink = gray < 100
+        def covered_edges(padding):
+            left, top = max(0,x-padding), max(0,y-padding)
+            right, bottom = min(gray.shape[1],x+w+padding), min(gray.shape[0],y+h+padding)
+            strips = [ink[top:min(top+3,bottom),left:right].any(axis=0),
+                      ink[max(top,bottom-3):bottom,left:right].any(axis=0),
+                      ink[top:bottom,left:min(left+3,right)].any(axis=1),
+                      ink[top:bottom,max(left,right-3):right].any(axis=1)]
+            return all(strip.size and strip.mean() >= .65 for strip in strips)
+        rectangular = len(polygon)==4 or covered_edges(2)
+        if rectangular and w >= 16 and h >= 12 and w*h < gray.size*.2:
+            padding = 2 if len(polygon)!=4 else 0
+            box = [max(0,x-padding), max(0,y-padding), min(gray.shape[1],x+w+padding), min(gray.shape[0],y+h+padding)]
             if not any(max(abs(a-b) for a,b in zip(box, old)) < 5 for old in boxes):
                 boxes.append(box)
     return [{'id': i, 'source_pixel_box': box} for i, box in enumerate(sorted(boxes))]

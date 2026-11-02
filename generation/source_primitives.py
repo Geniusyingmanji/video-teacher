@@ -10,6 +10,7 @@ class SourcePrimitives:
         self.size = self.image.size
         self.boxes = allowed_boxes
         self.scale = min(config.frame_width/self.size[0], config.frame_height/self.size[1])
+        self.inset = max(3, 3/(self.scale*config.pixel_width/config.frame_width))
 
     def point(self, x, y):
         return np.array([(x-self.size[0]/2)*self.scale, (self.size[1]/2-y)*self.scale, 0])
@@ -24,7 +25,7 @@ class SourcePrimitives:
     def text(self, text, box, color=BLACK, replace=True):
         self.authorize(box)
         x0, y0, x1, y1 = box
-        width, height = (x1-x0-6)*self.scale, (y1-y0-6)*self.scale
+        width, height = (x1-x0-2*self.inset)*self.scale, (y1-y0-2*self.inset)*self.scale
         if width <= 0 or height <= 0:
             raise ValueError('source label box too small')
         label = Text(str(text), font_size=32, color=color)
@@ -45,7 +46,7 @@ class SourcePrimitives:
         self.authorize(box)
         if len(points) < 2 or stroke_width > 6 or stroke_width < 2:
             raise ValueError('invalid source curve')
-        if any(not (box[0]+3 <= x <= box[2]-3 and box[1]+3 <= y <= box[3]-3) for x,y in points):
+        if any(not (box[0]+self.inset <= x <= box[2]-self.inset and box[1]+self.inset <= y <= box[3]-self.inset) for x,y in points):
             raise ValueError('curve leaves its authorized source box')
         curve = VMobject(stroke_color=color, stroke_width=stroke_width)
         curve.set_points_as_corners([self.point(x,y) for x,y in points])
@@ -54,6 +55,6 @@ class SourcePrimitives:
     def highlight(self, box, color='#D62728'):
         self.authorize(box)
         x0,y0,x1,y1 = box
-        mark = Rectangle(width=(x1-x0-6)*self.scale, height=(y1-y0-6)*self.scale,
+        mark = Rectangle(width=(x1-x0-2*self.inset)*self.scale, height=(y1-y0-2*self.inset)*self.scale,
                          stroke_color=color, stroke_width=3)
         return mark.move_to(self.point((x0+x1)/2, (y0+y1)/2))

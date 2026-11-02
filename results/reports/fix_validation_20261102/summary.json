@@ -1,0 +1,313 @@
+{
+  "contract_version": "strict-five-seconds-v4",
+  "scoring_version": "video-teacher-2x8-v5",
+  "tests": {
+    "command": "PATH=/root/code2video-env/bin:$PATH /root/code2video-env/bin/python -m unittest tests.test_generation_repairs tests.test_benchmark_v2 tests.test_strict_video_contract tests.test_source_geometry tests.test_qwen_batch tests.test_structured_rubric tests.test_rubric_6x6 tests.test_teaching_engagement tests.test_candidate_400 -q",
+    "passed": 58
+  },
+  "live_markov_agent": {
+    "complete": true,
+    "timing": {
+      "valid": true,
+      "decoded_frames": 75,
+      "fps": 15.0,
+      "duration_seconds": 5.0
+    },
+    "source_plan_validation": {
+      "valid": true,
+      "finding": "The proposed plan correctly identifies the two missing values in the Markov chain diagram. The source image shows a '?' in the box for the S1→S2 transition and another '?' in the box for the S2 self-loop. The plan proposes filling these with '0.8' and '0.4' respectively, which satisfies the condition that outgoing probabilities sum to 1 (0.2+0.8=1 and 0.6+0.4=1). The edit regions [426, 195, 526, 242] and [418, 645, 514, 689] correspond accurately to the locations of the '?' boxes in the source image. The plan adheres to the task constraints and uses the provided source image as a locked background."
+    },
+    "pre_encoding": {
+      "valid": true,
+      "checked_frames": 75,
+      "max_changed_pixels": 0,
+      "unexpected_change_boxes_pixels": []
+    },
+    "video_sha256": "5f83bc6763a03c9cc78bb651d6f400d8fb9289ab169522b9dfa96f82c921d769"
+  },
+  "live_observations": {
+    "observations": [
+      {
+        "fact": "State S1 self-loop probability is labeled 0.2",
+        "frames": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "fact": "State S2 to State S1 transition probability is labeled 0.6",
+        "frames": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "fact": "State S1 to State S2 edge label box contains a question mark",
+        "frames": [
+          1
+        ]
+      },
+      {
+        "fact": "State S2 self-loop label box contains a question mark",
+        "frames": [
+          1,
+          2
+        ]
+      },
+      {
+        "fact": "State S1 to State S2 edge label box contains the value 0.8",
+        "frames": [
+          2,
+          3
+        ]
+      },
+      {
+        "fact": "State S2 self-loop label box contains the value 0.4",
+        "frames": [
+          3
+        ]
+      }
+    ],
+    "visible_progression": true,
+    "completed_task": true,
+    "uncertainties": []
+  },
+  "render_regressions": [
+    {
+      "name": "old_medical_overlap",
+      "exit_code": 1,
+      "timing": {
+        "valid": true,
+        "decoded_frames": 75,
+        "fps": 15.0,
+        "duration_seconds": 5.0
+      },
+      "layout": {
+        "valid": false,
+        "checks": [
+          {
+            "valid": false,
+            "text_count": 4,
+            "failures": [
+              {
+                "kind": "text_too_small",
+                "text": "Functionalunitofthekidney"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Filtrationandreabsorption"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Keycomponentslabeled"
+              }
+            ]
+          },
+          {
+            "valid": false,
+            "text_count": 9,
+            "failures": [
+              {
+                "kind": "text_too_small",
+                "text": "Functionalunitofthekidney"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Filtrationandreabsorption"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Keycomponentslabeled"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Glomerulus"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "ProximalTubule"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "DistalTubule"
+              },
+              {
+                "kind": "text_overlap",
+                "text": "DistalTubule",
+                "other": "ProximalTubule"
+              }
+            ]
+          },
+          {
+            "valid": false,
+            "text_count": 9,
+            "failures": [
+              {
+                "kind": "text_too_small",
+                "text": "Functionalunitofthekidney"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Filtrationandreabsorption"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Keycomponentslabeled"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Glomerulus"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "ProximalTubule"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "DistalTubule"
+              },
+              {
+                "kind": "text_overlap",
+                "text": "DistalTubule",
+                "other": "ProximalTubule"
+              }
+            ]
+          },
+          {
+            "valid": false,
+            "text_count": 9,
+            "failures": [
+              {
+                "kind": "text_too_small",
+                "text": "Functionalunitofthekidney"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Filtrationandreabsorption"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Keycomponentslabeled"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Glomerulus"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "ProximalTubule"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "DistalTubule"
+              },
+              {
+                "kind": "text_overlap",
+                "text": "DistalTubule",
+                "other": "ProximalTubule"
+              }
+            ]
+          },
+          {
+            "valid": false,
+            "text_count": 9,
+            "failures": [
+              {
+                "kind": "text_too_small",
+                "text": "Functionalunitofthekidney"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Filtrationandreabsorption"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Keycomponentslabeled"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "Glomerulus"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "ProximalTubule"
+              },
+              {
+                "kind": "text_too_small",
+                "text": "DistalTubule"
+              },
+              {
+                "kind": "text_overlap",
+                "text": "DistalTubule",
+                "other": "ProximalTubule"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "verified_chemistry",
+      "exit_code": 0,
+      "timing": {
+        "valid": true,
+        "decoded_frames": 75,
+        "fps": 15.0,
+        "duration_seconds": 5.0
+      },
+      "layout": {
+        "valid": true,
+        "checks": [
+          {
+            "valid": true,
+            "text_count": 1,
+            "failures": []
+          },
+          {
+            "valid": true,
+            "text_count": 4,
+            "failures": []
+          },
+          {
+            "valid": true,
+            "text_count": 4,
+            "failures": []
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": "Integration validation is not a ten-case quality pass. Same-model reviews remain non-independent; fixed-ten generation must use fresh artifacts.",
+  "live_request_budgets": [
+    {
+      "text_tokens": 1855,
+      "image_count": 1,
+      "reserved_tokens": 3072,
+      "max_context_tokens": 32768,
+      "output_tokens": 1500
+    },
+    {
+      "text_tokens": 1740,
+      "image_count": 1,
+      "reserved_tokens": 3072,
+      "max_context_tokens": 32768,
+      "output_tokens": 4096
+    },
+    {
+      "text_tokens": 1135,
+      "image_count": 1,
+      "reserved_tokens": 3072,
+      "max_context_tokens": 32768,
+      "output_tokens": 4096
+    },
+    {
+      "text_tokens": 1525,
+      "image_count": 1,
+      "reserved_tokens": 3072,
+      "max_context_tokens": 32768,
+      "output_tokens": 1500
+    }
+  ]
+}

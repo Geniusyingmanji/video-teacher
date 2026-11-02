@@ -21,6 +21,7 @@ from eval.rubric_6x6 import DIMENSIONS
 from eval.benchmark_video_rubric import DIMENSIONS as VIDEO_DIMENSIONS
 from eval.judges.gpt55 import judge_config
 from eval import teaching_engagement
+from eval import grounded_observations
 from eval.rubric_6x6 import RUBRIC_VERSION
 
 MAX_JUDGE_FRAMES = 24
@@ -32,7 +33,7 @@ def scoring_code_sha256() -> str:
                                     ("benchmark_scoring.py", "benchmark_operators.py",
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
-                                     "judges/structured_rubric.py"))).hexdigest()
+                                     "judges/structured_rubric.py", "grounded_observations.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
@@ -123,6 +124,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         else:
             result["judge_frame_indices_in_sample"] = list(range(len(sampled)))
         result["sampled_frame_count"] = len(sampled)
+        observations = cached.get('grounded_observations') or grounded_observations.observe(judged_case, sampled)
+        result['grounded_observations'] = observations
+        judged_case = {**judged_case, 'grounded_observations': observations}
         for name, dimension in DIMENSIONS.items():
             try:
                 saved = cached.get('axes', {}).get(name, {})
@@ -142,7 +146,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                 if saved.get('score') is not None and not saved.get('error'):
                     result['axes'][name] = saved
                     continue
-                judged = dimension.score(case, sampled)
+                judged = dimension.score(judged_case, sampled)
                 if name == "signal_quality":
                     diagnostic = result["operators"][name]
                     if diagnostic["exposure_penalty_applicable"] and diagnostic["clipped_fraction_p90"] >= 0.95:
@@ -152,6 +156,18 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             except Exception as exc:
                 result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
                 result["errors"].append(f"{name}_failed")
+        result['consistency_review'] = grounded_observations.consistency(judged_case, observations, result['axes'], sampled)
+        if not result['consistency_review']['valid']:
+            for name in result['consistency_review']['conflicting_axes']:
+                dimension = DIMENSIONS.get(name) or VIDEO_DIMENSIONS[name]
+                revised_case = {**judged_case, 'consistency_correction': result['consistency_review']}
+                revised = dimension.score(revised_case, sampled)
+                if name in DIMENSIONS:
+                    revised = {**revised, 'score': _semantic_score(revised), 'rubric_score_1_to_5': revised['score'], 'method':'evidence_backed_6x6_vlm_v2'}
+                result['axes'][name] = revised
+            result['consistency_review'] = grounded_observations.consistency(judged_case, observations, result['axes'], sampled)
+            if not result['consistency_review']['valid']:
+                result['errors'].append('unresolved_cross_axis_contradictions')
         try:
             saved = cached.get('supplementary', {}).get('teaching_engagement', {})
             result['supplementary'] = {'teaching_engagement': saved if saved.get('valid') is True
@@ -162,17 +178,32 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                 'rubric_version': teaching_engagement.VERSION,
                 'error': f'{type(exc).__name__}: {exc}'[:400]}}
     except Exception as exc:
-        result["errors"].append(f"video_decode_or_operator_failed: {type(exc).__name__}: {exc}"[:400])
+        result["errors"].append(f"evaluation_failed: {type(exc).__name__}: {exc}"[:400])
+    signal = result.get('axes', {}).get('signal_quality', {})
+    diagnostic = result.get('operators', {}).get('signal_quality', {})
+    if (signal.get('score') is not None and diagnostic.get('exposure_penalty_applicable')
+            and diagnostic.get('clipped_fraction_p90', 0) >= .95):
+        signal['score'] = min(signal['score'],40.0)
+        signal['operator_cap'] = 'near_blank_or_clipped_frames'
     flat = {name: value.get("score") for name, value in result["axes"].items()}
     freeze = result.get("operators", {}).get("temporal_consistency", {}).get(
         "longest_duplicate_run_seconds", 0.0)
     result["defects"] = scoring.evidence_defects(result["axes"],
                                                  expected_steps=len(case.get("expected_narrative_order") or []),
-                                                 freeze_seconds=freeze)
+                                                 freeze_seconds=freeze,
+                                                 progression_verified=(result.get('grounded_observations', {}).get('visible_progression') is True
+                                                   and result.get('grounded_observations', {}).get('completed_task') is True
+                                                   and not result.get('grounded_observations', {}).get('uncertainties')
+                                                   and result.get('consistency_review', {}).get('valid') is True))
     result["scoring"] = scoring.score_case(
         flat, narration_required=result["narration_required"],
         narration_detected=result.get("narration", {}).get("detected"),
         defects=result["defects"])
+    if result.get('axes') and result.get('consistency_review', {}).get('valid') is not True:
+        result['errors'].append('consistency_review_missing_or_failed')
+    if any(error in result['errors'] for error in ('unresolved_cross_axis_contradictions','consistency_review_missing_or_failed')):
+        result['scoring'] = {**result['scoring'], 'valid': False, 'strict_pass': False,
+                             'score': None, 'groups': None, 'errors': ['unresolved_cross_axis_contradictions']}
     return result
 
 

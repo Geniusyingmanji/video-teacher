@@ -108,8 +108,15 @@ if __name__ == '__main__':
         # Worker reconstruction must receive the same callable.
         agent.cfg.api = agent.API
         install_renderer(agent_module, contract_path)
+    source_validation = {'valid': False, 'finding': 'not planned'}
     generation_error = None
     try:
+        if args.strict_five_seconds:
+            from generation.verified_assets import molecule_assets
+            verified = molecule_assets(case, agent.output_dir / 'verified_assets')
+            if verified:
+                contract['verified_assets'] = verified
+                contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
         if args.strict_five_seconds:
             for attempt in range(3):
                 outline = agent.generate_outline()
@@ -130,11 +137,23 @@ if __name__ == '__main__':
                         raise ValueError('Quality repair changed frozen source target boxes')
                     if not needs_source and agent.enhanced_storyboard.get('source_edit_regions'):
                         raise ValueError('Standalone task must not reference source edit regions')
+                    if needs_source:
+                        from generation.source_plan import validate_plan, review_plan
+                        validate_plan(agent.enhanced_storyboard, contract)
+                        source_validation = review_plan(agent.API, agent.enhanced_storyboard, contract)
+                        (agent.output_dir / f'source_plan_review_{attempt}.json').write_text(json.dumps(source_validation, indent=2))
+                        if not source_validation['valid']:
+                            raise ValueError(source_validation['finding'])
                     break
-                except ValueError:
+                except (ValueError, KeyError, TypeError) as exc:
+                    contract['storyboard_repair'] = {'error': str(exc), 'instruction': 'Fix this plan using the original source and unchanged task. Do not reuse rejected regions.'}
+                    contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
                     (agent.output_dir / 'storyboard.json').rename(agent.output_dir / f'storyboard_rejected_{attempt}.json')
             else:
                 raise ValueError('Storyboard source edit regions failed validation')
+        if args.strict_five_seconds and needs_source:
+            from generation.source_plan import compile_plan
+            (agent.output_dir / 'section_1.py').write_text(compile_plan(agent.enhanced_storyboard, contract))
         video = agent.GENERATE_VIDEO()
     except Exception as exc:
         generation_error = f'{type(exc).__name__}: {exc}'
@@ -151,13 +170,21 @@ if __name__ == '__main__':
     if args.strict_five_seconds:
         result['contract_version'] = VERSION
         result['contract_sha256'] = contract_hash(contract)
-        result['timing'] = inspect_exact(Path(video)) if video else {'valid': False}
         diagnostics_path = agent.output_dir / 'strict_diagnostics.json'
         diagnostics = json.loads(diagnostics_path.read_text()) if diagnostics_path.exists() else {}
+        result['timing'] = inspect_exact(Path(video)) if video else diagnostics.get('timing', {'valid': False, 'reason': 'no rendered video'})
         result['strict_diagnostics'] = diagnostics
+        result['source_plan_validation'] = source_validation
+        result['source_size_pixels'] = contract.get('source_size_pixels')
+        result['verified_assets'] = contract.get('verified_assets')
+        if not video and diagnostics:
+            result['failure_stage'] = ('source_preservation' if diagnostics.get('source_preservation', {}).get('valid') is False else 'layout' if diagnostics.get('layout', {}).get('valid') is False else 'render')
+            if not generation_error:
+                generation_error = 'Rejected render: ' + result['failure_stage']
         result['source_required'] = needs_source
-        result['source_edit_regions'] = getattr(agent, 'enhanced_storyboard', {}).get('source_edit_regions')
+        result['source_edit_regions'] = (getattr(agent, 'enhanced_storyboard', None) or {}).get('source_edit_regions')
         result['complete'] = (result['complete'] and result['timing']['valid'] and len(agent.sections) == 1
+                              and diagnostics.get('layout', {'valid': True})['valid']
                               and (not needs_source or diagnostics.get('source_preservation', {}).get('valid') is True))
         result['semantic_review_status'] = 'pending_eight_axis_self_evaluation'
     if generation_error:

@@ -67,7 +67,8 @@ RUBRIC: dict[str, tuple[tuple[str, str], ...]] = {
     ),
 }
 
-SYSTEM = """Judge a short educational video from sampled frames. Score each of the six
+SYSTEM = """Use the shared literal grounded_observations to keep values, positions and completion facts consistent across axes. Recheck uncertain facts against frames; do not guess unsupported domain identities. If a consistency_correction is provided, correct the cited factual observation while keeping the original rubric and actual evidence.
+Judge a short educational video from sampled frames. Score each of the six
 listed criteria on 1..5 (1 severe failure, 3 partial/uncertain, 5 clear success).
 For each criterion return id, applicable (boolean), score (1..5 or null when
 inapplicable), evidence_frames (indices 1..N), and one concrete finding. Treat
@@ -136,7 +137,7 @@ def score_dimension(dimension: str, case: dict, frames: list) -> dict:
         "prompt_text", "expected_concepts", "expected_visual_elements",
         "expected_narrative_order", "discipline_specific_rubric",
         "target_duration_s",
-        "actual_duration_s",
+        "actual_duration_s", "grounded_observations", "consistency_correction",
     )}, ensure_ascii=False)
     content = frames_as_multimodal_content(
         frames, f"Dimension: {dimension}\nTask: {task}\nCriteria:\n{criteria}\n"

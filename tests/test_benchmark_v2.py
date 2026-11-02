@@ -95,6 +95,15 @@ class ScoringPolicyTests(unittest.TestCase):
 
 
 class OperatorTests(unittest.TestCase):
+    def setUp(self):
+        observer = patch.object(runner.grounded_observations, 'observe', return_value={
+            'observations':[{'fact':'fixture frame', 'frames':[1]}],
+            'visible_progression':True, 'completed_task':True, 'uncertainties':[]})
+        reviewer = patch.object(runner.grounded_observations, 'consistency', return_value={
+            'valid':True, 'conflicting_axes':[], 'finding':'fixture reports agree'})
+        observer.start(); reviewer.start()
+        self.addCleanup(observer.stop); self.addCleanup(reviewer.stop)
+
     def test_video_rubric_rejects_missing_evidence_and_separates_scores(self):
         rows = [{"id": key, "applicable": True, "score": 4,
                  "evidence_frames": [1], "finding": "visible"}
@@ -138,6 +147,11 @@ class OperatorTests(unittest.TestCase):
                 with patch.object(runner.teaching_engagement, 'score', side_effect=RuntimeError('judge unavailable')):
                     supplemental_failed = runner.evaluate({'id': 'x', 'expected_narrative_order': ['step']},
                                                           {'status': 'ok', 'video_path': path})
+                with patch.object(runner.grounded_observations, 'consistency', return_value={'valid':False, 'conflicting_axes':['conceptual_correctness'], 'finding':'literal answer conflicts'}):
+                    inconsistent = runner.evaluate({'id':'x','expected_narrative_order':['step']}, {'status':'ok','video_path':path})
+                    self.assertFalse(inconsistent['scoring']['valid'])
+                    self.assertFalse(inconsistent['scoring']['strict_pass'])
+                    self.assertIsNone(inconsistent['scoring']['score'])
                 with patch.object(runner, 'DIMENSIONS', {'conceptual_correctness': MagicMock()}), \
                      patch.object(runner, 'VIDEO_DIMENSIONS', {'visual_quality': MagicMock()}):
                     resumed = runner.evaluate({'id': 'x', 'expected_narrative_order': ['step']},

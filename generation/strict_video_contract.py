@@ -10,7 +10,7 @@ import base64
 import uuid
 from generation.source_geometry import rectangle_candidates
 
-VERSION = 'strict-five-seconds-v3'
+VERSION = 'strict-five-seconds-v4'
 
 
 def make_contract(case: dict, source_image: Path | None = None) -> dict:
@@ -32,6 +32,8 @@ def make_contract(case: dict, source_image: Path | None = None) -> dict:
         from PIL import Image
         with Image.open(source_image) as image:
             contract['source_size_pixels'] = list(image.size)
+        import math
+        contract['source_stroke_inset_pixels'] = max(3, math.ceil(3/min(854/contract['source_size_pixels'][0],480/contract['source_size_pixels'][1])))
         contract['source_sha256'] = hashlib.sha256(source_image.read_bytes()).hexdigest()
         contract['source_rectangle_candidates'] = rectangle_candidates(source_image)
         contract['source_coordinate_space'] = 'original_image_pixels_top_left'
@@ -39,7 +41,11 @@ def make_contract(case: dict, source_image: Path | None = None) -> dict:
 
 
 def contract_text(contract: dict) -> str:
-    return '\nAUTHORITATIVE TASK CONTRACT (applies to this stage and every repair):\n' + json.dumps(contract, ensure_ascii=False)
+    from generation.repair_feedback import compact
+    current = dict(contract)
+    if 'quality_feedback' in current:
+        current['quality_feedback'] = compact(current['quality_feedback'])
+    return '\nAUTHORITATIVE TASK CONTRACT (applies to this stage and every repair):\n' + json.dumps(current, ensure_ascii=False)
 
 
 def contract_hash(contract: dict) -> str:
@@ -68,6 +74,12 @@ def storyboard_prompt(contract: dict, outline) -> str:
             'The renderer supplies the original source background, holds it for 1 second before your animations '
             'and holds the final result for 1 second. Do not redraw, move, recolor, hide or replace the source. '
             'When source_image is null there is NO source image: draw standalone visuals and source_edit_regions MUST be empty. '
+            'For source tasks ALSO return source_operations: [{id:string,kind: text|curve|highlight,step:1|2|3,box:[x0,y0,x1,y1],reason:string,text:string (text only),points:[[x,y],...] (curve only)}]. '
+            'Every required answer or path MUST have its own operation at the correct target. All operations will be executed exactly as declared, grouped into at most three reveal steps. '
+            'Curve points must stay at least source_stroke_inset_pixels inside their box. Text boxes must allow at least 16 rendered pixels. '
+            'Do not choose answer-box candidates belonging to axis labels or unrelated targets; inspect the image. '
+            'For a graph conversion draw the actual curve in source coordinates. Split a long curved path into 2..12 short curve operations with narrow boxes following each segment, all at the same step; never authorize the full plot bounding box or copy small tick-label boxes.  For symmetry preserve the original and draw the correctly reflected construction. '
+            'For board moves inspect actual blockers and represent all legal destinations, not an invented board. '
             'Carry ALL source task restrictions and expected visual/narrative elements into animations. '
             + contract_text(contract) + '\nOUTLINE:\n' + str(outline))
 
@@ -77,6 +89,11 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
     return ('Write complete runnable Manim CE v0.19 Python code only. ' + note
             + f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'
             + base_class + '\nUse at most three meaningful animation steps. Keep all content readable. '
+            'Before finalizing, list every required entity/value and ensure ALL are visibly present. '
+            'For standalone diagrams use the full width, avoid dense lecture bullets. Keep labels in separate rows or outside the diagram with leader lines; at least 0.15 Manim units between labels. '
+            'Never place two labels on the same side of adjacent segments without checking their bounding boxes. '
+            'For sorting move the original number objects along distinct arc trajectories between slots; do not morph or cross-fade digits in place. '
+            'For scientific structures preserve verified assets and do not redraw an approximation. '
             'Use real Manim CE primitives such as Text, Circle, Line, Arrow, VGroup and Dot; '
             'never invent classes such as Check. Draw checkmarks from two Line objects. '
             'Use short readable on-screen labels instead of copying lecture paragraphs onto the canvas. '
@@ -116,6 +133,8 @@ def validate_regions(regions: list, required: bool = False, source_size=None) ->
 
 
 def install_prompts(agent_module, contract: dict):
+    from generation.scene_base import BASE
+    agent_module.base_class = BASE
     agent_module.get_prompt1_outline = lambda **kwargs: outline_prompt(contract)
     agent_module.get_prompt2_storyboard = lambda **kwargs: storyboard_prompt(contract, kwargs['outline'])
     agent_module.get_prompt3_code = lambda regenerate_note, section, base_class: code_prompt(contract, section, base_class, regenerate_note)
@@ -132,10 +151,14 @@ class ContractAPI:
         storyboard = self.output / 'storyboard.json'
         if storyboard.exists():
             current['allowed_source_edit_regions'] = json.loads(storyboard.read_text()).get('source_edit_regions', [])
-        text = str(prompt) + contract_text(current)
+        from generation.repair_feedback import compact
+        from generation.prompt_budget import request_budget
+        text = str(prompt)
+        if 'AUTHORITATIVE TASK CONTRACT' not in text:
+            text += contract_text(current)
         diagnostics = self.output / 'strict_diagnostics.json'
         if diagnostics.exists():
-            text += '\nPREVIOUS ACTUAL RENDER DIAGNOSTICS (fix their cause, never widen target boxes):\n' + diagnostics.read_text()
+            text += '\nPREVIOUS ACTUAL RENDER DIAGNOSTICS (fix their cause, never widen target boxes):\n' + json.dumps(compact(json.loads(diagnostics.read_text())), ensure_ascii=False)
         content = [{'type': 'text', 'text': text}]
         if current.get('source_image'):
             data = base64.b64encode(Path(current['source_image']).read_bytes()).decode()
@@ -146,7 +169,9 @@ class ContractAPI:
         logs = self.output / 'requests'
         logs.mkdir(parents=True, exist_ok=True)
         name = uuid.uuid4().hex
+        max_tokens, budget = request_budget(text, max_tokens, len(content)-1)
         (logs / f'{name}.prompt.txt').write_text(text)
+        (logs / f'{name}.budget.json').write_text(json.dumps(budget, indent=2))
         result = OpenAI(base_url=os.environ.get('LOCAL_BASE_URL', 'http://127.0.0.1:8000/v1'),
                         api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=600, max_retries=1).chat.completions.create(
             model=os.environ.get('LOCAL_MODEL', 'qwen3.8-27b'),

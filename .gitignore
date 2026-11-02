@@ -57,3 +57,8 @@ data/human_eval/*/audit_log*
 
 # Local four-GPU resume runtime; compact reviewed evidence lives in results/reports/.
 results/resume_four_gpu_20261102/
+
+# Fresh strict-contract validation and two-GPU experiment runtime artifacts.
+/media/
+results/fix_validation_*/
+results/qwen38_two_gpu_sample10*/

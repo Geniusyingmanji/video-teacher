@@ -17,6 +17,7 @@ from generation.strict_manim import inspect_exact
 from eval.benchmark_scoring import VERSION as SCORING_VERSION
 from eval.run_benchmark_v2 import evaluate
 from generation.quality_gate import assess
+from generation.repair_feedback import validated_frozen, feedback_for
 from eval.frame_extractor import extract_frames
 OUT = ROOT / 'results/qwen38_gpu0_sample10_strict5s_v3_20261102'
 SOURCE = ROOT / 'data/prompts/candidate_400.jsonl'
@@ -112,8 +113,8 @@ def main():
             feedback = {'gate': gate, 'render_diagnostics': result.get('strict_diagnostics', {}),
                         'generation_error': result.get('error'),
                         'instruction': 'Repair the evidenced failures while preserving the original task and target boxes.'}
-            if frozen_regions is None and result.get('source_edit_regions'):
-                frozen_regions = result['source_edit_regions']
+            frozen_regions = validated_frozen(result, frozen_regions)
+            feedback = feedback_for(result, evaluation, frozen_regions)
             if frozen_regions is not None:
                 feedback['frozen_source_edit_regions'] = frozen_regions
             if rendered:
