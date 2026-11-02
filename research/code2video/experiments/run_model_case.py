@@ -4,12 +4,18 @@ from pathlib import Path
 import sys
 import time
 import argparse
+import base64
+import shutil
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'Code2Video/src'))
 sys.path.insert(0, str(ROOT.parents[1]))
 from agent import TeachingVideoAgent, RunConfig
+import agent as agent_module
 from gpt_request import request_local_token
+from generation.strict_video_contract import (make_contract, contract_hash, ContractAPI,
+                                              install_prompts, install_renderer, validate_regions, VERSION)
+from generation.strict_manim import inspect_exact
 try:
     from scripts.audit_generated_videos import inspect_video
 except ImportError:
@@ -27,9 +33,12 @@ LAYOUT_POLICY = (
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--case-id', default='math_exp_01')
+    parser.add_argument('--prompts', type=Path)
+    parser.add_argument('--out', type=Path)
+    parser.add_argument('--strict-five-seconds', action='store_true')
     args = parser.parse_args()
     started = time.monotonic()
-    source = ROOT.parents[1] / 'data/prompts/pilot_v0_1.jsonl'
+    source = args.prompts or ROOT.parents[1] / 'data/prompts/pilot_v0_1.jsonl'
     case = next(json.loads(row) for row in source.read_text().splitlines()
                 if json.loads(row)['id'] == args.case_id)
     topics = {
@@ -42,12 +51,82 @@ if __name__ == '__main__':
         'chem_exp_01': 'Ionic bonding: sodium transfers an electron to chlorine to form NaCl',
         'chem_prob_02': 'Calculate the pH of a solution with hydrogen ion concentration 1e-3 mol/L',
     }
-    topic = topics[args.case_id] + LAYOUT_POLICY
+    topic = (case['prompt_text'] if args.prompts else topics[args.case_id]) + LAYOUT_POLICY
+    if args.prompts:
+        topic += (' Use exactly one section for this short clip, with a compact Manim scene under 160 lines.'
+                  + ' The entire video, including all animations and waits, must match the target duration.'
+                  + ' Target audience: ' + str(case.get('pedagogical_target_audience', 'general'))
+                  + '. Target duration in seconds: ' + str(case.get('target_duration_s', 5))
+                  + '. Use English labels. Required concepts: '
+                  + json.dumps(case.get('expected_concepts', []))
+                  + '. Required visual sequence: ' + json.dumps(case.get('expected_narrative_order', [])))
+        # The upstream helper uses the entire prompt as a directory component.
+        agent_module.get_output_dir = lambda idx, knowledge_point, base_dir: Path(base_dir) / args.case_id
+        agent_module.topic_to_safe_name = lambda topic: args.case_id
+    api = request_local_token
+    source_id = case.get('source', {}).get('source_id')
+    source_image = ROOT.parents[1] / f'data/sources/grade/selected_assets/before/grade_{source_id}.png'
+    if args.prompts and ('supplied' in case['prompt_text'] or 'source image' in case['prompt_text']):
+        if not source_image.is_file():
+            raise FileNotFoundError(f'Required source image unavailable: {source_image}')
+        asset_image = ROOT / 'Code2Video/src/assets/icon' / source_image.name
+        asset_image.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source_image, asset_image)
+        source_image = asset_image
+        topic += f' Source image is available at {source_image}. Use ImageMobject with this absolute path to preserve the supplied diagram.'
+        from openai import OpenAI
+        import os
+        image_url = 'data:image/png;base64,' + base64.b64encode(source_image.read_bytes()).decode()
+        def api(prompt, max_tokens=10000):
+            response = OpenAI(base_url=os.getenv('LOCAL_BASE_URL', 'http://127.0.0.1:8000/v1'),
+                              api_key='local', timeout=600, max_retries=1).chat.completions.create(
+                model='qwen3.8-27b', messages=[{'role': 'user', 'content': [
+                    {'type': 'text', 'text': prompt}, {'type': 'image_url', 'image_url': {'url': image_url}}]}],
+                max_tokens=max_tokens, temperature=0.6,
+                extra_body={'chat_template_kwargs': {'enable_thinking': False}})
+            if response.choices[0].finish_reason == 'length':
+                raise RuntimeError('Local model output truncated')
+            return response, response.usage.model_dump() if response.usage else {}
     agent = TeachingVideoAgent(0, topic,
-        folder=ROOT / f'Code2Video/src/CASES/VIDEOTEACHER-qwen38-{args.case_id}',
-        cfg=RunConfig(api=request_local_token, use_feedback=False, use_assets=False,
+        folder=ROOT / ('Code2Video/src/CASES/' + (args.out.name if args.out else 'VIDEOTEACHER') + f'-qwen38-{args.case_id}'),
+        cfg=RunConfig(api=api, use_feedback=False, use_assets=False,
             max_code_token_length=4096, max_fix_bug_tries=2, max_regenerate_tries=2))
-    video = agent.GENERATE_VIDEO()
+    if args.strict_five_seconds:
+        needs_source = bool(args.prompts and ('supplied' in case['prompt_text'] or 'source image' in case['prompt_text']))
+        contract = make_contract(case, source_image if needs_source else None)
+        contract_path = agent.output_dir / 'task_contract.json'
+        contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
+        install_prompts(agent_module, contract)
+        agent.API = ContractAPI(contract, agent.output_dir)
+        agent.scope_refine_fixer.request_gpt = agent.API
+        # Worker reconstruction must receive the same callable.
+        agent.cfg.api = agent.API
+        install_renderer(agent_module, contract_path)
+    generation_error = None
+    try:
+        if args.strict_five_seconds:
+            for attempt in range(3):
+                outline = agent.generate_outline()
+                if len(outline.sections) == 1:
+                    break
+                (agent.output_dir / 'outline.json').rename(agent.output_dir / f'outline_rejected_{attempt}.json')
+            else:
+                raise ValueError('Outline must have exactly one scene')
+            for attempt in range(3):
+                agent.generate_storyboard()
+                try:
+                    if len(agent.sections) != 1:
+                        raise ValueError('Storyboard must have exactly one scene')
+                    validate_regions(agent.enhanced_storyboard.get('source_edit_regions', []), required=needs_source)
+                    break
+                except ValueError:
+                    (agent.output_dir / 'storyboard.json').rename(agent.output_dir / f'storyboard_rejected_{attempt}.json')
+            else:
+                raise ValueError('Storyboard source edit regions failed validation')
+        video = agent.GENERATE_VIDEO()
+    except Exception as exc:
+        generation_error = f'{type(exc).__name__}: {exc}'
+        video = None
     result = dict(model='Qwen/Qwen3.8-27B', source_case_id=case['id'],
         topic=topic, use_feedback=False, use_assets=False,
         layout_policy_version='safe_areas_v1',
@@ -57,10 +136,22 @@ if __name__ == '__main__':
         video=video, output_dir=str(agent.output_dir))
     result['complete'] = bool(video and Path(video).is_file() and agent.sections
                               and len(agent.sections)==len(agent.section_videos))
+    if args.strict_five_seconds:
+        result['contract_version'] = VERSION
+        result['contract_sha256'] = contract_hash(contract)
+        result['timing'] = inspect_exact(Path(video)) if video else {'valid': False}
+        diagnostics_path = agent.output_dir / 'strict_diagnostics.json'
+        diagnostics = json.loads(diagnostics_path.read_text()) if diagnostics_path.exists() else {}
+        result['strict_diagnostics'] = diagnostics
+        result['complete'] = (result['complete'] and result['timing']['valid'] and len(agent.sections) == 1
+                              and (not needs_source or diagnostics.get('source_preservation', {}).get('valid') is True))
+        result['semantic_review_status'] = 'pending_eight_axis_self_evaluation'
+    if generation_error:
+        result['error'] = generation_error
     if result['complete'] and inspect_video is not None:
         audit_dir = ROOT / 'experiments' / 'layout_review' / args.case_id
         try:
-            result['layout_review'] = inspect_video(Path(video), audit_dir, None)
+            result['layout_review'] = inspect_video(Path(video), audit_dir, 5 if args.strict_five_seconds else None)
             result['layout_review']['meaning'] = (
                 'Source-resolution frames and safe-area overlays require visual review; '
                 'successful rendering is not a layout pass.'
@@ -71,7 +162,9 @@ if __name__ == '__main__':
         result['layout_review'] = {'status': 'unavailable', 'reason': 'OpenCV/Pillow audit dependencies missing'}
     else:
         result['layout_review'] = {'status': 'not_run_incomplete_video'}
-    (ROOT / f'experiments/model_result_{args.case_id}.json').write_text(json.dumps(result, indent=2))
+    result_path = args.out / f'model_result_{args.case_id}.json' if args.out else ROOT / f'experiments/model_result_{args.case_id}.json'
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    result_path.write_text(json.dumps(result, indent=2))
     print(json.dumps(result, indent=2), flush=True)
     if not result['complete']:
         raise SystemExit(1)

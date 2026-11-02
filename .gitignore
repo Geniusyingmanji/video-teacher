@@ -45,6 +45,11 @@ data/round2_grade_probe11/first_frames/
 .DS_Store
 Thumbs.db
 
+# Local Qwen smoke runs, source-resolution review frames and server logs.
+qwen-sample10-*.log
+results/qwen38_gpu0_sample10*/
+research/code2video/experiments/layout_review/
+
 # Human-study participant data (keep templates/README tracked)
 data/human_eval/*/responses*.jsonl
 data/human_eval/*/raw_submissions/

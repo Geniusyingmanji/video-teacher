@@ -152,6 +152,9 @@ def chat(
     if response_format is not None:
         extra["response_format"] = response_format
     extra.update(kwargs)
+    if os.environ.get("VIDEO_TEACHER_ENABLE_THINKING") == "false":
+        body = extra.setdefault("extra_body", {})
+        body.setdefault("chat_template_kwargs", {})["enable_thinking"] = False
     delay = 10.0
     for attempt in range(max_retries):
         try:

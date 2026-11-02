@@ -1,0 +1,108 @@
+diff --git a/src/agent.py b/src/agent.py
+--- a/src/agent.py
++++ b/src/agent.py
+@@ -358,6 +358,13 @@
+         if section_id not in self.section_codes:
+             return False
+ 
++        original = self.section_codes[section_id]
++        normalized = normalize_scene_play_calls(original)
++        if normalized != original:
++            (self.output_dir / f'{section_id}_before_play_fix.py').write_text(original, encoding='utf-8')
++            self.section_codes[section_id] = normalized
++            (self.output_dir / f'{section_id}.py').write_text(normalized, encoding='utf-8')
++
+         # Each permitted fix needs a subsequent render to validate its result.
+         for fix_attempt in range(max_fix_attempts + 1):
+             print(f"🔧 {self.learning_topic} Debugging {section_id} (attempt {fix_attempt + 1}/{max_fix_attempts + 1})")
+@@ -367,7 +374,7 @@
+                 code_file = f"{section_id}.py"
+                 cmd = ["manim", "-ql", str(code_file), scene_name]
+ 
+-                result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.output_dir, timeout=180)
++                result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.output_dir, timeout=300)
+                 (self.output_dir / f"{section_id}_render.log").write_text(
+                     result.stdout + "\n" + result.stderr, encoding="utf-8"
+                 )
+@@ -396,9 +403,19 @@
+                 else:
+                     break
+ 
+-            except subprocess.TimeoutExpired:
++            except subprocess.TimeoutExpired as exc:
++                def decoded(value):
++                    return value.decode(errors='replace') if isinstance(value, bytes) else (value or '')
++                error = decoded(exc.stdout) + '\n' + decoded(exc.stderr) + '\nRender exceeded 300 seconds. Simplify the scene and expensive animations.'
++                (self.output_dir / f'{section_id}_render.log').write_text(error, encoding='utf-8')
+                 print(f"❌ {self.learning_topic} {section_id} timed out")
+-                break
++                if fix_attempt == max_fix_attempts:
++                    break
++                fixed = self.scope_refine_fixer.fix_code_smart(section_id, self.section_codes[section_id], error, self.output_dir)
++                if not fixed:
++                    break
++                self.section_codes[section_id] = fixed
++                (self.output_dir / code_file).write_text(fixed, encoding='utf-8')
+             except Exception as e:
+                 print(f"❌ {self.learning_topic} {section_id} failed with exception: {e}")
+                 break
+diff --git a/src/utils.py b/src/utils.py
+--- a/src/utils.py
++++ b/src/utils.py
+@@ -1,4 +1,6 @@
+ import os
++import hashlib
++import ast
+ import subprocess
+ from typing import List
+ from manim import *
+@@ -8,6 +10,26 @@
+ from pathlib import Path
+ 
+ 
++def normalize_scene_play_calls(code):
++    """Convert eager Mobject mutations passed to play into animation builders."""
++    methods = {'scale', 'shift', 'move_to', 'rotate', 'set_color', 'set_opacity', 'to_edge', 'to_corner'}
++    class FixPlay(ast.NodeTransformer):
++        changed = False
++        def visit_Call(self, node):
++            self.generic_visit(node)
++            if isinstance(node.func, ast.Attribute) and node.func.attr == 'play':
++                for arg in node.args:
++                    if isinstance(arg, ast.Call) and isinstance(arg.func, ast.Attribute) and arg.func.attr in methods:
++                        if not any(isinstance(n, ast.Attribute) and n.attr == 'animate' for n in ast.walk(arg.func.value)):
++                            arg.func.value = ast.Attribute(value=arg.func.value, attr='animate', ctx=ast.Load())
++                            self.changed = True
++            return node
++    tree = ast.parse(code)
++    fixer = FixPlay()
++    fixer.visit(tree)
++    return ast.unparse(ast.fix_missing_locations(tree)) + '\n' if fixer.changed else code
++
++
+ def extract_json_from_markdown(text):
+     # Match ```json ... ``` or ``` ... ```
+     match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
+@@ -179,6 +201,9 @@
+     safe_name = re.sub(SAFE_PATTERN, "", knowledge_point)
+     # Replace consecutive spaces with a single underscore
+     safe_name = re.sub(r"\s+", "_", safe_name.strip())
++    if len(safe_name.encode('utf-8')) > 160:
++        suffix = hashlib.sha256(knowledge_point.encode('utf-8')).hexdigest()[:12]
++        safe_name = safe_name.encode('utf-8')[:140].decode('utf-8', errors='ignore') + '-' + suffix
+     return safe_name
+ 
+ 
+diff --git a/src/scope_refine.py b/src/scope_refine.py
+--- a/src/scope_refine.py
++++ b/src/scope_refine.py
+@@ -149,6 +149,9 @@
+         """Extract the relevant code block based on the error information"""
+         lines = code.split("\n")
+ 
++        if not isinstance(error_info.get('line_number'), int):
++            return code
++
+         if error_info["fix_scope"] == "single_line" and error_info["line_number"]:
+             # Single line error: return the error line and surrounding lines
+             line_num = error_info["line_number"] - 1  # Convert to 0-indexed
