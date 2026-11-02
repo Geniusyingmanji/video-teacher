@@ -9,19 +9,24 @@ import os
 import base64
 import uuid
 
-VERSION = 'strict-five-seconds-v1'
+VERSION = 'strict-five-seconds-v2'
 
 
 def make_contract(case: dict, source_image: Path | None = None) -> dict:
     return {'version': VERSION, 'duration_seconds': 5, 'fps': 15, 'frame_count': 75,
             'task': case, 'source_image': str(source_image.resolve()) if source_image else None,
+            'field_precedence': ('task.prompt_text and current expected_concepts, expected_visual_elements, '
+                                 'expected_narrative_order and discipline_specific_rubric define the current task. '
+                                 'original_prompt_text, source.original_instruction and old narrative_beats are provenance, '
+                                 'not replacement instructions. Old expected_frame_range values refer to historical sampled '
+                                 'frames, not the 75 rendered frames. Use source_image only when it is non-null.'),
             'rules': ['Preserve every instruction and prohibition in task.prompt_text.',
                       'Show every required concept, visual element and narrative step.',
                       'Use one scene; show initial state, the requested change, then hold the result.',
                       'Never substitute an easier question or omit constraints to fit the duration.',
-                      'The supplied source is a locked background, not an inspiration to redraw.',
-                      'Source edits must stay inside declared edit rectangles covering at most 25% of the canvas.',
-                      'Do not add unrelated titles, panels or decorations over a supplied source.']}
+                      'When source_image is non-null, the source is a locked background, not an inspiration to redraw.',
+                      'When source_image is non-null, edits must stay inside declared edit rectangles covering at most 25% of the canvas.',
+                      'When source_image is null, create a standalone diagram and never reference a nonexistent source image.']}
 
 
 def contract_text(contract: dict) -> str:
@@ -37,7 +42,9 @@ def outline_prompt(contract: dict) -> str:
             'Return only JSON: {"topic":str,"target_audience":str,"sections":'
             '[{"id":"section_1","title":str,"content":str,"example":str}]}. '
             'Include the original task constraints, correct answer and every required step in the section. '
-            'Do not invent unsupported answers. ' + contract_text(contract))
+            'Do not invent unsupported answers. '
+            + ('There is NO source image for this current task. Draw standalone visuals. ' if not contract['source_image'] else '')
+            + contract_text(contract))
 
 
 def storyboard_prompt(contract: dict, outline) -> str:
@@ -49,7 +56,7 @@ def storyboard_prompt(contract: dict, outline) -> str:
             'the requested changed labels or marks; union area must not exceed 0.25. '
             'The renderer supplies the original source background, holds it for 1 second before your animations '
             'and holds the final result for 1 second. Do not redraw, move, recolor, hide or replace the source. '
-            'For other tasks use an empty source_edit_regions list. '
+            'When source_image is null there is NO source image: draw standalone visuals and source_edit_regions MUST be empty. '
             'Carry ALL source task restrictions and expected visual/narrative elements into animations. '
             + contract_text(contract) + '\nOUTLINE:\n' + str(outline))
 
@@ -59,6 +66,9 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
     return ('Write complete runnable Manim CE v0.19 Python code only. ' + note
             + f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'
             + base_class + '\nUse at most three meaningful animation steps. Keep all content readable. '
+            'Use real Manim CE primitives such as Text, Circle, Line, Arrow, VGroup and Dot; '
+            'never invent classes such as Check. Draw checkmarks from two Line objects. '
+            'Use short readable on-screen labels instead of copying lecture paragraphs onto the canvas. '
             'Pass animations or .animate builders to self.play(), never eager mobject mutations. '
             'Set explicit short run_time values; no loops with many tiny animations or per-frame updaters. '
             'The runtime allocates exactly 75 frames to the full scene and adds a one-second final hold. '

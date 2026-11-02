@@ -118,6 +118,8 @@ if __name__ == '__main__':
                     if len(agent.sections) != 1:
                         raise ValueError('Storyboard must have exactly one scene')
                     validate_regions(agent.enhanced_storyboard.get('source_edit_regions', []), required=needs_source)
+                    if not needs_source and agent.enhanced_storyboard.get('source_edit_regions'):
+                        raise ValueError('Standalone task must not reference source edit regions')
                     break
                 except ValueError:
                     (agent.output_dir / 'storyboard.json').rename(agent.output_dir / f'storyboard_rejected_{attempt}.json')

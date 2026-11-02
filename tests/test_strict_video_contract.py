@@ -23,6 +23,8 @@ class ContractTests(unittest.TestCase):
             self.assertIn('150/min', prompt)
             self.assertNotIn('5 minutes', prompt)
         self.assertEqual(contract['frame_count'], 75)
+        self.assertIn('NO source image', outline_prompt(contract))
+        self.assertIn('provenance', contract['field_precedence'])
 
     def test_regions_cannot_authorize_entire_source(self):
         for invalid in ([], [[0, 0, 1, 1]], [[-.1, 0, .1, .1]], [[0, 0, float('nan'), .1]]):
