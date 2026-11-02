@@ -1,0 +1,27 @@
+[
+  {
+    "file": "visual_evidence/grade_his_task_16.jpg",
+    "sha256": "3c4fd91356e2103abadbfedbec2084fcb5db0820f4ca1f6ef64de9ea55b7eeb1",
+    "video_sha256": "55177fd32dab58ca4281c75f439685ed81ce44e28d7c2d6f1e39a2bbd3960403"
+  },
+  {
+    "file": "visual_evidence/grade_ComputerScience_task_17.jpg",
+    "sha256": "8ad811f49adc78108260d0ee7a994a66fec3fdfd3819096758c0a50d29b21ac5",
+    "video_sha256": "4357c8e87c60010e736c41d27a5be7cffa8b3efae512d4051a43a27880c191c7"
+  },
+  {
+    "file": "visual_evidence/grade_ComputerScience_task_17_scene.py",
+    "sha256": "5f270de73f195aca899faccbf96fc46fadce72add8b9e2e977280f98a3710ac4",
+    "video_sha256": "4357c8e87c60010e736c41d27a5be7cffa8b3efae512d4051a43a27880c191c7"
+  },
+  {
+    "file": "visual_evidence/med_exp_01.jpg",
+    "sha256": "6124f04031b1c3026dbb365abf21e3ff217d263b2eca1c3df259aedaabbee103",
+    "video_sha256": "9fdb901f59f5bbe7de72f04256b03b2e66ee96dd3df72e2cc3d4e090f3f3952d"
+  },
+  {
+    "file": "visual_evidence/med_exp_01_scene.py",
+    "sha256": "5fd556797d11b0a85852e03c829612ab643819a168f66a779a72d0ba6fb11413",
+    "video_sha256": "9fdb901f59f5bbe7de72f04256b03b2e66ee96dd3df72e2cc3d4e090f3f3952d"
+  }
+]
