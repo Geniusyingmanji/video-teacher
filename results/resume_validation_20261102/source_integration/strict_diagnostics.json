@@ -1,0 +1,54 @@
+{
+  "timing": {
+    "valid": true,
+    "decoded_frames": 75,
+    "fps": 15.0,
+    "duration_seconds": 5.0
+  },
+  "event_frames": [
+    15,
+    45,
+    15
+  ],
+  "events": [
+    {
+      "kind": "wait",
+      "frames": 15
+    },
+    {
+      "kind": "play",
+      "frames": 45
+    },
+    {
+      "kind": "wait",
+      "frames": 15
+    }
+  ],
+  "source_preservation": {
+    "valid": true,
+    "initial_source_mean_pixel_error": 1.1397915040333073,
+    "max_changed_fraction_outside_edit_regions": 0.00022590213526626986,
+    "edit_regions": [
+      [
+        0.5619286057244764,
+        0.899581589958159,
+        0.637183620275739,
+        0.9609483960948395
+      ]
+    ],
+    "unexpected_change_boxes_pixels": [
+      [
+        488,
+        130,
+        59,
+        1
+      ]
+    ],
+    "pre_encoding": {
+      "valid": true,
+      "checked_frames": 75,
+      "max_changed_pixels": 0,
+      "unexpected_change_boxes_pixels": []
+    }
+  }
+}

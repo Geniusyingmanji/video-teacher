@@ -165,6 +165,8 @@ def chat(
                 max_completion_tokens=max_tokens,
                 **extra,
             )
+            if getattr(completion.choices[0], 'finish_reason', None) == 'length':
+                raise ValueError('Judge output truncated; no score accepted')
             return completion.choices[0].message.content or ""
         except (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError):
             if attempt == max_retries - 1:

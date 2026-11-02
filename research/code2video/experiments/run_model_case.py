@@ -16,6 +16,7 @@ from gpt_request import request_local_token
 from generation.strict_video_contract import (make_contract, contract_hash, ContractAPI,
                                               install_prompts, install_renderer, validate_regions, VERSION)
 from generation.strict_manim import inspect_exact
+from generation.source_geometry import resolve_source, needs_source as requires_source
 try:
     from scripts.audit_generated_videos import inspect_video
 except ImportError:
@@ -36,6 +37,8 @@ if __name__ == '__main__':
     parser.add_argument('--prompts', type=Path)
     parser.add_argument('--out', type=Path)
     parser.add_argument('--strict-five-seconds', action='store_true')
+    parser.add_argument('--attempt', type=int, default=0)
+    parser.add_argument('--quality-feedback', type=Path)
     args = parser.parse_args()
     started = time.monotonic()
     source = args.prompts or ROOT.parents[1] / 'data/prompts/pilot_v0_1.jsonl'
@@ -65,8 +68,9 @@ if __name__ == '__main__':
         agent_module.topic_to_safe_name = lambda topic: args.case_id
     api = request_local_token
     source_id = case.get('source', {}).get('source_id')
-    source_image = ROOT.parents[1] / f'data/sources/grade/selected_assets/before/grade_{source_id}.png'
-    if args.prompts and ('supplied' in case['prompt_text'] or 'source image' in case['prompt_text']):
+    source_image = resolve_source(case, ROOT.parents[1] / 'data/sources/grade/selected_assets/before') if args.strict_five_seconds else ROOT.parents[1] / f'data/sources/grade/selected_assets/before/grade_{source_id}.png'
+    needs_image = requires_source(case) if args.strict_five_seconds else bool(args.prompts and ('supplied' in case['prompt_text'] or 'source image' in case['prompt_text']))
+    if needs_image:
         if not source_image.is_file():
             raise FileNotFoundError(f'Required source image unavailable: {source_image}')
         asset_image = ROOT / 'Code2Video/src/assets/icon' / source_image.name
@@ -88,12 +92,14 @@ if __name__ == '__main__':
                 raise RuntimeError('Local model output truncated')
             return response, response.usage.model_dump() if response.usage else {}
     agent = TeachingVideoAgent(0, topic,
-        folder=ROOT / ('Code2Video/src/CASES/' + (args.out.name if args.out else 'VIDEOTEACHER') + f'-qwen38-{args.case_id}'),
+        folder=ROOT / ('Code2Video/src/CASES/' + ((args.out.parent.name + '-' + args.out.name) if args.out else 'VIDEOTEACHER') + f'-qwen38-{args.case_id}-attempt{args.attempt}'),
         cfg=RunConfig(api=api, use_feedback=False, use_assets=False,
             max_code_token_length=4096, max_fix_bug_tries=2, max_regenerate_tries=2))
     if args.strict_five_seconds:
-        needs_source = bool(args.prompts and ('supplied' in case['prompt_text'] or 'source image' in case['prompt_text']))
+        needs_source = needs_image
         contract = make_contract(case, source_image if needs_source else None)
+        if args.quality_feedback:
+            contract['quality_feedback'] = json.loads(args.quality_feedback.read_text())
         contract_path = agent.output_dir / 'task_contract.json'
         contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
         install_prompts(agent_module, contract)
@@ -117,7 +123,11 @@ if __name__ == '__main__':
                 try:
                     if len(agent.sections) != 1:
                         raise ValueError('Storyboard must have exactly one scene')
-                    validate_regions(agent.enhanced_storyboard.get('source_edit_regions', []), required=needs_source)
+                    validate_regions(agent.enhanced_storyboard.get('source_edit_regions', []), required=needs_source,
+                                     source_size=contract.get('source_size_pixels'))
+                    frozen = contract.get('quality_feedback', {}).get('frozen_source_edit_regions')
+                    if frozen is not None and agent.enhanced_storyboard.get('source_edit_regions', []) != frozen:
+                        raise ValueError('Quality repair changed frozen source target boxes')
                     if not needs_source and agent.enhanced_storyboard.get('source_edit_regions'):
                         raise ValueError('Standalone task must not reference source edit regions')
                     break
@@ -145,6 +155,8 @@ if __name__ == '__main__':
         diagnostics_path = agent.output_dir / 'strict_diagnostics.json'
         diagnostics = json.loads(diagnostics_path.read_text()) if diagnostics_path.exists() else {}
         result['strict_diagnostics'] = diagnostics
+        result['source_required'] = needs_source
+        result['source_edit_regions'] = getattr(agent, 'enhanced_storyboard', {}).get('source_edit_regions')
         result['complete'] = (result['complete'] and result['timing']['valid'] and len(agent.sections) == 1
                               and (not needs_source or diagnostics.get('source_preservation', {}).get('valid') is True))
         result['semantic_review_status'] = 'pending_eight_axis_self_evaluation'

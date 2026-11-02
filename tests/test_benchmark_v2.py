@@ -138,6 +138,13 @@ class OperatorTests(unittest.TestCase):
                 with patch.object(runner.teaching_engagement, 'score', side_effect=RuntimeError('judge unavailable')):
                     supplemental_failed = runner.evaluate({'id': 'x', 'expected_narrative_order': ['step']},
                                                           {'status': 'ok', 'video_path': path})
+                with patch.object(runner, 'DIMENSIONS', {'conceptual_correctness': MagicMock()}), \
+                     patch.object(runner, 'VIDEO_DIMENSIONS', {'visual_quality': MagicMock()}):
+                    resumed = runner.evaluate({'id': 'x', 'expected_narrative_order': ['step']},
+                                              {'status': 'ok', 'video_path': path}, previous=supplemental_failed)
+                    runner.DIMENSIONS['conceptual_correctness'].score.assert_not_called()
+                    runner.VIDEO_DIMENSIONS['visual_quality'].score.assert_not_called()
+                    self.assertTrue(resumed['supplementary']['teaching_engagement']['valid'])
             self.assertTrue(row["scoring"]["valid"])
             self.assertEqual(row["axes"]["conceptual_correctness"]["score"], 75)
             self.assertEqual(row["sampled_frame_count"], 24)

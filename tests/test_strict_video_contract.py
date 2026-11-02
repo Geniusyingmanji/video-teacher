@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 from generation.strict_video_contract import make_contract, outline_prompt, storyboard_prompt, code_prompt, validate_regions
-from generation.strict_manim import allocate_frames, inspect_exact
+from generation.strict_manim import allocate_frames, inspect_exact, SourceFrameGuard
 
 
 class ContractTests(unittest.TestCase):
@@ -37,6 +37,19 @@ class ContractTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             allocate_frames([1]*76)
 
+    def test_pre_encoding_rejects_even_one_outside_pixel(self):
+        import numpy as np
+        guard = SourceFrameGuard([[.4, .4, .6, .6]])
+        frame = np.zeros((100, 100, 3), dtype=np.uint8)
+        guard.check(frame, 15)
+        frame[50, 50] = 255
+        guard.check(frame)
+        self.assertTrue(guard.report()['valid'])
+        frame[10, 10] = 1
+        guard.check(frame)
+        self.assertFalse(guard.report()['valid'])
+        self.assertEqual(guard.report()['max_changed_pixels'], 1)
+
     def test_real_render_and_preserved_source(self):
         try:
             import manim
@@ -51,11 +64,11 @@ class ContractTests(unittest.TestCase):
             image.save(source)
             contract = root / 'contract.json'
             contract.write_text(json.dumps(make_contract({'id': 'fixture'}, source)))
-            (root / 'storyboard.json').write_text(json.dumps({'source_edit_regions': [[.4, .4, .6, .6]]}))
+            (root / 'storyboard.json').write_text(json.dumps({'source_edit_regions': [[342, 192, 512, 288]]}))
             code = root / 'section_1.py'
             code.write_text('from manim import *\nclass Section1Scene(Scene):\n'
                             ' def construct(self):\n'
-                            '  self.play(FadeIn(Dot(radius=.12, color=RED)), run_time=.3)\n'
+                            '  self.play(FadeIn(self.source_text("TEST", [342,192,512,288])), run_time=.3)\n'
                             '  self.wait(.2)\n')
             env = dict(os.environ)
             env['PATH'] = str(Path(sys.executable).parent) + os.pathsep + env.get('PATH', '')
@@ -66,6 +79,7 @@ class ContractTests(unittest.TestCase):
             data = json.loads((root / 'strict_diagnostics.json').read_text())
             self.assertTrue(data['timing']['valid'])
             self.assertTrue(data['source_preservation']['valid'])
+            self.assertEqual(data['source_preservation']['pre_encoding']['checked_frames'], 75)
             self.assertEqual(sum(data['event_frames']), 75)
             # A global alteration must be rejected, even though encoding succeeds.
             code.write_text('from manim import *\nclass Section1Scene(Scene):\n'

@@ -8,12 +8,13 @@ from dataclasses import dataclass
 import os
 import base64
 import uuid
+from generation.source_geometry import rectangle_candidates
 
-VERSION = 'strict-five-seconds-v2'
+VERSION = 'strict-five-seconds-v3'
 
 
 def make_contract(case: dict, source_image: Path | None = None) -> dict:
-    return {'version': VERSION, 'duration_seconds': 5, 'fps': 15, 'frame_count': 75,
+    contract = {'version': VERSION, 'duration_seconds': 5, 'fps': 15, 'frame_count': 75,
             'task': case, 'source_image': str(source_image.resolve()) if source_image else None,
             'field_precedence': ('task.prompt_text and current expected_concepts, expected_visual_elements, '
                                  'expected_narrative_order and discipline_specific_rubric define the current task. '
@@ -27,6 +28,14 @@ def make_contract(case: dict, source_image: Path | None = None) -> dict:
                       'When source_image is non-null, the source is a locked background, not an inspiration to redraw.',
                       'When source_image is non-null, edits must stay inside declared edit rectangles covering at most 25% of the canvas.',
                       'When source_image is null, create a standalone diagram and never reference a nonexistent source image.']}
+    if source_image:
+        from PIL import Image
+        with Image.open(source_image) as image:
+            contract['source_size_pixels'] = list(image.size)
+        contract['source_sha256'] = hashlib.sha256(source_image.read_bytes()).hexdigest()
+        contract['source_rectangle_candidates'] = rectangle_candidates(source_image)
+        contract['source_coordinate_space'] = 'original_image_pixels_top_left'
+    return contract
 
 
 def contract_text(contract: dict) -> str:
@@ -51,9 +60,11 @@ def storyboard_prompt(contract: dict, outline) -> str:
     return ('Return only JSON with one section: {"sections":[{"id":"section_1","title":str,'
             '"lecture_lines":[str],"animations":[str]}],"source_edit_regions":[[x0,y0,x1,y1]]}. '
             'Design an initial state, at most three meaningful animation steps, and final hold. '
-            'All phases together last exactly 5 seconds. Use normalized canvas coordinates for edit rectangles '
-            '(origin top left, values 0..1). For source-image tasks identify small rectangles covering only '
+            'All phases together last exactly 5 seconds. Use ORIGINAL IMAGE PIXELS for edit rectangles '
+            '(origin top left, x in 0..source width, y in 0..source height). Never use normalized canvas '
+            'coordinates or guess letterbox offsets. For source-image tasks identify small rectangles covering only '
             'the requested changed labels or marks; union area must not exceed 0.25. '
+            'Use source_rectangle_candidates when they identify the requested answer boxes, and copy their exact pixel boxes. '
             'The renderer supplies the original source background, holds it for 1 second before your animations '
             'and holds the final result for 1 second. Do not redraw, move, recolor, hide or replace the source. '
             'When source_image is null there is NO source image: draw standalone visuals and source_edit_regions MUST be empty. '
@@ -76,23 +87,30 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
             'In source tasks draw ONLY requested changes in the declared edit rectangles; do not call '
             'setup_layout, add an image, clear the scene or draw a new diagram. '
             'Use ordinary positioning matching the actual source; no forced grid. '
+            'For source tasks use ONLY self.source_text(text, pixel_box, replace=True), '
+            'self.source_curve(pixel_points, pixel_box), or self.source_highlight(pixel_box) '
+            'to create overlays, then animate those returned mobjects. These helpers perform exact image-to-canvas '
+            'conversion and check frozen source edit boxes. Do not create or position Text/Line/Rectangle/Circle '
+            'directly for a source overlay; never move, scale or shift a returned overlay. '
+            'Use the original source-pixel boxes declared in source_edit_regions. '
             'Respect scientific units, correct answers, task prohibitions and narration requirements. '
             + contract_text(contract) + '\nSTORYBOARD SECTION:\n'
             + json.dumps(vars(section), ensure_ascii=False))
 
 
-def validate_regions(regions: list, required: bool = False) -> list:
+def validate_regions(regions: list, required: bool = False, source_size=None) -> list:
     if not isinstance(regions, list) or (required and not regions):
         raise ValueError('source task needs explicit edit rectangles')
     area = 0
+    width, height = source_size or (1, 1)
     for r in regions:
         if not isinstance(r, list) or len(r) != 4 or any(type(v) not in (int, float) for v in r):
             raise ValueError('invalid edit rectangle')
         x0, y0, x1, y1 = r
-        if not (0 <= x0 < x1 <= 1 and 0 <= y0 < y1 <= 1):
+        if not (0 <= x0 < x1 <= width and 0 <= y0 < y1 <= height):
             raise ValueError('edit rectangle outside canvas')
         area += (x1-x0)*(y1-y0)
-    if area > .25:
+    if area > .25*width*height:
         raise ValueError('source edit rectangles cover more than 25% of canvas')
     return regions
 
@@ -115,10 +133,16 @@ class ContractAPI:
         if storyboard.exists():
             current['allowed_source_edit_regions'] = json.loads(storyboard.read_text()).get('source_edit_regions', [])
         text = str(prompt) + contract_text(current)
+        diagnostics = self.output / 'strict_diagnostics.json'
+        if diagnostics.exists():
+            text += '\nPREVIOUS ACTUAL RENDER DIAGNOSTICS (fix their cause, never widen target boxes):\n' + diagnostics.read_text()
         content = [{'type': 'text', 'text': text}]
         if current.get('source_image'):
             data = base64.b64encode(Path(current['source_image']).read_bytes()).decode()
             content.append({'type': 'image_url', 'image_url': {'url': 'data:image/png;base64,' + data}})
+        for frame in current.get('quality_feedback', {}).get('review_frames', [])[:3]:
+            data = base64.b64encode(Path(frame).read_bytes()).decode()
+            content.append({'type': 'image_url', 'image_url': {'url': 'data:image/jpeg;base64,' + data}})
         logs = self.output / 'requests'
         logs.mkdir(parents=True, exist_ok=True)
         name = uuid.uuid4().hex

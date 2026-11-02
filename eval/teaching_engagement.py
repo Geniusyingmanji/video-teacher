@@ -5,6 +5,7 @@ from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
 from eval.rubric_6x6 import validate_result
 from eval.benchmark_scoring import valid_score
+from eval.judges.structured_rubric import judge
 
 VERSION = 'teaching-engagement-v1'
 RUBRIC = {'teaching_engagement': (
@@ -36,9 +37,9 @@ def score(case, frames):
     spec = '\n'.join(f'- {key}: {description}' for key, description in RUBRIC['teaching_engagement'])
     content = frames_as_multimodal_content(frames,
         f'Task: {json.dumps(task, ensure_ascii=False)}\nCriteria:\n{spec}\nFrames: 1..{len(frames)}')
-    raw = chat([{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
-               max_tokens=3500, response_format={'type': 'json_object'})
-    result = validate_result('teaching_engagement', json.loads(raw), len(frames), rubric=RUBRIC)
+    result = judge(chat, [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
+                   [key for key, _ in RUBRIC['teaching_engagement']], len(frames),
+                   lambda raw: validate_result('teaching_engagement', raw, len(frames), rubric=RUBRIC))
     result.pop('binary', None)
     return {**result, 'score': round((result['score']-1)*25, 4),
             'rubric_score_1_to_5': result['score'], 'rubric_version': VERSION,

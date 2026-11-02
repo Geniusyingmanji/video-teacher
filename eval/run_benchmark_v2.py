@@ -31,7 +31,8 @@ def scoring_code_sha256() -> str:
     return hashlib.sha256(b"".join((root / name).read_bytes() for name in
                                     ("benchmark_scoring.py", "benchmark_operators.py",
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
-                                     "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py"))).hexdigest()
+                                     "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
+                                     "judges/structured_rubric.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
@@ -78,7 +79,7 @@ def file_sha256(path: str | Path) -> str:
 
 
 def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
-             frame_max_px: int = 832, ffmpeg: str = "ffmpeg") -> dict:
+             frame_max_px: int = 832, ffmpeg: str = "ffmpeg", previous: dict | None = None) -> dict:
     result = {"id": case["id"], "axes": {}, "errors": [],
               "narration_required": case.get("audio_narration_required") is True,
               "video_path": manifest.get("video_path"), "version": scoring.VERSION,
@@ -95,6 +96,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         if not video.is_file():
             raise FileNotFoundError(path)
         result["video_sha256"] = file_sha256(video)
+        cached = previous if cache_matches(previous, case, manifest, sample_fps, frame_max_px) else {}
         frames, fps = operators.decode_video(path)
         result["source_fps"] = fps
         result["source_frame_count"] = len(frames)
@@ -123,6 +125,10 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["sampled_frame_count"] = len(sampled)
         for name, dimension in DIMENSIONS.items():
             try:
+                saved = cached.get('axes', {}).get(name, {})
+                if saved.get('score') is not None and not saved.get('error'):
+                    result['axes'][name] = saved
+                    continue
                 judged = dimension.score(judged_case, sampled)
                 result["axes"][name] = {**judged, "score": _semantic_score(judged),
                                          "rubric_score_1_to_5": judged["score"],
@@ -132,6 +138,10 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                 result["errors"].append(f"{name}_failed")
         for name, dimension in VIDEO_DIMENSIONS.items():
             try:
+                saved = cached.get('axes', {}).get(name, {})
+                if saved.get('score') is not None and not saved.get('error'):
+                    result['axes'][name] = saved
+                    continue
                 judged = dimension.score(case, sampled)
                 if name == "signal_quality":
                     diagnostic = result["operators"][name]
@@ -143,7 +153,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                 result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
                 result["errors"].append(f"{name}_failed")
         try:
-            result['supplementary'] = {'teaching_engagement': teaching_engagement.score(judged_case, sampled)}
+            saved = cached.get('supplementary', {}).get('teaching_engagement', {})
+            result['supplementary'] = {'teaching_engagement': saved if saved.get('valid') is True
+                                       else teaching_engagement.score(judged_case, sampled)}
         except Exception as exc:
             result['supplementary'] = {'teaching_engagement': {
                 'valid': False, 'score': None, 'included_in_total': False,
@@ -194,14 +206,10 @@ def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     return rep
 
 
-def reusable(previous: dict | None, case: dict, manifest: dict,
-             sample_fps: float, frame_max_px: int) -> bool:
-    """Reuse only complete results for exactly the same task, clip and protocol."""
+def cache_matches(previous: dict | None, case: dict, manifest: dict,
+                  sample_fps: float, frame_max_px: int) -> bool:
+    """Match provenance before reusing any independently validated dimension."""
     if not previous or previous.get("version") != scoring.VERSION:
-        return False
-    if previous.get("scoring", {}).get("valid") is not True:
-        return False
-    if previous.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is not True:
         return False
     expected_case = hashlib.sha256(json.dumps(case, ensure_ascii=False, sort_keys=True,
                                               separators=(",", ":")).encode("utf-8")).hexdigest()
@@ -212,6 +220,13 @@ def reusable(previous: dict | None, case: dict, manifest: dict,
     video = Path(str(manifest.get("video_path") or ""))
     return (manifest.get("status") == "ok" and video.is_file()
             and previous.get("video_sha256") == file_sha256(video))
+
+
+def reusable(previous: dict | None, case: dict, manifest: dict,
+             sample_fps: float, frame_max_px: int) -> bool:
+    return (cache_matches(previous, case, manifest, sample_fps, frame_max_px)
+            and previous.get('scoring', {}).get('valid') is True
+            and previous.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is True)
 
 
 def main() -> None:
@@ -269,7 +284,7 @@ def main() -> None:
             row = previous.get(id)
             if not reusable(row, prompts[id], item, args.sample_fps, args.frame_max_px):
                 row = evaluate(prompts[id], item, sample_fps=args.sample_fps,
-                               frame_max_px=args.frame_max_px, ffmpeg=args.ffmpeg)
+                               frame_max_px=args.frame_max_px, ffmpeg=args.ffmpeg, previous=row)
                 f.write(json.dumps(row, ensure_ascii=False) + "\n")
                 f.flush()
             rows.append(row)

@@ -11,6 +11,7 @@ import math
 
 from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
+from eval.judges.structured_rubric import judge
 
 RUBRIC_VERSION = '6x6-v2'
 
@@ -34,7 +35,7 @@ RUBRIC: dict[str, tuple[tuple[str, str], ...]] = {
     ),
     "visual_quality": (
         ("legibility", "Essential text and marks are legible at source resolution."),
-        ("text_stability", "Existing text does not mutate or become gibberish."),
+        ("text_stability", "Text and symbols stay readable and consistent except explicitly requested edits; correctly replacing a placeholder or intentionally revealing a label is not corruption."),
         ("shape_stability", "Important objects and diagrams keep their identity."),
         ("artifact_control", "No intrusive hands, objects, melting, or glitches."),
         ("composition", "The subject stays framed with usable contrast."),
@@ -140,10 +141,9 @@ def score_dimension(dimension: str, case: dict, frames: list) -> dict:
     content = frames_as_multimodal_content(
         frames, f"Dimension: {dimension}\nTask: {task}\nCriteria:\n{criteria}\n"
                 f"Frames are indexed 1..{len(frames)}. Return JSON only.")
-    raw = chat([{"role": "system", "content": SYSTEM},
-                {"role": "user", "content": content}],
-               max_tokens=3500, response_format={"type": "json_object"})
-    return validate_result(dimension, json.loads(raw), len(frames))
+    return judge(chat, [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
+                 [key for key, _ in RUBRIC[dimension]], len(frames),
+                 lambda raw: validate_result(dimension, raw, len(frames)))
 
 
 class RubricDimension:

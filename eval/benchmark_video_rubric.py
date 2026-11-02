@@ -6,6 +6,7 @@ import math
 
 from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
+from eval.judges.structured_rubric import judge
 
 RUBRIC = {
     "temporal_consistency": (
@@ -86,10 +87,9 @@ class VideoDimension:
         content = frames_as_multimodal_content(
             frames, f"Axis: {axis}\nTask: {json.dumps(task, ensure_ascii=False)}\n"
                     f"Criteria:\n{spec}\nFrames: 1..{len(frames)}")
-        raw = chat([{"role": "system", "content": SYSTEM},
-                    {"role": "user", "content": content}],
-                   max_tokens=3500, response_format={"type": "json_object"})
-        return validate_result(axis, json.loads(raw), len(frames))
+        return judge(chat, [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
+                     [key for key, _ in RUBRIC[axis]], len(frames),
+                     lambda raw: validate_result(axis, raw, len(frames)))
 
 
 DIMENSIONS = {name: VideoDimension(name) for name in RUBRIC}

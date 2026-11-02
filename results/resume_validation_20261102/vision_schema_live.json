@@ -1,0 +1,78 @@
+{
+  "score": 100.0,
+  "rubric_score_1_to_5": 5.0,
+  "criteria": [
+    {
+      "id": "focus",
+      "applicable": true,
+      "score": 5,
+      "evidence_frames": [
+        1,
+        2,
+        3
+      ],
+      "finding": "The diagram elements, including the state nodes (S1, S2), transition arrows, and probability values, are rendered with high sharpness and clear edge definition."
+    },
+    {
+      "id": "exposure",
+      "applicable": true,
+      "score": 5,
+      "evidence_frames": [
+        1,
+        2,
+        3
+      ],
+      "finding": "The image is well-lit with a white background and no areas of destructive clipping or excessive darkness; all colors are visible."
+    },
+    {
+      "id": "compression",
+      "applicable": true,
+      "score": 5,
+      "evidence_frames": [
+        1,
+        2,
+        3
+      ],
+      "finding": "No compression artifacts, blocking, or generation noise are visible in the flat vector-style graphics across any of the frames."
+    },
+    {
+      "id": "text_rendering",
+      "applicable": true,
+      "score": 5,
+      "evidence_frames": [
+        1,
+        2,
+        3
+      ],
+      "finding": "Letters, numbers, and symbols (S1, S2, 0.2, 0.6, ?) are rendered cleanly with stable positioning and no visual distortions."
+    },
+    {
+      "id": "contrast",
+      "applicable": true,
+      "score": 5,
+      "evidence_frames": [
+        1,
+        2,
+        3
+      ],
+      "finding": "The black lines and text provide strong contrast against the white background, and the colored nodes are clearly distinguishable from their surroundings."
+    },
+    {
+      "id": "frame_integrity",
+      "applicable": true,
+      "score": 5,
+      "evidence_frames": [
+        1,
+        2,
+        3
+      ],
+      "finding": "All frames are complete with no missing segments, corruption, or severe degradation of the diagram."
+    }
+  ],
+  "summary": "The video displays a clear and static state machine diagram with high sharpness and even lighting. Across the three frames, there are no visual artifacts, compression issues, or rendering errors; the text and diagram elements remain crisp and legible throughout.",
+  "method": "evidence_backed_video_rubric_v2",
+  "structured_validation": {
+    "attempts": 1,
+    "errors": []
+  }
+}
