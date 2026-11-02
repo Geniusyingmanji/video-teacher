@@ -1,4 +1,4 @@
-"""Paired model comparison for complete benchmark 2x8-v3 results."""
+"""Paired model comparison for complete benchmark 2x8-v4 results."""
 from __future__ import annotations
 
 import argparse

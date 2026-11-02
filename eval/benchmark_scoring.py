@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 
-VERSION = "video-teacher-2x8-v3"
+VERSION = "video-teacher-2x8-v4"
 VIDEO_AXES = ("visual_quality", "temporal_consistency", "signal_quality")
 TEACHING_AXES = (
     "conceptual_correctness", "narrative_structure", "pedagogical_clarity",
@@ -36,7 +36,7 @@ def score_case(axes: dict, *, narration_required: bool = False,
         return {"valid": False, "score": None, "groups": None,
                 "strict_pass": False, "errors": errors}
     defects = defects or []
-    capped = dict(axes)
+    capped = {name: axes[name] for names in GROUPS.values() for name in names}
     for defect in defects:
         axis = defect["axis"]
         capped[axis] = min(float(capped[axis]), float(defect["axis_cap"]))

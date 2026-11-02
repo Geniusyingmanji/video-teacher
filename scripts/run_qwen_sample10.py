@@ -14,6 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from generation.strict_video_contract import VERSION
 from generation.strict_manim import inspect_exact
+from eval.benchmark_scoring import VERSION as SCORING_VERSION
 OUT = ROOT / 'results/qwen38_gpu0_sample10_strict5s_20261102'
 SOURCE = ROOT / 'data/prompts/candidate_400.jsonl'
 SEED = 20261102
@@ -42,7 +43,9 @@ def main():
          git_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
          ids=[r['id'] for r in selected], gpu=0, model='qwen3.8-27b',
          self_judge=True, use_feedback=False, use_assets=False,
-         contract_version=VERSION, duration_seconds=5, fps=15, frame_count=75))
+         contract_version=VERSION, duration_seconds=5, fps=15, frame_count=75,
+         scoring_version=SCORING_VERSION))
+    evaluation_dir = OUT / SCORING_VERSION
     print('Selected: ' + ', '.join(r['id'] for r in selected), flush=True)
     deadline = time.monotonic() + 600
     while True:
@@ -92,16 +95,20 @@ def main():
         dump(OUT / 'generation_summary.json', results)
         print(f'[{index}/10] {case_id}: {"ok" if ok else "failed"}', flush=True)
     print('Running eight-axis evaluation (same-model self-evaluation).', flush=True)
-    with (OUT / 'evaluation.log').open('a') as log:
+    with (OUT / f'{SCORING_VERSION}.log').open('a') as log:
         run = subprocess.run([sys.executable, '-m', 'eval.run_benchmark_v2', '--prompts', str(prompts),
-                              '--manifest', str(manifest), '--out', str(OUT / 'evaluation'), '--limit', '10'],
+                              '--manifest', str(manifest), '--out', str(evaluation_dir), '--limit', '10'],
                              cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT)
-    aggregate_path = OUT / 'evaluation/aggregate.json'
+    aggregate_path = evaluation_dir / 'aggregate.json'
     aggregate = json.loads(aggregate_path.read_text()) if aggregate_path.exists() else {}
-    complete = (all(r['status'] == 'ok' for r in results) and run.returncode == 0 and aggregate.get('n_valid') == 10)
+    engagement_valid = aggregate.get('supplementary', {}).get('teaching_engagement', {}).get('n_valid', 0)
+    complete = (all(r['status'] == 'ok' for r in results) and run.returncode == 0
+                and aggregate.get('n_valid') == 10 and engagement_valid == 10)
     dump(OUT / 'completion.json', dict(generated=sum(r['status'] == 'ok' for r in results),
          total=10, evaluation_exit_code=run.returncode, same_model_self_evaluation=True,
-         evaluation_valid=aggregate.get('n_valid', 0), complete=complete))
+         evaluation_valid=aggregate.get('n_valid', 0), complete=complete,
+         scoring_version=SCORING_VERSION, engagement_valid=engagement_valid,
+         evaluation_dir=str(evaluation_dir)))
     print('Finished. Outputs: ' + str(OUT), flush=True)
     return 0 if complete else 1
 

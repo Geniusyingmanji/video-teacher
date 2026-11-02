@@ -1,4 +1,11 @@
-# Video Teacher benchmark 2x8-v3
+# Video Teacher benchmark 2x8-v4
+
+Version v4 strengthens comprehensibility within pedagogical clarity and visual
+explanation within didactic affordances. It adds a separate, unweighted
+teaching-engagement report. The eight public axes, equal-category weights and
+correctness gates remain fixed. V3 and v4 results are not directly comparable;
+reevaluate the same videos under v4. Exact criteria and score anchors are in
+[the v4 teaching-design rules](TEACHING_DESIGN_V4.md).
 
 This is a new scoring protocol. Its results must never be mixed with the legacy
 3/6-dimension results or the 6x6 pilot. It follows FORGE's separation of

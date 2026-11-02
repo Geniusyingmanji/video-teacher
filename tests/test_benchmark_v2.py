@@ -127,19 +127,28 @@ class OperatorTests(unittest.TestCase):
                 writer.write(frame)
             writer.release()
             fake = {"score": 4, "binary": "PASS", "criteria": [{"id": "x", "evidence_frames": [1]}]}
-            with patch.object(runner, "extract_frames", return_value=[object()] * 100), \
+            with patch.object(runner.teaching_engagement, 'score', return_value={'valid': True, 'score': 75}), \
+                 patch.object(runner, "extract_frames", return_value=[object()] * 100), \
                  patch.object(runner, "DIMENSIONS", {a: type("Judge", (), {"score": lambda self, c, f: fake})()
                                                       for a in runner.DIMENSIONS}), \
                  patch.object(runner, "VIDEO_DIMENSIONS", {a: type("Judge", (), {"score": lambda self, c, f: {"score": 75}})()
                                                             for a in runner.VIDEO_DIMENSIONS}):
                 row = runner.evaluate({"id": "x", "expected_narrative_order": ["step"]},
                                       {"status": "ok", "video_path": path})
+                with patch.object(runner.teaching_engagement, 'score', side_effect=RuntimeError('judge unavailable')):
+                    supplemental_failed = runner.evaluate({'id': 'x', 'expected_narrative_order': ['step']},
+                                                          {'status': 'ok', 'video_path': path})
             self.assertTrue(row["scoring"]["valid"])
             self.assertEqual(row["axes"]["conceptual_correctness"]["score"], 75)
             self.assertEqual(row["sampled_frame_count"], 24)
             self.assertEqual(row["judge_frame_indices_in_sample"][0], 0)
             self.assertEqual(row["judge_frame_indices_in_sample"][-1], 99)
             self.assertEqual(len(row["video_sha256"]), 64)
+            self.assertTrue(supplemental_failed['scoring']['valid'])
+            self.assertEqual(supplemental_failed['scoring']['score'], row['scoring']['score'])
+            self.assertFalse(supplemental_failed['supplementary']['teaching_engagement']['valid'])
+            self.assertFalse(runner.reusable(supplemental_failed, {'id': 'x', 'expected_narrative_order': ['step']},
+                                             {'status': 'ok', 'video_path': path}, 2.0, 832))
             self.assertTrue(runner.reusable(row, {"id": "x", "expected_narrative_order": ["step"]},
                                             {"status": "ok", "video_path": path}, 2.0, 832))
             self.assertFalse(runner.reusable(row, {"id": "x", "expected_narrative_order": ["changed"]},
@@ -166,7 +175,8 @@ class OperatorTests(unittest.TestCase):
                 return {"score": 4, "binary": "PASS", "criteria": [], "summary": "mock"}
             def video_judged(case, frames):
                 return {"score": 75, "criteria": [], "summary": "mock"}
-            with patch.dict(os.environ, env), patch.object(sys, "argv", args), \
+            with patch.object(runner.teaching_engagement, 'score', return_value={'valid': True, 'score': 75}), \
+                 patch.dict(os.environ, env), patch.object(sys, "argv", args), \
                  patch.object(runner, "DIMENSIONS", {a: type("Judge", (), {"score": lambda self, c, f: judged(c, f)})()
                                                       for a in runner.DIMENSIONS}), \
                  patch.object(runner, "VIDEO_DIMENSIONS", {a: type("Judge", (), {"score": lambda self, c, f: video_judged(c, f)})()

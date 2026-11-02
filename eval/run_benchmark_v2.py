@@ -1,4 +1,4 @@
-"""Two-category educational video benchmark, version 2x8-v3.
+"""Two-category educational video benchmark, version 2x8-v4.
 
 Run from repository root: python -m eval.run_benchmark_v2 --prompts P.jsonl
 --manifest M.jsonl --out OUTPUT_DIR. Requires the existing Azure judge for the
@@ -20,6 +20,8 @@ from eval.frame_extractor import extract_frames
 from eval.rubric_6x6 import DIMENSIONS
 from eval.benchmark_video_rubric import DIMENSIONS as VIDEO_DIMENSIONS
 from eval.judges.gpt55 import judge_config
+from eval import teaching_engagement
+from eval.rubric_6x6 import RUBRIC_VERSION
 
 MAX_JUDGE_FRAMES = 24
 
@@ -29,12 +31,14 @@ def scoring_code_sha256() -> str:
     return hashlib.sha256(b"".join((root / name).read_bytes() for name in
                                     ("benchmark_scoring.py", "benchmark_operators.py",
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
-                                     "run_benchmark_v2.py", "judges/gpt55.py"))).hexdigest()
+                                     "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
     return {"sample_fps": sample_fps, "frame_max_px": frame_max_px,
             "max_judge_frames": MAX_JUDGE_FRAMES, "judge": judge_config(),
+            "teaching_rubric_version": RUBRIC_VERSION,
+            "engagement_rubric_version": teaching_engagement.VERSION,
             "scoring_code_sha256": scoring_code_sha256()}
 
 
@@ -94,6 +98,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         frames, fps = operators.decode_video(path)
         result["source_fps"] = fps
         result["source_frame_count"] = len(frames)
+        judged_case = {**case, 'actual_duration_s': len(frames)/fps}
         expected_steps = len(case.get("expected_narrative_order") or [])
         result["operators"] = {
             "signal_quality": operators.signal_quality(frames),
@@ -118,10 +123,10 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["sampled_frame_count"] = len(sampled)
         for name, dimension in DIMENSIONS.items():
             try:
-                judged = dimension.score(case, sampled)
+                judged = dimension.score(judged_case, sampled)
                 result["axes"][name] = {**judged, "score": _semantic_score(judged),
                                          "rubric_score_1_to_5": judged["score"],
-                                         "method": "evidence_backed_6x6_vlm_v1"}
+                                         "method": "evidence_backed_6x6_vlm_v2"}
             except Exception as exc:
                 result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
                 result["errors"].append(f"{name}_failed")
@@ -137,6 +142,13 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             except Exception as exc:
                 result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
                 result["errors"].append(f"{name}_failed")
+        try:
+            result['supplementary'] = {'teaching_engagement': teaching_engagement.score(judged_case, sampled)}
+        except Exception as exc:
+            result['supplementary'] = {'teaching_engagement': {
+                'valid': False, 'score': None, 'included_in_total': False,
+                'rubric_version': teaching_engagement.VERSION,
+                'error': f'{type(exc).__name__}: {exc}'[:400]}}
     except Exception as exc:
         result["errors"].append(f"video_decode_or_operator_failed: {type(exc).__name__}: {exc}"[:400])
     flat = {name: value.get("score") for name, value in result["axes"].items()}
@@ -165,6 +177,7 @@ def bootstrap_ci(values: list[float], *, seed: int = 20261031,
 
 def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     rep = scoring.aggregate(rows)
+    rep['supplementary'] = {'teaching_engagement': teaching_engagement.aggregate(rows)}
     valid = [r for r in rows if r["scoring"]["valid"]]
     rep["bootstrap_95_ci_case_mean"] = (bootstrap_ci([r["scoring"]["score"] for r in valid])
                                          if rep["ranking_publishable"] else None)
@@ -187,6 +200,8 @@ def reusable(previous: dict | None, case: dict, manifest: dict,
     if not previous or previous.get("version") != scoring.VERSION:
         return False
     if previous.get("scoring", {}).get("valid") is not True:
+        return False
+    if previous.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is not True:
         return False
     expected_case = hashlib.sha256(json.dumps(case, ensure_ascii=False, sort_keys=True,
                                               separators=(",", ":")).encode("utf-8")).hexdigest()

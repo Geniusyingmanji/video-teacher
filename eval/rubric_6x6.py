@@ -12,6 +12,8 @@ import math
 from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
 
+RUBRIC_VERSION = '6x6-v2'
+
 
 RUBRIC: dict[str, tuple[tuple[str, str], ...]] = {
     "conceptual_correctness": (
@@ -39,18 +41,18 @@ RUBRIC: dict[str, tuple[tuple[str, str], ...]] = {
         ("motion", "Motion is smooth and serves the requested change."),
     ),
     "pedagogical_clarity": (
-        ("single_focus", "The clip has one clear learning focus."),
-        ("attention", "Visual emphasis directs attention to the important part."),
-        ("explanation", "The visual change helps explain the target concept."),
-        ("readability", "The viewer has enough time to read essential content."),
-        ("ambiguity", "The viewer can distinguish the intended answer from distractors."),
-        ("takeaway", "The end state makes the lesson's takeaway clear."),
+        ("single_focus", "The stated audience can identify the one task and learning target without reconstructing omitted context."),
+        ("attention", "Cues guide the audience to the critical object or step at the right time, without competing highlights."),
+        ("explanation", "The visible sequence makes how or why the result follows understandable; revealing an answer alone does not explain a requested mechanism."),
+        ("readability", "Essential labels, formulas and visual changes can be read and followed within the actual clip duration by the stated audience; do not assume unlimited pausing."),
+        ("ambiguity", "The initial condition, operation and result are distinguishable, with no unresolved symbol, label or reference ambiguity."),
+        ("takeaway", "The final visible state communicates the requested conclusion without needing an off-screen explanation."),
     ),
     "didactic_affordances": (
-        ("observable_change", "A meaningful before-and-after change is visible."),
-        ("step_evidence", "A viewer can locate the crucial step or event."),
-        ("reference_anchor", "Stable visual anchors support comparison across time."),
-        ("alignment", "Highlights or annotations point to the correct objects."),
+        ("observable_change", "A concrete representation makes the task-relevant state, relation or before-and-after change visible; decorative movement and answer-only text do not substitute for a requested demonstration."),
+        ("step_evidence", "The crucial operation, mechanism or relation is visually demonstrated, rather than asserted only in a caption. For a labeling task, accurately localized labeling can be sufficient."),
+        ("reference_anchor", "Stable objects, scales or correspondences support comparison and reveal the intended relationship without misleading changes."),
+        ("alignment", "Visual shapes, positions, arrows, colors and labels map accurately to the knowledge being explained; an analogy, if used, preserves the relevant relationship."),
         ("inspectability", "The result can be paused and checked visually."),
         ("diagnosability", "A wrong answer or step would be observable from the clip."),
     ),
@@ -71,10 +73,17 @@ inapplicable), evidence_frames (indices 1..N), and one concrete finding. Treat
 missing visual evidence as a low score, not as proof of success. Use inapplicable
 only when the task genuinely has no such element. Do not invent audio evidence.
 Return JSON only: {"criteria": [...], "summary": "..."}."""
+SYSTEM += """ Assess observable design evidence, not whether a real student learned or enjoyed it.
+Judge reading and reasoning demands against the actual duration and stated audience.
+Do not reward photorealism, cartoons, animation quantity or decorative effects by themselves.
+Simple diagrams and precise annotations can fully explain a task. Do not require an
+analogy, character, question or elaborate mechanism when the task only asks for labeling.
+Keep clarity (can the audience follow it) distinct from didactic affordances
+(does the representation visibly expose the relevant relation or operation)."""
 
 
-def validate_result(dimension: str, raw: dict, frame_count: int) -> dict:
-    expected = [criterion_id for criterion_id, _ in RUBRIC[dimension]]
+def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None) -> dict:
+    expected = [criterion_id for criterion_id, _ in (rubric or RUBRIC)[dimension]]
     criteria = raw.get("criteria")
     if not isinstance(criteria, list) or len(criteria) != 6:
         raise ValueError("judge must return exactly six criteria")
@@ -115,7 +124,7 @@ def validate_result(dimension: str, raw: dict, frame_count: int) -> dict:
         "binary": "PASS" if score >= 4 and min(scores) >= 3 else "FAIL",
         "criteria": ordered,
         "summary": str(raw.get("summary", "")),
-        "rubric_version": "6x6-v1",
+        "rubric_version": RUBRIC_VERSION,
     }
 
 
@@ -125,6 +134,8 @@ def score_dimension(dimension: str, case: dict, frames: list) -> dict:
         "discipline", "subdomain", "task_type", "pedagogical_target_audience",
         "prompt_text", "expected_concepts", "expected_visual_elements",
         "expected_narrative_order", "discipline_specific_rubric",
+        "target_duration_s",
+        "actual_duration_s",
     )}, ensure_ascii=False)
     content = frames_as_multimodal_content(
         frames, f"Dimension: {dimension}\nTask: {task}\nCriteria:\n{criteria}\n"
