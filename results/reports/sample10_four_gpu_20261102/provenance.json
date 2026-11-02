@@ -1,0 +1,57 @@
+{
+  "source_run": "results/qwen38_gpu0_sample10_strict5s_v3_20261102",
+  "resumed_run": "results/resume_four_gpu_20261102",
+  "source_run_config": {
+    "seed": 20261102,
+    "source": "/root/video-teacher/data/prompts/candidate_400.jsonl",
+    "source_sha256": "7306ebec148bb0e67d6192532ce982b0d265fe55a16c20b8902428984bf513a7",
+    "git_commit": "fe8a69b9129fd2478a4480fa8071e5f0b6244272",
+    "ids": [
+      "grade_his_task_16",
+      "cand_med_cs_gap_05",
+      "grade_ComputerScience_task_17",
+      "grade_math_math_90",
+      "grade_math_static_9",
+      "disciplinegen_chemistry_32e43cbfb37a3402",
+      "cs_prob_02",
+      "grade_board_games_task_13",
+      "cand_hs_civ_05",
+      "med_exp_01"
+    ],
+    "gpu": 0,
+    "model": "qwen3.8-27b",
+    "self_judge": true,
+    "use_feedback": false,
+    "use_assets": false,
+    "contract_version": "strict-five-seconds-v3",
+    "duration_seconds": 5,
+    "fps": 15,
+    "frame_count": 75,
+    "scoring_version": "video-teacher-2x8-v4"
+  },
+  "resumed_run_config": {
+    "source": "/root/video-teacher/results/qwen38_gpu0_sample10_strict5s_v3_20261102",
+    "pending": [
+      "disciplinegen_chemistry_32e43cbfb37a3402",
+      "cs_prob_02",
+      "grade_board_games_task_13",
+      "cand_hs_civ_05",
+      "med_exp_01"
+    ],
+    "gpus": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "ports": [
+      8000,
+      8001,
+      8002,
+      8003
+    ],
+    "max_attempts_including_prior": 3
+  },
+  "prompt_sha256": "d3a634bd78842a65b148204db7e05a841929742ae594b7dce322f720526ec543",
+  "verification": "Ten IDs, thirty completed attempts, seven redecoded video timings and hashes, all gates and aggregate recomputed without model calls."
+}

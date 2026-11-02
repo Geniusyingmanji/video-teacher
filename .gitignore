@@ -54,3 +54,6 @@ research/code2video/experiments/layout_review/
 data/human_eval/*/responses*.jsonl
 data/human_eval/*/raw_submissions/
 data/human_eval/*/audit_log*
+
+# Local four-GPU resume runtime; compact reviewed evidence lives in results/reports/.
+results/resume_four_gpu_20261102/

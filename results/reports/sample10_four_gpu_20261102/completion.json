@@ -1,0 +1,15 @@
+{
+  "total": 10,
+  "processed": 10,
+  "generated": 7,
+  "quality_passed": 0,
+  "worker_exit_codes": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "execution_finished": true,
+  "complete": false,
+  "same_model_self_evaluation": true
+}
