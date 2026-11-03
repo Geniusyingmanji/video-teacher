@@ -152,6 +152,8 @@ def chat(
     if response_format is not None:
         extra["response_format"] = response_format
     extra.update(kwargs)
+    if judge_config()["provider"] == "openai_compatible":
+        extra.setdefault("temperature", temperature)
     if os.environ.get("VIDEO_TEACHER_ENABLE_THINKING") == "false":
         body = extra.setdefault("extra_body", {})
         body.setdefault("chat_template_kwargs", {})["enable_thinking"] = False

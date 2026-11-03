@@ -1,0 +1,11 @@
+{
+  "total": 10,
+  "processed": 10,
+  "generated": 6,
+  "quality_passed": 2,
+  "execution_finished": true,
+  "complete": false,
+  "scoring_version": "video-teacher-2x8-v5",
+  "contract_version": "strict-five-seconds-v4",
+  "same_model_self_evaluation": true
+}

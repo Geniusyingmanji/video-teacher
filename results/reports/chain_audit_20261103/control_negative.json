@@ -1,0 +1,149 @@
+{
+  "control": "negative",
+  "id": "grade_ComputerScience_task_17",
+  "expected_pass": false,
+  "expectation_matches": true,
+  "review": {
+    "version": "task-completion-v1",
+    "valid": true,
+    "passed": false,
+    "requirements": [
+      {
+        "id": "prompt",
+        "text": "Create a five-second teaching clip. On the supplied two-state Markov chain, fill S1\u2192S2 with 0.8 and the S2 self-loop with 0.4. Hold both completed outgoing sums equal to 1.",
+        "kind": "instruction",
+        "expected": "Fill S1\u2192S2 with 0.8 and S2 self-loop with 0.4.",
+        "observed": "S1\u2192S2 remains '?'; S2 self-loop is filled with 0.8.",
+        "finding": "Values are incorrect and placed on the wrong edges.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "incorrect"
+      },
+      {
+        "id": "expected_concepts:0",
+        "text": "S1\u2192S2=0.8; S2\u2192S2=0.4",
+        "kind": "expected_concepts",
+        "expected": "S1\u2192S2=0.8; S2\u2192S2=0.4",
+        "observed": "S1\u2192S2 is '?'; S2\u2192S2 is 0.8.",
+        "finding": "Neither target value is present in the correct location.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "incorrect"
+      },
+      {
+        "id": "expected_visual_elements:0",
+        "text": "S1\u2192S2=0.8; S2\u2192S2=0.4",
+        "kind": "expected_visual_elements",
+        "expected": "S1\u2192S2=0.8; S2\u2192S2=0.4",
+        "observed": "S1\u2192S2 is '?'; S2\u2192S2 is 0.8.",
+        "finding": "Visual elements do not match the required values.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "incorrect"
+      },
+      {
+        "id": "expected_visual_elements:1",
+        "text": "0.2+0.8=1 for S1 and 0.6+0.4=1 for S2",
+        "kind": "expected_visual_elements",
+        "expected": "0.2+0.8=1 for S1 and 0.6+0.4=1 for S2",
+        "observed": "S1 sum is 0.2+?; S2 sum is 0.6+0.8.",
+        "finding": "Sums are not equal to 1 as required.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "incorrect"
+      },
+      {
+        "id": "expected_narrative_order:0",
+        "text": "show source image",
+        "kind": "expected_narrative_order",
+        "expected": "show source image",
+        "observed": "Source image with '?' labels is shown in initial frames.",
+        "finding": "Source image is visible.",
+        "evidence_frames": [
+          1
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_narrative_order:1",
+        "text": "reveal one answer",
+        "kind": "expected_narrative_order",
+        "expected": "reveal one answer",
+        "observed": "Value 0.8 appears in the S2 self-loop box.",
+        "finding": "An answer is revealed, though it is the wrong value for the wrong edge.",
+        "evidence_frames": [
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_narrative_order:2",
+        "text": "hold result",
+        "kind": "expected_narrative_order",
+        "expected": "hold result",
+        "observed": "The diagram with 0.8 in the S2 loop is held static.",
+        "finding": "The result is held on screen.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "met"
+      },
+      {
+        "id": "discipline_specific_rubric:0",
+        "text": "0.2+0.8=1 for S1 and 0.6+0.4=1 for S2",
+        "kind": "discipline_specific_rubric",
+        "expected": "0.2+0.8=1 for S1 and 0.6+0.4=1 for S2",
+        "observed": "S1 sum is 0.2+?; S2 sum is 0.6+0.8.",
+        "finding": "The required sums are not achieved.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "incorrect"
+      },
+      {
+        "id": "discipline_specific_rubric:1",
+        "text": "the original diagram remains identifiable",
+        "kind": "discipline_specific_rubric",
+        "expected": "the original diagram remains identifiable",
+        "observed": "Nodes S1, S2 and arrows remain visible and unchanged.",
+        "finding": "The original diagram structure is preserved.",
+        "evidence_frames": [
+          16
+        ],
+        "status": "met"
+      }
+    ],
+    "failures": [
+      "prompt",
+      "expected_concepts:0",
+      "expected_visual_elements:0",
+      "expected_visual_elements:1",
+      "discipline_specific_rubric:0"
+    ],
+    "coverage": 0.4444444444444444,
+    "validation_errors": [],
+    "verified_arithmetic": [
+      {
+        "task_identity": "0.2+0.8=1",
+        "computed_result": "1.0",
+        "stated_result_correct": true
+      },
+      {
+        "task_identity": "0.6+0.4=1",
+        "computed_result": "1.0",
+        "stated_result_correct": true
+      }
+    ]
+  },
+  "video_sha256": "4357c8e87c60010e736c41d27a5be7cffa8b3efae512d4051a43a27880c191c7",
+  "code_sha256": "3e5579b2b3a7f8fba21183ea5c7fa9c57e1263472e3920ab38091556aac75cec",
+  "judge": {
+    "provider": "openai_compatible",
+    "base_url": "http://127.0.0.1:8000/v1",
+    "model": "qwen3.8-27b"
+  }
+}

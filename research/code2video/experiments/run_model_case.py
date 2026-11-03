@@ -126,6 +126,7 @@ if __name__ == '__main__':
             else:
                 raise ValueError('Outline must have exactly one scene')
             for attempt in range(3):
+                source_validation = {'valid': False, 'finding': 'current storyboard not yet validated'}
                 agent.generate_storyboard()
                 try:
                     if len(agent.sections) != 1:
@@ -146,11 +147,13 @@ if __name__ == '__main__':
                             raise ValueError(source_validation['finding'])
                     break
                 except (ValueError, KeyError, TypeError) as exc:
+                    source_validation = {'valid': False, 'finding': str(exc), 'attempt': attempt}
+                    (agent.output_dir / f'source_plan_review_{attempt}.json').write_text(json.dumps(source_validation, indent=2))
                     contract['storyboard_repair'] = {'error': str(exc), 'instruction': 'Fix this plan using the original source and unchanged task. Do not reuse rejected regions.'}
                     contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
                     (agent.output_dir / 'storyboard.json').rename(agent.output_dir / f'storyboard_rejected_{attempt}.json')
             else:
-                raise ValueError('Storyboard source edit regions failed validation')
+                raise ValueError('Storyboard validation exhausted: ' + source_validation['finding'])
         if args.strict_five_seconds and needs_source:
             from generation.source_plan import compile_plan
             (agent.output_dir / 'section_1.py').write_text(compile_plan(agent.enhanced_storyboard, contract))
@@ -177,6 +180,8 @@ if __name__ == '__main__':
         result['source_plan_validation'] = source_validation
         result['source_size_pixels'] = contract.get('source_size_pixels')
         result['verified_assets'] = contract.get('verified_assets')
+        if not video and not diagnostics:
+            result['failure_stage'] = 'storyboard' if contract.get('storyboard_repair') else 'planning_or_generation'
         if not video and diagnostics:
             result['failure_stage'] = ('source_preservation' if diagnostics.get('source_preservation', {}).get('valid') is False else 'layout' if diagnostics.get('layout', {}).get('valid') is False else 'render')
             if not generation_error:

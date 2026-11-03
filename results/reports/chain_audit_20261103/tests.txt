@@ -1,0 +1,190 @@
+Command: PATH=/root/code2video-env/bin:$PATH /root/code2video-env/bin/python -m unittest discover -s tests -v
+
+test_api_key_client_sends_configured_model_and_json_mode (test_benchmark_v2.OperatorTests.test_api_key_client_sends_configured_model_and_json_mode) ... ok
+test_api_key_configuration_requires_base_url_and_model (test_benchmark_v2.OperatorTests.test_api_key_configuration_requires_base_url_and_model) ... ok
+test_complete_cli_flow_and_resume_with_api_key (test_benchmark_v2.OperatorTests.test_complete_cli_flow_and_resume_with_api_key) ... ok
+test_evaluate_writes_evidence_and_score (test_benchmark_v2.OperatorTests.test_evaluate_writes_evidence_and_score) ... ok
+test_signal_metrics_are_finite_and_explainable (test_benchmark_v2.OperatorTests.test_signal_metrics_are_finite_and_explainable) ... ok
+test_static_requested_diagram_is_not_frozen_failure (test_benchmark_v2.OperatorTests.test_static_requested_diagram_is_not_frozen_failure) ... ok
+test_video_rubric_rejects_missing_evidence_and_separates_scores (test_benchmark_v2.OperatorTests.test_video_rubric_rejects_missing_evidence_and_separates_scores) ... ok
+test_equal_categories_and_strict_gate (test_benchmark_v2.ScoringPolicyTests.test_equal_categories_and_strict_gate) ... ok
+test_freeze_gate_is_task_aware (test_benchmark_v2.ScoringPolicyTests.test_freeze_gate_is_task_aware) ... ok
+test_incomplete_run_has_no_ranking (test_benchmark_v2.ScoringPolicyTests.test_incomplete_run_has_no_ranking) ... ok
+test_missing_nan_bool_and_required_audio_invalidate (test_benchmark_v2.ScoringPolicyTests.test_missing_nan_bool_and_required_audio_invalidate) ... ok
+test_paired_comparison_requires_same_cases_and_version (test_benchmark_v2.ScoringPolicyTests.test_paired_comparison_requires_same_cases_and_version) ... ok
+test_visible_intrusion_and_wrong_text_cannot_average_away (test_benchmark_v2.ScoringPolicyTests.test_visible_intrusion_and_wrong_text_cannot_average_away) ... ok
+test_offline_build_links_only_existing_artifacts (test_build_v1.LocalV1Test.test_offline_build_links_only_existing_artifacts) ... ok
+test_video_check_rejects_visual_mismatch (test_build_v1.LocalV1Test.test_video_check_rejects_visual_mismatch) ... ok
+test_disciplinegen_factual_repairs (test_candidate_400.Candidate400Test.test_disciplinegen_factual_repairs) ... ok
+test_food_chain_repair_removes_unsupported_link (test_candidate_400.Candidate400Test.test_food_chain_repair_removes_unsupported_link) ... ok
+test_grade_targets_with_unrequested_edits_are_not_scoring_references (test_candidate_400.Candidate400Test.test_grade_targets_with_unrequested_edits_are_not_scoring_references) ... ok
+test_long_source_is_not_silently_truncated (test_candidate_400.Candidate400Test.test_long_source_is_not_silently_truncated) ... ok
+test_meiosis_repair_does_not_infer_mutation (test_candidate_400.Candidate400Test.test_meiosis_repair_does_not_infer_mutation) ... ok
+test_pilot_duration_matches_target (test_candidate_400.Candidate400Test.test_pilot_duration_matches_target) ... ok
+test_short_source_focus_preserves_complete_instruction (test_candidate_400.Candidate400Test.test_short_source_focus_preserves_complete_instruction) ... ok
+test_verified_replacements_keep_source_and_answer (test_candidate_400.Candidate400Test.test_verified_replacements_keep_source_and_answer) ... ok
+test_comparison_uses_only_jointly_scored_cases (test_compare_standard_eval.CompareStandardEvalTest.test_comparison_uses_only_jointly_scored_cases) ... ok
+test_constant_difference_has_undefined_standardized_effect (test_compare_standard_eval.CompareStandardEvalTest.test_constant_difference_has_undefined_standardized_effect) ... ok
+test_draw_count_must_be_positive (test_compare_standard_eval.CompareStandardEvalTest.test_draw_count_must_be_positive) ... ok
+test_extracts_aggregate_and_dimension_scores (test_compare_standard_eval.CompareStandardEvalTest.test_extracts_aggregate_and_dimension_scores) ... ok
+test_holm_adjustment_is_monotone_in_sorted_order (test_compare_standard_eval.CompareStandardEvalTest.test_holm_adjustment_is_monotone_in_sorted_order) ... ok
+test_rejects_boolean_and_non_finite_scores (test_compare_standard_eval.CompareStandardEvalTest.test_rejects_boolean_and_non_finite_scores) ... ok
+test_constant_differences_have_json_safe_undefined_effect (test_compare_teachquiz.CompareTeachQuizTest.test_constant_differences_have_json_safe_undefined_effect) ... ok
+test_draw_count_must_be_positive (test_compare_teachquiz.CompareTeachQuizTest.test_draw_count_must_be_positive) ... ok
+test_joint_valid_comparison_uses_shared_valid_intersection (test_compare_teachquiz.CompareTeachQuizTest.test_joint_valid_comparison_uses_shared_valid_intersection) ... ok
+test_rejects_model_specific_probes (test_compare_teachquiz.CompareTeachQuizTest.test_rejects_model_specific_probes) ... ok
+test_rejects_protocol_difference (test_compare_teachquiz.CompareTeachQuizTest.test_rejects_protocol_difference) ... ok
+test_all_examples_render_at_video_aspect_ratio (test_contract_frame.ContractFrameTest.test_all_examples_render_at_video_aspect_ratio) ... ok
+test_drawing_reads_knowledge_state (test_contract_frame.ContractFrameTest.test_drawing_reads_knowledge_state) ... ok
+test_setup_and_result_are_distinct (test_contract_frame.ContractFrameTest.test_setup_and_result_are_distinct) ... ok
+test_electron_transfer_count_is_fixed (test_contract_video.AnimatedContractTruthTest.test_electron_transfer_count_is_fixed) ... ok
+test_ray_must_reach_focus (test_contract_video.AnimatedContractTruthTest.test_ray_must_reach_focus) ... ok
+test_wrong_final_derivative_is_rejected (test_contract_video.AnimatedContractTruthTest.test_wrong_final_derivative_is_rejected) ... ok
+test_blank_video_is_wrong (test_contract_video_audit.ContractVideoAuditTest.test_blank_video_is_wrong) ... ok
+test_missing_file_is_unobservable (test_contract_video_audit.ContractVideoAuditTest.test_missing_file_is_unobservable) ... ok
+test_static_setup_is_missing_result_with_timestamp (test_contract_video_audit.ContractVideoAuditTest.test_static_setup_is_missing_result_with_timestamp) ... ok
+test_music_normalizes_without_changing_source_label (test_curate_paper_items.PaperItemCurationTest.test_music_normalizes_without_changing_source_label) ... ok
+test_release_requires_fresh_independent_complete_reviews (test_curate_paper_items.PaperItemCurationTest.test_release_requires_fresh_independent_complete_reviews) ... ok
+test_source_pixels_stay_fixed_outside_reviewed_box (test_diagram_overlay.DiagramOverlayTest.test_source_pixels_stay_fixed_outside_reviewed_box) ... ok
+test_resume_requires_matching_inputs_and_intact_video (test_generation_provenance.GenerationProvenanceTest.test_resume_requires_matching_inputs_and_intact_video) ... ok
+test_arrow_touching_answer_box_is_not_missed (test_generation_repairs.RepairTests.test_arrow_touching_answer_box_is_not_missed) ... ok
+test_compaction_preserves_full_task_but_bounds_diagnostic_arrays (test_generation_repairs.RepairTests.test_compaction_preserves_full_task_but_bounds_diagnostic_arrays) ... ok
+test_consistency_rejects_reported_conflict (test_generation_repairs.RepairTests.test_consistency_rejects_reported_conflict) ... ok
+test_exact_molecule_roundtrip_and_functional_groups (test_generation_repairs.RepairTests.test_exact_molecule_roundtrip_and_functional_groups) ... ok
+test_exact_text_budget_fails_before_network_and_reserves_images (test_generation_repairs.RepairTests.test_exact_text_budget_fails_before_network_and_reserves_images) ... ok
+test_feedback_carries_actual_low_criteria_without_entire_evaluation (test_generation_repairs.RepairTests.test_feedback_carries_actual_low_criteria_without_entire_evaluation) ... ok
+test_grounded_schema_rejects_guessed_frame_indices (test_generation_repairs.RepairTests.test_grounded_schema_rejects_guessed_frame_indices) ... ok
+test_layout_guard_rejects_overlapping_and_offscreen_labels (test_generation_repairs.RepairTests.test_layout_guard_rejects_overlapping_and_offscreen_labels) ... /root/code2video-env/lib/python3.11/site-packages/pydub/utils.py:14: DeprecationWarning: 'audioop' is deprecated and slated for removal in Python 3.13
+  import audioop
+ok
+test_missing_worker_still_counts_in_ten_case_denominator (test_generation_repairs.RepairTests.test_missing_worker_still_counts_in_ten_case_denominator) ... ok
+test_real_compiled_source_render_preserves_every_outside_pixel (test_generation_repairs.RepairTests.test_real_compiled_source_render_preserves_every_outside_pixel) ... ok
+test_rejected_regions_never_freeze_and_accepted_regions_stay_fixed (test_generation_repairs.RepairTests.test_rejected_regions_never_freeze_and_accepted_regions_stay_fixed) ... ok
+test_source_compiler_cannot_omit_second_answer (test_generation_repairs.RepairTests.test_source_compiler_cannot_omit_second_answer) ... ok
+test_source_plan_rejects_widening_bad_points_and_missing_operations (test_generation_repairs.RepairTests.test_source_plan_rejects_widening_bad_points_and_missing_operations) ... ok
+test_unreadable_source_box_is_rejected_before_plan_freezes (test_generation_repairs.RepairTests.test_unreadable_source_box_is_rejected_before_plan_freezes) ... ok
+test_verified_asset_calls_without_display_are_rejected (test_generation_repairs.RepairTests.test_verified_asset_calls_without_display_are_rejected) ... ok
+test_verified_progression_does_not_erase_real_correctness_defects (test_generation_repairs.RepairTests.test_verified_progression_does_not_erase_real_correctness_defects) ... ok
+test_analyse_rejects_boolean_and_float_scores (test_human_eval.HumanEvalStatsTest.test_analyse_rejects_boolean_and_float_scores) ... ok
+test_bootstrap_handles_constant_samples_without_crashing (test_human_eval.HumanEvalStatsTest.test_bootstrap_handles_constant_samples_without_crashing) ... ok
+test_export_and_analyse_round_trip (test_human_eval.HumanEvalStatsTest.test_export_and_analyse_round_trip) ... ok
+test_ordinal_alpha_is_one_for_identical_raters (test_human_eval.HumanEvalStatsTest.test_ordinal_alpha_is_one_for_identical_raters) ... ok
+test_spearman_handles_ties_and_monotonic_data (test_human_eval.HumanEvalStatsTest.test_spearman_handles_ties_and_monotonic_data) ... ok
+test_stratified_sample_is_deterministic_and_bounded (test_human_eval.HumanEvalStatsTest.test_stratified_sample_is_deterministic_and_bounded) ... ok
+test_invalid_ray_endpoint_rejected_before_export (test_interactive_lesson.InteractiveLessonTest.test_invalid_ray_endpoint_rejected_before_export) ... ok
+test_invariant_change_requires_consistent_updates (test_interactive_lesson.InteractiveLessonTest.test_invariant_change_requires_consistent_updates) ... ok
+test_three_branches_compile_to_distinct_verified_results (test_interactive_lesson.InteractiveLessonTest.test_three_branches_compile_to_distinct_verified_results) ... ok
+test_variants_cannot_rewrite_checks (test_interactive_lesson.InteractiveLessonTest.test_variants_cannot_rewrite_checks) ... ok
+test_artifact_gate_uses_latest_attempt_and_rejects_errors (test_pipeline_gates.PipelineGateTest.test_artifact_gate_uses_latest_attempt_and_rejects_errors) ... ok
+test_first_frame_review_rejects_known_failed_sources (test_pipeline_gates.PipelineGateTest.test_first_frame_review_rejects_known_failed_sources) ... ok
+test_generation_gate_keeps_all_60_cases_without_quiz (test_pipeline_gates.PipelineGateTest.test_generation_gate_keeps_all_60_cases_without_quiz) ... ok
+test_preflight_rejects_empty_and_duplicate_quiz_questions (test_pipeline_gates.PipelineGateTest.test_preflight_rejects_empty_and_duplicate_quiz_questions) ... ok
+test_real_pilot_preflight_reports_partial_shared_quiz (test_pipeline_gates.PipelineGateTest.test_real_pilot_preflight_reports_partial_shared_quiz) ... ok
+test_review_hash_rejects_changed_first_frame (test_pipeline_gates.PipelineGateTest.test_review_hash_rejects_changed_first_frame) ... ok
+test_failures_are_bounded_and_all_ten_remain_in_denominator (test_qwen_batch.BatchTests.test_failures_are_bounded_and_all_ten_remain_in_denominator) ... {"n_total": 1, "n_valid": 1, "ranking_publishable": true, "out": "/root/video-teacher/tmp5nt_atmu/out"}
+{"n_total": 1, "n_valid": 1, "ranking_publishable": true, "out": "/root/video-teacher/tmp5nt_atmu/out"}
+wrote /tmp/tmp5vghbw1s/report.md and /tmp/tmp5vghbw1s/report.json
+wrote 8 blinded assignments (4 cases × 2 raters) and 2 rater packets to /tmp/tmp2izci8_0/session
+wrote /tmp/tmp2izci8_0/report.md and /tmp/tmp2izci8_0/report.json
+Selected: grade_his_task_16, cand_med_cs_gap_05, grade_ComputerScience_task_17, grade_math_math_90, grade_math_static_9, disciplinegen_chemistry_32e43cbfb37a3402, cs_prob_02, grade_board_games_task_13, cand_hs_civ_05, med_exp_01
+[1/10] generating grade_his_task_16, attempt 1
+[1/10] generating grade_his_task_16, attempt 2
+[1/10] generating grade_his_task_16, attempt 3
+[1/10] grade_his_task_16: failed
+[2/10] generating cand_med_cs_gap_05, attempt 1
+[2/10] generating cand_med_cs_gap_05, attempt 2
+[2/10] generating cand_med_cs_gap_05, attempt 3
+[2/10] cand_med_cs_gap_05: failed
+[3/10] generating grade_ComputerScience_task_17, attempt 1
+[3/10] generating grade_ComputerScience_task_17, attempt 2
+[3/10] generating grade_ComputerScience_task_17, attempt 3
+[3/10] grade_ComputerScience_task_17: failed
+[4/10] generating grade_math_math_90, attempt 1
+[4/10] generating grade_math_math_90, attempt 2
+[4/10] generating grade_math_math_90, attempt 3
+[4/10] grade_math_math_90: failed
+[5/10] generating grade_math_static_9, attempt 1
+[5/10] generating grade_math_static_9, attempt 2
+[5/10] generating grade_math_static_9, attempt 3
+[5/10] grade_math_static_9: failed
+[6/10] generating disciplinegen_chemistry_32e43cbfb37a3402, attempt 1
+[6/10] generating disciplinegen_chemistry_32e43cbfb37a3402, attempt 2
+[6/10] generating disciplinegen_chemistry_32e43cbfb37a3402, attempt 3
+[6/10] disciplinegen_chemistry_32e43cbfb37a3402: failed
+[7/10] generating cs_prob_02, attempt 1
+[7/10] generating cs_prob_02, attempt 2
+[7/10] generating cs_prob_02, attempt 3
+[7/10] cs_prob_02: failed
+[8/10] generating grade_board_games_task_13, attempt 1
+[8/10] generating grade_board_games_task_13, attempt 2
+[8/10] generating grade_board_games_task_13, attempt 3
+[8/10] grade_board_games_task_13: failed
+[9/10] generating cand_hs_civ_05, attempt 1
+[9/10] generating cand_hs_civ_05, attempt 2
+[9/10] generating cand_hs_civ_05, attempt 3
+[9/10] cand_hs_civ_05: failed
+[10/10] generating med_exp_01, attempt 1
+[10/10] generating med_exp_01, attempt 2
+[10/10] generating med_exp_01, attempt 3
+[10/10] med_exp_01: failed
+Running eight-axis evaluation (same-model self-evaluation).
+Finished. Outputs: /tmp/tmpp6dlij28/new_run
+ok
+test_aggregate_reports_criterion_failures (test_rubric_6x6.Rubric6x6Test.test_aggregate_reports_criterion_failures) ... ok
+test_focused_prompt_selects_one_change_and_preserves_text (test_rubric_6x6.Rubric6x6Test.test_focused_prompt_selects_one_change_and_preserves_text) ... ok
+test_registry_has_six_distinct_criteria_per_dimension (test_rubric_6x6.Rubric6x6Test.test_registry_has_six_distinct_criteria_per_dimension) ... ok
+test_result_requires_complete_evidence_and_hard_gate (test_rubric_6x6.Rubric6x6Test.test_result_requires_complete_evidence_and_hard_gate) ... ok
+test_aggregate_excludes_partial_dimension_failures (test_run_eval.RunEvalAggregationTest.test_aggregate_excludes_partial_dimension_failures) ... ok
+test_correlation_score_extraction_preserves_zero (test_run_eval.RunEvalAggregationTest.test_correlation_score_extraction_preserves_zero) ... ok
+test_dimension_score_preserves_zero_and_rejects_non_finite (test_run_eval.RunEvalAggregationTest.test_dimension_score_preserves_zero_and_rejects_non_finite) ... ok
+test_manifest_uses_latest_attempt (test_run_eval.RunEvalAggregationTest.test_manifest_uses_latest_attempt) ... ok
+test_casefold_requires_unambiguous_asset (test_source_geometry.GeometryTests.test_casefold_requires_unambiguous_asset) ... ok
+test_letterbox_landscape_portrait_and_pixel_bounds (test_source_geometry.GeometryTests.test_letterbox_landscape_portrait_and_pixel_bounds) ... ok
+test_quality_rejects_render_only_and_preservation_failure (test_source_geometry.GeometryTests.test_quality_rejects_render_only_and_preservation_failure) ... ok
+test_exact_integer_frame_budget (test_strict_video_contract.ContractTests.test_exact_integer_frame_budget) ... ok
+test_lossless_task_and_seconds (test_strict_video_contract.ContractTests.test_lossless_task_and_seconds) ... ok
+test_pre_encoding_rejects_even_one_outside_pixel (test_strict_video_contract.ContractTests.test_pre_encoding_rejects_even_one_outside_pixel) ... ok
+test_real_render_and_preserved_source (test_strict_video_contract.ContractTests.test_real_render_and_preserved_source) ... ok
+test_regions_cannot_authorize_entire_source (test_strict_video_contract.ContractTests.test_regions_cannot_authorize_entire_source) ... ok
+test_duplicate_ids_and_exhaustion (test_structured_rubric.StructuredTests.test_duplicate_ids_and_exhaustion) ... ok
+test_invalid_content_is_retried_without_coercion (test_structured_rubric.StructuredTests.test_invalid_content_is_retried_without_coercion) ... ok
+test_schema_has_exact_count_and_boolean (test_structured_rubric.StructuredTests.test_schema_has_exact_count_and_boolean) ... ok
+test_truncation_retries_but_infrastructure_propagates (test_structured_rubric.StructuredTests.test_truncation_retries_but_infrastructure_propagates) ... ok
+test_arithmetic_anchors_use_exact_decimals_and_report_wrong_source (test_task_completion.CompletionTests.test_arithmetic_anchors_use_exact_decimals_and_report_wrong_source) ... ok
+test_complete_evidence_passes_without_historical_instruction (test_task_completion.CompletionTests.test_complete_evidence_passes_without_historical_instruction) ... ok
+test_exact_last_frame_is_always_available_to_judge (test_task_completion.CompletionTests.test_exact_last_frame_is_always_available_to_judge) ... ok
+test_geometry_counts_union_and_keeps_area_limit (test_task_completion.CompletionTests.test_geometry_counts_union_and_keeps_area_limit) ... ok
+test_global_low_motion_does_not_invent_defect_when_task_reviewed (test_task_completion.CompletionTests.test_global_low_motion_does_not_invent_defect_when_task_reviewed) ... ok
+test_invalid_judge_retries_same_video_without_repeating_valid_low_score (test_task_completion.CompletionTests.test_invalid_judge_retries_same_video_without_repeating_valid_low_score) ... ok
+test_low_steps_and_final_state_are_critical_even_when_progress_seen (test_task_completion.CompletionTests.test_low_steps_and_final_state_are_critical_even_when_progress_seen) ... ok
+test_missing_flow_cannot_be_offset_by_perfect_visuals (test_task_completion.CompletionTests.test_missing_flow_cannot_be_offset_by_perfect_visuals) ... ok
+test_opaque_image_cannot_cover_notes_but_lower_image_can (test_task_completion.CompletionTests.test_opaque_image_cannot_cover_notes_but_lower_image_can) ... ok
+test_quality_gate_blocks_global_completion_claim_with_missing_steps (test_task_completion.CompletionTests.test_quality_gate_blocks_global_completion_claim_with_missing_steps) ... ok
+test_schema_rejects_omission_duplicate_fake_or_unsupported_frames (test_task_completion.CompletionTests.test_schema_rejects_omission_duplicate_fake_or_unsupported_frames) ... ok
+test_uncertain_is_not_fabricated_as_incorrect_or_passed (test_task_completion.CompletionTests.test_uncertain_is_not_fabricated_as_incorrect_or_passed) ... ok
+test_bounded_revision_repairs_layout_and_records_attempts (test_teaching_contract.TeachingContractTest.test_bounded_revision_repairs_layout_and_records_attempts) ... ok
+test_rejects_low_contrast_text (test_teaching_contract.TeachingContractTest.test_rejects_low_contrast_text) ... ok
+test_rejects_overlapping_or_tiny_text_and_wrong_duration (test_teaching_contract.TeachingContractTest.test_rejects_overlapping_or_tiny_text_and_wrong_duration) ... ok
+test_rejects_state_change_disagreement_and_false_domain_check (test_teaching_contract.TeachingContractTest.test_rejects_state_change_disagreement_and_false_domain_check) ... ok
+test_revision_cannot_change_frozen_truth (test_teaching_contract.TeachingContractTest.test_revision_cannot_change_frozen_truth) ... ok
+test_schema_is_not_tied_to_subject_or_case_id (test_teaching_contract.TeachingContractTest.test_schema_is_not_tied_to_subject_or_case_id) ... ok
+test_three_disciplines_compile_without_video_generation (test_teaching_contract.TeachingContractTest.test_three_disciplines_compile_without_video_generation) ... ok
+test_engagement_never_compensates_for_incorrectness (test_teaching_engagement.TeachingEngagementTests.test_engagement_never_compensates_for_incorrectness) ... ok
+test_new_rules_cover_duration_and_representation (test_teaching_engagement.TeachingEngagementTests.test_new_rules_cover_duration_and_representation) ... ok
+test_no_positive_score_without_evidence (test_teaching_engagement.TeachingEngagementTests.test_no_positive_score_without_evidence) ... ok
+test_partial_supplement_has_no_complete_mean (test_teaching_engagement.TeachingEngagementTests.test_partial_supplement_has_no_complete_mean) ... ok
+test_supplement_is_evidence_backed_and_excluded (test_teaching_engagement.TeachingEngagementTests.test_supplement_is_evidence_backed_and_excluded) ... ok
+test_aggregate_includes_new_gain_metrics (test_teachquiz_protocol.TeachQuizProtocolTest.test_aggregate_includes_new_gain_metrics) ... ok
+test_control_prefers_metadata_match_and_is_order_stable (test_teachquiz_protocol.TeachQuizProtocolTest.test_control_prefers_metadata_match_and_is_order_stable) ... ok
+test_quiz_validation_rejects_duplicate_question_ids (test_teachquiz_protocol.TeachQuizProtocolTest.test_quiz_validation_rejects_duplicate_question_ids) ... ok
+test_reports_raw_control_adjusted_and_legacy_gain (test_teachquiz_protocol.TeachQuizProtocolTest.test_reports_raw_control_adjusted_and_legacy_gain) ... ok
+test_resume_rejects_changed_protocol (test_teachquiz_protocol.TeachQuizProtocolTest.test_resume_rejects_changed_protocol) ... ok
+test_adaptive_sampling_catches_unscheduled_scene_change (test_video_audit.VideoAuditTest.test_adaptive_sampling_catches_unscheduled_scene_change) ... ok
+test_fixed_rate_sampling_depends_on_duration (test_video_audit.VideoAuditTest.test_fixed_rate_sampling_depends_on_duration) ... ok
+test_layout_judges_receive_detail_frames (test_video_audit.VideoAuditTest.test_layout_judges_receive_detail_frames) ... ok
+test_short_video_sampling_and_duration_gate (test_video_audit.VideoAuditTest.test_short_video_sampling_and_duration_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 133 tests in 32.588s
+
+OK

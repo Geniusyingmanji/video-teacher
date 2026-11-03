@@ -1,3 +1,7 @@
+# Current status — 2026-11-03
+
+最新固定十题批次生成 6/10、质量 2/10，未全部修复。当前链路升级至 contract v5 / scoring v6；详见 [逐项复核与验证](CHAIN_QUALITY_AUDIT_2026-11-03.md)。400 题结构预检通过不表示 400 条视频通过。下面保留历史 pilot 状态，不能当作当前十题结果。
+
 # Project status — local v1 assembled 2026-10-20
 
 The offline first version can be rebuilt with `python -m scripts.build_v1` and

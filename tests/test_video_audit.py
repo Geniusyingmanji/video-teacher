@@ -24,7 +24,7 @@ class VideoAuditTest(unittest.TestCase):
 
             frames = extract_frames(path, n=3, resize_max=48)
             self.assertEqual(len(frames), 3)
-            self.assertEqual(len(extract_frames(path, resize_max=48)), 2)
+            self.assertEqual(len(extract_frames(path, resize_max=48)), 3)
             self.assertEqual(frames[0].size, (48, 32))
             self.assertLess(np.asarray(frames[0]).mean(), np.asarray(frames[-1]).mean())
 

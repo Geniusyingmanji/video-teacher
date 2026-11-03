@@ -23,7 +23,7 @@ def sample_frame_indices(total: int, source_fps: float, sample_fps: float = 2.0)
     if not math.isfinite(sample_fps) or sample_fps <= 0:
         raise ValueError("sample_fps must be positive and finite")
     last_sample = math.floor((total - 1) * sample_fps / source_fps)
-    return sorted({round(k * source_fps / sample_fps) for k in range(last_sample + 1)})
+    return sorted({round(k * source_fps / sample_fps) for k in range(last_sample + 1)} | {total - 1})
 
 
 def extract_frames(

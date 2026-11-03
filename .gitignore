@@ -62,3 +62,6 @@ results/resume_four_gpu_20261102/
 /media/
 results/fix_validation_*/
 results/qwen38_two_gpu_sample10*/
+
+# Local chain audit renders and exploratory reviews; curated evidence is in results/reports/.
+results/optimization_*/

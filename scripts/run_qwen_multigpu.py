@@ -24,6 +24,16 @@ def dump(path, data):
     temporary.replace(path)
 
 
+def implementation_sha256():
+    paths = sorted([*ROOT.glob('generation/**/*.py'), *ROOT.glob('eval/**/*.py'),
+                    *ROOT.glob('scripts/*.py'), *ROOT.glob('research/code2video/experiments/*.py'),
+                    *ROOT.glob('research/code2video/experiments/*.sh')])
+    digest = hashlib.sha256()
+    for path in paths:
+        digest.update(str(path.relative_to(ROOT)).encode() + b'\0' + path.read_bytes() + b'\0')
+    return digest.hexdigest()
+
+
 def environment(gpu, port):
     env = dict(os.environ, CUDA_VISIBLE_DEVICES=str(gpu), LOCAL_BASE_URL=f'http://127.0.0.1:{port}/v1',
         LOCAL_MODEL='qwen3.8-27b', VIDEO_TEACHER_API_KEY='local',
@@ -39,7 +49,7 @@ def run_case(args):
     from generation.strict_manim import inspect_exact
     from generation.quality_gate import assess
     from generation.repair_feedback import feedback_for, validated_frozen
-    from eval.run_benchmark_v2 import evaluate
+    from eval.run_benchmark_v2 import evaluate_with_retry as evaluate
     from eval.frame_extractor import extract_frames
     case = next(json.loads(line) for line in (args.out/'prompts.jsonl').read_text().splitlines()
                 if json.loads(line)['id'] == args.case)
@@ -152,7 +162,7 @@ def main():
     args = parser.parse_args(); args.out = args.out.resolve()
     if args.case:
         run_case(args); return 0
-    if len(args.gpus) != len(args.ports) or len(set(args.gpus)) != len(args.gpus):
+    if len(args.gpus) != len(args.ports) or len(set(args.gpus)) != len(args.gpus) or len(set(args.ports)) != len(args.ports):
         parser.error('GPUs and ports must be unique and paired')
     cases = [json.loads(line) for line in args.prompts.read_text().splitlines() if line.strip()]
     if len(cases)!=10 or len({case['id'] for case in cases})!=10:
@@ -161,11 +171,12 @@ def main():
     commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     config = dict(git_commit=commit, ids=[case['id'] for case in cases], gpus=args.gpus, ports=args.ports,
         contract_version=VERSION, scoring_version=SCORING_VERSION, max_attempts=args.max_attempts,
+        implementation_sha256=implementation_sha256(),
         prompt_sha256=hashlib.sha256(args.prompts.read_bytes()).hexdigest(), fresh_generation=True)
     config_path = args.out/'run_config.json'
     if args.resume:
         previous = json.loads(config_path.read_text())
-        if any(previous[key]!=config[key] for key in ['git_commit','ids','contract_version','scoring_version','prompt_sha256','max_attempts']):
+        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_version','scoring_version','prompt_sha256','max_attempts','implementation_sha256']):
             parser.error('resume requires the identical code, task, contract and scoring configuration')
     elif any(args.out.iterdir()):
         parser.error('fresh run requires empty output directory')

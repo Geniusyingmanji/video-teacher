@@ -1,0 +1,13 @@
+{
+  "tests": 133,
+  "tests_passed": true,
+  "preflight_total": 400,
+  "preflight_valid": 400,
+  "markov_negative_rejected": true,
+  "markov_positive_accepted": true,
+  "chemistry_occlusion_rejected": true,
+  "independent_expert_calibration": false,
+  "full_400_video_run": false,
+  "new_ten_case_run": "pending_after_push",
+  "medical_missing_flow_rejected": true
+}

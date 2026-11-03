@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 
-VERSION = "video-teacher-2x8-v5"
+VERSION = "video-teacher-2x8-v6"
 VIDEO_AXES = ("visual_quality", "temporal_consistency", "signal_quality")
 TEACHING_AXES = (
     "conceptual_correctness", "narrative_structure", "pedagogical_clarity",
@@ -62,7 +62,7 @@ def score_case(axes: dict, *, narration_required: bool = False,
 
 CRITICAL_CRITERIA = {
     "visual_quality": {"artifact_control", "text_stability"},
-    "conceptual_correctness": {"core_fact", "symbols", "no_contradiction"},
+    "conceptual_correctness": {"core_fact", "symbols", "steps", "final_state", "no_contradiction"},
     "narrative_structure": {"transition", "completion"},
     "temporal_consistency": {"action_completion", "identity"},
     "signal_quality": {"text_rendering", "frame_integrity"},
@@ -70,13 +70,15 @@ CRITICAL_CRITERIA = {
 
 
 def evidence_defects(axis_results: dict, *, expected_steps: int = 0,
-                     freeze_seconds: float = 0.0, progression_verified: bool = False) -> list[dict]:
+                     freeze_seconds: float = 0.0, progression_verified: bool = False,
+                     completion_reviewed: bool = False) -> list[dict]:
     """Turn documented failures into non-compensatory caps.
 
     A low criterion requires a judge finding; cited frame indices are retained
     when present. A global CV freeze is not a failure when a separate grounded
     observation and consistent rubric review verify the requested progression
-    and completion. Thresholds and content-defect caps remain unchanged.
+    and completion. With a valid per-obligation review, global motion is diagnostic
+    only: actual action omissions are penalized from visible task evidence.
     """
     out = []
     for axis, keys in CRITICAL_CRITERIA.items():
@@ -88,7 +90,7 @@ def evidence_defects(axis_results: dict, *, expected_steps: int = 0,
                             "reason": f"critical_{axis}_{row['id']}",
                             "evidence_frames": row.get("evidence_frames", []),
                             "finding": row.get("finding", "")})
-    if expected_steps > 1 and freeze_seconds >= 1.5 and not progression_verified:
+    if expected_steps > 1 and freeze_seconds >= 1.5 and not progression_verified and not completion_reviewed:
         out.append({"axis": "temporal_consistency", "axis_cap": 50.0,
                     "overall_cap": 60.0, "reason": "requested_multistep_action_frozen",
                     "freeze_seconds": freeze_seconds})

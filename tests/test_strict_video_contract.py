@@ -63,7 +63,7 @@ class ContractTests(unittest.TestCase):
             source = root / 'source.png'
             image.save(source)
             contract = root / 'contract.json'
-            contract.write_text(json.dumps(make_contract({'id': 'fixture'}, source)))
+            contract.write_text(json.dumps(make_contract({'id': 'fixture', 'prompt_text': 'Fill the answer box.'}, source)))
             (root / 'storyboard.json').write_text(json.dumps({'source_edit_regions': [[342, 192, 512, 288]]}))
             code = root / 'section_1.py'
             code.write_text('from manim import *\nclass Section1Scene(Scene):\n'

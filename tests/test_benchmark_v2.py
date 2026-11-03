@@ -101,6 +101,9 @@ class OperatorTests(unittest.TestCase):
             'visible_progression':True, 'completed_task':True, 'uncertainties':[]})
         reviewer = patch.object(runner.grounded_observations, 'consistency', return_value={
             'valid':True, 'conflicting_axes':[], 'finding':'fixture reports agree'})
+        completion = patch.object(runner.task_completion, 'review', return_value={
+            'valid':True, 'passed':True, 'requirements':[], 'failures':[], 'coverage':1})
+        completion.start(); self.addCleanup(completion.stop)
         observer.start(); reviewer.start()
         self.addCleanup(observer.stop); self.addCleanup(reviewer.stop)
 
@@ -144,6 +147,16 @@ class OperatorTests(unittest.TestCase):
                                                             for a in runner.VIDEO_DIMENSIONS}):
                 row = runner.evaluate({"id": "x", "expected_narrative_order": ["step"]},
                                       {"status": "ok", "video_path": path})
+                with patch.object(runner.task_completion, 'review', return_value={
+                        'valid': True, 'passed': False, 'failures':['flow'],
+                        'requirements':[{'id':'flow','status':'missing','evidence_frames':[],
+                                         'finding':'flow arrow or moving marker absent'}]}):
+                    omitted = runner.evaluate({'id':'x','expected_narrative_order':['step']},
+                                              {'status':'ok','video_path':path})
+                    self.assertTrue(omitted['scoring']['valid'])
+                    self.assertEqual(omitted['scoring']['score'],50)
+                    self.assertFalse(omitted['scoring']['strict_pass'])
+                    self.assertTrue(any('task_requirement_missing' in gate for gate in omitted['scoring']['gates']))
                 with patch.object(runner.teaching_engagement, 'score', side_effect=RuntimeError('judge unavailable')):
                     supplemental_failed = runner.evaluate({'id': 'x', 'expected_narrative_order': ['step']},
                                                           {'status': 'ok', 'video_path': path})

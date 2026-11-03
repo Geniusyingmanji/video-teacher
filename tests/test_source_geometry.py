@@ -34,7 +34,7 @@ class GeometryTests(unittest.TestCase):
         evaluation = {'scoring': {'valid': True, 'strict_pass': True},
                       'axes': {axis: {'criteria': [dict(id=key, applicable=True, score=4, evidence_frames=[1])
                                                    for key in keys]} for axis, keys in (
-                          ('conceptual_correctness', ['final_state', 'core_fact', 'no_contradiction']),
+                          ('conceptual_correctness', ['steps', 'final_state', 'core_fact', 'no_contradiction']),
                           ('pedagogical_clarity', ['readability', 'takeaway']))},
                       'supplementary': {'teaching_engagement': {'valid': True, 'score': 0}}}
         self.assertTrue(assess(generation, evaluation)['passed'])

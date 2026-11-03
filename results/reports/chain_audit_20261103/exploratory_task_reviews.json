@@ -1,0 +1,120 @@
+[
+  {
+    "id": "cand_hs_civ_05",
+    "valid": true,
+    "passed": false,
+    "failures": [
+      {
+        "id": "expected_concepts:3",
+        "status": "uncertain",
+        "finding": "The visual metaphor for balance of power is present, but the specific text is missing."
+      },
+      {
+        "id": "expected_visual_elements:2",
+        "status": "uncertain",
+        "finding": "The icon is present but is very small and its specific identity as a 'scale' might be ambiguous without context, though it fits the theme."
+      },
+      {
+        "id": "expected_visual_elements:3",
+        "status": "uncertain",
+        "finding": "A diagram is present, but it is a simple circle, not a complex 'council diagram'."
+      }
+    ],
+    "code_sha256": "7165fd96e409b58cf7b606b943c151c7ed358067461280e3c34b18436ca03438",
+    "exploratory": true
+  },
+  {
+    "id": "cand_med_cs_gap_05",
+    "valid": false,
+    "passed": false,
+    "failures": [],
+    "code_sha256": "4b631ac9cebd3df59af8ddd8f6b49beb6fc44089f0e9607c25824e3b4c600509",
+    "exploratory": true
+  },
+  {
+    "id": "cs_prob_02",
+    "valid": true,
+    "passed": true,
+    "failures": [],
+    "code_sha256": "d1e972c48efcd143b2ee7afbd645a111874db0e36f1c6b7ebe43c53b8b19331e",
+    "exploratory": true
+  },
+  {
+    "id": "grade_math_static_9",
+    "valid": false,
+    "passed": false,
+    "failures": [],
+    "code_sha256": "4b631ac9cebd3df59af8ddd8f6b49beb6fc44089f0e9607c25824e3b4c600509",
+    "exploratory": true
+  },
+  {
+    "id": "grade_board_games_task_13",
+    "valid": false,
+    "passed": false,
+    "failures": [],
+    "code_sha256": "7165fd96e409b58cf7b606b943c151c7ed358067461280e3c34b18436ca03438",
+    "exploratory": true
+  },
+  {
+    "id": "med_exp_01",
+    "valid": true,
+    "passed": false,
+    "failures": [
+      {
+        "id": "prompt",
+        "status": "incorrect",
+        "finding": "The schematic is anatomically incorrect (glomerulus is not enclosed by Bowman's capsule; tubule connections are non-standard). Critically, the prompt requires 'indicating filtrate direction', but no arrows or directional flow markers are present in the diagram, only text describing it. Additionally, the anatomical drawing is highly stylized and not representative of a functional nephron (e.g., glomerulus is open)."
+      },
+      {
+        "id": "expected_narrative_order:2",
+        "status": "missing",
+        "finding": "The requirement to 'indicate' direction implies a visual cue (like arrows) on the diagram. The video only provides a textual description of the flow, failing to visually indicate the direction on the structure itself."
+      }
+    ],
+    "code_sha256": "5e9b93b6a88729200f7f064ded58355a3df7092cb4c51b72312739e892a24dfe",
+    "exploratory": true
+  },
+  {
+    "id": "disciplinegen_chemistry_32e43cbfb37a3402",
+    "valid": true,
+    "passed": true,
+    "failures": [],
+    "code_sha256": "4b631ac9cebd3df59af8ddd8f6b49beb6fc44089f0e9607c25824e3b4c600509",
+    "exploratory": true
+  },
+  {
+    "id": "grade_his_task_16",
+    "valid": true,
+    "passed": true,
+    "failures": [],
+    "code_sha256": "f4b070b5bfc280df5bb110d893cc3c46d4a8051593c1f8fe6448aaa87b938a72",
+    "exploratory": true
+  },
+  {
+    "id": "grade_math_math_90",
+    "valid": false,
+    "passed": false,
+    "failures": [],
+    "code_sha256": "4b631ac9cebd3df59af8ddd8f6b49beb6fc44089f0e9607c25824e3b4c600509",
+    "exploratory": true
+  },
+  {
+    "id": "grade_ComputerScience_task_17",
+    "valid": true,
+    "passed": false,
+    "failures": [
+      {
+        "id": "prompt",
+        "status": "incorrect",
+        "finding": "The video fails the negative constraint of keeping row sums equal to 1 for the S1 state."
+      },
+      {
+        "id": "expected_visual_elements:1",
+        "status": "missing",
+        "finding": "The expected visual state of valid probability sums (all rows summing to 1) is not achieved; specifically, S1 sums to 1.6."
+      }
+    ],
+    "code_sha256": "4b631ac9cebd3df59af8ddd8f6b49beb6fc44089f0e9607c25824e3b4c600509",
+    "exploratory": true
+  }
+]

@@ -64,7 +64,7 @@ class RepairTests(unittest.TestCase):
         from PIL import Image
         with tempfile.TemporaryDirectory() as tmp:
             source=Path(tmp)/'source.png';Image.new('RGB',(1000,1000),'white').save(source)
-            contract=make_contract({'id':'tiny answer'},source)
+            contract=make_contract({'id':'tiny answer','prompt_text':'Write the answer in the blank box.'},source)
             plan={'source_edit_regions':[[100,100,200,110]],'source_operations':[
                 {'id':'answer','kind':'text','step':1,'box':[100,100,200,110],'text':'0.8','reason':'answer'}]}
             with self.assertRaises(ValueError):validate_plan(plan,contract)
@@ -96,7 +96,7 @@ class RepairTests(unittest.TestCase):
             c=summarize(Path(tmp),[{'id':f'case{i}'} for i in range(10)],finished=True)
             self.assertEqual(c['total'],10);self.assertEqual(c['processed'],0)
             self.assertFalse(c['complete'])
-            data=json.loads((Path(tmp)/'video-teacher-2x8-v5/aggregate.json').read_text())
+            data=json.loads((Path(tmp)/__import__('eval.benchmark_scoring', fromlist=['VERSION']).VERSION/'aggregate.json').read_text())
             self.assertEqual(data['n_total'],10);self.assertEqual(data['n_failed'],10)
 
     def test_exact_text_budget_fails_before_network_and_reserves_images(self):
@@ -150,7 +150,7 @@ class RepairTests(unittest.TestCase):
         from PIL import Image
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);source=root/'source.png';Image.new('RGB',(1000,1000),'white').save(source)
-            p,c=self.plan();c=make_contract({'id':'fixture'},source)
+            p,c=self.plan();c=make_contract({'id':'fixture','prompt_text':'Fill both answer boxes.'},source)
             (root/'contract.json').write_text(json.dumps(c));(root/'storyboard.json').write_text(json.dumps(p))
             (root/'scene.py').write_text(compile_plan(p,c))
             env=dict(os.environ,PATH=str(Path(sys.executable).parent)+os.pathsep+os.environ.get('PATH',''))
@@ -159,6 +159,27 @@ class RepairTests(unittest.TestCase):
             d=json.loads((root/'strict_diagnostics.json').read_text())
             self.assertEqual(d['source_preservation']['pre_encoding']['max_changed_pixels'],0)
             self.assertEqual(d['timing']['decoded_frames'],75)
+
+    def test_verified_asset_calls_without_display_are_rejected(self):
+        from PIL import Image
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            image = root/'molecule.png'
+            Image.new('RGB',(300,200),'white').save(image)
+            contract = make_contract({'prompt_text':'Show the verified initial and classified structures.'})
+            contract['verified_assets'] = {'paths':{'initial':str(image),'classified':str(image)}}
+            (root/'contract.json').write_text(json.dumps(contract))
+            (root/'storyboard.json').write_text('{"source_edit_regions":[]}')
+            (root/'scene.py').write_text('from manim import *\nclass Section1Scene(Scene):\n'
+                '    def construct(self):\n'
+                '        unused = self.verified_structure(False)\n'
+                '        shown = self.verified_structure(True)\n'
+                '        self.play(FadeIn(shown))\n')
+            env = dict(os.environ,PATH=str(Path(sys.executable).parent)+os.pathsep+os.environ.get('PATH',''))
+            result = subprocess.run([sys.executable,'-m','generation.strict_manim','--code',str(root/'scene.py'),
+                '--scene','Section1Scene','--contract',str(root/'contract.json')],capture_output=True,text=True,env=env,timeout=90)
+            self.assertNotEqual(result.returncode,0)
+            self.assertIn('must actually appear',result.stderr)
 
 
 if __name__=='__main__':unittest.main()

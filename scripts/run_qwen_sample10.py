@@ -15,7 +15,7 @@ sys.path.insert(0, str(ROOT))
 from generation.strict_video_contract import VERSION
 from generation.strict_manim import inspect_exact
 from eval.benchmark_scoring import VERSION as SCORING_VERSION
-from eval.run_benchmark_v2 import evaluate
+from eval.run_benchmark_v2 import evaluate_with_retry as evaluate
 from generation.quality_gate import assess
 from generation.repair_feedback import validated_frozen, feedback_for
 from eval.frame_extractor import extract_frames
@@ -110,9 +110,6 @@ def main():
             result['quality_gate'] = gate
             dump(attempt_dir / f'{case_id}_evaluation.json', evaluation)
             dump(result_path, result)
-            feedback = {'gate': gate, 'render_diagnostics': result.get('strict_diagnostics', {}),
-                        'generation_error': result.get('error'),
-                        'instruction': 'Repair the evidenced failures while preserving the original task and target boxes.'}
             frozen_regions = validated_frozen(result, frozen_regions)
             feedback = feedback_for(result, evaluation, frozen_regions)
             if frozen_regions is not None:

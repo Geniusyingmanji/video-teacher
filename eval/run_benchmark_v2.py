@@ -21,7 +21,7 @@ from eval.rubric_6x6 import DIMENSIONS
 from eval.benchmark_video_rubric import DIMENSIONS as VIDEO_DIMENSIONS
 from eval.judges.gpt55 import judge_config
 from eval import teaching_engagement
-from eval import grounded_observations
+from eval import grounded_observations, task_completion
 from eval.rubric_6x6 import RUBRIC_VERSION
 
 MAX_JUDGE_FRAMES = 24
@@ -33,7 +33,8 @@ def scoring_code_sha256() -> str:
                                     ("benchmark_scoring.py", "benchmark_operators.py",
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
-                                     "judges/structured_rubric.py", "grounded_observations.py"))).hexdigest()
+                                     "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py",
+                                     "../generation/task_requirements.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
@@ -124,7 +125,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         else:
             result["judge_frame_indices_in_sample"] = list(range(len(sampled)))
         result["sampled_frame_count"] = len(sampled)
+        result['task_completion'] = cached.get('task_completion') or task_completion.review(judged_case, sampled)
         observations = cached.get('grounded_observations') or grounded_observations.observe(judged_case, sampled)
+        observations = {**observations, 'task_completion': result['task_completion']}
         result['grounded_observations'] = observations
         judged_case = {**judged_case, 'grounded_observations': observations}
         for name, dimension in DIMENSIONS.items():
@@ -191,10 +194,13 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     result["defects"] = scoring.evidence_defects(result["axes"],
                                                  expected_steps=len(case.get("expected_narrative_order") or []),
                                                  freeze_seconds=freeze,
+                                                 completion_reviewed=result.get('task_completion', {}).get('valid') is True,
                                                  progression_verified=(result.get('grounded_observations', {}).get('visible_progression') is True
                                                    and result.get('grounded_observations', {}).get('completed_task') is True
                                                    and not result.get('grounded_observations', {}).get('uncertainties')
-                                                   and result.get('consistency_review', {}).get('valid') is True))
+                                                   and result.get('consistency_review', {}).get('valid') is True
+                                                   and result.get('task_completion', {}).get('passed') is True))
+    result['defects'].extend(task_completion.defects(result.get('task_completion', {})))
     result["scoring"] = scoring.score_case(
         flat, narration_required=result["narration_required"],
         narration_detected=result.get("narration", {}).get("detected"),
@@ -204,6 +210,31 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     if any(error in result['errors'] for error in ('unresolved_cross_axis_contradictions','consistency_review_missing_or_failed')):
         result['scoring'] = {**result['scoring'], 'valid': False, 'strict_pass': False,
                              'score': None, 'groups': None, 'errors': ['unresolved_cross_axis_contradictions']}
+    if result.get('task_completion', {}).get('valid') is not True and result.get('axes'):
+        result['scoring'].update(valid=False, strict_pass=False, score=None, groups=None)
+        result['errors'].append('task_completion_missing_or_invalid')
+    elif result.get('task_completion', {}).get('passed') is not True:
+        result['scoring']['strict_pass'] = False
+        result['scoring'].setdefault('gates', []).append('task_completion_not_verified')
+    return result
+
+
+def evaluate_with_retry(case, manifest, **kwargs):
+    """Retry an invalid judge once on the same video, reusing validated axes.
+
+    A valid low score or observed task omission is never retried to fish for
+    a pass. Generation failures need generation repair, not more judge calls.
+    """
+    result = evaluate(case, manifest, **kwargs)
+    transient = any(error.endswith('_failed') or error.startswith('evaluation_failed:')
+                    for error in result.get('errors', []))
+    supplement_failed = result.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is not True
+    if manifest.get('status') == 'ok' and (transient or supplement_failed):
+        prior_errors = list(result.get('errors', []))
+        kwargs['previous'] = result
+        result = evaluate(case, manifest, **kwargs)
+        result['evaluation_retry'] = {'attempts': 2, 'previous_errors': prior_errors,
+                                      'same_video': True}
     return result
 
 
@@ -220,6 +251,12 @@ def bootstrap_ci(values: list[float], *, seed: int = 20261031,
 
 def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     rep = scoring.aggregate(rows)
+    rep['task_completion'] = {
+        'n_total': len(rows),
+        'n_reviewed': sum(r.get('task_completion', {}).get('valid') is True for r in rows),
+        'n_passed': sum(r.get('task_completion', {}).get('passed') is True for r in rows),
+        'failed_ids': [r['id'] for r in rows if r.get('task_completion', {}).get('passed') is not True],
+        'pass_rate_all_cases': sum(r.get('task_completion', {}).get('passed') is True for r in rows)/len(rows) if rows else None}
     rep['supplementary'] = {'teaching_engagement': teaching_engagement.aggregate(rows)}
     valid = [r for r in rows if r["scoring"]["valid"]]
     rep["bootstrap_95_ci_case_mean"] = (bootstrap_ci([r["scoring"]["score"] for r in valid])

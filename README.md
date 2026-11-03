@@ -1,5 +1,7 @@
 # rise-teacher
 
+最新链路复核：[2026-11-03 质量审计与 v6 修订](docs/CHAIN_QUALITY_AUDIT_2026-11-03.md)。上一批生成 6/10、质量 2/10，尚未全部修好；新版本逐项报告任务完成证据。
+
 ## 一键运行视频评测
 
 在仓库根目录安装评测所需依赖（Python 3.10+）：
@@ -28,12 +30,12 @@ python scripts/run_benchmark_once.py --full-400 --manifest '400个视频的manif
 当前仓库有 400 题候选文件，但**没有 400 个已生成视频的清单**，所以目前无法在本机实际完成 400 条 API 评分。候选题仍需人工内容审核。取得视频清单后，上述命令会输出 `results/benchmark_400/per_case.jsonl`（每题一行）和 `results/benchmark_400/aggregate.json`（总体结果）：
 
 ```json
-{"id":"题目ID","version":"video-teacher-2x8-v4","axes":{"visual_quality":{"score":75,"criteria":[{"id":"legibility","score":4,"applicable":true,"evidence_frames":[1],"finding":"具体观察"}]}},"scoring":{"valid":true,"score":75,"groups":{"video_quality":75,"teaching_quality":75},"strict_pass":true,"errors":[],"gates":[]},"errors":[]}
+{"id":"题目ID","version":"video-teacher-2x8-v6","axes":{"visual_quality":{"score":75,"criteria":[{"id":"legibility","score":4,"applicable":true,"evidence_frames":[1],"finding":"具体观察"}]}},"scoring":{"valid":true,"score":75,"groups":{"video_quality":75,"teaching_quality":75},"strict_pass":true,"errors":[],"gates":[]},"errors":[]}
 ```
 
 上例省略了其余七个维度和视频诊断字段；实际文件会包含完整记录。汇总文件中重点看 `n_total`、`n_valid`、`n_failed`、`failed_ids`、`ranking_publishable`、`ranking_score`、`axis_means`、`group_means`。只有 400 题全部有效时 `ranking_publishable` 才为 `true`；失败题修复后可原命令续跑。
 
-## Benchmark scoring (2x8-v4)
+## Benchmark scoring (2x8-v6)
 
 The current benchmark implementation groups eight subcategories under **video
 quality** and **teaching quality**, with equal category weight, evidence-backed

@@ -1,6 +1,6 @@
 """Validate and compile all declared source edits into deterministic Manim operations."""
 import json
-from generation.strict_video_contract import validate_regions
+from generation.strict_video_contract import validate_regions, region_union_area
 
 
 def validate_plan(plan, contract):
@@ -79,12 +79,16 @@ def compile_plan(plan, contract):
 
 def review_plan(api, plan, contract):
     """A separate, grounded planning check; no model score is silently promoted."""
-    prompt = ('Inspect the actual supplied source image and the proposed source-pixel edits against the CURRENT task. '
+    geometry = {'validated_by_code': True, 'source_size_pixels': contract['source_size_pixels'],
+                'edit_union_fraction': region_union_area(plan['source_edit_regions']) / (contract['source_size_pixels'][0]*contract['source_size_pixels'][1])}
+    prompt = ('Geometry and the 25% union area limit have already been checked by deterministic code. '
+              'Use those supplied measurements; focus on semantic correctness and task coverage. '
+              'Inspect the actual supplied source image and the proposed source-pixel edits against the CURRENT task. '
               'Check EVERY requested answer, its exact target position, graph/board rules and unchanged objects. '
               'Reject missing answers, guessed unrelated diagrams, incorrect spatial locations, paths through blockers, '
               'or annotations that merely claim completion. Coordinates are ORIGINAL image pixels. '
               'Return only JSON {"valid":boolean,"finding":string}. Be conservative; no unsupported claims. '
-              'Do not propose widening target boxes.\nPROPOSED PLAN:\n' + json.dumps(plan, ensure_ascii=False))
+              'Do not propose widening target boxes.\nMEASURED GEOMETRY:\n' + json.dumps(geometry) + '\nPROPOSED PLAN:\n' + json.dumps(plan, ensure_ascii=False))
     response, _ = api(prompt, max_tokens=1500)
     text = response.choices[0].message.content.strip()
     if text.startswith('```'):

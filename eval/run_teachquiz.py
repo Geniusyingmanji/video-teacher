@@ -25,9 +25,6 @@ from typing import Any
 from eval.dimensions.learning_gain import learning_gain, score_quiz
 from eval.frame_extractor import extract_frames
 from eval.students.dummy import DummyStudent, OracleStudent
-from eval.students.smolvlm2 import SmolVLM2Student
-from eval.students.qwen25vl import Qwen25VLStudent
-from eval.students.qwen3vl import Qwen3VLStudent
 from eval.students.gpt55_student import GPT55Student
 
 
@@ -126,6 +123,7 @@ def load_student(args: argparse.Namespace, quiz_rows: list[dict[str, Any]]):
     if args.student == "qwen25vl":
         if not args.student_model_path:
             raise SystemExit("--student-model-path is required for --student qwen25vl")
+        from eval.students.qwen25vl import Qwen25VLStudent
         return Qwen25VLStudent(
             args.student_model_path,
             device_map=args.device_map,
@@ -135,6 +133,7 @@ def load_student(args: argparse.Namespace, quiz_rows: list[dict[str, Any]]):
     if args.student == "smolvlm2":
         if not args.student_model_path:
             raise SystemExit("--student-model-path is required for --student smolvlm2")
+        from eval.students.smolvlm2 import SmolVLM2Student
         return SmolVLM2Student(
             args.student_model_path,
             device_map=args.device_map,
@@ -144,6 +143,7 @@ def load_student(args: argparse.Namespace, quiz_rows: list[dict[str, Any]]):
     if args.student == "qwen3vl":
         if not args.student_model_path:
             raise SystemExit("--student-model-path is required for --student qwen3vl")
+        from eval.students.qwen3vl import Qwen3VLStudent
         return Qwen3VLStudent(
             args.student_model_path,
             device_map=args.device_map,

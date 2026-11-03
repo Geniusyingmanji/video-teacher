@@ -1,3 +1,5 @@
+当前规则为 `video-teacher-2x8-v6`，新增逐项任务完成检查、算术依据与关键步骤门槛；详见 [v6 修订](CHAIN_QUALITY_AUDIT_2026-11-03.md)。本文其余部分保留八轴协议及历史版本说明。
+
 # Video Teacher benchmark 2x8-v4
 
 Version v4 strengthens comprehensibility within pedagogical clarity and visual

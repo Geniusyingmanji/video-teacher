@@ -1,0 +1,188 @@
+[
+  {
+    "id": "cand_hs_civ_05",
+    "generated": true,
+    "quality_passed": false,
+    "gate_failures": [
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "task_coverage",
+      "correctness",
+      "readability",
+      "engagement_report_valid",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "evaluation_failed: ValueError: grounded observations rejected after three schema checks"
+    ],
+    "generation_error": null,
+    "video_sha256": "bdaad3312250096ff3cbf32d895547b693b2ea55d9a9062ddd39acfb011888cd"
+  },
+  {
+    "id": "cand_med_cs_gap_05",
+    "generated": false,
+    "quality_passed": false,
+    "gate_failures": [
+      "generation",
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "task_coverage",
+      "correctness",
+      "readability",
+      "engagement_report_valid",
+      "layout",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "generation_missing_or_failed"
+    ],
+    "generation_error": "Rejected render: layout",
+    "video_sha256": null
+  },
+  {
+    "id": "cs_prob_02",
+    "generated": true,
+    "quality_passed": false,
+    "gate_failures": [
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "task_coverage",
+      "correctness",
+      "readability",
+      "engagement_report_valid",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "evaluation_failed: ValueError: grounded observations rejected after three schema checks"
+    ],
+    "generation_error": null,
+    "video_sha256": "8f5a54c3d6ef7ce9843491833f25570bbc54e93fc47d57cd328d71a23e6ede92"
+  },
+  {
+    "id": "disciplinegen_chemistry_32e43cbfb37a3402",
+    "generated": true,
+    "quality_passed": false,
+    "gate_failures": [
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "unresolved_cross_axis_contradictions",
+      "consistency_review_missing_or_failed"
+    ],
+    "generation_error": null,
+    "video_sha256": "697c53913aaec0ebcafd69f2f5d25dd8b9d12deffb3e7c57065c02ee2e633be2"
+  },
+  {
+    "id": "grade_ComputerScience_task_17",
+    "generated": true,
+    "quality_passed": true,
+    "gate_failures": [],
+    "score": 95.5555,
+    "evaluation_errors": [],
+    "generation_error": null,
+    "video_sha256": "5f83bc6763a03c9cc78bb651d6f400d8fb9289ab169522b9dfa96f82c921d769"
+  },
+  {
+    "id": "grade_board_games_task_13",
+    "generated": false,
+    "quality_passed": false,
+    "gate_failures": [
+      "generation",
+      "strict_duration",
+      "source_preservation",
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "task_coverage",
+      "correctness",
+      "readability",
+      "engagement_report_valid",
+      "layout",
+      "source_plan",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "generation_missing_or_failed"
+    ],
+    "generation_error": "ValueError: Storyboard source edit regions failed validation",
+    "video_sha256": null
+  },
+  {
+    "id": "grade_his_task_16",
+    "generated": true,
+    "quality_passed": true,
+    "gate_failures": [],
+    "score": 94.7208,
+    "evaluation_errors": [],
+    "generation_error": null,
+    "video_sha256": "bb34470407dc3b7403d4fe818fea8bc57c91b17c4a3aba1d0a9ba235270ade83"
+  },
+  {
+    "id": "grade_math_math_90",
+    "generated": false,
+    "quality_passed": false,
+    "gate_failures": [
+      "generation",
+      "strict_duration",
+      "source_preservation",
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "task_coverage",
+      "correctness",
+      "readability",
+      "engagement_report_valid",
+      "layout",
+      "source_plan",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "generation_missing_or_failed"
+    ],
+    "generation_error": "ValueError: Storyboard source edit regions failed validation",
+    "video_sha256": null
+  },
+  {
+    "id": "grade_math_static_9",
+    "generated": false,
+    "quality_passed": false,
+    "gate_failures": [
+      "generation",
+      "strict_duration",
+      "source_preservation",
+      "rubric_valid",
+      "benchmark_strict_pass",
+      "task_coverage",
+      "correctness",
+      "readability",
+      "engagement_report_valid",
+      "layout",
+      "source_plan",
+      "consistent_evidence"
+    ],
+    "score": null,
+    "evaluation_errors": [
+      "generation_missing_or_failed"
+    ],
+    "generation_error": "ValueError: Storyboard source edit regions failed validation",
+    "video_sha256": null
+  },
+  {
+    "id": "med_exp_01",
+    "generated": true,
+    "quality_passed": false,
+    "gate_failures": [
+      "benchmark_strict_pass"
+    ],
+    "score": 85.0006,
+    "evaluation_errors": [],
+    "generation_error": null,
+    "video_sha256": "f824ef777264d3d99c739878a89762cef178bbc970f8275e8124c29beea795ef"
+  }
+]

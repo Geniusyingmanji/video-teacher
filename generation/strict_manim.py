@@ -150,11 +150,15 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 primitives = SourcePrimitives(source, source_regions)
                 scene.source_text, scene.source_curve, scene.source_highlight = primitives.text, primitives.curve, primitives.highlight
             verified_calls = set()
+            verified_objects = {}
+            verified_visible = set()
             if contract.get('verified_assets'):
                 def verified_structure(highlighted=False):
                     key = 'classified' if highlighted else 'initial'
                     verified_calls.add(key)
-                    return ImageMobject(contract['verified_assets']['paths'][key]).scale_to_fit_width(9).move_to([0, -.25, 0])
+                    image = ImageMobject(contract['verified_assets']['paths'][key]).scale_to_fit_width(9).move_to([0, -.25, 0])
+                    verified_objects.setdefault(key, []).append(image)
+                    return image
                 scene.verified_structure = verified_structure
             old_setup, old_construct = scene.setup, scene.construct
             old_play, old_wait = scene.play, scene.wait
@@ -196,6 +200,14 @@ def render(code: Path, scene_name: str, contract_path: Path):
                     result = function(*args, **kwargs)
                 finally:
                     nested = False
+                family_ids = {id(obj) for obj in scene.get_mobject_family_members()}
+                for key, objects in verified_objects.items():
+                    if any(id(obj) in family_ids and obj.width > 0 and obj.height > 0
+                           and obj.get_pixel_array()[:, :, 3].max() > 12
+                           and obj.get_left()[0] < config.frame_width/2 and obj.get_right()[0] > -config.frame_width/2
+                           and obj.get_bottom()[1] < config.frame_height/2 and obj.get_top()[1] > -config.frame_height/2
+                           for obj in objects):
+                        verified_visible.add(key)
                 if phase == 'final' and not source:
                     from generation.layout_guard import check_layout
                     layout_reports.append(check_layout(scene))
@@ -212,8 +224,8 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 self.wait(1)
             scene.construct = types.MethodType(construct, scene)
             scene.render()
-            if contract.get('verified_assets') and verified_calls != {'initial', 'classified'}:
-                raise ValueError('Verified molecule must be shown with self.verified_structure(False) then self.verified_structure(True); never redraw a guessed structure')
+            if contract.get('verified_assets') and (verified_calls != {'initial', 'classified'} or verified_visible != {'initial', 'classified'}):
+                raise ValueError('Verified molecule assets must actually appear in the scene with self.verified_structure(False) then self.verified_structure(True); never redraw a guessed structure')
             paths.append(Path(scene.renderer.file_writer.movie_file_path))
             if phase == 'measure':
                 recorded = observed

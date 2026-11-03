@@ -1,0 +1,218 @@
+{
+  "id": "med_exp_01",
+  "judge": {
+    "provider": "openai_compatible",
+    "base_url": "http://127.0.0.1:8001/v1",
+    "model": "qwen3.8-27b"
+  },
+  "code_sha256": "3e5579b2b3a7f8fba21183ea5c7fa9c57e1263472e3920ab38091556aac75cec",
+  "video_sha256": "f824ef777264d3d99c739878a89762cef178bbc970f8275e8124c29beea795ef",
+  "review": {
+    "version": "task-completion-v1",
+    "valid": true,
+    "passed": false,
+    "requirements": [
+      {
+        "id": "prompt",
+        "text": "Generate an educational video showing the structure of a human nephron, the functional unit of the kidney. Label glomerulus, proximal tubule, loop of Henle, distal tubule, and collecting duct.",
+        "kind": "instruction",
+        "expected": "Educational video showing nephron structure with 5 specific labels.",
+        "observed": "Video displays a schematic nephron with all 5 required labels appearing sequentially.",
+        "finding": "The video fulfills the core instruction to show and label the nephron structure.",
+        "evidence_frames": [
+          1,
+          6,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_concepts:0",
+        "text": "nephron anatomy",
+        "kind": "expected_concepts",
+        "expected": "Nephron anatomy concepts.",
+        "observed": "Schematic diagram of a nephron with anatomical parts.",
+        "finding": "Nephron anatomy is the central visual subject.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_concepts:1",
+        "text": "filtration unit",
+        "kind": "expected_concepts",
+        "expected": "Filtration unit concept.",
+        "observed": "Text states 'nephron is the functional unit of the kidney'.",
+        "finding": "The concept of the nephron as a functional unit is explicitly stated.",
+        "evidence_frames": [
+          1
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_concepts:2",
+        "text": "kidney",
+        "kind": "expected_concepts",
+        "expected": "Kidney concept.",
+        "observed": "Text mentions 'kidney' and title implies renal context.",
+        "finding": "The kidney is identified as the organ containing the nephron.",
+        "evidence_frames": [
+          1
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_visual_elements:0",
+        "text": "glomerulus",
+        "kind": "expected_visual_elements",
+        "expected": "Glomerulus visual element.",
+        "observed": "Yellow circle labeled 'Glomerulus' at the top of the structure.",
+        "finding": "Glomerulus is present and labeled.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_visual_elements:1",
+        "text": "proximal convoluted tubule",
+        "kind": "expected_visual_elements",
+        "expected": "Proximal convoluted tubule visual element.",
+        "observed": "Blue curved line labeled 'Proximal Tubule'.",
+        "finding": "Proximal tubule is present and labeled.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_visual_elements:2",
+        "text": "loop of Henle",
+        "kind": "expected_visual_elements",
+        "expected": "Loop of Henle visual element.",
+        "observed": "Green U-shaped line labeled 'Loop of Henle'.",
+        "finding": "Loop of Henle is present and labeled.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_visual_elements:3",
+        "text": "distal tubule",
+        "kind": "expected_visual_elements",
+        "expected": "Distal tubule visual element.",
+        "observed": "Red curved line labeled 'Distal Tubule'.",
+        "finding": "Distal tubule is present and labeled.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_visual_elements:4",
+        "text": "collecting duct",
+        "kind": "expected_visual_elements",
+        "expected": "Collecting duct visual element.",
+        "observed": "Vertical red line labeled 'Collecting Duct'.",
+        "finding": "Collecting duct is present and labeled.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_narrative_order:0",
+        "text": "show whole nephron schematic",
+        "kind": "expected_narrative_order",
+        "expected": "Show whole nephron schematic.",
+        "observed": "Schematic lines appear and form the complete structure by frame 5.",
+        "finding": "The whole schematic is shown before labeling.",
+        "evidence_frames": [
+          2,
+          3,
+          4,
+          5
+        ],
+        "status": "met"
+      },
+      {
+        "id": "expected_narrative_order:1",
+        "text": "label each part in sequence",
+        "kind": "expected_narrative_order",
+        "expected": "Label each part in sequence.",
+        "observed": "Labels appear simultaneously in frame 6.",
+        "finding": "Labels appear all at once rather than in a distinct sequence.",
+        "evidence_frames": [
+          6
+        ],
+        "status": "incorrect"
+      },
+      {
+        "id": "expected_narrative_order:2",
+        "text": "indicate filtrate direction",
+        "kind": "expected_narrative_order",
+        "expected": "Indicate filtrate direction.",
+        "observed": "Text mentions flow, but no arrows are visible on the diagram.",
+        "finding": "Filtrate direction is described in text but not visually indicated on the schematic.",
+        "evidence_frames": [
+          1,
+          7
+        ],
+        "status": "missing"
+      },
+      {
+        "id": "discipline_specific_rubric:0",
+        "text": "all 5 components present and correctly labeled",
+        "kind": "discipline_specific_rubric",
+        "expected": "All 5 components present and correctly labeled.",
+        "observed": "Glomerulus, Proximal, Loop, Distal, and Collecting Duct are all labeled.",
+        "finding": "All required components are present with correct labels.",
+        "evidence_frames": [
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "discipline_specific_rubric:1",
+        "text": "geometric arrangement matches textbook (loop of Henle dips down)",
+        "kind": "discipline_specific_rubric",
+        "expected": "Geometric arrangement matches textbook (loop dips down).",
+        "observed": "The green loop extends downwards from the proximal tubule.",
+        "finding": "The geometric arrangement correctly shows the loop dipping down.",
+        "evidence_frames": [
+          3,
+          7
+        ],
+        "status": "met"
+      },
+      {
+        "id": "discipline_specific_rubric:2",
+        "text": "flow direction follows the anatomical order",
+        "kind": "discipline_specific_rubric",
+        "expected": "Flow direction follows anatomical order.",
+        "observed": "No arrows or flow indicators are present on the diagram.",
+        "finding": "Flow direction cannot be verified visually as no indicators are shown.",
+        "evidence_frames": [
+          7
+        ],
+        "status": "missing"
+      }
+    ],
+    "failures": [
+      "expected_narrative_order:1",
+      "expected_narrative_order:2",
+      "discipline_specific_rubric:2"
+    ],
+    "coverage": 0.8,
+    "validation_errors": [],
+    "verified_arithmetic": []
+  }
+}
