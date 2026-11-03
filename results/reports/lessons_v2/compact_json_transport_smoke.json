@@ -1,0 +1,54 @@
+[
+  {
+    "port": 8000,
+    "valid": true,
+    "finish_reason": "stop",
+    "elapsed_s": 2.935593305155635,
+    "usage": {
+      "completion_tokens": 22,
+      "prompt_tokens": 24,
+      "total_tokens": 46,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": null
+      },
+      "prompt_tokens_details": null
+    },
+    "result": {
+      "sections": [
+        {
+          "id": "section_1",
+          "text": "done"
+        }
+      ]
+    }
+  },
+  {
+    "port": 8001,
+    "valid": true,
+    "finish_reason": "stop",
+    "elapsed_s": 2.9282129839994013,
+    "usage": {
+      "completion_tokens": 22,
+      "prompt_tokens": 24,
+      "total_tokens": 46,
+      "completion_tokens_details": {
+        "accepted_prediction_tokens": null,
+        "audio_tokens": null,
+        "reasoning_tokens": 0,
+        "rejected_prediction_tokens": null
+      },
+      "prompt_tokens_details": null
+    },
+    "result": {
+      "sections": [
+        {
+          "id": "section_1",
+          "text": "done"
+        }
+      ]
+    }
+  }
+]

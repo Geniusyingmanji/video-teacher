@@ -14,6 +14,21 @@ def contract_version(case):
     return CONTRACT_VERSION if case.get('lesson_version')==VERSION else 'instructional-lesson-contract-v1' if is_lesson(case) else 'strict-five-seconds-v5'
 
 
+def single_scene_outline(case):
+    """Lossless structural adapter; creative teaching is planned in the storyboard.
+
+    The vendor requires a sections array, but all chapters share one scene.
+    Do not ask a language model to discard extra sections or silently keep only
+    its first introduction. Pass every current obligation into the storyboard.
+    """
+    from generation.task_requirements import requirements
+    obligations=requirements(case)
+    return {'topic':case['id'],'target_audience':case.get('pedagogical_target_audience','general'),
+            'sections':[{'id':'section_1','title':case.get('subdomain') or case.get('discipline') or 'Teaching lesson',
+                         'content':'\n'.join(f'{row["id"]}: {row["text"]}' for row in obligations),
+                         'example':'Preserve the original givens and answer constraints. Plan the full lesson, verification and recap in this one continuous scene.'}]}
+
+
 def duration_spec(case):
     if case.get('lesson_version')==VERSION and case.get('audio_narration_required') is not True:
         raise ValueError('current narrated lessons require explicit spoken narration')

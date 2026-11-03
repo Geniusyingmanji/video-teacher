@@ -56,7 +56,11 @@ python scripts/run_qwen_multigpu.py --gpus 0 1 --ports 8000 8001 \
 和解题各五题，包含简单、标准、较难任务及原图操作。这是预定义覆盖验证，不是随机
 抽样或 400 题全量实测。首轮每题一次外层尝试，保留内部有界修复和所有失败证据。
 
-大纲输出独立限制为 2048 tokens，分镜为 6000，代码为 8192；详细教学由实际分镜、
-图示和旁白展开。GPU 0、1 各有一个 Qwen vision 服务，TTS 组合和 ASR 使用 CPU。
+大纲现在由程序无损组织为一个完整场景，保留所有当前要求，不再额外请求模型决定场景数量。
+分镜预算为 6000 tokens，代码为 8192；详细教学由分镜、图示和旁白展开。
+实测发现旧规划在章节边界反复输出回车和空白，因此服务显式使用
+[`xgrammar` 与 `disable_any_whitespace=true`](https://github.com/vllm-project/vllm/blob/main/vllm/config/structured_outputs.py)，
+限制 JSON 字段之间的空白，不改变字段语义或验收要求。
+GPU 0、1 各有一个 Qwen vision 服务，TTS 组合和 ASR 使用 CPU。
 生成、音轨验证、任务完成与质量通过分别报告，以 completion.json、逐题报告和语音
 证据为准，不能用少量有效高分代替十题完成。

@@ -16,7 +16,7 @@ from gpt_request import request_local_token
 from generation.strict_video_contract import (make_contract, contract_hash, ContractAPI,
                                               install_prompts, install_renderer, validate_regions, VERSION)
 from generation.strict_manim import inspect_exact
-from generation.lesson_spec import CONTRACT_VERSION, is_lesson, validate_timeline
+from generation.lesson_spec import CONTRACT_VERSION, is_lesson, validate_timeline, single_scene_outline
 from generation.source_geometry import resolve_source, needs_source as requires_source
 try:
     from scripts.audit_generated_videos import inspect_video
@@ -124,6 +124,8 @@ if __name__ == '__main__':
                 contract['verified_assets'] = verified
                 contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
         if args.strict_five_seconds:
+            if lesson:
+                (agent.output_dir/'outline.json').write_text(json.dumps(single_scene_outline(case),ensure_ascii=False,indent=2))
             for attempt in range(3):
                 outline = agent.generate_outline()
                 if len(outline.sections) == 1:
@@ -181,7 +183,7 @@ if __name__ == '__main__':
         topic=topic, use_feedback=False, use_assets=False,
         layout_policy_version='safe_areas_v1',
         elapsed_seconds=time.monotonic()-started, token_usage=agent.token_usage,
-        token_usage_scope='parent planner/storyboard/coder calls; excludes worker repair calls',
+        token_usage_scope='parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR',
         expected_sections=len(agent.sections), rendered_sections=len(agent.section_videos),
         video=video, output_dir=str(agent.output_dir))
     result['audio_narration_required']=case.get('audio_narration_required') is True

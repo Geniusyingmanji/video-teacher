@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from generation.lesson_spec import VERSION, CONTRACT_VERSION, duration_spec, validate_timeline
+from generation.lesson_spec import VERSION, CONTRACT_VERSION, duration_spec, validate_timeline, single_scene_outline
 from generation.strict_video_contract import make_contract, outline_prompt, storyboard_prompt, code_prompt
 from generation.strict_manim import inspect_exact, SourceFrameGuard
 from generation.source_geometry import canvas_box
@@ -73,6 +73,15 @@ class LessonPipelineTests(unittest.TestCase):
             self.assertIn('2x+5=17',prompt)
             self.assertNotIn('exactly FIVE SECONDS',prompt)
         self.assertIn('begin_teaching_step',code_prompt(contract,section,''))
+
+    def test_vendor_outline_keeps_every_requirement_in_one_scene_including_late_steps(self):
+        case=self.case()
+        case['expected_narrative_order']=['introduce the equation','subtract five','divide by two','verify x=6 in the original equation']
+        outline=single_scene_outline(case)
+        self.assertEqual(len(outline['sections']),1)
+        content=outline['sections'][0]['content']
+        self.assertIn(case['prompt_text'],content)
+        for obligation in case['expected_narrative_order']:self.assertIn(obligation,content)
 
     def test_bad_duration_and_gapped_or_incomplete_timeline_are_rejected(self):
         for duration in (True,float('nan'),0,29,181):
