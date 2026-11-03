@@ -29,9 +29,10 @@ def feedback_for(result, evaluation, frozen=None):
                 'evaluation_errors': evaluation.get('errors', []),
                 'consistency_review': evaluation.get('consistency_review'),
                 'grounded_observations': compact(evaluation.get('grounded_observations', {})),
+                'instructional_presentation': compact(evaluation.get('instructional_presentation',{})),
                 'task_completion': evaluation.get('task_completion'),
                 'source_plan_validation': result.get('source_plan_validation'),
-                'instruction': 'Repair all evidenced failures. Preserve the full task and validated target boxes.'}
+                'instruction': 'Repair all evidenced failures. Preserve the full task and validated target boxes. Expose relevant operations or reasoning; decorative motion and answer-only reveals do not repair weak video value. If source restrictions make substantive demonstration impossible, report that blocker rather than adding unrelated animation.'}
     if frozen is not None:
         feedback['frozen_source_edit_regions'] = deepcopy(frozen)
     return feedback

@@ -1,6 +1,6 @@
 # rise-teacher
 
-最新链路复核：[2026-11-03 质量审计与 v6 修订](docs/CHAIN_QUALITY_AUDIT_2026-11-03.md)。上一批生成 6/10、质量 2/10，尚未全部修好；新版本逐项报告任务完成证据。
+当前分钟级任务和评分采用 [1–3 分钟教学协议 / v8](docs/LESSONS_V1.md)：题目、视频提示词、章节时间线、渲染和分段评测使用同一时长。知识点讲解和解题分别要求可见的解释与推理。历史五秒题和成绩保留；最近完整十题 v6 实跑自动通过 4/10，97.88 分仅是四个有效结果均值，详见 [失效分析](docs/SAMPLE10_V6_ANALYSIS_2026-11-03.md)。
 
 ## 一键运行视频评测
 
@@ -27,15 +27,15 @@ python scripts/run_benchmark_once.py --manifest '你的视频清单/manifest.jso
 python scripts/run_benchmark_once.py --full-400 --manifest '400个视频的manifest.jsonl'
 ```
 
-当前仓库有 400 题候选文件，但**没有 400 个已生成视频的清单**，所以目前无法在本机实际完成 400 条 API 评分。候选题仍需人工内容审核。取得视频清单后，上述命令会输出 `results/benchmark_400/per_case.jsonl`（每题一行）和 `results/benchmark_400/aggregate.json`（总体结果）：
+`--full-400` 当前默认使用分钟级 `candidate_400_lessons_v1.jsonl`；历史五秒任务可显式传入旧 `--prompts`。当前**没有 400 个已生成视频的清单**，不能声称已完成全库质量验证。候选题仍需人工内容审核。取得完整清单后，上述命令输出 `results/benchmark_400_lessons_v1/per_case.jsonl` 和 `aggregate.json`：
 
 ```json
-{"id":"题目ID","version":"video-teacher-2x8-v6","axes":{"visual_quality":{"score":75,"criteria":[{"id":"legibility","score":4,"applicable":true,"evidence_frames":[1],"finding":"具体观察"}]}},"scoring":{"valid":true,"score":75,"groups":{"video_quality":75,"teaching_quality":75},"strict_pass":true,"errors":[],"gates":[]},"errors":[]}
+{"id":"题目ID","version":"video-teacher-2x8-v8","axes":{"visual_quality":{"score":75,"criteria":[{"id":"legibility","score":4,"applicable":true,"evidence_frames":[1],"finding":"具体观察"}]}},"scoring":{"valid":true,"score":75,"groups":{"video_quality":75,"teaching_quality":75},"strict_pass":true,"errors":[],"gates":[]},"errors":[]}
 ```
 
-上例省略了其余七个维度和视频诊断字段；实际文件会包含完整记录。汇总文件中重点看 `n_total`、`n_valid`、`n_failed`、`failed_ids`、`ranking_publishable`、`ranking_score`、`axis_means`、`group_means`。只有 400 题全部有效时 `ranking_publishable` 才为 `true`；失败题修复后可原命令续跑。
+上例省略了其余七个维度、视频诊断及必需的 instructional_presentation 审查字段；v8 总分受呈现分约束，严重排版和缺乏实质过程不能靠其他维度抵消。实际文件会包含完整记录。汇总文件中重点看 `n_total`、`n_valid`、`n_failed`、`failed_ids`、`ranking_publishable`、`ranking_score`、`axis_means`、`group_means`。只有 400 题全部有效时 `ranking_publishable` 才为 `true`；失败题修复后可原命令续跑。
 
-## Benchmark scoring (2x8-v6)
+## Benchmark scoring (2x8-v8)
 
 The current benchmark implementation groups eight subcategories under **video
 quality** and **teaching quality**, with equal category weight, evidence-backed

@@ -104,6 +104,9 @@ class OperatorTests(unittest.TestCase):
         completion = patch.object(runner.task_completion, 'review', return_value={
             'valid':True, 'passed':True, 'requirements':[], 'failures':[], 'coverage':1})
         completion.start(); self.addCleanup(completion.stop)
+        presentation = patch.object(runner.instructional_video,'assess',return_value={
+            'valid':True,'passed':True,'score':100,'failures':[]})
+        presentation.start(); self.addCleanup(presentation.stop)
         observer.start(); reviewer.start()
         self.addCleanup(observer.stop); self.addCleanup(reviewer.stop)
 

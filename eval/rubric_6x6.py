@@ -13,7 +13,7 @@ from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
 from eval.judges.structured_rubric import judge
 
-RUBRIC_VERSION = '6x6-v2'
+RUBRIC_VERSION = '6x6-v3'
 
 
 RUBRIC: dict[str, tuple[tuple[str, str], ...]] = {
@@ -69,7 +69,11 @@ RUBRIC: dict[str, tuple[tuple[str, str], ...]] = {
 
 SYSTEM = """Use the shared literal grounded_observations to keep values, positions and completion facts consistent across axes. Recheck uncertain facts against frames; do not guess unsupported domain identities. If a consistency_correction is provided, correct the cited factual observation while keeping the original rubric and actual evidence.
 Judge a short educational video from sampled frames. Score each of the six
-listed criteria on 1..5 (1 severe failure, 3 partial/uncertain, 5 clear success).
+listed criteria on 1..5 (1 severe failure, 2 weak, 3 adequate/uncertain, 4 strong,
+5 exceptional and specifically evidenced). Meeting a checklist is not automatically 5.
+For relationships inspect connections, endpoints and object-state invariants; labels
+or arrows alone do not prove a coherent mechanism. Do not treat task completion
+as evidence of exceptional clarity, explanation or teaching value.
 For each criterion return id, applicable (boolean), score (1..5 or null when
 inapplicable), evidence_frames (indices 1..N), and one concrete finding. Treat
 missing visual evidence as a low score, not as proof of success. Use inapplicable
@@ -137,7 +141,7 @@ def score_dimension(dimension: str, case: dict, frames: list) -> dict:
         "prompt_text", "expected_concepts", "expected_visual_elements",
         "expected_narrative_order", "discipline_specific_rubric",
         "target_duration_s",
-        "actual_duration_s", "grounded_observations", "consistency_correction",
+        "actual_duration_s", "grounded_observations", "consistency_correction", "segment_evidence",
     )}, ensure_ascii=False)
     content = frames_as_multimodal_content(
         frames, f"Dimension: {dimension}\nTask: {task}\nCriteria:\n{criteria}\n"

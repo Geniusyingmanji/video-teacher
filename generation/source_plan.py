@@ -23,8 +23,9 @@ def validate_plan(plan, contract):
             raise ValueError('operation outside declared target boxes')
         if op.get('kind') not in ('text', 'curve', 'highlight'):
             raise ValueError('unknown source operation')
-        if type(op.get('step')) is not int or not 1 <= op['step'] <= 3:
-            raise ValueError('source operation step must be 1, 2 or 3')
+        maximum = 18 if contract.get('source_viewport') else 3
+        if type(op.get('step')) is not int or not 1 <= op['step'] <= maximum:
+            raise ValueError(f'source operation step must be in 1..{maximum}')
         if not isinstance(op.get('reason'), str) or not op['reason'].strip():
             raise ValueError('each edit needs its task-specific target and reason')
         if op['kind'] == 'text' and (not isinstance(op.get('text'), str) or not op['text'].strip()):
@@ -44,7 +45,7 @@ def validate_plan(plan, contract):
         from manim import tempconfig
         from generation.source_primitives import SourcePrimitives
         with tempconfig({'pixel_width': 854, 'pixel_height': 480}):
-            primitives = SourcePrimitives(contract['source_image'], boxes)
+            primitives = SourcePrimitives(contract['source_image'], boxes, contract.get('source_viewport'))
             for op in operations:
                 if op['kind'] == 'text':
                     primitives.text(op['text'], op['box'])

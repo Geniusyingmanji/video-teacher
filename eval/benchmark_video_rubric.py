@@ -31,8 +31,9 @@ SYSTEM = """Use the shared literal grounded_observations to keep values, positio
 Evaluate only the named video-quality axis using the ordered sampled frames.
 For each of its six criteria return id, applicable (boolean), score (integer 1..5
 or null when inapplicable), evidence_frames (1-based indices), and a concrete
-finding. 1=severe failure, 2=clear defect, 3=partial/uncertain, 4=good,
-5=excellent. Missing requested evidence scores 1 or 2. Do not assume audio.
+finding. 1=severe failure, 2=clear defect, 3=adequate/uncertain, 4=strong,
+5=exceptional with concrete evidence. Mere presence or stable still frames does not
+prove completed motion. Inspect identities and intermediate states. Missing requested evidence scores 1 or 2. Do not assume audio.
 Avoid penalising intentional static holds, flat diagrams, cuts, or white
 backgrounds merely because they are present. Return JSON only with criteria
 and summary. Every score >=3 needs at least one cited frame."""
@@ -84,7 +85,7 @@ class VideoDimension:
         axis = self.name
         spec = "\n".join(f"- {k}: {description}" for k, description in RUBRIC[axis])
         task = {key: case.get(key) for key in ("prompt_text", "expected_visual_elements",
-                                                "expected_narrative_order", "task_type", "grounded_observations", "consistency_correction")}
+                                                "expected_narrative_order", "task_type", "grounded_observations", "consistency_correction", "segment_evidence", "actual_duration_s", "target_duration_s")}
         content = frames_as_multimodal_content(
             frames, f"Axis: {axis}\nTask: {json.dumps(task, ensure_ascii=False)}\n"
                     f"Criteria:\n{spec}\nFrames: 1..{len(frames)}")

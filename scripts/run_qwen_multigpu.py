@@ -3,9 +3,11 @@ import argparse
 import concurrent.futures
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import queue
+import random
 import signal
 import subprocess
 import sys
@@ -15,6 +17,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from generation.strict_video_contract import VERSION
+from generation.lesson_spec import contract_version, duration_spec
 from eval.benchmark_scoring import VERSION as SCORING_VERSION
 
 
@@ -45,6 +48,18 @@ def environment(gpu, port):
     return env
 
 
+def candidate_rank(candidate):
+    result,evaluation,_ = candidate
+    scoring=evaluation.get('scoring',{})
+    value=scoring.get('score')
+    numeric=type(value) in (int,float) and math.isfinite(value)
+    return (result.get('quality_gate',{}).get('passed') is True,
+            result.get('complete') is True,
+            scoring.get('valid') is True and numeric,
+            value if numeric else -1,
+            -candidate[2])
+
+
 def run_case(args):
     from generation.strict_manim import inspect_exact
     from generation.quality_gate import assess
@@ -53,6 +68,8 @@ def run_case(args):
     from eval.frame_extractor import extract_frames
     case = next(json.loads(line) for line in (args.out/'prompts.jsonl').read_text().splitlines()
                 if json.loads(line)['id'] == args.case)
+    timing = duration_spec(case)
+    expected_version = contract_version(case)
     deadline = time.monotonic() + 1200
     while True:
         try:
@@ -63,6 +80,7 @@ def run_case(args):
                 raise RuntimeError('model health timeout')
             time.sleep(3)
     feedback, frozen = None, None
+    candidates=[]
     for attempt in range(args.max_attempts):
         directory = args.out/f'attempt_{attempt}'
         directory.mkdir(exist_ok=True)
@@ -75,7 +93,7 @@ def run_case(args):
         else:
             command = ['bash', 'research/code2video/experiments/run_model_case.sh', '--case-id', args.case,
                 '--prompts', str(args.out/'prompts.jsonl'), '--out', str(directory),
-                '--strict-five-seconds', '--attempt', str(attempt)]
+                '--strict-contract', '--attempt', str(attempt)]
             if feedback:
                 path = directory/f'{args.case}_feedback.json'
                 dump(path, feedback)
@@ -95,13 +113,14 @@ def run_case(args):
             result = json.loads(result_path.read_text()) if result_path.exists() else {'error':f'generation exited {code} without result'}
             result['exit_code'] = code
             video = Path(result.get('video') or '')
-            rendered = result.get('complete') is True and result.get('contract_version') == VERSION and video.is_file() and inspect_exact(video)['valid']
+            rendered = result.get('complete') is True and result.get('contract_version') == expected_version and video.is_file() and inspect_exact(video,timing['duration_seconds'],timing['fps'])['valid']
             previous = json.loads(evaluation_path.read_text()) if evaluation_path.exists() else None
             evaluation = evaluate(case, {'status':'ok' if rendered else 'failed', 'video_path':str(video) if rendered else None}, previous=previous)
             result['quality_gate'] = assess(result, evaluation)
             result['semantic_review_status'] = ('evaluated_pass' if result['quality_gate']['passed'] else 'evaluated_fail' if evaluation.get('scoring',{}).get('valid') else 'evaluation_invalid')
             dump(result_path, result)
             dump(evaluation_path, evaluation)
+        candidates.append((result,evaluation,attempt))
         frozen = validated_frozen(result, frozen)
         feedback = feedback_for(result, evaluation, frozen)
         if result.get('complete') and Path(result.get('video') or '').is_file():
@@ -112,8 +131,14 @@ def run_case(args):
                 feedback['review_frames'].append(str(path))
         if result['quality_gate']['passed']:
             break
+    result,evaluation,selected_attempt=max(candidates,key=candidate_rank)
+    result={**result,'selected_attempt':selected_attempt,
+            'candidate_history':[{'attempt':attempt,'complete':r.get('complete'),
+                                  'quality_passed':r.get('quality_gate',{}).get('passed'),
+                                  'evaluation_valid':e.get('scoring',{}).get('valid'),
+                                  'score':e.get('scoring',{}).get('score')} for r,e,attempt in candidates]}
     video = Path(result.get('video') or '')
-    rendered = result.get('complete') is True and result.get('contract_version') == VERSION and video.is_file() and inspect_exact(video)['valid']
+    rendered = result.get('complete') is True and result.get('contract_version') == expected_version and video.is_file() and inspect_exact(video,timing['duration_seconds'],timing['fps'])['valid']
     entry = dict(id=args.case, status='ok' if rendered else 'failed', video_path=str(video) if rendered else None,
         model='qwen3.8-27b', generation=result, quality_passed=result['quality_gate']['passed'])
     dump(args.out/f'final_{args.case}.json', {'entry':entry, 'evaluation':evaluation})
@@ -144,7 +169,7 @@ def summarize(out, cases, finished=False):
     completion = dict(total=len(cases), processed=sum((out/f'final_{case["id"]}.json').exists() for case in cases),
         generated=sum(row['status']=='ok' for row in rows), quality_passed=sum(row['quality_passed'] for row in rows),
         execution_finished=finished, complete=finished and len(rows)==len(cases) and all(row['quality_passed'] for row in rows),
-        scoring_version=SCORING_VERSION, contract_version=VERSION, same_model_self_evaluation=True)
+        scoring_version=SCORING_VERSION, contract_versions={c['id']:contract_version(c) for c in cases}, same_model_self_evaluation=True)
     dump(out/('completion.json' if finished else 'progress.json'), completion)
     return completion
 
@@ -152,7 +177,7 @@ def summarize(out, cases, finished=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--prompts', type=Path, default=ROOT/'results/reports/sample10_four_gpu_20261102/prompts.jsonl')
+    parser.add_argument('--prompts', type=Path, default=ROOT/'data/prompts/lesson_validation_10_v1.jsonl')
     parser.add_argument('--gpus', type=int, nargs='+', default=[0,1])
     parser.add_argument('--ports', type=int, nargs='+', default=[8000,8001])
     parser.add_argument('--max-attempts', type=int, default=3, choices=range(1,4))
@@ -165,23 +190,27 @@ def main():
     if len(args.gpus) != len(args.ports) or len(set(args.gpus)) != len(args.gpus) or len(set(args.ports)) != len(args.ports):
         parser.error('GPUs and ports must be unique and paired')
     cases = [json.loads(line) for line in args.prompts.read_text().splitlines() if line.strip()]
+    if len(cases)==400 and len({c['id'] for c in cases})==400:
+        cases=random.Random(20261102).sample(sorted(cases,key=lambda c:c['id']),10)
     if len(cases)!=10 or len({case['id'] for case in cases})!=10:
         parser.error('exactly ten unique fixed cases required')
     args.out.mkdir(parents=True, exist_ok=True)
     commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     config = dict(git_commit=commit, ids=[case['id'] for case in cases], gpus=args.gpus, ports=args.ports,
-        contract_version=VERSION, scoring_version=SCORING_VERSION, max_attempts=args.max_attempts,
+        contract_versions={c['id']:contract_version(c) for c in cases},
+        timing={c['id']:duration_spec(c) for c in cases},
+        scoring_version=SCORING_VERSION, max_attempts=args.max_attempts,
         implementation_sha256=implementation_sha256(),
         prompt_sha256=hashlib.sha256(args.prompts.read_bytes()).hexdigest(), fresh_generation=True)
     config_path = args.out/'run_config.json'
     if args.resume:
         previous = json.loads(config_path.read_text())
-        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_version','scoring_version','prompt_sha256','max_attempts','implementation_sha256']):
+        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_versions','timing','scoring_version','prompt_sha256','max_attempts','implementation_sha256']):
             parser.error('resume requires the identical code, task, contract and scoring configuration')
     elif any(args.out.iterdir()):
         parser.error('fresh run requires empty output directory')
     dump(config_path, config)
-    (args.out/'prompts.jsonl').write_bytes(args.prompts.read_bytes())
+    (args.out/'prompts.jsonl').write_text(''.join(json.dumps(c,ensure_ascii=False)+'\n' for c in cases))
     tasks = queue.Queue()
     for case in cases:
         if not (args.out/f'final_{case["id"]}.json').exists(): tasks.put(case['id'])

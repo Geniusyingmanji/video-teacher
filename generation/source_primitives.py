@@ -5,15 +5,17 @@ from PIL import Image
 
 
 class SourcePrimitives:
-    def __init__(self, source, allowed_boxes):
+    def __init__(self, source, allowed_boxes, viewport=None):
         self.image = Image.open(source).convert('RGB')
         self.size = self.image.size
         self.boxes = allowed_boxes
-        self.scale = min(config.frame_width/self.size[0], config.frame_height/self.size[1])
+        x0,y0,x1,y1 = viewport or [0,0,1,1]
+        self.scale = min(config.frame_width*(x1-x0)/self.size[0], config.frame_height*(y1-y0)/self.size[1])
+        self.offset = np.array([((x0+x1)/2-.5)*config.frame_width, (.5-(y0+y1)/2)*config.frame_height,0])
         self.inset = max(3, 3/(self.scale*config.pixel_width/config.frame_width))
 
     def point(self, x, y):
-        return np.array([(x-self.size[0]/2)*self.scale, (self.size[1]/2-y)*self.scale, 0])
+        return self.offset + np.array([(x-self.size[0]/2)*self.scale, (self.size[1]/2-y)*self.scale, 0])
 
     def authorize(self, box):
         x0, y0, x1, y1 = box

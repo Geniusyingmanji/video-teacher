@@ -47,7 +47,7 @@ class TeachingEngagementTests(unittest.TestCase):
         self.assertEqual(report['diagnostic_mean_available_only'], 100)
 
     def test_new_rules_cover_duration_and_representation(self):
-        self.assertEqual(RUBRIC_VERSION, '6x6-v2')
+        self.assertEqual(RUBRIC_VERSION, '6x6-v3')
         clarity = dict(RUBRIC['pedagogical_clarity'])
         representation = dict(RUBRIC['didactic_affordances'])
         self.assertIn('actual clip duration', clarity['readability'])

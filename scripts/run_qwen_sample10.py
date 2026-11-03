@@ -14,13 +14,14 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from generation.strict_video_contract import VERSION
 from generation.strict_manim import inspect_exact
+from generation.lesson_spec import contract_version, duration_spec
 from eval.benchmark_scoring import VERSION as SCORING_VERSION
 from eval.run_benchmark_v2 import evaluate_with_retry as evaluate
 from generation.quality_gate import assess
 from generation.repair_feedback import validated_frozen, feedback_for
 from eval.frame_extractor import extract_frames
 OUT = ROOT / 'results/qwen38_gpu0_sample10_strict5s_v3_20261102'
-SOURCE = ROOT / 'data/prompts/candidate_400.jsonl'
+SOURCE = ROOT / 'data/prompts/candidate_400_lessons_v1.jsonl'
 SEED = 20261102
 
 
@@ -32,6 +33,7 @@ def main():
     global OUT
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, default=OUT)
+    parser.add_argument('--prompts', type=Path, default=SOURCE)
     parser.add_argument('--max-attempts', type=int, default=3)
     args = parser.parse_args()
     if not 1 <= args.max_attempts <= 3:
@@ -40,17 +42,19 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     if any(OUT.iterdir()):
         parser.error('output directory must be empty; preserve previous evidence and choose a new --out')
-    rows = [json.loads(line) for line in SOURCE.read_text().splitlines() if line.strip()]
+    source = args.prompts.resolve()
+    rows = [json.loads(line) for line in source.read_text().splitlines() if line.strip()]
     assert len(rows) == len({r['id'] for r in rows}) == 400
     selected = random.Random(SEED).sample(sorted(rows, key=lambda r: r['id']), 10)
     prompts = OUT / 'prompts.jsonl'
     prompts.write_text(''.join(json.dumps(r, ensure_ascii=False) + '\n' for r in selected))
-    dump(OUT / 'run_config.json', dict(seed=SEED, source=str(SOURCE),
-         source_sha256=hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
+    dump(OUT / 'run_config.json', dict(seed=SEED, source=str(source),
+         source_sha256=hashlib.sha256(source.read_bytes()).hexdigest(),
          git_commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
          ids=[r['id'] for r in selected], gpu=0, model='qwen3.8-27b',
          self_judge=True, use_feedback=False, use_assets=False,
-         contract_version=VERSION, duration_seconds=5, fps=15, frame_count=75,
+         contract_versions={r['id']:contract_version(r) for r in selected},
+         timing={r['id']:duration_spec(r) for r in selected},
          scoring_version=SCORING_VERSION))
     evaluation_dir = OUT / SCORING_VERSION
     evaluation_dir.mkdir(exist_ok=True)
@@ -77,6 +81,8 @@ def main():
     manifest = OUT / 'manifest.jsonl'
     for index, case in enumerate(selected, 1):
         case_id = case['id']
+        timing = duration_spec(case)
+        expected_version = contract_version(case)
         feedback = None
         frozen_regions = None
         for attempt in range(args.max_attempts):
@@ -87,7 +93,7 @@ def main():
             print(f'[{index}/10] generating {case_id}, attempt {attempt+1}', flush=True)
             command = ['bash', 'research/code2video/experiments/run_model_case.sh',
                        '--case-id', case_id, '--prompts', str(prompts), '--out', str(attempt_dir),
-                       '--strict-five-seconds', '--attempt', str(attempt)]
+                       '--strict-contract', '--attempt', str(attempt)]
             if feedback:
                 feedback_path = attempt_dir / f'{case_id}_feedback.json'
                 dump(feedback_path, feedback)
@@ -101,9 +107,9 @@ def main():
                     code = 124
             result = json.loads(result_path.read_text()) if result_path.exists() else {}
             result['exit_code'] = code
-            rendered = bool(result.get('complete') and result.get('contract_version') == VERSION
+            rendered = bool(result.get('complete') and result.get('contract_version') == expected_version
                             and Path(result.get('video') or '').is_file()
-                            and inspect_exact(Path(result['video']))['valid'])
+                            and inspect_exact(Path(result['video']),timing['duration_seconds'],timing['fps'])['valid'])
             evaluation = evaluate(case, {'status': 'ok' if rendered else 'failed',
                                          'video_path': result.get('video')})
             gate = assess(result, evaluation)
@@ -125,9 +131,9 @@ def main():
         dump(OUT / f'model_result_{case_id}.json', result)
         with (evaluation_dir / 'per_case.jsonl').open('a') as handle:
             handle.write(json.dumps(evaluation, ensure_ascii=False) + '\n')
-        ok = bool(result.get('complete') and result.get('contract_version') == VERSION
+        ok = bool(result.get('complete') and result.get('contract_version') == expected_version
                   and Path(result.get('video') or '').is_file()
-                  and inspect_exact(Path(result['video']))['valid'])
+                  and inspect_exact(Path(result['video']),timing['duration_seconds'],timing['fps'])['valid'])
         results.append(dict(id=case_id, status='ok' if ok else 'failed',
                             video_path=result.get('video') if ok else None,
                             model='qwen3.8-27b', generation=result,

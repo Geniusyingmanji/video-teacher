@@ -21,8 +21,9 @@ from eval.rubric_6x6 import DIMENSIONS
 from eval.benchmark_video_rubric import DIMENSIONS as VIDEO_DIMENSIONS
 from eval.judges.gpt55 import judge_config
 from eval import teaching_engagement
-from eval import grounded_observations, task_completion
+from eval import grounded_observations, task_completion, instructional_video
 from eval.rubric_6x6 import RUBRIC_VERSION
+from generation.lesson_spec import is_lesson, duration_spec
 
 MAX_JUDGE_FRAMES = 24
 
@@ -30,16 +31,17 @@ MAX_JUDGE_FRAMES = 24
 def scoring_code_sha256() -> str:
     root = Path(__file__).parent
     return hashlib.sha256(b"".join((root / name).read_bytes() for name in
-                                    ("benchmark_scoring.py", "benchmark_operators.py",
+                                    ("benchmark_scoring.py", "benchmark_operators.py", "frame_extractor.py",
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
-                                     "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py",
-                                     "../generation/task_requirements.py"))).hexdigest()
+                                     "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py",
+                                     "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
     return {"sample_fps": sample_fps, "frame_max_px": frame_max_px,
             "max_judge_frames": MAX_JUDGE_FRAMES, "judge": judge_config(),
+            "instructional_video_version": instructional_video.VERSION,
             "teaching_rubric_version": RUBRIC_VERSION,
             "engagement_rubric_version": teaching_engagement.VERSION,
             "scoring_code_sha256": scoring_code_sha256()}
@@ -103,6 +105,10 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["source_fps"] = fps
         result["source_frame_count"] = len(frames)
         judged_case = {**case, 'actual_duration_s': len(frames)/fps}
+        if is_lesson(case):
+            target=duration_spec(case)
+            result['duration_validation']={'valid':len(frames)==target['frame_count'] and abs(fps-target['fps'])<1e-6,
+                                           **target,'actual_duration_s':len(frames)/fps}
         expected_steps = len(case.get("expected_narrative_order") or [])
         result["operators"] = {
             "signal_quality": operators.signal_quality(frames),
@@ -125,6 +131,20 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         else:
             result["judge_frame_indices_in_sample"] = list(range(len(sampled)))
         result["sampled_frame_count"] = len(sampled)
+        try:
+            saved_presentation = cached.get('instructional_presentation',{})
+            result['instructional_presentation'] = (saved_presentation if saved_presentation.get('valid') is True
+                else instructional_video.assess_video(judged_case,path,resize_max=frame_max_px,previous=saved_presentation))
+        except Exception as exc:
+            result['instructional_presentation'] = {'valid':False,'passed':False,
+                'version':instructional_video.VERSION,'error':f'{type(exc).__name__}: {exc}'[:600]}
+            result['errors'].append('instructional_presentation_failed')
+        if is_lesson(case):
+            ledger=result['instructional_presentation'].get('segment_evidence')
+            if ledger is not None:
+                judged_case={**judged_case,'segment_evidence':ledger}
+            if result['instructional_presentation'].get('all_windows_reviewed') is not True:
+                result['errors'].append('lesson_segment_coverage_failed')
         result['task_completion'] = cached.get('task_completion') or task_completion.review(judged_case, sampled)
         observations = cached.get('grounded_observations') or grounded_observations.observe(judged_case, sampled)
         observations = {**observations, 'task_completion': result['task_completion']}
@@ -201,6 +221,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                                                    and result.get('consistency_review', {}).get('valid') is True
                                                    and result.get('task_completion', {}).get('passed') is True))
     result['defects'].extend(task_completion.defects(result.get('task_completion', {})))
+    if is_lesson(case) and result.get('duration_validation',{}).get('valid') is not True:
+        result['defects'].append({'axis':'temporal_consistency','axis_cap':40.,'overall_cap':40.,
+                                 'reason':'lesson_duration_mismatch'})
     result["scoring"] = scoring.score_case(
         flat, narration_required=result["narration_required"],
         narration_detected=result.get("narration", {}).get("detected"),
@@ -216,6 +239,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     elif result.get('task_completion', {}).get('passed') is not True:
         result['scoring']['strict_pass'] = False
         result['scoring'].setdefault('gates', []).append('task_completion_not_verified')
+    result['scoring'] = instructional_video.apply(result['scoring'],result.get('instructional_presentation',{}))
+    if is_lesson(case) and result.get('instructional_presentation',{}).get('all_windows_reviewed') is not True:
+        result['scoring'].update(valid=False,strict_pass=False,score=None,groups=None)
     return result
 
 
@@ -229,7 +255,8 @@ def evaluate_with_retry(case, manifest, **kwargs):
     transient = any(error.endswith('_failed') or error.startswith('evaluation_failed:')
                     for error in result.get('errors', []))
     supplement_failed = result.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is not True
-    if manifest.get('status') == 'ok' and (transient or supplement_failed):
+    presentation_failed = ('instructional_presentation' in result and result['instructional_presentation'].get('valid') is not True)
+    if manifest.get('status') == 'ok' and (transient or supplement_failed or presentation_failed):
         prior_errors = list(result.get('errors', []))
         kwargs['previous'] = result
         result = evaluate(case, manifest, **kwargs)
@@ -251,6 +278,12 @@ def bootstrap_ci(values: list[float], *, seed: int = 20261031,
 
 def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     rep = scoring.aggregate(rows)
+    rep['instructional_presentation'] = {
+        'n_total':len(rows),
+        'n_reviewed':sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows),
+        'n_passed':sum(r.get('instructional_presentation',{}).get('passed') is True for r in rows),
+        'mean_valid_only':(sum(r['instructional_presentation']['score'] for r in rows if r.get('instructional_presentation',{}).get('valid') is True) /
+            sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows)) if any(r.get('instructional_presentation',{}).get('valid') is True for r in rows) else None}
     rep['task_completion'] = {
         'n_total': len(rows),
         'n_reviewed': sum(r.get('task_completion', {}).get('valid') is True for r in rows),

@@ -16,6 +16,7 @@ from gpt_request import request_local_token
 from generation.strict_video_contract import (make_contract, contract_hash, ContractAPI,
                                               install_prompts, install_renderer, validate_regions, VERSION)
 from generation.strict_manim import inspect_exact
+from generation.lesson_spec import CONTRACT_VERSION, is_lesson, validate_timeline
 from generation.source_geometry import resolve_source, needs_source as requires_source
 try:
     from scripts.audit_generated_videos import inspect_video
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     parser.add_argument('--case-id', default='math_exp_01')
     parser.add_argument('--prompts', type=Path)
     parser.add_argument('--out', type=Path)
-    parser.add_argument('--strict-five-seconds', action='store_true')
+    parser.add_argument('--strict-contract', '--strict-five-seconds', dest='strict_five_seconds', action='store_true')
     parser.add_argument('--attempt', type=int, default=0)
     parser.add_argument('--quality-feedback', type=Path)
     args = parser.parse_args()
@@ -44,6 +45,9 @@ if __name__ == '__main__':
     source = args.prompts or ROOT.parents[1] / 'data/prompts/pilot_v0_1.jsonl'
     case = next(json.loads(row) for row in source.read_text().splitlines()
                 if json.loads(row)['id'] == args.case_id)
+    lesson = is_lesson(case)
+    if lesson and not args.strict_five_seconds:
+        parser.error('versioned lessons require --strict-contract')
     topics = {
         'math_exp_01': 'Geometric meaning of the derivative: a point moving on y=x², its tangent line, and derivative as the slope of that tangent',
         'math_exp_02': 'Why the three interior angles of a triangle sum to 180 degrees',
@@ -56,7 +60,7 @@ if __name__ == '__main__':
     }
     topic = (case['prompt_text'] if args.prompts else topics[args.case_id]) + LAYOUT_POLICY
     if args.prompts:
-        topic += (' Use exactly one section for this short clip, with a compact Manim scene under 160 lines.'
+        topic += ((' Use one continuous scene with paced teaching chapters.' if lesson else ' Use exactly one section for this short clip, with a compact Manim scene under 160 lines.')
                   + ' The entire video, including all animations and waits, must match the target duration.'
                   + ' Target audience: ' + str(case.get('pedagogical_target_audience', 'general'))
                   + '. Target duration in seconds: ' + str(case.get('target_duration_s', 5))
@@ -94,7 +98,7 @@ if __name__ == '__main__':
     agent = TeachingVideoAgent(0, topic,
         folder=ROOT / ('Code2Video/src/CASES/' + ((args.out.parent.name + '-' + args.out.name) if args.out else 'VIDEOTEACHER') + f'-qwen38-{args.case_id}-attempt{args.attempt}'),
         cfg=RunConfig(api=api, use_feedback=False, use_assets=False,
-            max_code_token_length=4096, max_fix_bug_tries=2, max_regenerate_tries=2))
+            max_code_token_length=8192 if lesson else 4096, max_fix_bug_tries=2, max_regenerate_tries=2))
     if args.strict_five_seconds:
         needs_source = needs_image
         contract = make_contract(case, source_image if needs_source else None)
@@ -131,6 +135,10 @@ if __name__ == '__main__':
                 try:
                     if len(agent.sections) != 1:
                         raise ValueError('Storyboard must have exactly one scene')
+                    timeline = validate_timeline(agent.enhanced_storyboard, contract)
+                    if lesson:
+                        contract['teaching_timeline'] = timeline
+                        contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
                     validate_regions(agent.enhanced_storyboard.get('source_edit_regions', []), required=needs_source,
                                      source_size=contract.get('source_size_pixels'))
                     frozen = contract.get('quality_feedback', {}).get('frozen_source_edit_regions')
@@ -154,7 +162,7 @@ if __name__ == '__main__':
                     (agent.output_dir / 'storyboard.json').rename(agent.output_dir / f'storyboard_rejected_{attempt}.json')
             else:
                 raise ValueError('Storyboard validation exhausted: ' + source_validation['finding'])
-        if args.strict_five_seconds and needs_source:
+        if args.strict_five_seconds and needs_source and not lesson:
             from generation.source_plan import compile_plan
             (agent.output_dir / 'section_1.py').write_text(compile_plan(agent.enhanced_storyboard, contract))
         video = agent.GENERATE_VIDEO()
@@ -171,11 +179,13 @@ if __name__ == '__main__':
     result['complete'] = bool(video and Path(video).is_file() and agent.sections
                               and len(agent.sections)==len(agent.section_videos))
     if args.strict_five_seconds:
-        result['contract_version'] = VERSION
+        result['contract_version'] = contract['version']
         result['contract_sha256'] = contract_hash(contract)
         diagnostics_path = agent.output_dir / 'strict_diagnostics.json'
         diagnostics = json.loads(diagnostics_path.read_text()) if diagnostics_path.exists() else {}
-        result['timing'] = inspect_exact(Path(video)) if video else diagnostics.get('timing', {'valid': False, 'reason': 'no rendered video'})
+        result['timing'] = inspect_exact(Path(video),contract['duration_seconds'],contract['fps']) if video else diagnostics.get('timing', {'valid': False, 'reason': 'no rendered video'})
+        result['target_duration_s'] = contract['duration_seconds']
+        result['teaching_timeline'] = diagnostics.get('teaching_timeline')
         result['strict_diagnostics'] = diagnostics
         result['source_plan_validation'] = source_validation
         result['source_size_pixels'] = contract.get('source_size_pixels')
@@ -197,7 +207,7 @@ if __name__ == '__main__':
     if result['complete'] and inspect_video is not None:
         audit_dir = ROOT / 'experiments' / 'layout_review' / args.case_id
         try:
-            result['layout_review'] = inspect_video(Path(video), audit_dir, 5 if args.strict_five_seconds else None)
+            result['layout_review'] = inspect_video(Path(video), audit_dir, contract['duration_seconds'] if args.strict_five_seconds else None)
             result['layout_review']['meaning'] = (
                 'Source-resolution frames and safe-area overlays require visual review; '
                 'successful rendering is not a layout pass.'

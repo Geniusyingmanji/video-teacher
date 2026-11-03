@@ -13,7 +13,7 @@ def read_json(text):
 
 def observe(case, frames):
     task = {key:case.get(key) for key in ('prompt_text','expected_concepts','expected_visual_elements',
-            'expected_narrative_order','pedagogical_target_audience','actual_duration_s')}
+            'expected_narrative_order','pedagogical_target_audience','actual_duration_s','segment_evidence')}
     prompt = ('Record only what is visibly present, with frame indices. Inspect every requested answer/label and its location. '
               'Never infer a molecule identity, medical fact or intended animation from appearance. Quote actual values exactly. '
               'An initial reveal and a required final hold are intentional. Distinguish a visible change from a claim in a caption. '

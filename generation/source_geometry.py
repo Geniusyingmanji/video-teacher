@@ -23,7 +23,7 @@ def resolve_source(case, asset_dir):
     return matches[0].resolve()
 
 
-def canvas_box(box, source_size, canvas_size=(854, 480)):
+def canvas_box(box, source_size, canvas_size=(854, 480), viewport=None):
     sw, sh = source_size
     cw, ch = canvas_size
     if sw <= 0 or sh <= 0:
@@ -31,8 +31,12 @@ def canvas_box(box, source_size, canvas_size=(854, 480)):
     x0, y0, x1, y1 = box
     if not (0 <= x0 < x1 <= sw and 0 <= y0 < y1 <= sh):
         raise ValueError('box outside source image')
-    scale = min(cw/sw, ch/sh)
-    ox, oy = (cw-sw*scale)/2, (ch-sh*scale)/2
+    vx0, vy0, vx1, vy1 = viewport or [0,0,1,1]
+    if not 0 <= vx0 < vx1 <= 1 or not 0 <= vy0 < vy1 <= 1:
+        raise ValueError('invalid source viewport')
+    vw, vh = cw*(vx1-vx0), ch*(vy1-vy0)
+    scale = min(vw/sw, vh/sh)
+    ox, oy = cw*vx0+(vw-sw*scale)/2, ch*vy0+(vh-sh*scale)/2
     return [(ox+x0*scale)/cw, (oy+y0*scale)/ch, (ox+x1*scale)/cw, (oy+y1*scale)/ch]
 
 

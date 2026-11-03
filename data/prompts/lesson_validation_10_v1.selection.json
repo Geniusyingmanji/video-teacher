@@ -1,0 +1,126 @@
+{
+  "selection": "predeclared representative coverage; not a random sample or a ranking",
+  "source": "data/prompts/candidate_400_lessons_v1.jsonl",
+  "source_sha256": "e2720e5a88ddf83580f744fbab536f3257c3c57df7f6d5a94f0e25bc1f8d58e5",
+  "task_type_counts": {
+    "explanation": 5,
+    "problem_solving": 5
+  },
+  "duration_counts": {
+    "60": 4,
+    "120": 3,
+    "180": 3
+  },
+  "cases": [
+    {
+      "id": "math_exp_02",
+      "task_type": "explanation",
+      "difficulty": "low",
+      "duration_s": 60,
+      "lesson_profile": {
+        "kind": "knowledge_explanation",
+        "difficulty_group": "simple",
+        "duration_reason": "simple objective"
+      }
+    },
+    {
+      "id": "phys_exp_02",
+      "task_type": "explanation",
+      "difficulty": "low",
+      "duration_s": 60,
+      "lesson_profile": {
+        "kind": "knowledge_explanation",
+        "difficulty_group": "simple",
+        "duration_reason": "simple objective"
+      }
+    },
+    {
+      "id": "math_prob_01",
+      "task_type": "problem_solving",
+      "difficulty": "low",
+      "duration_s": 60,
+      "lesson_profile": {
+        "kind": "worked_solution",
+        "difficulty_group": "simple",
+        "duration_reason": "simple objective"
+      }
+    },
+    {
+      "id": "grade_ComputerScience_task_17",
+      "task_type": "problem_solving",
+      "difficulty": "medium",
+      "duration_s": 60,
+      "lesson_profile": {
+        "kind": "worked_solution",
+        "difficulty_group": "standard",
+        "duration_reason": "bounded source operation"
+      }
+    },
+    {
+      "id": "phys_exp_03",
+      "task_type": "explanation",
+      "difficulty": "medium",
+      "duration_s": 120,
+      "lesson_profile": {
+        "kind": "knowledge_explanation",
+        "difficulty_group": "standard",
+        "duration_reason": "standard lesson"
+      }
+    },
+    {
+      "id": "math_prob_02",
+      "task_type": "problem_solving",
+      "difficulty": "medium",
+      "duration_s": 120,
+      "lesson_profile": {
+        "kind": "worked_solution",
+        "difficulty_group": "standard",
+        "duration_reason": "standard lesson"
+      }
+    },
+    {
+      "id": "cs_prob_02",
+      "task_type": "problem_solving",
+      "difficulty": "medium",
+      "duration_s": 120,
+      "lesson_profile": {
+        "kind": "worked_solution",
+        "difficulty_group": "standard",
+        "duration_reason": "standard lesson"
+      }
+    },
+    {
+      "id": "med_exp_01",
+      "task_type": "explanation",
+      "difficulty": "high",
+      "duration_s": 180,
+      "lesson_profile": {
+        "kind": "knowledge_explanation",
+        "difficulty_group": "advanced",
+        "duration_reason": "advanced objective"
+      }
+    },
+    {
+      "id": "lang_high_01",
+      "task_type": "explanation",
+      "difficulty": "high",
+      "duration_s": 180,
+      "lesson_profile": {
+        "kind": "knowledge_explanation",
+        "difficulty_group": "advanced",
+        "duration_reason": "advanced objective"
+      }
+    },
+    {
+      "id": "math_high_02",
+      "task_type": "problem_solving",
+      "difficulty": "high",
+      "duration_s": 180,
+      "lesson_profile": {
+        "kind": "worked_solution",
+        "difficulty_group": "advanced",
+        "duration_reason": "advanced objective"
+      }
+    }
+  ]
+}

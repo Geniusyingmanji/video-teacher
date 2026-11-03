@@ -1,4 +1,4 @@
-"""Render the complete event timeline as exactly 75 frames; validate source preservation."""
+"""Render a complete versioned timeline at exact frame counts; protect source pixels."""
 from __future__ import annotations
 
 import argparse
@@ -12,13 +12,14 @@ import types
 class SourceFrameGuard:
     """Compare every unencoded frame with the pristine rendered source frame."""
 
-    def __init__(self, regions, initial_hold_frames=0):
+    def __init__(self, regions, initial_hold_frames=0, protected_viewport=None):
         self.regions = regions
         self.baseline = None
         self.frames = 0
         self.changed_pixels = 0
         self.boxes = []
         self.initial_hold_frames = initial_hold_frames
+        self.protected_viewport = protected_viewport
 
     def check(self, frame, num_frames=1):
         import numpy as np
@@ -28,6 +29,10 @@ class SourceFrameGuard:
             self.baseline = pixels.copy()
             h, w = pixels.shape[:2]
             self.mask = np.ones((h, w), bool)
+            if self.protected_viewport:
+                self.mask[:] = False
+                x0,y0,x1,y1 = self.protected_viewport
+                self.mask[int(y0*h):int(np.ceil(y1*h)),int(x0*w):int(np.ceil(x1*w))] = True
             for x0, y0, x1, y1 in self.regions:
                 self.mask[int(np.ceil(y0*h)):int(np.floor(y1*h)),
                           int(np.ceil(x0*w)):int(np.floor(x1*w))] = False
@@ -58,7 +63,7 @@ def allocate_frames(weights, total=75, minimum=1):
     return frames
 
 
-def inspect_exact(path: Path) -> dict:
+def inspect_exact(path: Path, duration_seconds=5, expected_fps=15) -> dict:
     import cv2
     cap = cv2.VideoCapture(str(path))
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -69,12 +74,19 @@ def inspect_exact(path: Path) -> dict:
             break
         count += 1
     cap.release()
-    valid = count == 75 and abs(fps-15) < 1e-6
+    import math
+    if type(duration_seconds) not in (int,float) or not math.isfinite(duration_seconds) or duration_seconds <= 0:
+        raise ValueError('invalid expected duration')
+    if type(expected_fps) not in (int,float) or not math.isfinite(expected_fps) or expected_fps <= 0:
+        raise ValueError('invalid expected FPS')
+    expected_count = round(duration_seconds * expected_fps)
+    valid = count == expected_count and abs(fps-expected_fps) < 1e-6
     return {'valid': valid, 'decoded_frames': count, 'fps': fps,
-            'duration_seconds': count/fps if fps else None}
+            'duration_seconds': count/fps if fps else None,
+            'expected_duration_seconds': duration_seconds, 'expected_frame_count': expected_count}
 
 
-def check_source(path: Path, source: Path, regions: list) -> dict:
+def check_source(path: Path, source: Path, regions: list, viewport=None) -> dict:
     import cv2
     import numpy as np
     from PIL import Image
@@ -84,13 +96,18 @@ def check_source(path: Path, source: Path, regions: list) -> dict:
         raise ValueError('source preservation: unreadable video')
     h, w = first.shape[:2]
     src = Image.open(source).convert('RGB')
-    scale = min(w/src.width, h/src.height)
+    vx0,vy0,vx1,vy1 = viewport or [0,0,1,1]
+    vw,vh = w*(vx1-vx0),h*(vy1-vy0)
+    scale = min(vw/src.width, vh/src.height)
     size = (round(src.width*scale), round(src.height*scale))
     expected = Image.new('RGB', (w, h), 'black')
-    expected.paste(src.resize(size, Image.Resampling.BICUBIC), ((w-size[0])//2, (h-size[1])//2))
+    expected.paste(src.resize(size, Image.Resampling.BICUBIC), (round(w*vx0+(vw-size[0])/2), round(h*vy0+(vh-size[1])/2)))
     expected = cv2.cvtColor(np.array(expected), cv2.COLOR_RGB2BGR)
     initial_error = float(np.mean(np.abs(first.astype(float)-expected)))
     mask = np.ones((h, w), bool)
+    if viewport:
+        mask[:] = False
+        mask[int(vy0*h):int(np.ceil(vy1*h)),int(vx0*w):int(np.ceil(vx1*w))] = True
     for x0, y0, x1, y1 in regions:
         mask[max(0, int(y0*h)-3):min(h, int(y1*h)+4), max(0, int(x0*w)-3):min(w, int(x1*w)+4)] = False
     worst = 0.0
@@ -116,11 +133,20 @@ def render(code: Path, scene_name: str, contract_path: Path):
     from generation.strict_video_contract import validate_regions
     from generation.source_geometry import canvas_box
     contract = json.loads(contract_path.read_text())
+    from generation.lesson_spec import CONTRACT_VERSION, validate_timeline
+    lesson = contract['version'] == CONTRACT_VERSION
+    duration = contract['duration_seconds']
+    fps = contract['fps']
+    total_frames = contract['frame_count']
+    if fps != 15 or total_frames != round(duration*fps):
+        raise ValueError('inconsistent frame contract')
     source = Path(contract['source_image']) if contract.get('source_image') else None
     storyboard = json.loads((code.parent / 'storyboard.json').read_text())
+    chapters = validate_timeline(storyboard, contract)
+    viewport = contract.get('source_viewport')
     size = contract.get('source_size_pixels')
     source_regions = validate_regions(storyboard.get('source_edit_regions', []), required=bool(source), source_size=size)
-    regions = [canvas_box(box, size) for box in source_regions] if source else []
+    regions = [canvas_box(box, size, viewport=viewport) for box in source_regions] if source else []
     spec = importlib.util.spec_from_file_location('generated_scene', code)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -129,6 +155,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
     measured_weights = []
     paths = []
     layout_reports = []
+    chapter_reports = []
     for phase in ('measure', 'final'):
         options = dict(pixel_width=854, pixel_height=480, frame_rate=15,
                        media_dir=str(code.parent / 'media'), disable_caching=True,
@@ -137,7 +164,8 @@ def render(code: Path, scene_name: str, contract_path: Path):
                        verbosity='WARNING')
         with tempconfig(options):
             scene = cls()
-            guard = SourceFrameGuard(regions, initial_hold_frames=15) if source and phase == 'final' else None
+            protected = [0,0,1,contract['teaching_panel'][1]] if lesson and source else viewport
+            guard = SourceFrameGuard(regions, initial_hold_frames=fps, protected_viewport=protected) if source and phase == 'final' else None
             if guard:
                 original_add_frame = scene.renderer.add_frame
                 def guarded_add_frame(frame, num_frames=1):
@@ -147,8 +175,23 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 scene.renderer.add_frame = guarded_add_frame
             if source:
                 from generation.source_primitives import SourcePrimitives
-                primitives = SourcePrimitives(source, source_regions)
+                primitives = SourcePrimitives(source, source_regions, viewport)
                 scene.source_text, scene.source_curve, scene.source_highlight = primitives.text, primitives.curve, primitives.highlight
+            chapter_observed = []
+            def begin_step(chapter_id):
+                chapter_observed.append({'id':chapter_id,'start_s':round(scene.time,6)})
+            scene.begin_teaching_step = begin_step
+            if lesson:
+                from manim import Text
+                def teaching_caption(text):
+                    label = Text(str(text),font_size=26)
+                    maximum_width = config.frame_width*.9
+                    maximum_height = config.frame_height*(.25 if source else .15)
+                    label.scale(min(1,maximum_width/max(label.width,.001),maximum_height/max(label.height,.001)))
+                    if label.height/config.frame_height*config.pixel_height < 16:
+                        raise ValueError('teaching caption below 16 pixels; split into shorter captions')
+                    return label.move_to([0,-config.frame_height*.325,0])
+                scene.teaching_caption = teaching_caption
             verified_calls = set()
             verified_objects = {}
             verified_visible = set()
@@ -175,7 +218,9 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 old_setup()
                 if source:
                     image = ImageMobject(str(source))
-                    image.scale(min(config.frame_width/image.width, config.frame_height/image.height))
+                    vx0,vy0,vx1,vy1 = viewport or [0,0,1,1]
+                    image.scale(min(config.frame_width*(vx1-vx0)/image.width, config.frame_height*(vy1-vy0)/image.height))
+                    image.move_to([((vx0+vx1)/2-.5)*config.frame_width,(.5-(vy0+vy1)/2)*config.frame_height,0])
                     image.set_z_index(-1000)
                     self.add(image)
                     if guard:
@@ -208,10 +253,12 @@ def render(code: Path, scene_name: str, contract_path: Path):
                            and obj.get_bottom()[1] < config.frame_height/2 and obj.get_top()[1] > -config.frame_height/2
                            for obj in objects):
                         verified_visible.add(key)
-                if phase == 'final' and not source:
+                if phase == 'final' and (not source or lesson):
                     from generation.layout_guard import check_layout
                     layout_reports.append(check_layout(scene))
                 observed.append((kind, max(1/15, scene.time-start)))
+                if lesson and kind == 'wait' and scene.time-start > contract['pacing']['max_wait_s'] + .1:
+                    raise ValueError('lesson has an empty hold longer than the pacing limit')
                 index += 1
                 return result
             scene.setup = types.MethodType(setup, scene)
@@ -229,23 +276,44 @@ def render(code: Path, scene_name: str, contract_path: Path):
             paths.append(Path(scene.renderer.file_writer.movie_file_path))
             if phase == 'measure':
                 recorded = observed
+                if lesson:
+                    expected_ids = [row['id'] for row in chapters]
+                    if [row['id'] for row in chapter_observed] != expected_ids:
+                        raise ValueError('code must mark every authored teaching chapter exactly once in order')
+                    for i,(actual,planned) in enumerate(zip(chapter_observed,chapters)):
+                        expected_start = 1 if source and i == 0 else planned['start_s']
+                        if abs(actual['start_s']-expected_start) > .25:
+                            raise ValueError('teaching chapter does not match its planned timestamp: '+actual['id'])
+                    measured_duration = sum(weight for _,weight in recorded)
+                    if abs(measured_duration-duration) > max(.15,duration*.02):
+                        raise ValueError(f'lesson authored duration {measured_duration:.3f}s differs from {duration}s; refusing to stretch or truncate')
                 hold_indices = {len(recorded)-1} | ({0} if source else set())
                 body = [i for i in range(len(recorded)) if i not in hold_indices]
                 if not body:
                     raise ValueError('scene has no educational animation events')
-                body_frames = allocate_frames([recorded[i][1] for i in body], 75-15*len(hold_indices),
+                body_frames = allocate_frames([recorded[i][1] for i in body], total_frames-fps*len(hold_indices),
                                               [6 if recorded[i][0] == 'play' else 3 for i in body])
-                measured_weights = [15] * len(recorded)
+                measured_weights = [fps] * len(recorded)
                 for i, n in zip(body, body_frames):
                     measured_weights[i] = n
             elif index != len(recorded):
                 raise ValueError('non-deterministic timeline; missing events')
-    diagnostics = {'timing': inspect_exact(paths[-1]), 'event_frames': measured_weights,
+            if phase == 'final' and lesson:
+                if [row['id'] for row in chapter_observed] != [row['id'] for row in chapters]:
+                    raise ValueError('non-deterministic teaching chapter sequence')
+                chapter_reports = [{**planned,'actual_start_s':actual['start_s']} for planned,actual in zip(chapters,chapter_observed)]
+                for i,row in enumerate(chapter_reports):
+                    expected_start = 1 if source and i == 0 else row['start_s']
+                    if abs(row['actual_start_s']-expected_start) > max(.25,duration*.02):
+                        raise ValueError('rendered chapter timestamp changed')
+    diagnostics = {'timing': inspect_exact(paths[-1],duration,fps), 'event_frames': measured_weights,
                    'events': [dict(kind=kind, frames=n) for (kind,_),n in zip(recorded, measured_weights)]}
+    if lesson:
+        diagnostics['teaching_timeline'] = {'valid':True,'chapters':chapter_reports,'authored_duration_s':measured_duration}
     diagnostics['layout'] = {'valid': all(r['valid'] for r in layout_reports),
                              'checks': layout_reports}
     if source:
-        diagnostics['source_preservation'] = check_source(paths[-1], source, regions)
+        diagnostics['source_preservation'] = check_source(paths[-1], source, regions, viewport)
         diagnostics['source_preservation']['pre_encoding'] = guard.report()
         diagnostics['source_preservation']['valid'] &= guard.report()['valid']
     diagnostics['rendered_video'] = str(paths[-1])
