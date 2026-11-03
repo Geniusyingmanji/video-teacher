@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import math
 
-VERSION = "video-teacher-2x8-v8"
+VERSION = "video-teacher-2x8-v9"
 VIDEO_AXES = ("visual_quality", "temporal_consistency", "signal_quality")
 TEACHING_AXES = (
     "conceptual_correctness", "narrative_structure", "pedagogical_clarity",

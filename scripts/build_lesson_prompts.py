@@ -16,7 +16,7 @@ from generation.source_geometry import needs_source
 TIME = re.compile(r'\b(?:five|5|ten|10)[ -]seconds?\b(?=\s+(?:teaching|educational|worked|comparison|video|clip|animation|demonstration|explanation)\b)', re.I)
 
 
-def revise(case):
+def revise(case, language='en-US'):
     if case.get('lesson_version'):
         raise ValueError('input must be original tasks, not an already revised lesson set')
     row = copy.deepcopy(case)
@@ -27,6 +27,8 @@ def revise(case):
         duration = 180
     row['lesson_version'] = VERSION
     row['target_duration_s'] = duration
+    row['audio_narration_required'] = True
+    row['narration_language'] = language
     kind='worked_solution' if case.get('task_type')=='problem_solving' else 'knowledge_explanation'
     row['lesson_profile']={'kind':kind,
         'difficulty_group':'advanced' if case.get('difficulty')=='high' else 'simple' if case.get('difficulty') in ('low','k12') else 'standard',
@@ -49,7 +51,9 @@ def revise(case):
            'only the originally authorized target marks may change there. Put temporary explanations in the separate lower teaching panel. '
            'Restrictions against changing the supplied diagram continue to apply inside the reference viewport. '
            if source else '')
-        + 'No audio is required; visible explanation must stand on its own.')
+        + ('Provide clear Mandarin Chinese spoken explanation, retaining necessary English technical terms. ' if language=='zh-CN' else 'Provide clear English spoken explanation. ')
+        + 'Synchronize spoken reasons with the demonstrated steps. Narration must cover the question, key reasoning, verification and recap. '
+        'Music, tones or reading labels alone do not satisfy narration. Keep essential diagram labels readable.')
     teaching = ('For this worked solution, identify the givens and goal, show the strategy, justify each operation, '
                 'preserve intermediate values and units, and verify the final answer against the original problem.'
                 if kind=='worked_solution' else
@@ -63,6 +67,7 @@ def revise(case):
     }.items():
         row[key] = list(row.get(key) or []) + [value]
     row['discipline_specific_rubric'].append(teaching)
+    row['discipline_specific_rubric'].append('Intelligible spoken explanations agree with the visible steps, correct quantities, reasoning and final answer')
     # Historical sampled-frame ranges are provenance, never a new timing specification.
     row.pop('narrative_beats', None)
     duration_spec(row)
@@ -72,12 +77,13 @@ def revise(case):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source',type=Path,default=ROOT/'data/prompts/candidate_400.jsonl')
-    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v1.jsonl')
+    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v2.jsonl')
+    p.add_argument('--language',choices=['zh-CN','en-US'],default='en-US')
     a=p.parse_args()
     if a.source.resolve()==a.out.resolve():p.error('preserve original tasks; output must be a separate version')
     cases=[json.loads(x) for x in a.source.read_text().splitlines() if x.strip()]
     if len(cases)!=400 or len({c['id'] for c in cases})!=400:p.error('expected 400 unique original tasks')
-    rows=[revise(c) for c in cases]
+    rows=[revise(c,a.language) for c in cases]
     a.out.parent.mkdir(parents=True,exist_ok=True)
     a.out.write_text(''.join(json.dumps(c,ensure_ascii=False)+'\n' for c in rows))
     print(json.dumps({'total':len(rows),'duration_counts':dict(collections.Counter(c['target_duration_s'] for c in rows)),

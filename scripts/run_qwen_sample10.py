@@ -21,7 +21,7 @@ from generation.quality_gate import assess
 from generation.repair_feedback import validated_frozen, feedback_for
 from eval.frame_extractor import extract_frames
 OUT = ROOT / 'results/qwen38_gpu0_sample10_strict5s_v3_20261102'
-SOURCE = ROOT / 'data/prompts/candidate_400_lessons_v1.jsonl'
+SOURCE = ROOT / 'data/prompts/candidate_400_lessons_v2.jsonl'
 SEED = 20261102
 
 

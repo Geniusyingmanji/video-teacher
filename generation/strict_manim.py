@@ -133,8 +133,8 @@ def render(code: Path, scene_name: str, contract_path: Path):
     from generation.strict_video_contract import validate_regions
     from generation.source_geometry import canvas_box
     contract = json.loads(contract_path.read_text())
-    from generation.lesson_spec import CONTRACT_VERSION, validate_timeline
-    lesson = contract['version'] == CONTRACT_VERSION
+    from generation.lesson_spec import LESSON_CONTRACTS, validate_timeline
+    lesson = contract['version'] in LESSON_CONTRACTS
     duration = contract['duration_seconds']
     fps = contract['fps']
     total_frames = contract['frame_count']

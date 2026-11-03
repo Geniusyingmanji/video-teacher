@@ -126,6 +126,10 @@ def review(case, frames):
                    'with the overview images; do not invent operations absent from the ledger. A window can '
                    'omit later steps without being defective. Reconcile object identities and values across windows. '
                    'These are fallible model observations, not external truth:\n'+json.dumps(case['segment_evidence'],ensure_ascii=False))
+    if case.get('actual_spoken_segments'):
+        prompt += ('\nActual-track ASR observations are available. Spoken explanation may clarify the diagram, '
+                   'but cannot replace requested visible operations. Require correct correspondence at the cited times. '
+                   'ASR is fallible; do not infer pronunciation or voice quality.\n'+json.dumps(case['actual_spoken_segments'],ensure_ascii=False))
     if case.get('segment_context'):
         prompt += ('\nTHIS IS ONE WINDOW OF A LONGER LESSON. Judge layout, local state integrity and pacing here. '
                    'Do not require the entire lesson or final answer within this window; introductions, transitions '
@@ -221,6 +225,10 @@ def compare_still(case,frames,*,video_first):
         'Record exactly what useful information would be lost and cite its sequence-local before/after frame numbers. '
         'Use before_frame=after_frame=0 when no substantive transition can be established. '
         'Task: '+json.dumps(requirements(case),ensure_ascii=False))
+    if case.get('audio_narration_required'):
+        prompt += ('\nBoth presentations retain IDENTICAL narration. Compare only the information contributed '
+                   'by changing visuals beyond the final held image with that same speech; narration itself '
+                   'is not an advantage of either version.')
     if case.get('segment_evidence'):
         prompt += ('\nTimestamped observations from every window of the chronological version follow. '
                    'Use them only as supporting observations; cite a visible ordered overview-frame pair '
@@ -275,11 +283,14 @@ def assess_video(case, path, *, resize_max=854, previous=None):
             windows.append(cached[index]);continue
         try:
             frames,timestamps=extract_window(path,start,end,resize_max=resize_max)
-            local_case={**case,'segment_context':{'id':index,'start_s':start,'end_s':end,'timestamps_s':timestamps}}
+            from eval.narration import window_transcript
+            spoken=window_transcript(case.get('speech_transcript',{}),start,end)
+            local_case={**case,'actual_spoken_segments':spoken,
+                        'segment_context':{'id':index,'start_s':start,'end_s':end,'timestamps_s':timestamps}}
             observed=review(local_case,frames)
             events=verify_events(observed['events'],frames)
             windows.append({'id':index,'start_s':start,'end_s':end,'timestamps_s':timestamps,
-                            'review':observed,'events':events})
+                            'review':observed,'events':events,'actual_spoken_segments':spoken})
         except Exception as exc:
             windows.append({'id':index,'start_s':start,'end_s':end,'error':f'{type(exc).__name__}: {exc}'[:600]})
     if any(w.get('error') for w in windows):
@@ -289,7 +300,7 @@ def assess_video(case, path, *, resize_max=854, previous=None):
     overview=extract_frames(path,n=18,resize_max=resize_max)
     ledger=[{'id':w['id'],'start_s':w['start_s'],'end_s':w['end_s'],'summary':w['review']['summary'],
              'issues':w['review']['issues'],'requirement_evidence':w['review']['requirement_evidence'],
-             'timestamps_s':w['timestamps_s']} for w in windows]
+             'timestamps_s':w['timestamps_s'],'actual_spoken_segments':w.get('actual_spoken_segments',[])} for w in windows]
     global_case={**case,'segment_evidence':ledger}
     try:
         observed=review(global_case,overview)

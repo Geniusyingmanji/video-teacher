@@ -24,11 +24,13 @@ from eval import instructional_video as iv, task_completion
 class LessonPipelineTests(unittest.TestCase):
     def case(self,duration=120):
         return {'id':'fixture','lesson_version':VERSION,'target_duration_s':duration,
-                'prompt_text':'Solve 2x+5=17 visually. Keep both sides equal.'}
+                'prompt_text':'Solve 2x+5=17 visually. Keep both sides equal.',
+                'audio_narration_required':True,'narration_language':'en-US'}
 
     def timeline(self,duration=120):
         return [{'id':f'step_{i}','start_s':i*duration/6,'end_s':(i+1)*duration/6,
-                 'goal':f'explain step {i}','visible_evidence':f'equation state {i} changes on both sides','requirement_ids':['prompt']} for i in range(6)]
+                 'goal':f'explain step {i}','visible_evidence':f'equation state {i} changes on both sides','requirement_ids':['prompt'],
+                 'narration':f'Explain equation step {i} and why both sides stay equal.'} for i in range(6)]
 
     def test_revision_preserves_exact_original_without_restoring_historical_task(self):
         original={'id':'a','prompt_text':'Create a five-second clip. Show 2x+5=17. Never change the givens.',
@@ -51,12 +53,14 @@ class LessonPipelineTests(unittest.TestCase):
     def test_all_400_revision_ids_original_obligations_and_durations(self):
         root=Path(__file__).resolve().parents[1]
         original=[json.loads(x) for x in (root/'data/prompts/candidate_400.jsonl').read_text().splitlines()]
-        revised=[json.loads(x) for x in (root/'data/prompts/candidate_400_lessons_v1.jsonl').read_text().splitlines()]
+        revised=[json.loads(x) for x in (root/'data/prompts/candidate_400_lessons_v2.jsonl').read_text().splitlines()]
         self.assertEqual(len(revised),400)
         self.assertEqual([r['id'] for r in original],[r['id'] for r in revised])
         for before,after in zip(original,revised):
             self.assertEqual(after,revise(before))
             self.assertIn(duration_spec(after)['duration_seconds'],(60,120,180))
+            self.assertIs(after['audio_narration_required'],True)
+            self.assertEqual(after['narration_language'],'en-US')
 
     def test_prompts_and_contract_share_explicit_budget_and_chapters(self):
         from types import SimpleNamespace
@@ -74,6 +78,8 @@ class LessonPipelineTests(unittest.TestCase):
         for duration in (True,float('nan'),0,29,181):
             with self.subTest(duration=duration),self.assertRaises(ValueError):duration_spec(self.case(duration))
         with self.assertRaises(ValueError):duration_spec({'target_duration_s':120})
+        silent=self.case();silent['audio_narration_required']=False
+        with self.assertRaises(ValueError):duration_spec(silent)
         contract=make_contract(self.case())
         self.assertEqual(len(validate_timeline({'teaching_timeline':self.timeline()},contract)),6)
         for fault in ('gap','missing','duplicate'):
@@ -212,7 +218,8 @@ class LessonPipelineTests(unittest.TestCase):
             ImageDraw.Draw(image).rectangle([200,100,600,240],outline='black',width=3);image.save(source)
             contract=make_contract(self.case(30),source)
             (root/'contract.json').write_text(json.dumps(contract))
-            chapters=[{'id':f'step_{i}','start_s':i*10,'end_s':(i+1)*10,'goal':f'show value step {i}','visible_evidence':f'value and explanation {i}','requirement_ids':['prompt']} for i in range(3)]
+            chapters=[{'id':f'step_{i}','start_s':i*10,'end_s':(i+1)*10,'goal':f'show value step {i}','visible_evidence':f'value and explanation {i}','requirement_ids':['prompt'],
+                       'narration':f'Explain the value in step {i}.'} for i in range(3)]
             (root/'storyboard.json').write_text(json.dumps({'source_edit_regions':[[200,100,600,240]],'teaching_timeline':chapters}))
             code=root/'section_1.py'
             code.write_text('from manim import *\nclass Section1Scene(Scene):\n def construct(self):\n'

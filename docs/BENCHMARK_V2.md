@@ -1,4 +1,4 @@
-当前规则为 `video-teacher-2x8-v8`，保留 v7 的布局、实际过程和静态末帧对照门槛，并增加分钟级时长验证、逐窗口取证和局部证据引用；详见 [分钟级教学协议](LESSONS_V1.md) 以及 [v7 研究出处和局限](SCORING_V7_DESIGN.md)。本文其余部分保留八轴协议及历史版本说明。
+当前规则为 `video-teacher-2x8-v9`，保留布局、过程、末帧对照、分钟级时长及逐窗口取证，增加实际语音识别和口述正确性、解释覆盖与音画对应门槛。详见 [英文有声协议](NARRATED_LESSONS_V2.md)、[历史分钟级协议](LESSONS_V1.md) 和 [v7 研究出处与局限](SCORING_V7_DESIGN.md)。本文其余部分保留八轴协议及历史说明。
 
 # Video Teacher benchmark 2x8-v4
 

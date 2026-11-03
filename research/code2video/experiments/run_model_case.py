@@ -114,6 +114,8 @@ if __name__ == '__main__':
         install_renderer(agent_module, contract_path)
     source_validation = {'valid': False, 'finding': 'not planned'}
     generation_error = None
+    narration_result = None
+    failure_stage = None
     try:
         if args.strict_five_seconds:
             from generation.verified_assets import molecule_assets
@@ -166,6 +168,12 @@ if __name__ == '__main__':
             from generation.source_plan import compile_plan
             (agent.output_dir / 'section_1.py').write_text(compile_plan(agent.enhanced_storyboard, contract))
         video = agent.GENERATE_VIDEO()
+        if video and case.get('audio_narration_required') is True:
+            failure_stage='narration'
+            from generation.narration import attach
+            narrated,narration_result=attach(Path(video),contract,agent.output_dir/'narration',api=agent.API)
+            video=str(narrated)
+            failure_stage=None
     except Exception as exc:
         generation_error = f'{type(exc).__name__}: {exc}'
         video = None
@@ -176,6 +184,8 @@ if __name__ == '__main__':
         token_usage_scope='parent planner/storyboard/coder calls; excludes worker repair calls',
         expected_sections=len(agent.sections), rendered_sections=len(agent.section_videos),
         video=video, output_dir=str(agent.output_dir))
+    result['audio_narration_required']=case.get('audio_narration_required') is True
+    result['narration']=narration_result
     result['complete'] = bool(video and Path(video).is_file() and agent.sections
                               and len(agent.sections)==len(agent.section_videos))
     if args.strict_five_seconds:
@@ -204,6 +214,7 @@ if __name__ == '__main__':
         result['semantic_review_status'] = 'pending_eight_axis_self_evaluation'
     if generation_error:
         result['error'] = generation_error
+        if failure_stage:result['failure_stage']=failure_stage
     if result['complete'] and inspect_video is not None:
         audit_dir = ROOT / 'experiments' / 'layout_review' / args.case_id
         try:

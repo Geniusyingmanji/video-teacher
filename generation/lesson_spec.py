@@ -1,19 +1,22 @@
 """Explicit lesson duration and storyboard validation; legacy clips stay readable."""
 import math
 
-VERSION = 'instructional-lesson-v1'
-CONTRACT_VERSION = 'instructional-lesson-contract-v1'
+VERSION = 'instructional-lesson-v2'
+CONTRACT_VERSION = 'instructional-lesson-contract-v2'
+LESSON_CONTRACTS = ('instructional-lesson-contract-v1', CONTRACT_VERSION)
 
 
 def is_lesson(case):
-    return case.get('lesson_version') == VERSION
+    return case.get('lesson_version') in ('instructional-lesson-v1',VERSION)
 
 
 def contract_version(case):
-    return CONTRACT_VERSION if is_lesson(case) else 'strict-five-seconds-v5'
+    return CONTRACT_VERSION if case.get('lesson_version')==VERSION else 'instructional-lesson-contract-v1' if is_lesson(case) else 'strict-five-seconds-v5'
 
 
 def duration_spec(case):
+    if case.get('lesson_version')==VERSION and case.get('audio_narration_required') is not True:
+        raise ValueError('current narrated lessons require explicit spoken narration')
     duration = case.get('target_duration_s', 120 if is_lesson(case) else 5)
     fps = 15
     if type(duration) not in (int, float) or not math.isfinite(duration):
@@ -31,7 +34,7 @@ def duration_spec(case):
 
 def validate_timeline(plan, contract):
     """A continuous authored timeline, with evidence targets for each chapter."""
-    if contract['version'] != CONTRACT_VERSION:
+    if contract['version'] not in LESSON_CONTRACTS:
         return []
     rows = plan.get('teaching_timeline')
     minimum=max(3,math.ceil(contract['duration_seconds']/20))
@@ -62,6 +65,10 @@ def validate_timeline(plan, contract):
         if not isinstance(obligations,list) or not obligations or any(not isinstance(key,str) or key not in expected for key in obligations):
             raise ValueError('each chapter must map to current task requirement IDs')
         covered.update(obligations)
+        if contract['task'].get('audio_narration_required') is True:
+            narration=row.get('narration')
+            if not isinstance(narration,str) or not narration.strip():
+                raise ValueError('every chapter needs a spoken explanation, not only captions')
         end = finish
     if abs(end-contract['duration_seconds']) > 1e-6:
         raise ValueError('teaching timeline must match the full duration including initial/final holds')

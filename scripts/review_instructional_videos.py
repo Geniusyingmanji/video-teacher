@@ -66,7 +66,7 @@ def process(row,out):
 def main():
     p=argparse.ArgumentParser(description=__doc__);source=p.add_mutually_exclusive_group(required=True)
     source.add_argument('--run',type=Path);source.add_argument('--manifest',type=Path)
-    p.add_argument('--out',type=Path,required=True);p.add_argument('--ports',nargs='+',type=int,default=[8002,8003])
+    p.add_argument('--out',type=Path,required=True);p.add_argument('--ports',nargs='+',type=int,default=[8000,8001])
     p.add_argument('--per-port-concurrency',type=int,choices=[1,2],default=1)
     p.add_argument('--case');a=p.parse_args();a.out.mkdir(parents=True,exist_ok=True)
     if not a.ports or len(set(a.ports))!=len(a.ports):p.error('ports must be nonempty and unique')

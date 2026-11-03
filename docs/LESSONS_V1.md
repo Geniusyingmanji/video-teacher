@@ -1,5 +1,7 @@
 # 1–3 分钟单题教学视频与 v8 评测
 
+本文记录历史无声 v1。当前有声英文版及硬件限制见 [v2 / v9](NARRATED_LESSONS_V2.md)。今后只使用 GPU 0、1。
+
 题库 `data/prompts/candidate_400_lessons_v1.jsonl` 是独立的教学任务版本，
 完整保存每题旧版本和哈希；不覆盖原始 `candidate_400.jsonl`，不恢复可能与当前题意
 冲突的历史 original_prompt_text。当前旧题的知识内容、数字、答案约束和禁止事项继续保留。
@@ -60,7 +62,7 @@ python scripts/build_lesson_prompts.py
 python scripts/preflight_candidate400.py
 python -m unittest discover -s tests -v
 python scripts/select_lesson_cases.py
-python scripts/run_qwen_multigpu.py --gpus 2 3 --ports 8002 8003 \
+python scripts/run_qwen_multigpu.py --gpus 0 1 --ports 8000 8001 \
   --prompts data/prompts/lesson_validation_10_v1.jsonl \
   --out results/optimization_20261103/lessons10_two_gpu_v1
 ```

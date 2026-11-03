@@ -13,7 +13,7 @@ from generation.lesson_spec import duration_spec
 
 
 def audit(prompts=None):
-    cases = [json.loads(line) for line in (prompts or ROOT/'data/prompts/candidate_400_lessons_v1.jsonl').read_text().splitlines() if line.strip()]
+    cases = [json.loads(line) for line in (prompts or ROOT/'data/prompts/candidate_400_lessons_v2.jsonl').read_text().splitlines() if line.strip()]
     ids = Counter(case['id'] for case in cases)
     rows = []
     for case in cases:
@@ -43,8 +43,8 @@ def audit(prompts=None):
 
 if __name__ == '__main__':
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--prompts',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v1.jsonl')
-    parser.add_argument('--out',type=Path,default=ROOT/'results/reports/lessons_v1/preflight400.json')
+    parser.add_argument('--prompts',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v2.jsonl')
+    parser.add_argument('--out',type=Path,default=ROOT/'results/reports/lessons_v2/preflight400.json')
     args=parser.parse_args();out=args.out
     out.parent.mkdir(parents=True, exist_ok=True)
     report = audit(args.prompts)

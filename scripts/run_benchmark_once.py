@@ -22,9 +22,9 @@ def main() -> int:
     if missing:
         parser.error("set these environment variables first: " + ", ".join(missing))
     root = Path(__file__).resolve().parents[1]
-    prompt_path = Path(args.prompts or (root / "data/prompts/candidate_400_lessons_v1.jsonl" if args.full_400
+    prompt_path = Path(args.prompts or (root / "data/prompts/candidate_400_lessons_v2.jsonl" if args.full_400
                                         else root / "data/prompts/pilot_v0_1.jsonl")).resolve()
-    output_path = Path(args.out or (root / "results/benchmark_400_lessons_v1" if args.full_400
+    output_path = Path(args.out or (root / "results/benchmark_400_lessons_v2" if args.full_400
                                     else root / "results/benchmark_v2")).resolve()
     if args.full_400:
         try:

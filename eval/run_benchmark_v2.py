@@ -24,6 +24,7 @@ from eval import teaching_engagement
 from eval import grounded_observations, task_completion, instructional_video
 from eval.rubric_6x6 import RUBRIC_VERSION
 from generation.lesson_spec import is_lesson, duration_spec
+from eval import narration
 
 MAX_JUDGE_FRAMES = 24
 
@@ -35,7 +36,7 @@ def scoring_code_sha256() -> str:
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
                                      "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py",
-                                     "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
+                                     "narration.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
@@ -44,6 +45,7 @@ def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
             "instructional_video_version": instructional_video.VERSION,
             "teaching_rubric_version": RUBRIC_VERSION,
             "engagement_rubric_version": teaching_engagement.VERSION,
+            "spoken_teaching":narration.asr_config(),
             "scoring_code_sha256": scoring_code_sha256()}
 
 
@@ -120,6 +122,16 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             except Exception as exc:
                 result["narration"] = {"detected": None,
                                         "reason": f"audio_probe_failed: {type(exc).__name__}: {exc}"[:300]}
+            try:
+                if result['narration'].get('detected') is not True:
+                    raise ValueError('actual speech track is absent or unverified')
+                transcript=cached.get('speech_transcript') or narration.transcribe(path)
+                result['speech_transcript']=transcript
+                judged_case={**judged_case,'speech_transcript':transcript,
+                    'actual_spoken_segments':[{k:r[k] for k in ('id','start_s','end_s','text')} for r in transcript['segments']]}
+            except Exception as exc:
+                result['narration_review']={'valid':False,'passed':False,'score':None,'error':f'{type(exc).__name__}: {exc}'[:600]}
+                result['errors'].append('speech_transcription_failed')
         else:
             result["narration"] = {"detected": None, "reason": "not_required"}
         sampled = extract_frames(path, sample_fps=sample_fps, resize_max=frame_max_px)
@@ -145,6 +157,14 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                 judged_case={**judged_case,'segment_evidence':ledger}
             if result['instructional_presentation'].get('all_windows_reviewed') is not True:
                 result['errors'].append('lesson_segment_coverage_failed')
+        if result['narration_required'] and result.get('speech_transcript',{}).get('valid') is True:
+            try:
+                saved=cached.get('narration_review',{})
+                result['narration_review']=saved if saved.get('valid') is True else narration.review(
+                    judged_case,result['speech_transcript'],result['instructional_presentation'].get('segment_evidence',[]))
+            except Exception as exc:
+                result['narration_review']={'valid':False,'passed':False,'score':None,'error':f'{type(exc).__name__}: {exc}'[:600]}
+                result['errors'].append('spoken_teaching_failed')
         result['task_completion'] = cached.get('task_completion') or task_completion.review(judged_case, sampled)
         observations = cached.get('grounded_observations') or grounded_observations.observe(judged_case, sampled)
         observations = {**observations, 'task_completion': result['task_completion']}
@@ -240,6 +260,8 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result['scoring']['strict_pass'] = False
         result['scoring'].setdefault('gates', []).append('task_completion_not_verified')
     result['scoring'] = instructional_video.apply(result['scoring'],result.get('instructional_presentation',{}))
+    if result['narration_required']:
+        result['scoring']=narration.apply(result['scoring'],result.get('narration_review',{}))
     if is_lesson(case) and result.get('instructional_presentation',{}).get('all_windows_reviewed') is not True:
         result['scoring'].update(valid=False,strict_pass=False,score=None,groups=None)
     return result
@@ -256,7 +278,8 @@ def evaluate_with_retry(case, manifest, **kwargs):
                     for error in result.get('errors', []))
     supplement_failed = result.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is not True
     presentation_failed = ('instructional_presentation' in result and result['instructional_presentation'].get('valid') is not True)
-    if manifest.get('status') == 'ok' and (transient or supplement_failed or presentation_failed):
+    spoken_failed = (result.get('narration_required') is True and result.get('narration_review',{}).get('valid') is not True)
+    if manifest.get('status') == 'ok' and (transient or supplement_failed or presentation_failed or spoken_failed):
         prior_errors = list(result.get('errors', []))
         kwargs['previous'] = result
         result = evaluate(case, manifest, **kwargs)
@@ -278,6 +301,12 @@ def bootstrap_ci(values: list[float], *, seed: int = 20261031,
 
 def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     rep = scoring.aggregate(rows)
+    spoken=[r for r in rows if prompts[r['id']].get('audio_narration_required') is True]
+    rep['spoken_teaching']={'n_required':len(spoken),
+        'n_transcribed':sum(r.get('speech_transcript',{}).get('valid') is True for r in spoken),
+        'n_reviewed':sum(r.get('narration_review',{}).get('valid') is True for r in spoken),
+        'n_passed':sum(r.get('narration_review',{}).get('passed') is True for r in spoken),
+        'failed_ids':[r['id'] for r in spoken if r.get('narration_review',{}).get('passed') is not True]}
     rep['instructional_presentation'] = {
         'n_total':len(rows),
         'n_reviewed':sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows),

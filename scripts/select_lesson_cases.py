@@ -28,8 +28,8 @@ def select(rows):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--source',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v1.jsonl')
-    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/lesson_validation_10_v1.jsonl')
+    p.add_argument('--source',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v2.jsonl')
+    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/lesson_validation_10_v2.jsonl')
     a=p.parse_args()
     rows=[json.loads(x) for x in a.source.read_text().splitlines() if x.strip()]
     cases=select(rows)

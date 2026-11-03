@@ -10,13 +10,13 @@ import os
 import base64
 import uuid
 from generation.source_geometry import rectangle_candidates
-from generation.lesson_spec import CONTRACT_VERSION, duration_spec, is_lesson, validate_timeline
+from generation.lesson_spec import CONTRACT_VERSION, LESSON_CONTRACTS, contract_version, duration_spec, is_lesson, validate_timeline
 
 VERSION = 'strict-five-seconds-v5'
 
 
 def make_contract(case: dict, source_image: Path | None = None) -> dict:
-    contract = {'version': CONTRACT_VERSION if is_lesson(case) else VERSION, **duration_spec(case),
+    contract = {'version': contract_version(case), **duration_spec(case),
             'task': case, 'source_image': str(source_image.resolve()) if source_image else None,
             'field_precedence': ('task.prompt_text and current expected_concepts, expected_visual_elements, '
                                  'expected_narrative_order and discipline_specific_rubric define the current task. '
@@ -68,7 +68,7 @@ def contract_hash(contract: dict) -> str:
 
 
 def outline_prompt(contract: dict) -> str:
-    if contract['version'] == CONTRACT_VERSION:
+    if contract['version'] in LESSON_CONTRACTS:
         return ('Plan a paced teaching lesson of exactly '+str(contract['duration_seconds'])+' seconds. '
                 'Return JSON {"topic":str,"target_audience":str,"sections":[{"id":"section_1","title":str,"content":str,"example":str}]}. '
                 'Use ONE continuous Manim scene organized into several teaching chapters: question, '
@@ -84,9 +84,9 @@ def outline_prompt(contract: dict) -> str:
 
 
 def storyboard_prompt(contract: dict, outline) -> str:
-    if contract['version'] == CONTRACT_VERSION:
+    if contract['version'] in LESSON_CONTRACTS:
         return ('Return JSON {"sections":[{"id":"section_1","title":str,"lecture_lines":[str],"animations":[str]}],'
-                '"teaching_timeline":[{"id":str,"start_s":number,"end_s":number,"goal":str,"visible_evidence":str,"requirement_ids":[str]}],'
+                '"teaching_timeline":[{"id":str,"start_s":number,"end_s":number,"goal":str,"visible_evidence":str,"requirement_ids":[str],"narration":str}],'
                 '"source_edit_regions":[[x0,y0,x1,y1]],"source_operations":[object]}. '
                 f'Total duration is exactly {contract["duration_seconds"]} seconds, including one-second initial source hold if applicable and one-second final hold. '
                 f'Use {max(3,math.ceil(contract["duration_seconds"]/20))}..18 consecutive chapters of 3..30 seconds covering the ENTIRE timeline, without gaps. '
@@ -96,6 +96,10 @@ def storyboard_prompt(contract: dict, outline) -> str:
                 'inspectable operations, and a result check. Distinguish input objects, intermediate states and final result. '
                 'No empty waits over 8 seconds, repeated loops or slowing a short reveal to fill time. '
                 'Include exact per-action durations and natural reading pauses in animations. '
+                'When audio_narration_required is true, each chapter also needs its ACTUAL spoken narration in narration_language. '
+                'Write substantive explanations, not stage directions or a list of labels. Aim for 3..4 Chinese characters per second '
+                'or 2..2.5 English words per second; allow pauses and fit speech inside each chapter. '
+                'Spoken claims and animation order must agree, including givens, key operations, reasons and verification. '
                 'For standalone tasks source_edit_regions and source_operations must be empty. '
                 'For source tasks keep the complete original fixed in source_viewport, use original IMAGE PIXELS '
                 'for boxes and helper operations, never do coordinate conversion yourself. '
@@ -127,7 +131,7 @@ def storyboard_prompt(contract: dict, outline) -> str:
 
 def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str:
     scene = section.id.title().replace('_', '') + 'Scene'
-    if contract['version'] == CONTRACT_VERSION:
+    if contract['version'] in LESSON_CONTRACTS:
         return ('Write complete runnable Manim CE v0.19 Python code only. '+note+
                 f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'+base_class+
                 '\nAuthor the FULL lesson at its natural pace using explicit run_time and self.wait durations. '
@@ -136,6 +140,8 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
                 'Runtime permits only 2% timing correction; a five-second scene will be REJECTED instead of stretched. '
                 'Call self.begin_teaching_step(chapter_id) at each teaching_timeline chapter boundary, including the first chapter. '
                 'The first boundary is after the runtime initial source hold when applicable; remaining boundaries must match start_s. '
+                'Follow the chapter narration in teaching_timeline: show each referred object and operation at the corresponding time. '
+                'Do not synthesize, attach or play audio from generated Python; the trusted runtime attaches narration afterward. '
                 'Every chapter needs visible task-relevant explanation or an inspectable operation. '
                 'Use 1..3 second transitions, short captions, settled states and waits no longer than 8 seconds. '
                 'Do not simulate teaching with repeated highlights, decorative movement or duplicated footage. '
@@ -243,20 +249,25 @@ class ContractAPI:
         logs = self.output / 'requests'
         logs.mkdir(parents=True, exist_ok=True)
         name = uuid.uuid4().hex
+        if text.startswith('Plan a paced teaching lesson'):
+            max_tokens=min(max_tokens,2048)
+        elif self.contract['version'] in LESSON_CONTRACTS and text.startswith('Return JSON {"sections"'):
+            max_tokens=min(max_tokens,6000)
         max_tokens, budget = request_budget(text, max_tokens, len(content)-1)
         (logs / f'{name}.prompt.txt').write_text(text)
         (logs / f'{name}.budget.json').write_text(json.dumps(budget, indent=2))
         structured = {}
         if text.startswith('Plan a paced teaching lesson'):
             from eval.judges.structured_json import obj, array, response_format
-            string={'type':'string','minLength':1}
+            string={'type':'string','minLength':1,'maxLength':200}
             structured['response_format']=response_format('lesson_outline',{
                 'topic':string,'target_audience':string,
                 'sections':array(obj({'id':{'type':'string','enum':['section_1']},'title':string,
-                                      'content':string,'example':string}),minItems=1,maxItems=1)})
-        elif self.contract['version']==CONTRACT_VERSION and text.startswith('Return JSON {"sections"'):
+                                      'content':{'type':'string','minLength':1,'maxLength':4000},
+                                      'example':{'type':'string','minLength':1,'maxLength':800}}),minItems=1,maxItems=1)})
+        elif self.contract['version'] in LESSON_CONTRACTS and text.startswith('Return JSON {"sections"'):
             from eval.judges.structured_json import obj, array, response_format
-            string={'type':'string','minLength':1}
+            string={'type':'string','minLength':1,'maxLength':900}
             number={'type':'number'}
             box=array(number,minItems=4,maxItems=4)
             common={'id':string,'step':{'type':'integer','minimum':1,'maximum':18},'box':box,'reason':string}
@@ -270,7 +281,8 @@ class ContractAPI:
                 'sections':array(obj({'id':{'type':'string','enum':['section_1']},'title':string,
                     'lecture_lines':array(string,maxItems=12),'animations':array(string,minItems=3,maxItems=60)}),minItems=1,maxItems=1),
                 'teaching_timeline':array(obj({'id':string,'start_s':number,'end_s':number,'goal':string,'visible_evidence':string,
-                    'requirement_ids':array({'type':'string','enum':required_ids},minItems=1)}),
+                    'requirement_ids':array({'type':'string','enum':required_ids},minItems=1),
+                    **({'narration':{'type':'string','minLength':1,'maxLength':1600}} if current['task'].get('audio_narration_required') else {})}),
                     minItems=max(3,math.ceil(current['duration_seconds']/20)),maxItems=18),
                 'source_edit_regions':array(box,minItems=1 if source else 0,maxItems=32 if source else 0),
                 'source_operations':array(operations,minItems=1 if source else 0,maxItems=32 if source else 0)})
