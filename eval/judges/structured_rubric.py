@@ -12,10 +12,10 @@ def response_format(ids, frame_count):
                         'required': ['id', 'applicable', 'score', 'evidence_frames', 'finding'],
                         'properties': {
                             'id': {'type': 'string', 'enum': list(ids)},
-                            'applicable': {'type': 'boolean'},
-                            'score': {'anyOf': [{'type': 'number', 'minimum': 1, 'maximum': 5, 'multipleOf': 0.5}, {'type': 'null'}]},
+                            'finding': {'type': 'string', 'minLength': 1, 'maxLength': 240},
                             'evidence_frames': {'type': 'array', 'items': {'type': 'integer', 'minimum': 1, 'maximum': frame_count}},
-                            'finding': {'type': 'string', 'minLength': 1}}}}}}}}
+                            'applicable': {'type': 'boolean'},
+                            'score': {'anyOf': [{'type': 'number', 'enum': [1,1.5,2,2.5,3,3.5,4,4.5,5]}, {'type': 'null'}]}}}}}}}}
 
 
 def judge(chat, messages, ids, frame_count, validate, *, attempts=3):

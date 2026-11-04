@@ -223,11 +223,15 @@ class LessonPipelineTests(unittest.TestCase):
             def release(self):pass
         frames=[Image.new('RGB',(120,80),'black')]*3
         comparison={'preferred':'tie','video_preferred':False,'advantage':'none'}
+        checkpoints = []
         with patch.object(cv2,'VideoCapture',return_value=Capture()), \
              patch('eval.frame_extractor.extract_window',return_value=(frames,[0,1,2])), \
              patch('eval.frame_extractor.extract_frames',return_value=frames), \
              patch.object(iv,'review',side_effect=[copy.deepcopy(observation),ValueError('bad judge JSON'),copy.deepcopy(observation)]):
-            result=iv.assess_video(self.case(30),'fixture.mp4')
+            result=iv.assess_video(self.case(30),'fixture.mp4',
+                                   checkpoint=lambda state: checkpoints.append(copy.deepcopy(state)))
+        self.assertEqual([len(s['segments']) for s in checkpoints], [1,2,3])
+        self.assertTrue(all(s['score'] is None for s in checkpoints))
         self.assertFalse(result['valid']);self.assertFalse(result['all_windows_reviewed'])
         self.assertEqual(len(result['segments']),3)
         with patch.object(cv2,'VideoCapture',return_value=Capture()), \
@@ -238,6 +242,16 @@ class LessonPipelineTests(unittest.TestCase):
             resumed=iv.assess_video(self.case(30),'fixture.mp4',previous=result)
         self.assertEqual(call.call_count,2)  # one failed window plus the global review
         self.assertTrue(resumed['all_windows_reviewed'])
+
+    def test_compact_ledger_keeps_absence_explicit_and_all_observations(self):
+        rows = [{'id':'a','status':'not_shown','finding':'absent','evidence_frames':[]},
+                {'id':'b','status':'incorrect','finding':'wrong visible value','evidence_frames':[2]},
+                {'id':'c','status':'uncertain','finding':'unreadable','evidence_frames':[3]}]
+        source = [{'id':0,'requirement_evidence':copy.deepcopy(rows)}]
+        compact = iv.ledger_for_judge(source)
+        self.assertEqual(compact[0]['not_shown_requirement_ids'], ['a'])
+        self.assertEqual(compact[0]['requirement_evidence'], rows[1:])
+        self.assertEqual(source[0]['requirement_evidence'], rows)
 
     def test_real_minute_render_and_refusal_to_stretch_a_short_clip(self):
         try:import manim

@@ -1,5 +1,6 @@
 """Supplemental design-based engagement evidence; never part of the public score."""
 import json
+from eval.evidence_prompt import prompt_json
 
 from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
@@ -36,7 +37,7 @@ def score(case, frames):
             'expected_concepts', 'expected_visual_elements', 'expected_narrative_order', 'target_duration_s', 'actual_duration_s', 'segment_evidence', 'delivery_pacing_evidence')}
     spec = '\n'.join(f'- {key}: {description}' for key, description in RUBRIC['teaching_engagement'])
     content = frames_as_multimodal_content(frames,
-        f'Task: {json.dumps(task, ensure_ascii=False)}\nCriteria:\n{spec}\nFrames: 1..{len(frames)}')
+        f'Task: {prompt_json(task)}\nCriteria:\n{spec}\nFrames: 1..{len(frames)}')
     result = judge(chat, [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
                    [key for key, _ in RUBRIC['teaching_engagement']], len(frames),
                    lambda raw: validate_result('teaching_engagement', raw, len(frames), rubric=RUBRIC))

@@ -1,5 +1,6 @@
 """Measured actual-track pauses and static/silent holds; no script-based evidence."""
 import math
+from numbers import Real
 import subprocess
 import cv2
 import numpy as np
@@ -18,9 +19,9 @@ def measure(frames, fps, transcript, path=None, ffmpeg='ffmpeg'):
         words += len(segment.get('words') or segment.get('text', '').split())
         for entry in entries:
             start, end = entry['start_s'], entry['end_s']
-            if not all(type(t) in (int, float) and math.isfinite(t) for t in (start, end)) or end < start:
+            if not all(isinstance(t, Real) and not isinstance(t, (bool, np.bool_)) and math.isfinite(t) for t in (start, end)) or end < start:
                 raise ValueError('invalid actual speech timestamps')
-            start, end = max(0., start), min(duration, end)
+            start, end = max(0., float(start)), min(duration, float(end))
             if end > start: intervals.append((start, end))
     merged = []
     for start, end in sorted(intervals):

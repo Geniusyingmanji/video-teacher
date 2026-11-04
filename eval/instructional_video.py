@@ -4,6 +4,7 @@ Research motivations and attribution: docs/SCORING_V7_DESIGN.md. This module
 contains no external implementation, copied rubric, or learned reward weights.
 """
 import json
+from eval.evidence_prompt import prompt_json
 import math
 
 import numpy as np
@@ -23,7 +24,7 @@ CRITERIA = {
     'perceptual_pacing': 'Changes can be followed and important states inspected within actual playback time.',
 }
 SUBSTANTIVE = {'operation', 'reasoning', 'comparison'}
-TEXT = {'type':'string', 'minLength':1, 'maxLength':480}
+TEXT = {'type':'string', 'minLength':1, 'maxLength':240}
 BOX = array({'type':'number', 'minimum':0, 'maximum':1}, minItems=4, maxItems=4)
 
 
@@ -126,16 +127,17 @@ def review(case, frames):
         'A pause can support reading, reflection or spoken explanation; timing thresholds alone do not prove poor pacing. '
         + ('Measured sampled-frame evidence: every sampled image is unchanged at a 24-level RGB tolerance. Events MUST be empty; no operation, reveal or transition is visible in these samples. '
          if unchanged else '')+
-        'Task obligations: '+json.dumps(requirements(case),ensure_ascii=False)+'\nCriteria: '+json.dumps(CRITERIA))
+        'Keep every finding and event description concise (at most 25 words), while stating the actual observed object, value or defect. '
+        'Task obligations: '+prompt_json(requirements(case))+'\nCriteria: '+json.dumps(CRITERIA))
     if case.get('segment_evidence'):
         prompt += ('\nEvery ten-second window was separately inspected. Use this timestamped ledger together '
                    'with the overview images; do not invent operations absent from the ledger. A window can '
                    'omit later steps without being defective. Reconcile object identities and values across windows. '
-                   'These are fallible model observations, not external truth:\n'+json.dumps(case['segment_evidence'],ensure_ascii=False))
+                   'These are fallible model observations, not external truth:\n'+prompt_json(case['segment_evidence']))
     if case.get('actual_spoken_segments'):
         prompt += ('\nActual-track ASR observations are available. Spoken explanation may clarify the diagram, '
                    'but cannot replace requested visible operations. Require correct correspondence at the cited times. '
-                   'ASR is fallible; do not infer pronunciation or voice quality.\n'+json.dumps(case['actual_spoken_segments'],ensure_ascii=False))
+                   'ASR is fallible; do not infer pronunciation or voice quality.\n'+prompt_json(case['actual_spoken_segments']))
     if case.get('segment_context'):
         prompt += ('\nTHIS IS ONE WINDOW OF A LONGER LESSON. Judge layout, local state integrity and pacing here. '
                    'Do not require the entire lesson or final answer within this window; introductions, transitions '
@@ -152,14 +154,14 @@ def review(case, frames):
             'severity':{'type':'string','enum':['minor','severe']},'essential':{'type':'boolean'},
             'frames':frame_indices(count),'region':BOX,'finding':TEXT}),maxItems=12),
         'criteria':array(obj({'id':{'type':'string','enum':list(CRITERIA)},'finding':TEXT,
-            'evidence_frames':frame_indices(count),'score':{'type':'number','minimum':1,'maximum':5,'multipleOf':0.5}}),minItems=6,maxItems=6),
+            'evidence_frames':frame_indices(count),'score':{'type':'number','enum':[1,1.5,2,2.5,3,3.5,4,4.5,5]}}),minItems=6,maxItems=6),
         'summary':TEXT}
     required=requirements(case)
     if case.get('segment_context'):
         properties['requirement_evidence']=array(obj({
             'id':{'type':'string','enum':[r['id'] for r in required]},
             'status':{'type':'string','enum':['met','partial','incorrect','not_shown','uncertain']},
-            'evidence_frames':frame_indices(count),'finding':TEXT}),minItems=len(required),maxItems=len(required))
+            'evidence_frames':frame_indices(count),'finding':{'type':'string','minLength':1,'maxLength':160}}),minItems=len(required),maxItems=len(required))
     schema=response_format('instructional_presentation',properties)
     def validator(raw):
         validate(raw,count)
@@ -230,7 +232,7 @@ def compare_still(case,frames,*,video_first):
         'Do not require extra content absent from the task, but distinguish accurate task completion from video added value. '
         'Record exactly what useful information would be lost and cite its sequence-local before/after frame numbers. '
         'Use before_frame=after_frame=0 when no substantive transition can be established. '
-        'Task: '+json.dumps(requirements(case),ensure_ascii=False))
+        'Task: '+prompt_json(requirements(case)))
     if case.get('audio_narration_required'):
         prompt += ('\nBoth presentations retain IDENTICAL narration. Compare only the information contributed '
                    'by changing visuals beyond the final held image with that same speech; narration itself '
@@ -239,7 +241,7 @@ def compare_still(case,frames,*,video_first):
         prompt += ('\nTimestamped observations from every window of the chronological version follow. '
                    'Use them only as supporting observations; cite a visible ordered overview-frame pair '
                    'for substantive advantage, and mark uncertain when overview evidence cannot establish it.\n'
-                   +json.dumps(case['segment_evidence'],ensure_ascii=False))
+                   +prompt_json(case['segment_evidence']))
     content=[{'type':'text','text':prompt}]
     for label,is_video in [('A',video_first),('B',not video_first)]:
         content+=frames_as_multimodal_content(frames if is_video else [frames[-1]],
@@ -265,7 +267,16 @@ def assess(case,frames):
     return score_review(observed,events,comparisons)
 
 
-def assess_video(case, path, *, resize_max=854, previous=None):
+def ledger_for_judge(ledger):
+    """Compact repeated absence records; preserve all actual observations and raw reports."""
+    return [{**window,
+             'requirement_evidence': [r for r in window.get('requirement_evidence', []) if r.get('status') != 'not_shown'],
+             'not_shown_requirement_ids': [r['id'] for r in window.get('requirement_evidence', []) if r.get('status') == 'not_shown'],
+             'absence_policy': 'not_shown requirements are unobserved here, never fulfilled evidence'}
+            for window in ledger]
+
+
+def assess_video(case, path, *, resize_max=854, previous=None, checkpoint=None):
     """Inspect every ten-second window, then judge the whole lesson and actual final still.
 
     Window observations remain VLM evidence, not independent factual ground truth.
@@ -299,6 +310,11 @@ def assess_video(case, path, *, resize_max=854, previous=None):
                             'review':observed,'events':events,'actual_spoken_segments':spoken})
         except Exception as exc:
             windows.append({'id':index,'start_s':start,'end_s':end,'error':f'{type(exc).__name__}: {exc}'[:600]})
+        if checkpoint:
+            checkpoint({'version': VERSION, 'valid': False, 'segments': windows,
+                        'all_windows_reviewed': False, 'score': None})
+        print(json.dumps({'case':case.get('id'),'window':index+1,'windows_total':math.ceil(duration/10),
+                          'verified':not bool(windows[-1].get('error'))}), flush=True)
     if any(w.get('error') for w in windows):
         return {'version':VERSION,'valid':False,'passed':False,'score':None,'all_windows_reviewed':False,
                 'duration_s':duration,'segments':windows,'failures':['segment_review_incomplete'],
@@ -307,7 +323,7 @@ def assess_video(case, path, *, resize_max=854, previous=None):
     ledger=[{'id':w['id'],'start_s':w['start_s'],'end_s':w['end_s'],'summary':w['review']['summary'],
              'issues':w['review']['issues'],'requirement_evidence':w['review']['requirement_evidence'],
              'timestamps_s':w['timestamps_s'],'actual_spoken_segments':w.get('actual_spoken_segments',[])} for w in windows]
-    global_case={**case,'segment_evidence':ledger}
+    global_case={**case,'segment_evidence':ledger_for_judge(ledger)}
     try:
         observed=review(global_case,overview)
         comparisons=[compare_still(global_case,overview,video_first=first) for first in (True,False)]

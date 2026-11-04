@@ -1,5 +1,6 @@
 """Share literal, frame-grounded observations across axes; reject unresolved contradictions."""
 import json
+from eval.evidence_prompt import prompt_json
 from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
 from eval.judges.structured_json import response_format, obj, array, STRING, BOOLEAN, frame_indices
@@ -19,7 +20,7 @@ def observe(case, frames):
               'An initial reveal and a required final hold are intentional. Distinguish a visible change from a claim in a caption. '
               'Return JSON {"observations":[{"fact":string,"frames":[integer]}],'
               '"visible_progression":boolean,"completed_task":boolean,"uncertainties":[string]}. '
-              'Uncertainties must include any illegible or ambiguous answer. Task:\n' + json.dumps(task, ensure_ascii=False))
+              'Uncertainties must include any illegible or ambiguous answer. Task:\n' + prompt_json(task))
     schema = response_format('grounded_observations', {
         'observations': array(obj({'fact': STRING, 'frames': frame_indices(len(frames))}), minItems=1),
         'visible_progression': BOOLEAN, 'completed_task': BOOLEAN, 'uncertainties': array(STRING)})
@@ -37,7 +38,7 @@ def observe(case, frames):
                 and all(isinstance(r,dict) and isinstance(r.get('fact'),str) and r['fact'].strip() and isinstance(r.get('frames'),list)
                         and r['frames'] and all(type(i) is int and 1<=i<=len(frames) for i in r['frames']) for r in raw['observations'])
                 and raw['observations']):
-            return raw
+            return {**raw, 'valid': True}
         errors.append('Observation fields must have nonempty facts, in-range integer frame indices and string uncertainties')
         prompt += '\nPrevious observation schema was invalid. Include literal facts and valid frame indices.'
     raise ValueError('grounded observations rejected after three schema checks: ' + '; '.join(errors))
@@ -51,7 +52,7 @@ def consistency(case, observations, axes, frames):
               'When the observations and reports disagree, frames are the authority. '
               'Return JSON {"valid":boolean,"conflicting_axes":[string],"finding":string}. '
               'valid must be false if factual contradictions remain; name every axis with an incorrect observation.\n'
-              + json.dumps({'task':case.get('prompt_text'),'observations':observations,'reports':reports}, ensure_ascii=False))
+              + prompt_json({'task':case.get('prompt_text'),'observations':observations,'reports':reports}))
     schema = response_format('evidence_consistency', {
         'valid': BOOLEAN, 'conflicting_axes': array({'type':'string', 'enum':list(axes)}), 'finding': STRING})
     for _ in range(3):

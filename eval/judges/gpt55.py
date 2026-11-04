@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import base64
 import json
+import math
 import os
 import subprocess
 import threading
@@ -127,10 +128,14 @@ def judge_config() -> dict[str, str]:
 
 def configured_client():
     config = judge_config()
+    timeout = float(os.environ.get('VIDEO_TEACHER_JUDGE_TIMEOUT_S', '900'))
+    if not math.isfinite(timeout) or timeout <= 0:
+        raise ValueError('VIDEO_TEACHER_JUDGE_TIMEOUT_S must be finite and positive')
     if config["provider"] == "openai_compatible":
         return OpenAI(api_key=os.environ["VIDEO_TEACHER_API_KEY"],
-                      base_url=config["base_url"], timeout=300.0, max_retries=3)
-    return make_client()
+                      base_url=config["base_url"], timeout=timeout, max_retries=0)
+    client = make_client(timeout=timeout)
+    return client.with_options(max_retries=0)
 
 
 def chat(
@@ -141,7 +146,7 @@ def chat(
     max_tokens: int = 4096,
     response_format: Optional[dict[str, str]] = None,
     client: Optional[AzureOpenAI] = None,
-    max_retries: int = 6,
+    max_retries: int = 3,
     **kwargs: Any,
 ) -> str:
     import random
@@ -157,7 +162,7 @@ def chat(
     if os.environ.get("VIDEO_TEACHER_ENABLE_THINKING") == "false":
         body = extra.setdefault("extra_body", {})
         body.setdefault("chat_template_kwargs", {})["enable_thinking"] = False
-    delay = 10.0
+    delay = 1.0
     for attempt in range(max_retries):
         try:
             # gpt-5.5 reasoning models often use max_completion_tokens instead.
@@ -170,14 +175,15 @@ def chat(
             if getattr(completion.choices[0], 'finish_reason', None) == 'length':
                 raise ValueError('Judge output truncated; no score accepted')
             return completion.choices[0].message.content or ""
-        except (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError):
+        except (RateLimitError, APIConnectionError, APITimeoutError, InternalServerError) as exc:
             if attempt == max_retries - 1:
                 raise
             jitter = random.uniform(0.8, 1.2)
             wait = delay * jitter
-            print(f"[gpt55] 429 rate limit on attempt {attempt+1}, sleeping {wait:.1f}s ...")
+            status = getattr(exc, 'status_code', None)
+            print(f"[judge] {type(exc).__name__} status={status} on attempt {attempt+1}/{max_retries}; retry in {wait:.1f}s", flush=True)
             time.sleep(wait)
-            delay = min(delay * 2, 120.0)
+            delay = min(delay * 2, 10.0)
     return ""
 
 

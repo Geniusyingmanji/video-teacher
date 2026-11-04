@@ -34,3 +34,14 @@ class DeliveryPacingTests(unittest.TestCase):
         transcript=self.transcript([(0,3),(0,3)])
         report=measure([np.zeros((12,16,3),dtype=np.uint8)]*100,10,transcript)
         self.assertAlmostEqual(report['speech_coverage'],.3)
+
+    def test_asr_numpy_timestamps_are_real_evidence(self):
+        transcript = self.transcript([(np.float64(0), np.float64(3))])
+        report = measure([np.zeros((12,16,3), dtype=np.uint8)]*100, 10, transcript)
+        self.assertAlmostEqual(report['speech_coverage'], .3)
+
+    def test_invalid_timestamps_remain_rejected(self):
+        for start, end in [(float('nan'), 3), (0, float('inf')), (3, 2), (True, 3)]:
+            transcript = {'valid': True, 'segments': [{'start_s': start, 'end_s': end, 'text': 'why'}]}
+            with self.assertRaisesRegex(ValueError, 'invalid actual speech timestamps'):
+                measure([np.zeros((12,16,3), dtype=np.uint8)]*100, 10, transcript)

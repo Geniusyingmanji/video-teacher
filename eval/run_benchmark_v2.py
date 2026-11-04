@@ -10,8 +10,10 @@ import argparse
 import hashlib
 import json
 import math
+import os
 import random
 import shutil
+from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
 from eval import benchmark_operators as operators
@@ -33,7 +35,7 @@ def scoring_code_sha256() -> str:
     root = Path(__file__).parent
     return hashlib.sha256(b"".join((root / name).read_bytes() for name in
                                     ("benchmark_scoring.py", "benchmark_operators.py", "frame_extractor.py",
-                                     "benchmark_video_rubric.py", "rubric_6x6.py",
+                                     "benchmark_video_rubric.py", "rubric_6x6.py", "evidence_prompt.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
                                      "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py",
                                      "narration.py", "delivery_pacing.py", "evidence_audit.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
@@ -84,8 +86,37 @@ def file_sha256(path: str | Path) -> str:
     return digest.hexdigest()
 
 
+def assessment_coverage(result):
+    """Every required assessment has a state; unavailable evidence never becomes zero."""
+    unavailable = 'generation_missing_or_failed' in result.get('errors', [])
+    cells = {}
+    sections = {**{name: result.get('axes', {}).get(name, {})
+                   for name in scoring.VIDEO_AXES + scoring.TEACHING_AXES},
+                'instructional_presentation': result.get('instructional_presentation', {}),
+                'task_completion': result.get('task_completion', {}),
+                'teaching_engagement': result.get('supplementary', {}).get('teaching_engagement', {}),
+                'total': result.get('scoring', {})}
+    if result.get('narration_required'):
+        sections['spoken_teaching'] = result.get('narration_review', {})
+    for name, section in sections.items():
+        value = section.get('score')
+        # Completion has an evidence-backed coverage ratio, not a quality score.
+        if name == 'task_completion' and section.get('valid') is True:
+            value = section.get('coverage')
+        valid = (not unavailable and section.get('valid') is not False and not section.get('error')
+                 and scoring.valid_score(value)
+                 and (name != 'task_completion' or (section.get('valid') is True and value <= 1)))
+        cells[name] = {'status': 'scored' if valid else ('unavailable_video' if unavailable else 'evaluation_failed'),
+                       'score': value if valid else None,
+                       'scale': '0..1 requirement coverage' if name == 'task_completion' else '0..100',
+                       'reason': None if valid else ('generation_missing_or_failed' if unavailable else
+                           section.get('error') or section.get('errors') or result.get('errors') or 'required_evidence_missing')}
+    return cells
+
+
 def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
-             frame_max_px: int = 832, ffmpeg: str = "ffmpeg", previous: dict | None = None) -> dict:
+             frame_max_px: int = 832, ffmpeg: str = "ffmpeg", previous: dict | None = None,
+             checkpoint_path: str | None = None) -> dict:
     result = {"id": case["id"], "axes": {}, "errors": [],
               "narration_required": case.get("audio_narration_required") is True,
               "video_path": manifest.get("video_path"), "version": scoring.VERSION,
@@ -95,6 +126,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     if manifest.get("status") != "ok" or not manifest.get("video_path"):
         result["errors"].append("generation_missing_or_failed")
         result["scoring"] = scoring.score_case({})
+        result['assessment_coverage'] = assessment_coverage(result)
         return result
     path = str(manifest["video_path"])
     try:
@@ -103,6 +135,24 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             raise FileNotFoundError(path)
         result["video_sha256"] = file_sha256(video)
         cached = previous if cache_matches(previous, case, manifest, sample_fps, frame_max_px) else {}
+        if checkpoint_path and Path(checkpoint_path).is_file():
+            try:
+                saved = json.loads(Path(checkpoint_path).read_text())
+                if cache_matches(saved, case, manifest, sample_fps, frame_max_px):
+                    cached = {**cached, **saved}
+            except (OSError, ValueError):
+                pass  # An incomplete checkpoint cannot supply trusted evidence.
+        def save_checkpoint(presentation=None):
+            if presentation is not None:
+                result['instructional_presentation'] = presentation
+            if checkpoint_path:
+                target = Path(checkpoint_path)
+                target.parent.mkdir(parents=True, exist_ok=True)
+                temporary = target.with_suffix('.tmp')
+                snapshot = {**cached, **result,
+                            'axes': {**cached.get('axes', {}), **result.get('axes', {})}}
+                temporary.write_text(json.dumps(snapshot, ensure_ascii=False))
+                temporary.replace(target)
         frames, fps = operators.decode_video(path)
         result["source_fps"] = fps
         result["source_frame_count"] = len(frames)
@@ -128,6 +178,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                     raise ValueError('actual speech track is absent or unverified')
                 transcript=cached.get('speech_transcript') or narration.transcribe(path)
                 result['speech_transcript']=transcript
+                save_checkpoint()
                 try:
                     result['delivery_pacing']=delivery_pacing.measure(frames, fps, transcript, path, ffmpeg)
                 except Exception as exc:
@@ -153,7 +204,8 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         try:
             saved_presentation = cached.get('instructional_presentation',{})
             result['instructional_presentation'] = (saved_presentation if saved_presentation.get('valid') is True
-                else instructional_video.assess_video(judged_case,path,resize_max=frame_max_px,previous=saved_presentation))
+                else instructional_video.assess_video(judged_case,path,resize_max=frame_max_px,previous=saved_presentation,
+                                                      **({'checkpoint': save_checkpoint} if checkpoint_path else {})))
         except Exception as exc:
             result['instructional_presentation'] = {'valid':False,'passed':False,
                 'version':instructional_video.VERSION,'error':f'{type(exc).__name__}: {exc}'[:600]}
@@ -161,7 +213,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         if is_lesson(case):
             ledger=result['instructional_presentation'].get('segment_evidence')
             if ledger is not None:
-                judged_case={**judged_case,'segment_evidence':ledger}
+                judged_case={**judged_case,'segment_evidence':instructional_video.ledger_for_judge(ledger)}
             if result['instructional_presentation'].get('all_windows_reviewed') is not True:
                 result['errors'].append('lesson_segment_coverage_failed')
         if result['narration_required'] and result.get('speech_transcript',{}).get('valid') is True:
@@ -172,11 +224,23 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             except Exception as exc:
                 result['narration_review']={'valid':False,'passed':False,'score':None,'error':f'{type(exc).__name__}: {exc}'[:600]}
                 result['errors'].append('spoken_teaching_failed')
-        result['task_completion'] = cached.get('task_completion') or task_completion.review(judged_case, sampled)
-        observations = cached.get('grounded_observations') or grounded_observations.observe(judged_case, sampled)
+        try:
+            saved = cached.get('task_completion', {})
+            result['task_completion'] = saved if saved.get('valid') is True else task_completion.review(judged_case, sampled)
+        except Exception as exc:
+            result['task_completion'] = {'valid': False, 'passed': False, 'score': None,
+                                         'error': f'{type(exc).__name__}: {exc}'[:600]}
+            result['errors'].append('task_completion_failed')
+        try:
+            saved = cached.get('grounded_observations', {})
+            observations = saved if saved.get('valid') is True else grounded_observations.observe(judged_case, sampled)
+        except Exception as exc:
+            observations = {'valid': False, 'error': f'{type(exc).__name__}: {exc}'[:600]}
+            result['errors'].append('grounded_observations_failed')
         observations = {**observations, 'task_completion': result['task_completion']}
         result['grounded_observations'] = observations
         judged_case = {**judged_case, 'grounded_observations': observations}
+        save_checkpoint()
         for name, dimension in DIMENSIONS.items():
             try:
                 saved = cached.get('axes', {}).get(name, {})
@@ -190,6 +254,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             except Exception as exc:
                 result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
                 result["errors"].append(f"{name}_failed")
+            save_checkpoint()
         for name, dimension in VIDEO_DIMENSIONS.items():
             try:
                 saved = cached.get('axes', {}).get(name, {})
@@ -206,18 +271,23 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             except Exception as exc:
                 result["axes"][name] = {"error": f"{type(exc).__name__}: {exc}"[:400]}
                 result["errors"].append(f"{name}_failed")
-        result['consistency_review'] = grounded_observations.consistency(judged_case, observations, result['axes'], sampled)
-        if not result['consistency_review']['valid']:
-            for name in result['consistency_review']['conflicting_axes']:
-                dimension = DIMENSIONS.get(name) or VIDEO_DIMENSIONS[name]
-                revised_case = {**judged_case, 'consistency_correction': result['consistency_review']}
-                revised = dimension.score(revised_case, sampled)
-                if name in DIMENSIONS:
-                    revised = {**revised, 'score': _semantic_score(revised), 'rubric_score_1_to_5': revised['score'], 'method':'evidence_backed_6x6_vlm_v2'}
-                result['axes'][name] = revised
+            save_checkpoint()
+        try:
             result['consistency_review'] = grounded_observations.consistency(judged_case, observations, result['axes'], sampled)
             if not result['consistency_review']['valid']:
-                result['errors'].append('unresolved_cross_axis_contradictions')
+                for name in result['consistency_review']['conflicting_axes']:
+                    dimension = DIMENSIONS.get(name) or VIDEO_DIMENSIONS[name]
+                    revised_case = {**judged_case, 'consistency_correction': result['consistency_review']}
+                    revised = dimension.score(revised_case, sampled)
+                    if name in DIMENSIONS:
+                        revised = {**revised, 'score': _semantic_score(revised), 'rubric_score_1_to_5': revised['score'], 'method':'evidence_backed_6x6_vlm_v2'}
+                    result['axes'][name] = revised
+                result['consistency_review'] = grounded_observations.consistency(judged_case, observations, result['axes'], sampled)
+                if not result['consistency_review']['valid']:
+                    result['errors'].append('unresolved_cross_axis_contradictions')
+        except Exception as exc:
+            result['consistency_review'] = {'valid': False, 'error': f'{type(exc).__name__}: {exc}'[:600]}
+            result['errors'].append('consistency_review_failed')
         try:
             saved = cached.get('supplementary', {}).get('teaching_engagement', {})
             result['supplementary'] = {'teaching_engagement': saved if saved.get('valid') is True
@@ -274,6 +344,13 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result['scoring']=delivery_pacing.apply(result['scoring'],result.get('delivery_pacing',{}))
     if is_lesson(case) and result.get('instructional_presentation',{}).get('all_windows_reviewed') is not True:
         result['scoring'].update(valid=False,strict_pass=False,score=None,groups=None)
+    result['assessment_coverage'] = assessment_coverage(result)
+    if checkpoint_path:
+        target = Path(checkpoint_path)
+        target.parent.mkdir(parents=True, exist_ok=True)
+        temporary = target.with_suffix('.tmp')
+        temporary.write_text(json.dumps(result, ensure_ascii=False))
+        temporary.replace(target)
     return result
 
 
@@ -311,6 +388,7 @@ def bootstrap_ci(values: list[float], *, seed: int = 20261031,
 
 def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     rep = scoring.aggregate(rows)
+    rep['assessment_coverage'] = {r['id']: assessment_coverage(r) for r in rows}
     spoken=[r for r in rows if prompts[r['id']].get('audio_narration_required') is True]
     rep['spoken_teaching']={'n_required':len(spoken),
         'n_transcribed':sum(r.get('speech_transcript',{}).get('valid') is True for r in spoken),
@@ -369,6 +447,22 @@ def reusable(previous: dict | None, case: dict, manifest: dict,
             and previous.get('supplementary', {}).get('teaching_engagement', {}).get('valid') is True)
 
 
+def evaluate_job(case, manifest, previous, sample_fps, frame_max_px, ffmpeg, base_url, checkpoint_path=None):
+    """Process-local judge routing preserves provenance and cache identities."""
+    old_url = os.environ.get('VIDEO_TEACHER_BASE_URL')
+    try:
+        if base_url:
+            os.environ['VIDEO_TEACHER_BASE_URL'] = base_url
+        if reusable(previous, case, manifest, sample_fps, frame_max_px):
+            return previous
+        return evaluate_with_retry(case, manifest, sample_fps=sample_fps,
+                                   frame_max_px=frame_max_px, ffmpeg=ffmpeg, previous=previous,
+                                   checkpoint_path=checkpoint_path)
+    finally:
+        if old_url is None: os.environ.pop('VIDEO_TEACHER_BASE_URL', None)
+        else: os.environ['VIDEO_TEACHER_BASE_URL'] = old_url
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--prompts", required=True)
@@ -379,13 +473,18 @@ def main() -> None:
     parser.add_argument("--ffmpeg", default="ffmpeg")
     parser.add_argument("--limit", type=int, default=0, help="Debug only; output is never ranking-publishable")
     parser.add_argument("--preflight", action="store_true", help="Validate inputs and local dependencies without calling the judge")
+    parser.add_argument('--workers', type=int, default=1, help='Independent case evaluation processes')
+    parser.add_argument('--judge-base-url', action='append', default=[],
+                        help='Existing compatible judge service; repeat to distribute cases')
     args = parser.parse_args()
-    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0 or args.frame_max_px <= 0 or args.limit < 0:
+    if not math.isfinite(args.sample_fps) or args.sample_fps <= 0 or args.frame_max_px <= 0 or args.limit < 0 or args.workers < 1:
         parser.error("invalid sampling or limit")
     try:
         config = evaluation_config(args.sample_fps, args.frame_max_px)
     except ValueError as exc:
         parser.error(str(exc))
+    if args.judge_base_url and config['judge']['provider'] != 'openai_compatible':
+        parser.error('--judge-base-url requires an OpenAI-compatible judge configuration')
     if config["judge"]["provider"] == "azure_cli" and shutil.which("az") is None:
         parser.error("Azure CLI 'az' is required; alternatively configure VIDEO_TEACHER_API_KEY, VIDEO_TEACHER_BASE_URL and VIDEO_TEACHER_MODEL")
     if args.ffmpeg == "ffmpeg" and shutil.which("ffmpeg") is None:
@@ -416,28 +515,44 @@ def main() -> None:
     out.mkdir(parents=True, exist_ok=True)
     per_case = out / "per_case.jsonl"
     previous = unique_by_id(read_jsonl(per_case), latest=True) if per_case.is_file() else {}
-    rows = []
-    # Persist each completed case, so interruption loses at most the active case.
+    completed = {}
+    # Only the parent writes; completed cases survive interruption.
     with per_case.open("a", encoding="utf-8") as f:
-        for id in ids:
-            item = manifest.get(id, {"id": id})
-            row = previous.get(id)
-            if not reusable(row, prompts[id], item, args.sample_fps, args.frame_max_px):
-                row = evaluate(prompts[id], item, sample_fps=args.sample_fps,
-                               frame_max_px=args.frame_max_px, ffmpeg=args.ffmpeg, previous=row)
-                f.write(json.dumps(row, ensure_ascii=False) + "\n")
-                f.flush()
-            rows.append(row)
+        def persist(row):
+            completed[row['id']] = row
+            f.write(json.dumps(row, ensure_ascii=False) + '\n')
+            f.flush()
+            print(json.dumps({'completed': len(completed), 'total': len(ids), 'id': row['id'],
+                              'score': row['scoring'].get('score'), 'valid': row['scoring']['valid']}), flush=True)
+        # Start long available lessons first; result order remains the frozen prompt order.
+        scheduled = sorted(ids, key=lambda id: (manifest.get(id, {}).get('status') == 'ok',
+                                                prompts[id].get('target_duration_s', 0)), reverse=True)
+        jobs = [(prompts[id], manifest.get(id, {'id': id}), previous.get(id),
+                 args.sample_fps, args.frame_max_px, args.ffmpeg,
+                 args.judge_base_url[i % len(args.judge_base_url)] if args.judge_base_url else None,
+                 str(out/'checkpoints'/f'{hashlib.sha256(id.encode()).hexdigest()[:24]}.json'))
+                for i, id in enumerate(scheduled)]
+        if args.workers == 1:
+            for job in jobs:
+                persist(evaluate_job(*job))
+        else:
+            with ProcessPoolExecutor(max_workers=args.workers) as pool:
+                futures = [pool.submit(evaluate_job, *job) for job in jobs]
+                for future in as_completed(futures):
+                    persist(future.result())
+    rows = [completed[id] for id in ids]
     # Compact historical attempts after a successful traversal.
     per_case.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
                         encoding="utf-8")
     aggregate = report(rows, prompts)
+    aggregate['per_case_sha256'] = file_sha256(per_case)
     if args.limit:
         aggregate["ranking_publishable"] = False
         aggregate["ranking_score"] = None
         aggregate["bootstrap_95_ci_case_mean"] = None
         aggregate["debug_subset"] = True
     aggregate["config"] = {**config,
+                           "workers": args.workers, "judge_base_urls": args.judge_base_url,
                            "prompt_sha256": hashlib.sha256(Path(args.prompts).read_bytes()).hexdigest(),
                            "manifest_sha256": hashlib.sha256(Path(args.manifest).read_bytes()).hexdigest(),
                            "scoring_code_sha256": config["scoring_code_sha256"]}

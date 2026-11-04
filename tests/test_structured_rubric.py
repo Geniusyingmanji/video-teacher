@@ -49,3 +49,9 @@ class StructuredTests(unittest.TestCase):
         self.assertEqual(criteria['minItems'], 6)
         self.assertEqual(criteria['maxItems'], 6)
         self.assertEqual(criteria['items']['properties']['applicable']['type'], 'boolean')
+        rating = criteria['items']['properties']['score']['anyOf'][0]
+        self.assertEqual(rating['enum'], [1,1.5,2,2.5,3,3.5,4,4.5,5])
+        self.assertNotIn('multipleOf', rating)
+        fields = list(criteria['items']['properties'])
+        self.assertLess(fields.index('finding'), fields.index('score'))
+        self.assertLess(fields.index('evidence_frames'), fields.index('score'))

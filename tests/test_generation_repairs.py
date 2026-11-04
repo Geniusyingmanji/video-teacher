@@ -119,7 +119,7 @@ class RepairTests(unittest.TestCase):
         invalid={'observations':[{'fact':'0.8','frames':[90]}],'visible_progression':True,'completed_task':True,'uncertainties':[]}
         valid={**invalid,'observations':[{'fact':'0.8 in lower box','frames':[1]}]}
         with patch.object(grounded_observations,'frames_as_multimodal_content',return_value=[]), patch.object(grounded_observations,'chat',side_effect=[json.dumps(invalid),json.dumps(valid)]) as call:
-            self.assertEqual(grounded_observations.observe({},[object()]),valid)
+            self.assertEqual(grounded_observations.observe({},[object()]),{**valid, 'valid':True})
             self.assertEqual(call.call_count,2)
 
     def test_consistency_rejects_reported_conflict(self):

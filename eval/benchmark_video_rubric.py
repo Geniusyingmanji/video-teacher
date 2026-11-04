@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+from eval.evidence_prompt import prompt_json
 import math
 
 from eval.frame_extractor import frames_as_multimodal_content
@@ -87,7 +88,7 @@ class VideoDimension:
         task = {key: case.get(key) for key in ("prompt_text", "expected_visual_elements",
                                                 "expected_narrative_order", "task_type", "grounded_observations", "consistency_correction", "segment_evidence", "actual_duration_s", "target_duration_s")}
         content = frames_as_multimodal_content(
-            frames, f"Axis: {axis}\nTask: {json.dumps(task, ensure_ascii=False)}\n"
+            frames, f"Axis: {axis}\nTask: {prompt_json(task)}\n"
                     f"Criteria:\n{spec}\nFrames: 1..{len(frames)}")
         return judge(chat, [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
                      [key for key, _ in RUBRIC[axis]], len(frames),

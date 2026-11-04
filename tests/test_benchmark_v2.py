@@ -3,6 +3,7 @@ import unittest
 import json
 import os
 import sys
+import subprocess
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -18,6 +19,49 @@ from eval.judges import gpt55
 
 
 class ScoringPolicyTests(unittest.TestCase):
+    def test_process_local_judge_route_restores_parent_environment(self):
+        with patch.dict(os.environ, {'VIDEO_TEACHER_BASE_URL': 'http://parent/v1'}), \
+             patch.object(runner, 'reusable', return_value=False), \
+             patch.object(runner, 'evaluate_with_retry', side_effect=lambda *a, **k: os.environ['VIDEO_TEACHER_BASE_URL']):
+            self.assertEqual(runner.evaluate_job({}, {}, None, 2, 832, 'ffmpeg', 'http://worker/v1'),
+                             'http://worker/v1')
+            self.assertEqual(os.environ['VIDEO_TEACHER_BASE_URL'], 'http://parent/v1')
+
+    def test_parallel_missing_videos_preserve_all_ids_and_reasons(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            ids = ['first', 'second', 'third', 'fourth']
+            (root/'prompts.jsonl').write_text(''.join(json.dumps({'id': i})+'\n' for i in ids))
+            (root/'manifest.jsonl').write_text(''.join(json.dumps({'id': i, 'status': 'failed'})+'\n' for i in ids))
+            env = {**os.environ, 'VIDEO_TEACHER_API_KEY': 'local',
+                   'VIDEO_TEACHER_MODEL': 'test-only', 'VIDEO_TEACHER_BASE_URL': 'http://127.0.0.1:1/v1'}
+            subprocess.run([sys.executable, '-m', 'eval.run_benchmark_v2', '--prompts', str(root/'prompts.jsonl'),
+                            '--manifest', str(root/'manifest.jsonl'), '--out', str(root/'out'), '--workers', '2'],
+                           env=env, cwd=Path(__file__).parents[1], check=True, capture_output=True, timeout=60)
+            rows = runner.read_jsonl(root/'out/per_case.jsonl')
+            self.assertEqual([r['id'] for r in rows], ids)
+            self.assertTrue(all(r['assessment_coverage']['total']['status'] == 'unavailable_video' for r in rows))
+            aggregate = json.loads((root/'out/aggregate.json').read_text())
+            self.assertEqual(aggregate['n_total'], 4)
+            self.assertIsNone(aggregate['ranking_score'])
+
+    def test_coverage_distinguishes_zero_failure_and_unavailable_video(self):
+        row = {'axes': {'visual_quality': {'score': 0},
+                         'signal_quality': {'error': 'judge offline'}},
+               'scoring': {'valid': False, 'score': None},
+               'task_completion': {'valid': True, 'coverage': .5},
+               'narration_required': True}
+        cells = runner.assessment_coverage(row)
+        self.assertEqual(cells['visual_quality']['status'], 'scored')
+        self.assertEqual(cells['visual_quality']['score'], 0)
+        self.assertEqual(cells['task_completion']['score'], .5)
+        self.assertIsNone(cells['signal_quality']['score'])
+        self.assertEqual(cells['signal_quality']['reason'], 'judge offline')
+        self.assertIn('spoken_teaching', cells)
+        row['errors'] = ['generation_missing_or_failed']
+        self.assertTrue(all(c['status'] == 'unavailable_video' and c['score'] is None
+                            for c in runner.assessment_coverage(row).values()))
+
     def setUp(self):
         self.axes = {a: 80 for names in scoring.GROUPS.values() for a in names}
 
@@ -150,6 +194,16 @@ class OperatorTests(unittest.TestCase):
                                                             for a in runner.VIDEO_DIMENSIONS}):
                 row = runner.evaluate({"id": "x", "expected_narrative_order": ["step"]},
                                       {"status": "ok", "video_path": path})
+                with patch.object(runner.task_completion, 'review', side_effect=RuntimeError('completion offline')), \
+                     patch.object(runner.grounded_observations, 'consistency', side_effect=RuntimeError('consistency offline')):
+                    partial = runner.evaluate({'id':'x','expected_narrative_order':['step']},
+                                              {'status':'ok','video_path':path})
+                    self.assertEqual(len(partial['axes']), 8)
+                    self.assertTrue(partial['supplementary']['teaching_engagement']['valid'])
+                    self.assertFalse(partial['scoring']['valid'])
+                    self.assertIsNone(partial['scoring']['score'])
+                    self.assertEqual(partial['assessment_coverage']['visual_quality']['status'], 'scored')
+                    self.assertEqual(partial['assessment_coverage']['task_completion']['status'], 'evaluation_failed')
                 with patch.object(runner.task_completion, 'review', return_value={
                         'valid': True, 'passed': False, 'failures':['flow'],
                         'requirements':[{'id':'flow','status':'missing','evidence_frames':[],
@@ -250,9 +304,27 @@ class OperatorTests(unittest.TestCase):
         self.assertEqual(response, '{"ok":true}')
         factory.assert_called_once()
         self.assertEqual(factory.call_args.kwargs["base_url"], "https://example.test/v1")
+        self.assertEqual(factory.call_args.kwargs['timeout'], 900)
+        self.assertEqual(factory.call_args.kwargs['max_retries'], 0)
         self.assertEqual(fake_client.chat.completions.create.call_args.kwargs["model"], "vision-model")
         self.assertEqual(fake_client.chat.completions.create.call_args.kwargs["response_format"],
                          {"type": "json_object"})
+
+    def test_timeout_retry_is_named_truthfully_and_does_not_become_a_score(self):
+        import contextlib
+        import io
+        import httpx
+        from openai import APITimeoutError
+        client = MagicMock()
+        client.chat.completions.create.side_effect = APITimeoutError(request=httpx.Request('POST', 'http://judge.test'))
+        output = io.StringIO()
+        env = {'VIDEO_TEACHER_API_KEY':'local','VIDEO_TEACHER_BASE_URL':'http://judge.test/v1', 'VIDEO_TEACHER_MODEL':'test'}
+        with patch.dict(os.environ, env), patch.object(gpt55.time, 'sleep'), contextlib.redirect_stdout(output):
+            with self.assertRaises(APITimeoutError):
+                gpt55.chat([], client=client, max_retries=2)
+        self.assertEqual(client.chat.completions.create.call_count, 2)
+        self.assertIn('APITimeoutError', output.getvalue())
+        self.assertNotIn('429', output.getvalue())
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ returns criterion evidence before a dimension score is computed in code.
 from __future__ import annotations
 
 import json
+from eval.evidence_prompt import prompt_json
 import math
 
 from eval.frame_extractor import frames_as_multimodal_content
@@ -136,13 +137,13 @@ def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None)
 
 def score_dimension(dimension: str, case: dict, frames: list) -> dict:
     criteria = "\n".join(f"- {i}: {description}" for i, description in RUBRIC[dimension])
-    task = json.dumps({key: case.get(key) for key in (
+    task = prompt_json({key: case.get(key) for key in (
         "discipline", "subdomain", "task_type", "pedagogical_target_audience",
         "prompt_text", "expected_concepts", "expected_visual_elements",
         "expected_narrative_order", "discipline_specific_rubric",
         "target_duration_s",
         "actual_duration_s", "grounded_observations", "consistency_correction", "segment_evidence",
-    )}, ensure_ascii=False)
+    )})
     content = frames_as_multimodal_content(
         frames, f"Dimension: {dimension}\nTask: {task}\nCriteria:\n{criteria}\n"
                 f"Frames are indexed 1..{len(frames)}. Return JSON only.")

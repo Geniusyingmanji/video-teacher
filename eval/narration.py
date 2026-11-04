@@ -4,6 +4,7 @@ ASR is fallible and is not a human listening test. Never trust a planned script
 as proof of the audio that was actually encoded in the submitted video.
 """
 import json
+from eval.evidence_prompt import prompt_json
 import math
 import os
 import hashlib
@@ -12,7 +13,7 @@ from pathlib import Path
 
 from eval.judges.gpt55 import chat
 from eval.judges.structured_json import response_format,obj,array
-from eval.instructional_video import _ask
+from eval.instructional_video import _ask, ledger_for_judge
 
 VERSION='spoken-teaching-v1'
 CRITERIA=['speech_accuracy','explanatory_coverage','visual_alignment','speech_pacing']
@@ -39,9 +40,9 @@ def transcribe(path):
     raw,info=model.transcribe(str(path),beam_size=3,vad_filter=True,word_timestamps=True)
     if not math.isfinite(info.language_probability) or info.language_probability<.5:
         raise ValueError('spoken language could not be identified confidently')
-    segments=[{'id':index,'start_s':r.start,'end_s':r.end,'text':r.text.strip(),
+    segments=[{'id':index,'start_s':float(r.start),'end_s':float(r.end),'text':r.text.strip(),
                'avg_logprob':r.avg_logprob,'no_speech_prob':r.no_speech_prob,
-               'words':[{'start_s':w.start,'end_s':w.end,'word':w.word,'probability':w.probability} for w in (r.words or [])]}
+               'words':[{'start_s':float(w.start),'end_s':float(w.end),'word':w.word,'probability':w.probability} for w in (r.words or [])]}
               for index,r in enumerate(raw) if r.text.strip()]
     if not segments:raise ValueError('no intelligible speech recognized in actual audio track')
     reliable=[r for r in segments if r['no_speech_prob']<.8 and r['avg_logprob']> -1.2]
@@ -85,14 +86,14 @@ def review(case,transcript,ledger):
         'Do not aim for a predetermined high or low score. Every deduction needs a concrete rubric failure '
         'with cited actual speech and visual windows. Signal silence and word timing are diagnostic '
         'proxies; reading or reflection pauses are not automatically defects.\n'
-        +json.dumps({'task_requirements':requirements(case),
-                    'criteria':CRITERIA,'actual_speech':speech,'video_windows':ledger,
-                    'measured_pacing_evidence':case.get('delivery_pacing_evidence',{})},ensure_ascii=False))
+        +prompt_json({'task_requirements':requirements(case),
+                    'criteria':CRITERIA,'actual_speech':speech,'video_windows':ledger_for_judge(ledger),
+                    'measured_pacing_evidence':case.get('delivery_pacing_evidence',{})}))
     schema=response_format('spoken_teaching',{'criteria':array(obj({
         'id':{'type':'string','enum':CRITERIA},'finding':{'type':'string','minLength':1,'maxLength':480},
         'speech_ids':array({'type':'integer','enum':[r['id'] for r in speech]}),
         'window_ids':array({'type':'integer','enum':[r['id'] for r in ledger]}),
-        'score':{'type':'number','minimum':1,'maximum':5,'multipleOf':0.5}}),minItems=4,maxItems=4),
+        'score':{'type':'number','enum':[1,1.5,2,2.5,3,3.5,4,4.5,5]}}),minItems=4,maxItems=4),
         'summary':{'type':'string','minLength':1,'maxLength':700}})
     def validate(raw):
         rows=raw.get('criteria',[])

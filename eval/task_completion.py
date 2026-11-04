@@ -1,5 +1,6 @@
 """Check every current obligation against frames, independently of numeric axes."""
 import json
+from eval.evidence_prompt import prompt_json
 from eval.frame_extractor import frames_as_multimodal_content
 from eval.judges.gpt55 import chat
 from eval.judges.structured_json import response_format, obj, array, STRING, frame_indices
@@ -72,7 +73,7 @@ def review(case, frames):
               'Return JSON {"requirements":[{"id":string,"expected":string,"observed":string,'
               '"finding":string,"evidence_frames":[1-based integers],"status":"met|missing|incorrect|uncertain"}]}. '
               'For absent evidence use an empty array and explain what was inspected.\n'
-              + json.dumps({'requirements':required, 'verified_arithmetic':arithmetic_anchors(required)}, ensure_ascii=False))
+              + prompt_json({'requirements':required, 'verified_arithmetic':arithmetic_anchors(required)}))
     segments=case.get('segment_evidence')
     if segments is not None:
         prompt += ('\nThis is a long lesson. All ten-second windows were separately inspected. '
@@ -83,7 +84,7 @@ def review(case, frames):
                    'Copy only citations actually recorded for this requirement in that segment. '
                    'No useful evidence means uncertain or missing. Model observations remain fallible; '
                    'reconcile contradictions rather than selecting the favorable report.\nSEGMENT EVIDENCE:\n'
-                   +json.dumps(segments,ensure_ascii=False))
+                   +prompt_json(segments))
     row_schema={
         'id': {'type':'string', 'enum':[r['id'] for r in required]},
         'expected': {'type':'string','minLength':1,'maxLength':480},
