@@ -27,7 +27,7 @@ class ClaimGroundingTests(unittest.TestCase):
                 'instructional_presentation':{'overview_timestamps_s':[0,1,2],'issues':[claim]}}, claim
 
     def answer(self, decision='rejected'):
-        return {'observations':[{'frame':i,'visible_state':'CLEAR CAPTION is readable.'} for i in (1,2)],
+        return {'observations':[{'frame':i,'visible_state':'CLEAR CAPTION is readable.'} for i in (1,2,3)],
                 'decision':decision,'supporting_frames':[1,2],'persistent_in_settled_frames':False,
                 'essential_content_unreadable':False,'reason':'One clear caption is visible in both frames.'}
 
@@ -36,7 +36,7 @@ class ClaimGroundingTests(unittest.TestCase):
             row, claim = self.fixture(Path(tmp))
             result = grounding.verify(row,claim,chat_fn=lambda *a,**k:json.dumps(self.answer()))
             self.assertEqual(result['decision'],'rejected')
-            self.assertEqual([s['time_s'] for s in result['sample_info']],[0,2])
+            self.assertEqual([s['time_s'] for s in result['sample_info']],[0,1,2])
             row['video_sha256']='changed'
             with self.assertRaisesRegex(ValueError,'source video changed'):
                 grounding.verify(row,claim,chat_fn=lambda *a,**k:json.dumps(self.answer()))
@@ -46,6 +46,24 @@ class ClaimGroundingTests(unittest.TestCase):
             row, claim = self.fixture(Path(tmp))
             with self.assertRaisesRegex(ValueError,'repeated settled'):
                 grounding.verify(row,claim,chat_fn=lambda *a,**k:json.dumps(self.answer('confirmed')))
+
+    def test_single_transition_is_bracketed_by_settled_neighbors(self):
+        row={'instructional_presentation':{'overview_timestamps_s':[0,1,2]}}
+        self.assertEqual([s['time_s'] for s in grounding.samples_for_claim(row,{'frames':[2]})],[0,1,2])
+
+    def test_many_references_keep_originals_within_image_budget(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            row,claim=self.fixture(Path(tmp))
+            row['instructional_presentation']['overview_timestamps_s']=[i/11 for i in range(23)]
+            claim['frames']=list(range(1,24))
+            def answer(messages, **kwargs):
+                images=[c for c in messages[0]['content'] if c['type']=='image_url']
+                self.assertEqual(len(images),24)
+                raw=self.answer()
+                raw['observations']=[{'frame':i,'visible_state':'Clear caption.'} for i in range(1,24)]
+                return json.dumps(raw)
+            result=grounding.verify(row,claim,chat_fn=answer)
+            self.assertEqual(len(result['sample_info']),23)
 
     def test_rejected_penalty_rerates_then_recomputes_same_formula(self):
         with tempfile.TemporaryDirectory() as tmp:

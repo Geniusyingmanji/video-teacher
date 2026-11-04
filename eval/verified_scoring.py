@@ -17,7 +17,7 @@ from eval.frame_extractor import extract_frames, extract_window, frames_as_multi
 from eval.judges.gpt55 import judge_config
 from eval.judges.structured_json import response_format, array, obj, frame_indices
 
-VERSION = scoring.VERSION + '+grounded-v1'
+VERSION = scoring.VERSION + '+grounded-v2'
 
 
 def code_hash():

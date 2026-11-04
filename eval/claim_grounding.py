@@ -16,7 +16,7 @@ from eval.judges.structured_json import response_format, obj, array
 from eval.frame_extractor import frames_as_multimodal_content, frame_to_data_url
 from eval.instructional_video import _ask
 
-VERSION = 'localized-claim-grounding-v1'
+VERSION = 'localized-claim-grounding-v2-settled-neighbors'
 
 
 def samples_for_claim(row, claim):
@@ -31,11 +31,16 @@ def samples_for_claim(row, claim):
         cited = list(range(1, len(times)+1))
     if not cited or any(type(i) is not int or not 1 <= i <= len(times) for i in cited):
         raise ValueError('claim has no reconstructable actual-frame evidence')
-    if len(cited) == 1:
-        neighbors = [i for i in range(1, len(times)+1) if abs(times[i-1]-times[cited[0]-1]) >= 1]
-        if neighbors:
-            cited.append(min(neighbors, key=lambda i: abs(times[i-1]-times[cited[0]-1])))
-    return [{'source_frame_reference':i, 'time_s':times[i-1]} for i in sorted(cited)]
+    inspected = set(cited)
+    for reference in cited:
+        at = times[reference-1]
+        before = [i for i in range(1, len(times)+1) if times[i-1] <= at-1]
+        after = [i for i in range(1, len(times)+1) if times[i-1] >= at+1]
+        if before:
+            inspected.add(max(before, key=lambda i: times[i-1]))
+        if after:
+            inspected.add(min(after, key=lambda i: times[i-1]))
+    return [{'source_frame_reference':i, 'time_s':times[i-1]} for i in sorted(inspected)]
 
 
 def verify(row, claim, *, chat_fn=None):
@@ -66,6 +71,9 @@ def verify(row, claim, *, chat_fn=None):
         'a persistent severe defect. For a severe display defect require essential content actually '
         'unreadable in at least TWO settled images spanning at least one second. A clean settled image '
         'contradicts a claim that it contains severe overlap. Do not invent unseen text or motion. '
+        'Neighbor images before and after the cited times test persistence. Two separate transient '
+        'caption transitions do not establish continuous severe overlap. Reject the severe-persistence '
+        'allegation when only transition frames overlap and adjacent settled images are readable. '
         'confirmed means the specific allegation is observed; rejected means the images contradict it; '
         'uncertain means insufficient evidence. Keep observations concise and literal.\n'
         + json.dumps({'allegation':claim.get('finding'), 'kind':claim.get('kind'),
@@ -75,7 +83,8 @@ def verify(row, claim, *, chat_fn=None):
     if region:
         if len(region) != 4 or not 0 <= region[0] < region[2] <= 1 or not 0 <= region[1] < region[3] <= 1:
             raise ValueError('invalid claim region')
-        for i, frame in enumerate(frames, 1):
+        # Retain every original image; detail crops use only the remaining image budget.
+        for i, frame in list(enumerate(frames, 1))[:max(0, 24-len(frames))]:
             w, h = frame.size
             crop = frame.crop((int(region[0]*w), int(region[1]*h), int(region[2]*w), int(region[3]*h)))
             content.extend([{'type':'text','text':f'Detail crop of supplied frame {i}; actual pixels, same time.'},
@@ -110,7 +119,8 @@ def verify(row, claim, *, chat_fn=None):
             raise ValueError('verification reason missing')
         return raw
     if chat_fn is None:
-        raw = _ask([{'role':'user','content':content}], schema, validate, tokens=2000)
+        raw = _ask([{'role':'user','content':content}], schema, validate,
+                   tokens=max(2000, 128*len(frames)+500))
     else:
         raw = validate(json.loads(chat_fn([{'role':'user','content':content}], response_format=schema)))
     return {**raw, 'version':VERSION, 'judge':judge_config(), 'video_sha256':digest,
