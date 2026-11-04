@@ -28,6 +28,21 @@ class InstructionalVideoTests(unittest.TestCase):
             frames.append(Image.fromarray(pixels))
         return frames
 
+    def test_bad_layout_and_bad_pacing_do_not_force_a_target_low_score(self):
+        observed=self.observation(5)
+        for row in observed['criteria']:
+            if row['id'] in ('layout_readability','perceptual_pacing'):row['score']=2
+        result=iv.score_review(observed,[],self.comparisons())
+        self.assertEqual(result['score'],25)
+        self.assertNotIn(19, result['caps'])
+        self.assertFalse(result['passed'])
+
+    def test_low_rating_without_frame_evidence_is_rejected(self):
+        observed=self.observation(4)
+        observed['criteria'][0].update(score=1, evidence_frames=[])
+        with self.assertRaisesRegex(ValueError, 'every rating'):
+            iv.validate(observed, 3)
+
     def test_frozen_frame_evidence_prevents_the_judge_from_inventing_events(self):
         frame=Image.new('RGB',(120,80),'black')
         with patch.object(iv,'_ask',return_value=self.observation()) as call:

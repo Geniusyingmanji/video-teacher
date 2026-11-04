@@ -123,13 +123,13 @@ class OperatorTests(unittest.TestCase):
         frames = [np.full((144, 256, 3), 120, dtype=np.uint8) for _ in range(30)]
         still = op.temporal_consistency(frames, 30, expected_steps=1)
         changing = op.temporal_consistency(frames, 30, expected_steps=4)
-        self.assertEqual(still["score"], 100)
-        self.assertLess(changing["score"], still["score"])
+        self.assertEqual(still["diagnostic_proxy_index"], 100)
+        self.assertLess(changing["diagnostic_proxy_index"], still["diagnostic_proxy_index"])
 
     def test_signal_metrics_are_finite_and_explainable(self):
         frame = np.full((144, 256, 3), 128, dtype=np.uint8)
         result = op.signal_quality([frame] * 3)
-        self.assertEqual(result["focus_score"], 100)
+        self.assertEqual(result["relative_focus_index"], 100)
         self.assertIn("clipped_fraction_p90", result)
 
     def test_evaluate_writes_evidence_and_score(self):

@@ -68,6 +68,10 @@ def run_case(args):
     from eval.frame_extractor import extract_frames
     case = next(json.loads(line) for line in (args.out/'prompts.jsonl').read_text().splitlines()
                 if json.loads(line)['id'] == args.case)
+    config = json.loads((args.out/'run_config.json').read_text())
+    profile = config.get('generation_profile','strict')
+    draft = profile == 'draft'
+    evaluate_draft = config.get('evaluate_draft', False)
     timing = duration_spec(case)
     expected_version = contract_version(case)
     deadline = time.monotonic() + 1200
@@ -94,14 +98,26 @@ def run_case(args):
             command = ['bash', 'research/code2video/experiments/run_model_case.sh', '--case-id', args.case,
                 '--prompts', str(args.out/'prompts.jsonl'), '--out', str(directory),
                 '--strict-contract', '--attempt', str(attempt)]
+            command += ['--generation-profile',profile]
+            if attempt == 0 and draft and config.get('reuse_run'):
+                previous_run = Path(config['reuse_run'])
+                candidates_to_reuse = list((ROOT/'research/code2video/Code2Video/src/CASES').glob(
+                    f'{previous_run.name}-attempt_*-qwen38-{args.case}-attempt*/{args.case}/section_1.py'))
+                if candidates_to_reuse:
+                    old_code = max(candidates_to_reuse,key=lambda path:(
+                        (path.parent/f'{args.case}.mp4').is_file(),path.stat().st_mtime))
+                    command += ['--reuse-scene-from',str(old_code.parent)]
             if feedback:
+                if draft:
+                    # Generation retries carry actionable runtime errors, not the full quality ledger.
+                    feedback = {key: feedback[key] for key in ('generation_error','source_plan_validation','instruction') if key in feedback}
                 path = directory/f'{args.case}_feedback.json'
                 dump(path, feedback)
                 command += ['--quality-feedback', str(path)]
             with (directory/f'{args.case}.log').open('w') as log:
                 process = subprocess.Popen(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
                 try:
-                    code = process.wait(timeout=3600)
+                    code = process.wait(timeout=7200)
                 except subprocess.TimeoutExpired:
                     os.killpg(process.pid, signal.SIGTERM)
                     try:
@@ -115,14 +131,20 @@ def run_case(args):
             video = Path(result.get('video') or '')
             rendered = result.get('complete') is True and result.get('contract_version') == expected_version and video.is_file() and inspect_exact(video,timing['duration_seconds'],timing['fps'])['valid']
             previous = json.loads(evaluation_path.read_text()) if evaluation_path.exists() else None
-            evaluation = evaluate(case, {'status':'ok' if rendered else 'failed', 'video_path':str(video) if rendered else None}, previous=previous)
+            evaluation = ({'id':args.case,'version':SCORING_VERSION,'status':'deferred',
+                           'scoring':{'valid':False,'strict_pass':False,'score':None},
+                           'errors':['Full quality evaluation deferred: generation-first draft delivery']}
+                          if draft and not evaluate_draft else evaluate(case, {'status':'ok' if rendered else 'failed', 'video_path':str(video) if rendered else None, 'render_diagnostics':result.get('strict_diagnostics',{})}, previous=previous))
             result['quality_gate'] = assess(result, evaluation)
-            result['semantic_review_status'] = ('evaluated_pass' if result['quality_gate']['passed'] else 'evaluated_fail' if evaluation.get('scoring',{}).get('valid') else 'evaluation_invalid')
+            result['semantic_review_status'] = ('deferred_draft_delivery' if draft and not evaluate_draft else
+                'evaluated_pass' if result['quality_gate']['passed'] else 'evaluated_fail' if evaluation.get('scoring',{}).get('valid') else 'evaluation_invalid')
             dump(result_path, result)
             dump(evaluation_path, evaluation)
         candidates.append((result,evaluation,attempt))
         frozen = validated_frozen(result, frozen)
         feedback = feedback_for(result, evaluation, frozen)
+        if draft and result.get('complete') and Path(result.get('video') or '').is_file():
+            break
         if result.get('complete') and Path(result.get('video') or '').is_file():
             feedback['review_frames'] = []
             for index, frame in enumerate(extract_frames(result['video'], n=3, resize_max=854)):
@@ -140,7 +162,8 @@ def run_case(args):
     video = Path(result.get('video') or '')
     rendered = result.get('complete') is True and result.get('contract_version') == expected_version and video.is_file() and inspect_exact(video,timing['duration_seconds'],timing['fps'])['valid']
     entry = dict(id=args.case, status='ok' if rendered else 'failed', video_path=str(video) if rendered else None,
-        model='qwen3.8-27b', generation=result, quality_passed=result['quality_gate']['passed'])
+        model='qwen3.8-27b', generation=result, quality_passed=result['quality_gate']['passed'],
+        generation_profile=profile, quality_review_status='deferred' if draft and not evaluate_draft else result.get('semantic_review_status'))
     dump(args.out/f'final_{args.case}.json', {'entry':entry, 'evaluation':evaluation})
     print(f'{args.case}: generated={rendered}, quality_passed={entry["quality_passed"]}', flush=True)
 
@@ -166,9 +189,12 @@ def summarize(out, cases, finished=False):
     if finished:
         aggregate = report(evaluations, {case['id']:case for case in cases})
         dump(directory/'aggregate.json', aggregate)
+    config_path=out/'run_config.json'
+    draft=config_path.is_file() and json.loads(config_path.read_text()).get('generation_profile') == 'draft'
     completion = dict(total=len(cases), processed=sum((out/f'final_{case["id"]}.json').exists() for case in cases),
         generated=sum(row['status']=='ok' for row in rows), quality_passed=sum(row['quality_passed'] for row in rows),
-        execution_finished=finished, complete=finished and len(rows)==len(cases) and all(row['quality_passed'] for row in rows),
+        execution_finished=finished, complete=finished and len(rows)==len(cases) and all(row['status']=='ok' if draft else row['quality_passed'] for row in rows),
+        generation_profile='draft' if draft else 'strict', quality_review_deferred=draft and not json.loads(config_path.read_text()).get('evaluate_draft',False),
         scoring_version=SCORING_VERSION, contract_versions={c['id']:contract_version(c) for c in cases}, same_model_self_evaluation=True)
     dump(out/('completion.json' if finished else 'progress.json'), completion)
     return completion
@@ -182,6 +208,11 @@ def main():
     parser.add_argument('--ports', type=int, nargs='+', default=[8000,8001])
     parser.add_argument('--max-attempts', type=int, default=3, choices=range(1,4))
     parser.add_argument('--resume', action='store_true')
+    parser.add_argument('--workers-per-gpu', type=int, choices=(1,2), default=1)
+    parser.add_argument('--generation-profile', choices=('strict','draft'), default='strict')
+    parser.add_argument('--reuse-run', type=Path)
+    parser.add_argument('--evaluate-draft', action='store_true', help='Evaluate delivered drafts without making quality a generation requirement')
+    parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--case')
     parser.add_argument('--gpu', type=int, choices=[0,1])
     args = parser.parse_args(); args.out = args.out.resolve()
@@ -197,20 +228,27 @@ def main():
     args.out.mkdir(parents=True, exist_ok=True)
     commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     config = dict(git_commit=commit, ids=[case['id'] for case in cases], gpus=args.gpus, ports=args.ports,
+        evaluate_draft=args.evaluate_draft,generation_profile=args.generation_profile,workers_per_gpu=args.workers_per_gpu,
+        reuse_run=str(args.reuse_run.resolve()) if args.reuse_run else None,
         contract_versions={c['id']:contract_version(c) for c in cases},
         timing={c['id']:duration_spec(c) for c in cases},
         scoring_version=SCORING_VERSION, max_attempts=args.max_attempts,
         implementation_sha256=implementation_sha256(),
-        prompt_sha256=hashlib.sha256(args.prompts.read_bytes()).hexdigest(), fresh_generation=True)
+        prompt_sha256=hashlib.sha256(args.prompts.read_bytes()).hexdigest(), fresh_generation=not bool(args.reuse_run))
+    if args.reuse_run:
+        if args.generation_profile != 'draft':parser.error('reuse-run requires draft delivery')
+        previous_cases=[json.loads(line) for line in (args.reuse_run/'prompts.jsonl').read_text().splitlines() if line.strip()]
+        if previous_cases != cases:parser.error('reuse-run requires identical frozen cases')
     config_path = args.out/'run_config.json'
     if args.resume:
         previous = json.loads(config_path.read_text())
-        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_versions','timing','scoring_version','prompt_sha256','max_attempts','implementation_sha256']):
+        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_versions','timing','scoring_version','prompt_sha256','max_attempts','implementation_sha256','generation_profile','reuse_run','evaluate_draft']):
             parser.error('resume requires the identical code, task, contract and scoring configuration')
     elif any(args.out.iterdir()):
         parser.error('fresh run requires empty output directory')
     dump(config_path, config)
     (args.out/'prompts.jsonl').write_text(''.join(json.dumps(c,ensure_ascii=False)+'\n' for c in cases))
+    if args.prepare_only:return 0
     tasks = queue.Queue()
     for case in cases:
         if not (args.out/f'final_{case["id"]}.json').exists(): tasks.put(case['id'])
@@ -224,8 +262,8 @@ def main():
                 code = subprocess.run(command,cwd=ROOT,env=environment(gpu,port),stdout=log,stderr=subprocess.STDOUT).returncode
             codes.append({'id':cid,'exit_code':code,'gpu':gpu})
             print(json.dumps(codes[-1]),flush=True)
-    with concurrent.futures.ThreadPoolExecutor(max_workers=len(args.gpus)) as pool:
-        futures = [pool.submit(worker,gpu,port) for gpu,port in zip(args.gpus,args.ports)]
+    with concurrent.futures.ThreadPoolExecutor(max_workers=len(args.gpus)*args.workers_per_gpu) as pool:
+        futures = [pool.submit(worker,gpu,port) for gpu,port in zip(args.gpus,args.ports) for _ in range(args.workers_per_gpu)]
         while any(not future.done() for future in futures):
             summarize(args.out,cases)
             time.sleep(10)

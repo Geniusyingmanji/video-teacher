@@ -40,6 +40,8 @@ if __name__ == '__main__':
     parser.add_argument('--strict-contract', '--strict-five-seconds', dest='strict_five_seconds', action='store_true')
     parser.add_argument('--attempt', type=int, default=0)
     parser.add_argument('--quality-feedback', type=Path)
+    parser.add_argument('--generation-profile', choices=('strict','draft'), default='strict')
+    parser.add_argument('--reuse-scene-from', type=Path)
     args = parser.parse_args()
     started = time.monotonic()
     source = args.prompts or ROOT.parents[1] / 'data/prompts/pilot_v0_1.jsonl'
@@ -99,9 +101,16 @@ if __name__ == '__main__':
         folder=ROOT / ('Code2Video/src/CASES/' + ((args.out.parent.name + '-' + args.out.name) if args.out else 'VIDEOTEACHER') + f'-qwen38-{args.case_id}-attempt{args.attempt}'),
         cfg=RunConfig(api=api, use_feedback=False, use_assets=False,
             max_code_token_length=8192 if lesson else 4096, max_fix_bug_tries=2, max_regenerate_tries=2))
+    draft = lesson and args.generation_profile == 'draft'
+    if args.reuse_scene_from:
+        if not draft:
+            parser.error('scene reuse is available only for explicitly labeled draft delivery')
+        for name in ('outline.json','storyboard.json','section_1.py'):
+            old = args.reuse_scene_from/name
+            if old.is_file():shutil.copy2(old, agent.output_dir/name)
     if args.strict_five_seconds:
         needs_source = needs_image
-        contract = make_contract(case, source_image if needs_source else None)
+        contract = make_contract(case, source_image if needs_source else None, args.generation_profile)
         if args.quality_feedback:
             contract['quality_feedback'] = json.loads(args.quality_feedback.read_text())
         contract_path = agent.output_dir / 'task_contract.json'
@@ -153,19 +162,28 @@ if __name__ == '__main__':
                     if needs_source:
                         from generation.source_plan import validate_plan, review_plan
                         validate_plan(agent.enhanced_storyboard, contract)
-                        source_validation = review_plan(agent.API, agent.enhanced_storyboard, contract)
+                        source_validation = ({'valid': None, 'finding': 'Semantic source-plan review deferred for draft delivery'}
+                                             if draft else review_plan(agent.API, agent.enhanced_storyboard, contract))
                         (agent.output_dir / f'source_plan_review_{attempt}.json').write_text(json.dumps(source_validation, indent=2))
-                        if not source_validation['valid']:
+                        if not source_validation['valid'] and not draft:
                             raise ValueError(source_validation['finding'])
                     break
                 except (ValueError, KeyError, TypeError) as exc:
                     source_validation = {'valid': False, 'finding': str(exc), 'attempt': attempt}
                     (agent.output_dir / f'source_plan_review_{attempt}.json').write_text(json.dumps(source_validation, indent=2))
-                    contract['storyboard_repair'] = {'error': str(exc), 'instruction': 'Fix this plan using the original source and unchanged task. Do not reuse rejected regions.'}
+                    contract['storyboard_repair'] = {
+                        'error': str(exc),
+                        'rejected_plan': agent.enhanced_storyboard,
+                        'instruction': 'Correct the rejected plan below. Preserve correct teaching content and the original task. '
+                                       'Check ALL requirement IDs including prompt and ALL chapter boundaries before returning the complete replacement. '
+                                       'Never claim coverage by adding IDs to unrelated content. Repair missing visible explanations and spoken reasons as well.'}
                     contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
                     (agent.output_dir / 'storyboard.json').rename(agent.output_dir / f'storyboard_rejected_{attempt}.json')
             else:
                 raise ValueError('Storyboard validation exhausted: ' + source_validation['finding'])
+            contract.pop('storyboard_repair', None)
+            source_validation = {'valid': True, 'finding': 'Storyboard and task coverage validated'} if not needs_source else source_validation
+            contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
         if args.strict_five_seconds and needs_source and not lesson:
             from generation.source_plan import compile_plan
             (agent.output_dir / 'section_1.py').write_text(compile_plan(agent.enhanced_storyboard, contract))
@@ -173,6 +191,15 @@ if __name__ == '__main__':
         if video and case.get('audio_narration_required') is True:
             failure_stage='narration'
             from generation.narration import attach
+            if draft:
+                diagnostics_file = agent.output_dir/'strict_diagnostics.json'
+                if diagnostics_file.is_file():
+                    actual = json.loads(diagnostics_file.read_text()).get('teaching_timeline',{}).get('chapters',[])
+                    if len(actual) == len(contract['teaching_timeline']) and [r['id'] for r in actual] == [r['id'] for r in contract['teaching_timeline']]:
+                        starts = [0.] + [r['actual_start_s'] for r in actual[1:]] + [contract['duration_seconds']]
+                        if all(b > a for a,b in zip(starts, starts[1:])):
+                            contract['teaching_timeline'] = [{**row,'start_s':starts[i],'end_s':starts[i+1]} for i,row in enumerate(contract['teaching_timeline'])]
+                            contract_path.write_text(json.dumps(contract,ensure_ascii=False,indent=2))
             narrated,narration_result=attach(Path(video),contract,agent.output_dir/'narration',api=agent.API)
             video=str(narrated)
             failure_stage=None
@@ -187,6 +214,8 @@ if __name__ == '__main__':
         expected_sections=len(agent.sections), rendered_sections=len(agent.section_videos),
         video=video, output_dir=str(agent.output_dir))
     result['audio_narration_required']=case.get('audio_narration_required') is True
+    result['generation_profile']=args.generation_profile
+    result['reused_scene_from']=str(args.reuse_scene_from) if args.reuse_scene_from else None
     result['narration']=narration_result
     result['complete'] = bool(video and Path(video).is_file() and agent.sections
                               and len(agent.sections)==len(agent.section_videos))
@@ -211,8 +240,9 @@ if __name__ == '__main__':
         result['source_required'] = needs_source
         result['source_edit_regions'] = (getattr(agent, 'enhanced_storyboard', None) or {}).get('source_edit_regions')
         result['complete'] = (result['complete'] and result['timing']['valid'] and len(agent.sections) == 1
-                              and diagnostics.get('layout', {'valid': True})['valid']
-                              and (not needs_source or diagnostics.get('source_preservation', {}).get('valid') is True))
+                              and (draft or (diagnostics.get('layout', {'valid': True})['valid']
+                              and (not needs_source or diagnostics.get('source_preservation', {}).get('valid') is True))))
+        result['delivery_warnings'] = diagnostics.get('delivery_warnings',[]) + (narration_result or {}).get('delivery_warnings',[])
         result['semantic_review_status'] = 'pending_eight_axis_self_evaluation'
     if generation_error:
         result['error'] = generation_error

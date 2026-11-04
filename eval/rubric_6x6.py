@@ -106,7 +106,7 @@ def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None)
         score = row.get("score")
         if applicable:
             if (not isinstance(score, (int, float)) or isinstance(score, bool)
-                    or not math.isfinite(score) or not 1 <= score <= 5):
+                    or not math.isfinite(score) or not 1 <= score <= 5 or score * 2 != round(score * 2)):
                 raise ValueError(f"{criterion_id}: invalid score")
             scores.append(float(score))
         elif score is not None:
@@ -160,3 +160,13 @@ class RubricDimension:
 
 
 DIMENSIONS = {name: RubricDimension(name) for name in RUBRIC}
+
+SYSTEM += """ Use half-point increments (1, 1.5, ..., 5) only.
+Anchors: 1 unusable/absent; 2 major defect; 3 adequate with visible limitations;
+4 strong with minor defects; 5 exceptional and fully demonstrated. A half point
+requires evidence between adjacent anchors, not numerical precision by intuition.
+Inspect the supplied segment_evidence and delivery_pacing_evidence before grading.
+A clean static final diagram does not establish a successful transition.
+Find and describe failures before assigning a rating. Reconcile contrary evidence
+from segmented review; do not select only favorable overview frames.
+"""

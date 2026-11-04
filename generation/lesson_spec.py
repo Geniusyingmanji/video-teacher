@@ -47,10 +47,22 @@ def duration_spec(case):
     return {'duration_seconds': duration, 'fps': fps, 'frame_count': frames}
 
 
+def chapter_schedule(contract):
+    """Provide exact frame-aligned slots; the model authors their teaching content."""
+    duration = contract['duration_seconds']
+    fps = contract['fps']
+    count = max(3, math.ceil(duration / 20))
+    frames = round(duration * fps)
+    boundaries = [round(i * frames / count) / fps for i in range(count + 1)]
+    return [{'id': f'chapter_{i+1}', 'start_s': boundaries[i], 'end_s': boundaries[i+1]}
+            for i in range(count)]
+
+
 def validate_timeline(plan, contract):
     """A continuous authored timeline, with evidence targets for each chapter."""
     if contract['version'] not in LESSON_CONTRACTS:
         return []
+    draft = contract.get('generation_profile') == 'draft'
     rows = plan.get('teaching_timeline')
     minimum=max(3,math.ceil(contract['duration_seconds']/20))
     if not isinstance(rows, list) or not minimum <= len(rows) <= 18:
@@ -67,19 +79,19 @@ def validate_timeline(plan, contract):
         start, finish = row.get('start_s'), row.get('end_s')
         if any(type(v) not in (int,float) or not math.isfinite(v) for v in (start,finish)):
             raise ValueError('chapter times must be finite numbers')
-        if abs(start-end) > 1e-6 or not 3 <= finish-start <= 30:
+        if abs(start-end) > 1e-6 or not (.5 if draft else 3) <= finish-start <= (contract['duration_seconds'] if draft else 30):
             raise ValueError('chapters must cover the timeline continuously in 3..30 second segments')
         for field in ('goal','visible_evidence'):
             if not isinstance(row.get(field), str) or not row[field].strip():
                 raise ValueError('chapter needs a goal and inspectable evidence')
         goal=' '.join(row['goal'].lower().split());visible=' '.join(row['visible_evidence'].lower().split())
-        if goal in goals or visible in evidence:
+        if not draft and (goal in goals or visible in evidence):
             raise ValueError('chapters must have distinct goals and visible evidence, not repeated filler')
         goals.add(goal);evidence.add(visible)
         obligations=row.get('requirement_ids')
-        if not isinstance(obligations,list) or not obligations or any(not isinstance(key,str) or key not in expected for key in obligations):
+        if not draft and (not isinstance(obligations,list) or not obligations or any(not isinstance(key,str) or key not in expected for key in obligations)):
             raise ValueError('each chapter must map to current task requirement IDs')
-        covered.update(obligations)
+        covered.update(obligations or [])
         if contract['task'].get('audio_narration_required') is True:
             narration=row.get('narration')
             if not isinstance(narration,str) or not narration.strip():
@@ -87,6 +99,6 @@ def validate_timeline(plan, contract):
         end = finish
     if abs(end-contract['duration_seconds']) > 1e-6:
         raise ValueError('teaching timeline must match the full duration including initial/final holds')
-    if covered!=expected:
+    if covered!=expected and not draft:
         raise ValueError('timeline omits current task requirements: '+', '.join(sorted(expected-covered)))
     return rows

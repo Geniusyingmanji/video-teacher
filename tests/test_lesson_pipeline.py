@@ -12,7 +12,7 @@ import cv2
 import numpy as np
 from PIL import Image
 
-from generation.lesson_spec import VERSION, CONTRACT_VERSION, duration_spec, validate_timeline, single_scene_outline
+from generation.lesson_spec import VERSION, CONTRACT_VERSION, duration_spec, validate_timeline, single_scene_outline, chapter_schedule
 from generation.strict_video_contract import make_contract, outline_prompt, storyboard_prompt, code_prompt
 from generation.strict_manim import inspect_exact, SourceFrameGuard
 from generation.source_geometry import canvas_box
@@ -82,6 +82,53 @@ class LessonPipelineTests(unittest.TestCase):
         content=outline['sections'][0]['content']
         self.assertIn(case['prompt_text'],content)
         for obligation in case['expected_narrative_order']:self.assertIn(obligation,content)
+
+    def test_storyboard_checklist_includes_full_prompt_and_last_requirement(self):
+        from generation.task_requirements import requirements
+        case = self.case(180)
+        case['expected_visual_elements'] = ['balance', 'both operations', 'substitution check']
+        contract = make_contract(case)
+        self.assertEqual([r['id'] for r in contract['requirements']], [r['id'] for r in requirements(case)])
+        self.assertEqual(contract['requirements'][1:], requirements(case)[1:])
+        self.assertEqual(contract['requirements'][0]['text_ref'], 'task.prompt_text')
+        prompt = storyboard_prompt(contract, single_scene_outline(case))
+        checklist = json.loads(prompt.split('REQUIREMENT CHECKLIST:\n')[1].split('\n')[0])
+        self.assertEqual(checklist, [row['id'] for row in requirements(case)])
+        self.assertIn('prompt', checklist)
+        self.assertIn('expected_visual_elements:2', checklist)
+
+    def test_schedule_is_continuous_frame_aligned_for_all_lesson_durations(self):
+        for duration in (30, 60, 120, 180, 901/15):
+            contract = make_contract(self.case(duration))
+            rows = chapter_schedule(contract)
+            self.assertEqual(rows[0]['start_s'], 0)
+            self.assertEqual(rows[-1]['end_s'], duration)
+            for i, row in enumerate(rows):
+                self.assertGreaterEqual(row['end_s']-row['start_s'], 3)
+                self.assertLessEqual(row['end_s']-row['start_s'], 30)
+                self.assertAlmostEqual(row['end_s']*15, round(row['end_s']*15))
+                if i: self.assertEqual(rows[i-1]['end_s'], row['start_s'])
+
+    def test_storyboard_retry_receives_previous_plan_and_exact_failure(self):
+        contract = make_contract(self.case())
+        contract['storyboard_repair'] = {'error': 'timeline omits current task requirements: prompt',
+                                       'rejected_plan': {'teaching_timeline': self.timeline()}}
+        prompt = storyboard_prompt(contract, {})
+        self.assertIn(contract['storyboard_repair']['error'], prompt)
+        self.assertIn('equation state 5 changes on both sides', prompt)
+
+    def test_code_budgets_exclude_runtime_holds_and_cover_full_lesson(self):
+        from types import SimpleNamespace
+        for source in (None, 'fixture.png'):
+            contract = make_contract(self.case(60))
+            contract['source_image'] = source
+            contract['teaching_timeline'] = chapter_schedule(contract)
+            prompt = code_prompt(contract, SimpleNamespace(id='section_1'), '')
+            budgets = json.loads(prompt.split('CHAPTER ACTION BUDGETS (seconds):\n')[1].split('\n')[0])
+            self.assertEqual(sum(r['action_budget_s'] for r in budgets), 59-bool(source))
+            self.assertEqual(budgets[0]['code_start_s'], int(bool(source)))
+            self.assertEqual(budgets[-1]['action_budget_s'], 19)
+            self.assertIn('setup_layout(title, [])', prompt)
 
     def test_bad_duration_and_gapped_or_incomplete_timeline_are_rejected(self):
         for duration in (True,float('nan'),0,29,181):
@@ -204,7 +251,9 @@ class LessonPipelineTests(unittest.TestCase):
             for i,equation in enumerate(equations):
                 lines += [f'  self.begin_teaching_step("step_{i}")','  self.clear()',
                           f'  label = Text({equation!r},font_size=36)',
-                          '  self.play(FadeIn(label),run_time=2)','  self.wait(4)',f'  self.wait({3 if i==5 else 4})']
+                          '  self.play(FadeIn(label),run_time=2)','  self.wait(2)',
+                          f'  note=self.teaching_caption({["Keep both sides equal","Subtract five on both sides","Seventeen minus five is twelve","Divide both sides by two","Twelve divided by two is six","Substitute six to check the equation"][i]!r})',
+                          '  self.play(FadeIn(note),run_time=2)',f'  self.wait({3 if i==5 else 4})']
             code=root/'section_1.py';code.write_text('\n'.join(lines)+'\n')
             env=dict(os.environ,PATH=str(Path(sys.executable).parent)+os.pathsep+os.environ.get('PATH',''))
             command=[sys.executable,'-m','generation.strict_manim','--code',str(code),'--scene','Section1Scene','--contract',str(root/'contract.json')]
@@ -234,12 +283,16 @@ class LessonPipelineTests(unittest.TestCase):
             code.write_text('from manim import *\nclass Section1Scene(Scene):\n def construct(self):\n'
                 '  self.begin_teaching_step("step_0")\n'
                 '  note=self.teaching_caption("Keep the same quantity on both sides")\n'
-                '  self.play(FadeIn(note),run_time=2)\n  self.wait(7)\n'
+                '  self.play(FadeIn(note),run_time=2)\n  self.wait(2)\n'
+                '  self.play(Circumscribe(note),run_time=2)\n  self.wait(3)\n'
                 '  self.begin_teaching_step("step_1")\n'
                 '  self.play(FadeIn(self.source_text("6",[200,100,600,240])),run_time=2)\n'
-                '  self.wait(4)\n  self.wait(4)\n'
+                '  self.wait(2)\n  explanation=self.teaching_caption("Six is the value of the unknown")\n'
+                '  self.play(FadeIn(explanation),run_time=2)\n  self.wait(4)\n'
                 '  self.begin_teaching_step("step_2")\n'
-                '  self.play(FadeOut(note),run_time=2)\n  self.wait(7)\n')
+                '  self.play(FadeOut(explanation),run_time=2)\n  self.wait(2)\n'
+                '  recap=self.teaching_caption("Check the result against the original")\n'
+                '  self.play(FadeIn(recap),run_time=2)\n  self.wait(3)\n')
             env=dict(os.environ,PATH=str(Path(sys.executable).parent)+os.pathsep+os.environ.get('PATH',''))
             run=subprocess.run([sys.executable,'-m','generation.strict_manim','--code',str(code),'--scene','Section1Scene',
                 '--contract',str(root/'contract.json')],capture_output=True,text=True,env=env,timeout=120)

@@ -24,7 +24,7 @@ from eval import teaching_engagement
 from eval import grounded_observations, task_completion, instructional_video
 from eval.rubric_6x6 import RUBRIC_VERSION
 from generation.lesson_spec import is_lesson, duration_spec
-from eval import narration
+from eval import narration, delivery_pacing
 
 MAX_JUDGE_FRAMES = 24
 
@@ -36,7 +36,7 @@ def scoring_code_sha256() -> str:
                                      "benchmark_video_rubric.py", "rubric_6x6.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
                                      "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py",
-                                     "narration.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
+                                     "narration.py", "delivery_pacing.py", "evidence_audit.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
@@ -107,6 +107,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["source_fps"] = fps
         result["source_frame_count"] = len(frames)
         judged_case = {**case, 'actual_duration_s': len(frames)/fps}
+        result['render_geometry'] = manifest.get('render_diagnostics', {}).get('layout', {})
         if is_lesson(case):
             target=duration_spec(case)
             result['duration_validation']={'valid':len(frames)==target['frame_count'] and abs(fps-target['fps'])<1e-6,
@@ -127,7 +128,13 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                     raise ValueError('actual speech track is absent or unverified')
                 transcript=cached.get('speech_transcript') or narration.transcribe(path)
                 result['speech_transcript']=transcript
+                try:
+                    result['delivery_pacing']=delivery_pacing.measure(frames, fps, transcript, path, ffmpeg)
+                except Exception as exc:
+                    result['delivery_pacing']={'valid':False,'error':f'{type(exc).__name__}: {exc}'[:600]}
+                    result['errors'].append('delivery_pacing_measurement_failed')
                 judged_case={**judged_case,'speech_transcript':transcript,
+                    'delivery_pacing_evidence':result.get('delivery_pacing',{}),
                     'actual_spoken_segments':[{k:r[k] for k in ('id','start_s','end_s','text')} for r in transcript['segments']]}
             except Exception as exc:
                 result['narration_review']={'valid':False,'passed':False,'score':None,'error':f'{type(exc).__name__}: {exc}'[:600]}
@@ -228,6 +235,8 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
             and diagnostic.get('clipped_fraction_p90', 0) >= .95):
         signal['score'] = min(signal['score'],40.0)
         signal['operator_cap'] = 'near_blank_or_clipped_frames'
+    from eval.evidence_audit import reconcile
+    reconcile(result)
     flat = {name: value.get("score") for name, value in result["axes"].items()}
     freeze = result.get("operators", {}).get("temporal_consistency", {}).get(
         "longest_duplicate_run_seconds", 0.0)
@@ -262,6 +271,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     result['scoring'] = instructional_video.apply(result['scoring'],result.get('instructional_presentation',{}))
     if result['narration_required']:
         result['scoring']=narration.apply(result['scoring'],result.get('narration_review',{}))
+        result['scoring']=delivery_pacing.apply(result['scoring'],result.get('delivery_pacing',{}))
     if is_lesson(case) and result.get('instructional_presentation',{}).get('all_windows_reviewed') is not True:
         result['scoring'].update(valid=False,strict_pass=False,score=None,groups=None)
     return result

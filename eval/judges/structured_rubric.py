@@ -13,7 +13,7 @@ def response_format(ids, frame_count):
                         'properties': {
                             'id': {'type': 'string', 'enum': list(ids)},
                             'applicable': {'type': 'boolean'},
-                            'score': {'anyOf': [{'type': 'integer', 'minimum': 1, 'maximum': 5}, {'type': 'null'}]},
+                            'score': {'anyOf': [{'type': 'number', 'minimum': 1, 'maximum': 5, 'multipleOf': 0.5}, {'type': 'null'}]},
                             'evidence_frames': {'type': 'array', 'items': {'type': 'integer', 'minimum': 1, 'maximum': frame_count}},
                             'finding': {'type': 'string', 'minLength': 1}}}}}}}}
 

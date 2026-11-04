@@ -45,7 +45,8 @@ def validate_plan(plan, contract):
         from manim import tempconfig
         from generation.source_primitives import SourcePrimitives
         with tempconfig({'pixel_width': 854, 'pixel_height': 480}):
-            primitives = SourcePrimitives(contract['source_image'], boxes, contract.get('source_viewport'))
+            primitives = SourcePrimitives(contract['source_image'], boxes, contract.get('source_viewport'),
+                                          min_label_pixels=0 if contract.get('generation_profile') == 'draft' else 16)
             for op in operations:
                 if op['kind'] == 'text':
                     primitives.text(op['text'], op['box'])

@@ -15,8 +15,11 @@ from generation.lesson_spec import CONTRACT_VERSION, LESSON_CONTRACTS, contract_
 VERSION = 'strict-five-seconds-v5'
 
 
-def make_contract(case: dict, source_image: Path | None = None) -> dict:
+def make_contract(case: dict, source_image: Path | None = None, generation_profile='strict') -> dict:
+    if generation_profile not in ('strict', 'draft'):
+        raise ValueError('unknown generation profile')
     contract = {'version': contract_version(case), **duration_spec(case),
+            'generation_profile': generation_profile,
             'task': case, 'source_image': str(source_image.resolve()) if source_image else None,
             'field_precedence': ('task.prompt_text and current expected_concepts, expected_visual_elements, '
                                  'expected_narrative_order and discipline_specific_rubric define the current task. '
@@ -31,7 +34,11 @@ def make_contract(case: dict, source_image: Path | None = None) -> dict:
                       'When source_image is non-null, edits must stay inside declared edit rectangles covering at most 25% of the canvas.',
                       'When source_image is null, create a standalone diagram and never reference a nonexistent source image.']}
     from generation.task_requirements import requirements
-    contract['requirements'] = requirements(case)[1:]  # full prompt already lives in task.prompt_text
+    contract['requirements'] = requirements(case)
+    # Keep the obligation explicit without duplicating arbitrarily long prompts.
+    contract['requirements'][0] = {'id': 'prompt', 'kind': 'instruction',
+                                  'text': 'Preserve every instruction and prohibition in task.prompt_text.',
+                                  'text_ref': 'task.prompt_text'}
     if is_lesson(case):
         contract['task'] = {k:v for k,v in case.items() if k!='revision_provenance'}
         contract['task']['revision_provenance'] = {k:v for k,v in case.get('revision_provenance',{}).items() if k!='original_case'}
@@ -40,7 +47,7 @@ def make_contract(case: dict, source_image: Path | None = None) -> dict:
         if source_image:
             contract['source_viewport'] = [0, 0, 1, .60]
             contract['teaching_panel'] = [0, .65, 1, 1]
-        contract['pacing'] = {'max_wait_s': 8, 'max_time_rescale': 1.02,
+        contract['pacing'] = {'max_wait_s': 4, 'max_time_rescale': 1.02,
                               'minimum_chapters': 3, 'maximum_chapter_s': 30}
     if source_image:
         from PIL import Image
@@ -60,7 +67,10 @@ def contract_text(contract: dict) -> str:
     current = dict(contract)
     if 'quality_feedback' in current:
         current['quality_feedback'] = compact(current['quality_feedback'])
-    return '\nAUTHORITATIVE TASK CONTRACT (applies to this stage and every repair):\n' + json.dumps(current, ensure_ascii=False)
+    draft = ('\nDELIVERY PRIORITY: Produce a working narrated video first. Layout, label size, coverage metadata and small timing deviations are review warnings. '
+             'Preserve the actual task and explain it in English. Do not spend output on timing scratch-work. '
+             'Up to 25% authored timing deviation is accepted and normalized by the renderer.\n') if current.get('generation_profile') == 'draft' else ''
+    return '\nAUTHORITATIVE TASK CONTRACT (applies to this stage and every repair):\n' + json.dumps(current, ensure_ascii=False) + draft
 
 
 def contract_hash(contract: dict) -> str:
@@ -85,6 +95,8 @@ def outline_prompt(contract: dict) -> str:
 
 def storyboard_prompt(contract: dict, outline) -> str:
     if contract['version'] in LESSON_CONTRACTS:
+        from generation.lesson_spec import chapter_schedule
+        schedule = chapter_schedule(contract)
         return ('Return JSON {"sections":[{"id":"section_1","title":str,"lecture_lines":[str],"animations":[str]}],'
                 '"teaching_timeline":[{"id":str,"start_s":number,"end_s":number,"goal":str,"visible_evidence":str,"requirement_ids":[str],"narration":str}],'
                 '"source_edit_regions":[[x0,y0,x1,y1]],"source_operations":[object]}. '
@@ -92,6 +104,9 @@ def storyboard_prompt(contract: dict, outline) -> str:
                 f'Use {max(3,math.ceil(contract["duration_seconds"]/20))}..18 consecutive chapters of 3..30 seconds covering the ENTIRE timeline, without gaps. '
                 'Every chapter needs a DISTINCT goal and distinct visible evidence, mapped to the exact IDs in requirements '
                 '(the full prompt uses ID prompt). All requirement IDs must be covered across the timeline. '
+                'Use the supplied CHAPTER SCHEDULE exactly for chapter IDs and times. Author the teaching content for each slot. '
+                'Before returning, compare the union of requirement_ids with REQUIREMENT CHECKLIST and fix every omission. '
+                'Map prompt to chapters that actually explain and verify the original question; mapping IDs alone is not evidence. '
                 'Each chapter must visibly teach a specific part of the unchanged question, with legible captions, '
                 'inspectable operations, and a result check. Distinguish input objects, intermediate states and final result. '
                 'No empty waits over 8 seconds, repeated loops or slowing a short reveal to fill time. '
@@ -107,6 +122,8 @@ def storyboard_prompt(contract: dict, outline) -> str:
                 'Steps are 1..18; only originally requested changes belong in source_edit_regions, whose union is at most 25% of the source. '
                 'Preserve all original prohibitions and objects in the reference viewport. Explanatory captions and extra teaching diagrams '
                 'must be in the lower teaching_panel, never on the reference. Plan source text large enough to render at least 16 pixels. '
+                +'\nCHAPTER SCHEDULE:\n'+json.dumps(schedule)
+                +'\nREQUIREMENT CHECKLIST:\n'+json.dumps([r['id'] for r in contract['requirements']])
                 +contract_text(contract)+'\nOUTLINE:\n'+str(outline))
     return ('Return only JSON with one section: {"sections":[{"id":"section_1","title":str,'
             '"lecture_lines":[str],"animations":[str]}],"source_edit_regions":[[x0,y0,x1,y1]]}. '
@@ -132,27 +149,48 @@ def storyboard_prompt(contract: dict, outline) -> str:
 def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str:
     scene = section.id.title().replace('_', '') + 'Scene'
     if contract['version'] in LESSON_CONTRACTS:
+        budgets = []
+        timeline = contract.get('teaching_timeline', [])
+        for index, chapter in enumerate(timeline):
+            initial_hold = 1 if index == 0 and contract.get('source_image') else 0
+            final_hold = 1 if index == len(timeline)-1 else 0
+            budgets.append({'id': chapter['id'],
+                            'code_start_s': chapter['start_s'] + initial_hold,
+                            'action_budget_s': chapter['end_s']-chapter['start_s']-initial_hold-final_hold})
         return ('Write complete runnable Manim CE v0.19 Python code only. '+note+
                 f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'+base_class+
                 '\nAuthor the FULL lesson at its natural pace using explicit run_time and self.wait durations. '
                 f'Target {contract["duration_seconds"]} seconds including runtime-added one-second final hold '
                 'and one-second initial source hold when source_image is present. '
-                'Runtime permits only 2% timing correction; a five-second scene will be REJECTED instead of stretched. '
+                + ('Runtime permits up to 25% timing correction for this draft; aim for the full lesson duration. ' if contract.get('generation_profile') == 'draft' else
+                   'Runtime permits only 2% timing correction; a five-second scene will be REJECTED instead of stretched. ')+
                 'Call self.begin_teaching_step(chapter_id) at each teaching_timeline chapter boundary, including the first chapter. '
                 'The first boundary is after the runtime initial source hold when applicable; remaining boundaries must match start_s. '
+                'For EACH chapter, sum the actual run_time of every self.play and duration of every self.wait, including loop iterations. '
+                'That sum must equal action_budget_s below. A comment saying 20 seconds does not allocate any time. '
+                'Plan meaningful visual operations, reasons, inspections and short reading pauses for the whole budget before writing code. '
+                'Do not fill missing time with repeated effects or chained empty waits. Do not add a final hold yourself. '
                 'Follow the chapter narration in teaching_timeline: show each referred object and operation at the corresponding time. '
                 'Do not synthesize, attach or play audio from generated Python; the trusted runtime attaches narration afterward. '
                 'Every chapter needs visible task-relevant explanation or an inspectable operation. '
-                'Use 1..3 second transitions, short captions, settled states and waits no longer than 8 seconds. '
+                'Use 1..3 second transitions, short captions, settled states and waits no longer than 4 seconds, including consecutive waits. Never use a slow animation to pad duration. '
                 'Do not simulate teaching with repeated highlights, decorative movement or duplicated footage. '
                 'Clear old captions before new captions, track original object identities and slot occupancy after every manipulation. '
                 'Keep equations, units, answers and all original prohibitions correct. Use only real Manim primitives. '
+                'Use three-coordinate points [x,y,0] and polygon.get_vertices(). For angle geometry use Angle or '
+                'AngleFromThreePoints, angle_between_vectors and rotate about the actual angle vertex. '
+                'Check and Checkmark are not Manim classes; draw checkmarks with two Lines. '
+                'Never redefine runtime helpers begin_teaching_step, teaching_caption or source_text/curve/highlight. '
+                'Return finished executable code only: no placeholders, pass, ellipses, scratch calculations or plans to rewrite later. '
                 'Pass animations to self.play, never eager mutations. Preserve random seeds between rendering passes. '
                 'For source tasks the runtime draws the locked original in the upper viewport; never add another image, clear, shift or redraw it. '
                 'Use self.source_text/curve/highlight with declared ORIGINAL pixel boxes for source changes. '
-                'Use self.teaching_caption(text) for explanations in the lower panel; it returns a Text mobject to animate. '
+                'Use self.teaching_caption(text) for every explanation in the reserved lower caption band; it replaces the previous runtime caption and returns a Text mobject to animate. Keep each caption at most two lines, 42 characters per line. Do not put equations, titles, or diagram objects in the caption band. '
                 'Other explanatory geometry must fit ENTIRELY within teaching_panel. Source protection checks every rendered frame. '
                 'For standalone diagrams use the full canvas with separate title, diagram and caption areas. '
+                'Reserve top 15% for one short title, middle 60% for the diagram, bottom 20% for the caption, with 5% outer margins. Use a consistent neutral background, one accent color, aligned labels and balanced whitespace. Call setup_layout(title, []) if using that helper; do not display full lecture paragraphs as persistent notes. '
+                'Use short captions one at a time, clear the previous caption, and reserve enough width for labels without shrinking text. '
+                +'\nCHAPTER ACTION BUDGETS (seconds):\n'+json.dumps(budgets)+'\n'
                 +contract_text(contract)+'\nSTORYBOARD SECTION:\n'+json.dumps(vars(section),ensure_ascii=False))
     return ('Write complete runnable Manim CE v0.19 Python code only. ' + note
             + f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'
@@ -234,6 +272,11 @@ class ContractAPI:
         from generation.repair_feedback import compact
         from generation.prompt_budget import request_budget
         text = str(prompt)
+        from generation.lesson_codegen import is_code_request
+        code_request = self.contract['version'] in LESSON_CONTRACTS and is_code_request(text)
+        draft = self.contract.get('generation_profile') == 'draft'
+        if code_request:
+            max_tokens = 8192 if draft else max(max_tokens, 16384)
         if 'AUTHORITATIVE TASK CONTRACT' not in text:
             text += contract_text(current)
         diagnostics = self.output / 'strict_diagnostics.json'
@@ -254,6 +297,9 @@ class ContractAPI:
         elif self.contract['version'] in LESSON_CONTRACTS and text.startswith('Return JSON {"sections"'):
             max_tokens=min(max_tokens,6000)
         max_tokens, budget = request_budget(text, max_tokens, len(content)-1)
+        budget['enable_thinking'] = code_request and not draft
+        if code_request:
+            budget['reasoning_effort'] = 'low' if draft else 'medium'
         (logs / f'{name}.prompt.txt').write_text(text)
         (logs / f'{name}.budget.json').write_text(json.dumps(budget, indent=2))
         structured = {}
@@ -276,7 +322,7 @@ class ContractAPI:
                 obj({**common,'kind':{'type':'string','enum':['curve']},'points':array(array(number,minItems=2,maxItems=2),minItems=2,maxItems=96)}),
                 obj({**common,'kind':{'type':'string','enum':['highlight']}})]}
             source=bool(current.get('source_image'))
-            required_ids=['prompt']+[r['id'] for r in current['requirements']]
+            required_ids=list(dict.fromkeys(['prompt']+[r['id'] for r in current['requirements']]))
             structured['response_format']=response_format('lesson_storyboard',{
                 'sections':array(obj({'id':{'type':'string','enum':['section_1']},'title':string,
                     'lecture_lines':array(string,maxItems=12),'animations':array(string,minItems=3,maxItems=60)}),minItems=1,maxItems=1),
@@ -286,11 +332,13 @@ class ContractAPI:
                     minItems=max(3,math.ceil(current['duration_seconds']/20)),maxItems=18),
                 'source_edit_regions':array(box,minItems=1 if source else 0,maxItems=32 if source else 0),
                 'source_operations':array(operations,minItems=1 if source else 0,maxItems=32 if source else 0)})
+        if code_request:
+            structured['reasoning_effort'] = 'low' if draft else 'medium'
         result = OpenAI(base_url=os.environ.get('LOCAL_BASE_URL', 'http://127.0.0.1:8000/v1'),
-                        api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=600, max_retries=1).chat.completions.create(
+                        api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=1200 if code_request else 600, max_retries=1).chat.completions.create(
             model=os.environ.get('LOCAL_MODEL', 'qwen3.8-27b'),
             messages=[{'role': 'user', 'content': content}], max_tokens=max_tokens, temperature=.3,
-            extra_body={'chat_template_kwargs': {'enable_thinking': False}}, **structured)
+            extra_body={'chat_template_kwargs': {'enable_thinking': code_request and not draft}}, **structured)
         (logs / f'{name}.response.json').write_text(result.model_dump_json())
         if result.choices[0].finish_reason == 'length':
             raise RuntimeError('Model output truncated; task not accepted')

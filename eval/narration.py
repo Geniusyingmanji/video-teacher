@@ -79,26 +79,30 @@ def review(case,transcript,ledger):
         'run substantially ahead of operations or contradict diagrams. Allow natural reading and inspection pauses. '
         'Missing crucial explanations, unresolved ASR ambiguity and visual/spoken contradiction prevent passing. '
         'Do not require unrelated syllabus content. Speech cannot replace required visible operations. '
-        'Score each criterion 1..5: absent/wrong, weak, adequate/uncertain, strong, exceptional. '
+        'Score each criterion 1..5 in half-point increments between explicit adjacent anchors: absent/wrong, weak, adequate/uncertain, strong, exceptional. '
         'Cite actual speech IDs and video-window IDs. Give concrete observations before scores. '
-        'Do not trust intended narration scripts as proof of what was spoken.\n'
+        'Do not trust intended narration scripts as proof of what was spoken. '
+        'Do not aim for a predetermined high or low score. Every deduction needs a concrete rubric failure '
+        'with cited actual speech and visual windows. Signal silence and word timing are diagnostic '
+        'proxies; reading or reflection pauses are not automatically defects.\n'
         +json.dumps({'task_requirements':requirements(case),
-                    'criteria':CRITERIA,'actual_speech':speech,'video_windows':ledger},ensure_ascii=False))
+                    'criteria':CRITERIA,'actual_speech':speech,'video_windows':ledger,
+                    'measured_pacing_evidence':case.get('delivery_pacing_evidence',{})},ensure_ascii=False))
     schema=response_format('spoken_teaching',{'criteria':array(obj({
         'id':{'type':'string','enum':CRITERIA},'finding':{'type':'string','minLength':1,'maxLength':480},
         'speech_ids':array({'type':'integer','enum':[r['id'] for r in speech]}),
         'window_ids':array({'type':'integer','enum':[r['id'] for r in ledger]}),
-        'score':{'type':'integer','minimum':1,'maximum':5}}),minItems=4,maxItems=4),
+        'score':{'type':'number','minimum':1,'maximum':5,'multipleOf':0.5}}),minItems=4,maxItems=4),
         'summary':{'type':'string','minLength':1,'maxLength':700}})
     def validate(raw):
         rows=raw.get('criteria',[])
         if len(rows)!=4 or {r.get('id') for r in rows}!=set(CRITERIA):raise ValueError('all four spoken-teaching criteria required')
         for row in rows:
-            if type(row.get('score')) is not int or not 1<=row['score']<=5:raise ValueError('invalid spoken-teaching score')
+            if type(row.get('score')) not in (int,float) or not 1<=row['score']<=5 or row['score']*2 != round(row['score']*2):raise ValueError('invalid spoken-teaching score')
             for field,allowed in (('speech_ids',{r['id'] for r in speech}),('window_ids',{r['id'] for r in ledger})):
                 ids=row.get(field)
                 if not isinstance(ids,list) or any(type(i) is not int or i not in allowed for i in ids):raise ValueError('invalid spoken evidence citation')
-                if row['score']>=3 and not ids:raise ValueError('positive spoken review needs actual speech and visual evidence')
+                if not ids:raise ValueError('every spoken rating, including deductions, needs actual speech and visual evidence')
             if not isinstance(row.get('finding'),str) or not row['finding'].strip():raise ValueError('spoken review finding missing')
         return raw
     raw=_ask([{'role':'user','content':prompt}],schema,validate,tokens=2500)

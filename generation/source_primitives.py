@@ -5,7 +5,8 @@ from PIL import Image
 
 
 class SourcePrimitives:
-    def __init__(self, source, allowed_boxes, viewport=None):
+    def __init__(self, source, allowed_boxes, viewport=None, min_label_pixels=16):
+        self.min_label_pixels = min_label_pixels
         self.image = Image.open(source).convert('RGB')
         self.size = self.image.size
         self.boxes = allowed_boxes
@@ -32,8 +33,8 @@ class SourcePrimitives:
             raise ValueError('source label box too small')
         label = Text(str(text), font_size=32, color=color)
         label.scale(min(width/label.width, height/label.height, 1))
-        if label.height/config.frame_height*config.pixel_height < 16:
-            raise ValueError('source label would be below 16 rendered pixels; improve localization/layout')
+        if label.height/config.frame_height*config.pixel_height < self.min_label_pixels:
+            raise ValueError(f'source label would be below {self.min_label_pixels} rendered pixels; improve localization/layout')
         label.move_to(self.point((x0+x1)/2, (y0+y1)/2))
         if not replace:
             return label

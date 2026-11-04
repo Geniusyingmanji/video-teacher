@@ -32,6 +32,7 @@ def feedback_for(result, evaluation, frozen=None):
                 'instructional_presentation': compact(evaluation.get('instructional_presentation',{})),
                 'task_completion': evaluation.get('task_completion'),
                 'spoken_teaching':compact(evaluation.get('narration_review',{})),
+                'delivery_pacing':compact(evaluation.get('delivery_pacing',{})),
                 'narration_diagnostics':compact(result.get('narration')),
                 'source_plan_validation': result.get('source_plan_validation'),
                 'instruction': 'Repair all evidenced failures. Preserve the full task and validated target boxes. Expose relevant operations or reasoning; decorative motion and answer-only reveals do not repair weak video value. If source restrictions make substantive demonstration impossible, report that blocker rather than adding unrelated animation.'}

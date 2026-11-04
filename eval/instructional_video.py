@@ -50,11 +50,11 @@ def validate(raw, count):
         if not isinstance(row,dict) or row.get('id') not in CRITERIA or row['id'] in seen:
             raise ValueError('unknown or duplicate presentation criterion')
         seen.add(row['id'])
-        if type(row.get('score')) is not int or not 1<=row['score']<=5:
-            raise ValueError('criterion score must be integer 1..5')
+        if type(row.get('score')) not in (int,float) or not 1<=row['score']<=5 or row['score']*2 != round(row['score']*2):
+            raise ValueError('criterion score must use half points 1..5')
         _indices(row.get('evidence_frames'),count)
-        if row['score']>=3 and not row['evidence_frames']:
-            raise ValueError('positive rating needs visible evidence')
+        if not row['evidence_frames']:
+            raise ValueError('every rating, including deductions, needs visible evidence')
         if not isinstance(row.get('finding'),str) or not row['finding'].strip():
             raise ValueError('criterion finding missing')
     for field in ('events','issues'):
@@ -106,6 +106,9 @@ def review(case, frames):
         '1=unusable or absent, 2=weak, 3=adequate execution, 4=strong evidenced teaching, '
         '5=exceptionally effective and concretely justified. Do not give 5 merely for meeting a requirement. '
         'Inspect essential text overlap/occlusion and readable duration, not just whether words exist. '
+        'For layout_readability, assess hierarchy, alignment, spacing, balance and caption/diagram separation. '
+        'Legible text alone is not a polished layout. For perceptual_pacing inspect actual timestamps: '
+        'long empty holds, slow reveals and repeated filler are weak even if the total duration is correct. '
         'For paths/flows, check visible connections and that arrow endpoints attach to the represented route; '
         'disconnected decorative curves plus arrows do not demonstrate a coherent mechanism. '
         'For sorting or transformations, track object identities and every intermediate state. '
@@ -118,6 +121,9 @@ def review(case, frames):
         'Only report severe layout defects persisting in at least two settled frames, excluding transient writing animation. '
         'Use regions in normalized image coordinates [left,top,right,bottom]. Explain observations before scoring. '
         'Do not invent extra task requirements, infer unobserved expertise, or reward animation quantity. '
+        'Do not target any desired total score. Every rating below 5 must explain the specific unmet '
+        'rubric anchor and cite observable evidence; absence of evidence is uncertainty, not a defect. '
+        'A pause can support reading, reflection or spoken explanation; timing thresholds alone do not prove poor pacing. '
         + ('Measured sampled-frame evidence: every sampled image is unchanged at a 24-level RGB tolerance. Events MUST be empty; no operation, reveal or transition is visible in these samples. '
          if unchanged else '')+
         'Task obligations: '+json.dumps(requirements(case),ensure_ascii=False)+'\nCriteria: '+json.dumps(CRITERIA))
@@ -146,7 +152,7 @@ def review(case, frames):
             'severity':{'type':'string','enum':['minor','severe']},'essential':{'type':'boolean'},
             'frames':frame_indices(count),'region':BOX,'finding':TEXT}),maxItems=12),
         'criteria':array(obj({'id':{'type':'string','enum':list(CRITERIA)},'finding':TEXT,
-            'evidence_frames':frame_indices(count),'score':{'type':'integer','minimum':1,'maximum':5}}),minItems=6,maxItems=6),
+            'evidence_frames':frame_indices(count),'score':{'type':'number','minimum':1,'maximum':5,'multipleOf':0.5}}),minItems=6,maxItems=6),
         'summary':TEXT}
     required=requirements(case)
     if case.get('segment_context'):
@@ -312,7 +318,13 @@ def assess_video(case, path, *, resize_max=854, previous=None):
     # Layout cannot recover by averaging away an unreadable chapter.
     for row in observed['criteria']:
         if row['id'] in ('layout_readability','perceptual_pacing'):
-            row['score']=min([row['score']]+[next(r['score'] for r in w['review']['criteria'] if r['id']==row['id']) for w in windows])
+            for window in windows:
+                candidate=next(r for r in window['review']['criteria'] if r['id']==row['id'])
+                if candidate['score'] < row['score']:
+                    row.update(candidate)
+                    row['evidence_scope']='segment_local_frames'
+                    row['segment_id']=window['id']
+                    row['evidence_timestamps_s']=[window['timestamps_s'][i-1] for i in candidate['evidence_frames']]
     events=[{**event,'segment_id':w['id'],'evidence_scope':'segment_local_frames',
              'before_s':w['timestamps_s'][event['before_frame']-1],
              'after_s':w['timestamps_s'][event['after_frame']-1]} for w in windows for event in w['events']]
@@ -357,6 +369,14 @@ def score_review(observed,events,comparisons):
             'comparison_valid':not uncertain,
             'decision_type':'bounded_rejection' if bounded_rejection else 'complete_review' if not uncertain else 'unverified',
             'raw_review_score':raw_score,'passed':passed,'caps':caps,'failures':reasons,
+            'deduction_evidence':[{'criterion':row['id'],'rating':row['score'],
+                'rubric_anchor':'1=unusable; 2=weak; 3=adequate; 4=strong; 5=exceptional',
+                'finding':row['finding'],'evidence_frames':row['evidence_frames'],
+                'evidence_scope':row.get('evidence_scope','review_frames'),
+                'segment_id':row.get('segment_id'),
+                'timestamps_s':row.get('evidence_timestamps_s',[]),
+                'aggregation':'fixed rubric mapping and weakest essential criterion; not additive penalties'}
+                for row in observed['criteria'] if row['score']<5],
             'criteria':observed['criteria'],'issues':observed['issues'],'events':events,
             'still_comparisons':comparisons,'summary':observed['summary'],
             'interpretation':'observable_instructional_presentation_not_measured_learning'}

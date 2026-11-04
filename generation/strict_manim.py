@@ -135,6 +135,8 @@ def render(code: Path, scene_name: str, contract_path: Path):
     contract = json.loads(contract_path.read_text())
     from generation.lesson_spec import LESSON_CONTRACTS, validate_timeline
     lesson = contract['version'] in LESSON_CONTRACTS
+    draft = lesson and contract.get('generation_profile') == 'draft'
+    delivery_warnings = []
     duration = contract['duration_seconds']
     fps = contract['fps']
     total_frames = contract['frame_count']
@@ -143,6 +145,9 @@ def render(code: Path, scene_name: str, contract_path: Path):
     source = Path(contract['source_image']) if contract.get('source_image') else None
     storyboard = json.loads((code.parent / 'storyboard.json').read_text())
     chapters = validate_timeline(storyboard, contract)
+    if lesson and not draft:
+        from generation.lesson_codegen import validate_code
+        validate_code(code.read_text())
     viewport = contract.get('source_viewport')
     size = contract.get('source_size_pixels')
     source_regions = validate_regions(storyboard.get('source_edit_regions', []), required=bool(source), source_size=size)
@@ -175,7 +180,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 scene.renderer.add_frame = guarded_add_frame
             if source:
                 from generation.source_primitives import SourcePrimitives
-                primitives = SourcePrimitives(source, source_regions, viewport)
+                primitives = SourcePrimitives(source, source_regions, viewport, min_label_pixels=0 if draft else 16)
                 scene.source_text, scene.source_curve, scene.source_highlight = primitives.text, primitives.curve, primitives.highlight
             chapter_observed = []
             def begin_step(chapter_id):
@@ -183,8 +188,17 @@ def render(code: Path, scene_name: str, contract_path: Path):
             scene.begin_teaching_step = begin_step
             if lesson:
                 from manim import Text
+                active_caption = [None]
                 def teaching_caption(text):
-                    label = Text(str(text),font_size=26)
+                    import textwrap
+                    lines = str(text).splitlines()
+                    lines = [part for line in lines for part in (textwrap.wrap(line, width=42, break_long_words=False) or [''])]
+                    if len(lines) > 2 or any(len(line) > 42 for line in lines):
+                        raise ValueError('caption exceeds two lines of 42 characters; split across teaching steps')
+                    if active_caption[0] is not None:
+                        scene.remove(active_caption[0])
+                    label = Text('\n'.join(lines),font_size=26)
+                    active_caption[0] = label
                     maximum_width = config.frame_width*.9
                     maximum_height = config.frame_height*(.25 if source else .15)
                     label.scale(min(1,maximum_width/max(label.width,.001),maximum_height/max(label.height,.001)))
@@ -214,6 +228,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 scene.get_time_progression = exact_progression
                 scene.renderer.freeze_current_frame = lambda duration: scene.renderer.add_frame(scene.renderer.get_frame(), num_frames=scene._strict_event_frames)
             observed = []
+            consecutive_wait_s = 0.
             def setup(self):
                 old_setup()
                 if source:
@@ -227,7 +242,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
                         self.camera.capture_mobjects([image])
                         guard.check(self.renderer.get_frame(), 0)
             def event(kind, function, *args, **kwargs):
-                nonlocal index, nested
+                nonlocal index, nested, consecutive_wait_s
                 if nested:
                     return function(*args, **kwargs)
                 start = scene.time
@@ -257,8 +272,9 @@ def render(code: Path, scene_name: str, contract_path: Path):
                     from generation.layout_guard import check_layout
                     layout_reports.append(check_layout(scene))
                 observed.append((kind, max(1/15, scene.time-start)))
-                if lesson and kind == 'wait' and scene.time-start > contract['pacing']['max_wait_s'] + .1:
-                    raise ValueError('lesson has an empty hold longer than the pacing limit')
+                consecutive_wait_s = consecutive_wait_s + scene.time-start if kind == 'wait' else 0.
+                if lesson and consecutive_wait_s > min(4., contract['pacing']['max_wait_s']) + .1 and not draft:
+                    raise ValueError('lesson has consecutive empty holds longer than the pacing limit')
                 index += 1
                 return result
             scene.setup = types.MethodType(setup, scene)
@@ -271,21 +287,27 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 self.wait(1)
             scene.construct = types.MethodType(construct, scene)
             scene.render()
-            if contract.get('verified_assets') and (verified_calls != {'initial', 'classified'} or verified_visible != {'initial', 'classified'}):
+            if not draft and contract.get('verified_assets') and (verified_calls != {'initial', 'classified'} or verified_visible != {'initial', 'classified'}):
                 raise ValueError('Verified molecule assets must actually appear in the scene with self.verified_structure(False) then self.verified_structure(True); never redraw a guessed structure')
             paths.append(Path(scene.renderer.file_writer.movie_file_path))
             if phase == 'measure':
                 recorded = observed
                 if lesson:
                     expected_ids = [row['id'] for row in chapters]
-                    if [row['id'] for row in chapter_observed] != expected_ids:
+                    if not draft and [row['id'] for row in chapter_observed] != expected_ids:
                         raise ValueError('code must mark every authored teaching chapter exactly once in order')
                     for i,(actual,planned) in enumerate(zip(chapter_observed,chapters)):
                         expected_start = 1 if source and i == 0 else planned['start_s']
-                        if abs(actual['start_s']-expected_start) > .25:
-                            raise ValueError('teaching chapter does not match its planned timestamp: '+actual['id'])
+                        if abs(actual['start_s']-expected_start) > .25 and not draft:
+                            raise ValueError(
+                                f'teaching chapter does not match its planned timestamp: {actual["id"]}; '
+                                f'actual_start_s={actual["start_s"]:.3f}, expected_start_s={expected_start:.3f}, '
+                                f'delta_s={actual["start_s"]-expected_start:+.3f}. '
+                                'Correct the preceding chapters: sum every play run_time and wait, including loops. '
+                                'Author meaningful operations and short reading pauses to the exact chapter budgets; '
+                                'do not change chapter IDs, timestamps, or add empty filler.')
                     measured_duration = sum(weight for _,weight in recorded)
-                    if abs(measured_duration-duration) > max(.15,duration*.02):
+                    if abs(measured_duration-duration) > max(.15,duration*(.25 if draft else .02)) + 1e-6:
                         raise ValueError(f'lesson authored duration {measured_duration:.3f}s differs from {duration}s; refusing to stretch or truncate')
                 hold_indices = {len(recorded)-1} | ({0} if source else set())
                 body = [i for i in range(len(recorded)) if i not in hold_indices]
@@ -299,12 +321,12 @@ def render(code: Path, scene_name: str, contract_path: Path):
             elif index != len(recorded):
                 raise ValueError('non-deterministic timeline; missing events')
             if phase == 'final' and lesson:
-                if [row['id'] for row in chapter_observed] != [row['id'] for row in chapters]:
+                if not draft and [row['id'] for row in chapter_observed] != [row['id'] for row in chapters]:
                     raise ValueError('non-deterministic teaching chapter sequence')
                 chapter_reports = [{**planned,'actual_start_s':actual['start_s']} for planned,actual in zip(chapters,chapter_observed)]
                 for i,row in enumerate(chapter_reports):
                     expected_start = 1 if source and i == 0 else row['start_s']
-                    if abs(row['actual_start_s']-expected_start) > max(.25,duration*.02):
+                    if not draft and abs(row['actual_start_s']-expected_start) > max(.25,duration*.02):
                         raise ValueError('rendered chapter timestamp changed')
     diagnostics = {'timing': inspect_exact(paths[-1],duration,fps), 'event_frames': measured_weights,
                    'events': [dict(kind=kind, frames=n) for (kind,_),n in zip(recorded, measured_weights)]}
@@ -317,9 +339,25 @@ def render(code: Path, scene_name: str, contract_path: Path):
         diagnostics['source_preservation']['pre_encoding'] = guard.report()
         diagnostics['source_preservation']['valid'] &= guard.report()['valid']
     diagnostics['rendered_video'] = str(paths[-1])
+    diagnostics['generation_profile'] = contract.get('generation_profile', 'strict')
+    if draft:
+        delivery_warnings.append('Draft render retains pacing defects for independent quality review')
+        if abs(measured_duration-duration) > .15:
+            delivery_warnings.append(f'Authored duration {measured_duration:.3f}s normalized to {duration}s')
+        if not diagnostics['layout']['valid']:
+            delivery_warnings.append('Layout issues retained for later quality review')
+        if not diagnostics.get('source_preservation', {'valid': True})['valid']:
+            delivery_warnings.append('Source preservation needs review')
+        if [row['id'] for row in chapter_reports] != [row['id'] for row in chapters] or any(
+                abs(row['actual_start_s']-row['start_s']) > .25 for row in chapter_reports):
+            delivery_warnings.append('Chapter timing differs from planned boundaries')
+            diagnostics['teaching_timeline']['valid'] = False
+    diagnostics['delivery_warnings'] = delivery_warnings
     (code.parent / 'strict_diagnostics.json').write_text(json.dumps(diagnostics, indent=2))
-    if (not diagnostics['timing']['valid'] or not diagnostics['layout']['valid']
-            or not diagnostics.get('source_preservation', {'valid': True})['valid']):
+    blocking_layout = any(f['kind'] in ('text_overlap', 'text_occluded_by_image', 'text_outside_frame')
+                          for report in layout_reports for f in report['failures'])
+    if (not diagnostics['timing']['valid'] or (not draft and (blocking_layout or not diagnostics['layout']['valid']
+            or not diagnostics.get('source_preservation', {'valid': True})['valid']))):
         from generation.repair_feedback import compact
         raise ValueError('strict video contract failed: ' + json.dumps(compact(diagnostics)))
     print(json.dumps(diagnostics))

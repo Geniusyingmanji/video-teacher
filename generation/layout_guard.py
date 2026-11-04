@@ -27,7 +27,10 @@ def check_layout(scene):
         x0, x1 = obj.get_left()[0], obj.get_right()[0]
         y0, y1 = obj.get_bottom()[1], obj.get_top()[1]
         if x0 < -config.frame_width/2+.05 or x1 > config.frame_width/2-.05 or y0 < -config.frame_height/2+.05 or y1 > config.frame_height/2-.05:
-            failures.append({'kind': 'text_outside_frame', 'text': label})
+            visible_area = max(0., min(x1, config.frame_width/2)-max(x0, -config.frame_width/2))*max(0., min(y1, config.frame_height/2)-max(y0, -config.frame_height/2))
+            failures.append({'kind': 'text_outside_frame', 'text': label,
+                             'outside_fraction': max(0., 1-visible_area/(obj.width*obj.height)),
+                             'bbox': [float(x0),float(y0),float(x1),float(y1)]})
         if obj.height/config.frame_height*config.pixel_height < 16:
             failures.append({'kind': 'text_too_small', 'text': label})
         for image in images:
@@ -43,4 +46,4 @@ def check_layout(scene):
             if dx > 0 and dy > 0 and dx*dy > .12*min(obj.width*obj.height, other.width*other.height):
                 failures.append({'kind': 'text_overlap', 'text': label,
                                  'other': str(getattr(other, 'text', 'text'))[:100]})
-    return {'valid': not failures, 'text_count': len(texts), 'failures': failures[:12]}
+    return {'time_s': float(scene.time), 'valid': not failures, 'text_count': len(texts), 'failures': failures[:12]}

@@ -62,11 +62,11 @@ def signal_quality(frames: list[np.ndarray]) -> dict:
     exposure_score = (100 * (1 - min(1, clipped_p90 / 0.45))
                       if exposure_penalty_applicable else 100.0)
     score = _clip(0.6 * focus_score + 0.4 * exposure_score)
-    return {"score": score, "method": "relative_laplacian_focus_and_clipped_pixel_fraction_v1",
+    return {"score": None, "diagnostic_proxy_index": score, "quality_score": False, "method": "relative_laplacian_focus_and_clipped_pixel_fraction_v1",
             "focus_p10": round(p10, 4), "focus_p90": round(p90, 4),
             "clipped_fraction_p90": round(clipped_p90, 6),
             "exposure_penalty_applicable": exposure_penalty_applicable,
-            "focus_score": _clip(focus_score), "exposure_score": _clip(exposure_score),
+            "relative_focus_index": _clip(focus_score), "exposure_index": _clip(exposure_score),
             "frame_count": len(frames)}
 
 
@@ -82,7 +82,8 @@ def temporal_consistency(frames: list[np.ndarray], fps: float,
     grays = [cv2.cvtColor(f, cv2.COLOR_BGR2GRAY) for f in frames]
     differences = np.array([np.mean(cv2.absdiff(a, b)) / 255
                             for a, b in zip(grays, grays[1:])], dtype=float)
-    duplicate = differences < 0.002
+    changed = np.array([np.mean(cv2.absdiff(a, b) > 12) for a, b in zip(grays, grays[1:])])
+    duplicate = (differences < 0.002) & (changed < 0.0005)
     longest = run = 0
     for is_duplicate in duplicate:
         run = run + 1 if is_duplicate else 0
@@ -97,7 +98,7 @@ def temporal_consistency(frames: list[np.ndarray], fps: float,
     freeze_penalty = min(40.0, 20.0 * max(0, freeze_seconds - 0.5)) if expected_steps > 1 else 0.0
     score = _clip(100 - freeze_penalty - min(35, 350 * jump_fraction)
                   - min(25, 250 * flicker_fraction))
-    return {"score": score, "method": "duplicate_jump_flicker_v1",
+    return {"score": None, "diagnostic_proxy_index": score, "quality_score": False, "method": "duplicate_jump_flicker_v1",
             "longest_duplicate_run_seconds": round(freeze_seconds, 4),
             "abrupt_change_fraction": round(jump_fraction, 6),
             "luminance_jump_fraction": round(flicker_fraction, 6),

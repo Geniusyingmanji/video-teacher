@@ -33,7 +33,7 @@ not an independent measure of teaching effectiveness or a way to excuse factual 
 
 def score(case, frames):
     task = {key: case.get(key) for key in ('prompt_text', 'pedagogical_target_audience',
-            'expected_concepts', 'expected_visual_elements', 'expected_narrative_order', 'target_duration_s', 'actual_duration_s')}
+            'expected_concepts', 'expected_visual_elements', 'expected_narrative_order', 'target_duration_s', 'actual_duration_s', 'segment_evidence', 'delivery_pacing_evidence')}
     spec = '\n'.join(f'- {key}: {description}' for key, description in RUBRIC['teaching_engagement'])
     content = frames_as_multimodal_content(frames,
         f'Task: {json.dumps(task, ensure_ascii=False)}\nCriteria:\n{spec}\nFrames: 1..{len(frames)}')
