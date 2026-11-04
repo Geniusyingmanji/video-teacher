@@ -93,7 +93,18 @@ def audit(row):
                 evidence = next((e for e in window.get('requirement_evidence', []) if e['id'] == requirement['id']), {})
                 check(set(citation['frames']) <= set(evidence.get('evidence_frames', [])), 'completion: unrecorded citation')
     score = row['scoring']
+    consistency = row.get('consistency_review', {})
+    if consistency.get('version') == 'statement-grounded-consistency-v1':
+        from eval.verified_consistency import validate as validate_consistency
+        try:
+            verified = validate_consistency(consistency, axes, count)
+            for key in ('valid', 'conflicting_axes', 'uncertain_axes', 'source_statement_sha256'):
+                check(consistency.get(key) == verified[key], 'consistency: statement or validity mismatch')
+        except (ValueError, KeyError, TypeError) as exc:
+            errors.append('consistency: ' + str(exc))
     if score.get('valid') is True:
+        check(consistency.get('valid') is True, 'accepted total lacks verified report consistency')
+        check(row.get('task_completion', {}).get('valid') is True, 'accepted total lacks verified task completion')
         flat = {k: v.get('score') for k, v in axes.items()}
         expected = benchmark_scoring.score_case(flat, narration_required=row.get('narration_required', False),
                     narration_detected=row.get('narration', {}).get('detected'), defects=row.get('defects', []))

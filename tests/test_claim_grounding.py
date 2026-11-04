@@ -111,3 +111,34 @@ class ClaimGroundingTests(unittest.TestCase):
             verify.assert_called_once()
             self.assertFalse(result['uncertain_claims'])
             self.assertEqual(result['rejected_claims'][0]['decision'], 'rejected')
+
+    def test_consistency_repair_restores_low_score_without_passing_bad_task(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            row,_=self.fixture(Path(tmp));pr=row['instructional_presentation']
+            pr.update(criteria=[{'id':key,'score':4,'finding':'inspection','evidence_frames':[1,3]}
+                                for key in presentation.CRITERIA],issues=[],segments=[],
+                      events=[{'transition_verified':True}],all_windows_reviewed=True,summary='fixture',
+                      still_comparisons=[{'preferred':label,'video_preferred':True,'advantage':'substantive'}
+                                         for label in ('A','B')])
+            pr.update(presentation.score_review(pr,pr['events'],pr['still_comparisons']))
+            row.update(axes={k:{'score':75,'summary':'The final array is incorrect.'}
+                             for k in verified.scoring.VIDEO_AXES+verified.scoring.TEACHING_AXES},
+                       defects=[],scoring={'valid':False,'score':None},consistency_review={'valid':False},
+                       evaluation_config={'sample_fps':2},judge_frame_indices_in_sample=[0,1,2],
+                       speech_transcript={'valid':True,'segments':[{'id':0,'start_s':0.,'end_s':2.,
+                                          'text':'The final array is incorrect.'}]},
+                       errors=['unresolved_cross_axis_contradictions','consistency_review_missing_or_failed'],
+                       task_completion={'valid':True,'passed':False,'requirements':[{
+                           'id':'answer','status':'incorrect','evidence_frames':[1],
+                           'finding':'The final array is not sorted.'}]})
+            empty={'claims':[],'rejected_claims':[],'uncertain_claims':[]}
+            with patch.object(verified,'verify_presentation',return_value=empty), \
+                 patch('eval.verified_consistency.review',return_value={'valid':True}) as consistency_call:
+                result=verified.apply_grounding(row,{})
+            self.assertEqual(consistency_call.call_args.args[0]['actual_spoken_segments'][0]['text'],
+                             'The final array is incorrect.')
+            self.assertTrue(result['scoring']['valid'])
+            self.assertLessEqual(result['scoring']['score'],50)
+            self.assertFalse(result['scoring']['strict_pass'])
+            self.assertFalse(result['base_evaluation']['scoring']['valid'])
+            self.assertFalse(result['errors'])

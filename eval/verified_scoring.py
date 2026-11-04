@@ -17,12 +17,13 @@ from eval.frame_extractor import extract_frames, extract_window, frames_as_multi
 from eval.judges.gpt55 import judge_config
 from eval.judges.structured_json import response_format, array, obj, frame_indices
 
-VERSION = scoring.VERSION + '+grounded-v2'
+VERSION = scoring.VERSION + '+grounded-v3'
 
 
 def code_hash():
     return hashlib.sha256(b''.join(Path(__file__).with_name(name).read_bytes() for name in
-        ('verified_scoring.py','claim_grounding.py','verified_completion.py','evidence_prompt.py'))).hexdigest()
+        ('verified_scoring.py','claim_grounding.py','verified_completion.py',
+         'verified_consistency.py','evidence_prompt.py'))).hexdigest()
 
 
 def rerate(case, frames, ids, corrections):
@@ -84,7 +85,25 @@ def apply_grounding(base, case, *, previous_claims=None, checkpoint=None):
         row['resolved_errors'] = [e for e in row.get('errors',[]) if e in ('task_completion_failed','task_completion_missing_or_invalid')]
         row['errors'] = [e for e in row.get('errors',[]) if e not in row['resolved_errors']]
         completion_repaired = True
-    if not rejected and not completion_repaired:
+    consistency_repaired = False
+    if row.get('consistency_review',{}).get('valid') is not True:
+        from eval.verified_consistency import review as verify_consistency
+        samples = extract_frames(row['video_path'],sample_fps=row['evaluation_config']['sample_fps'],resize_max=832)
+        frames = [samples[i] for i in row['judge_frame_indices_in_sample']]
+        previous = copy.deepcopy(row.get('consistency_review', {}))
+        transcript = row.get('speech_transcript', {})
+        consistency_case = {**case, 'actual_spoken_segments': [
+            {k:s[k] for k in ('id','start_s','end_s','text')} for s in transcript.get('segments', [])]
+            if transcript.get('valid') is True else []}
+        row['consistency_review'] = verify_consistency(consistency_case, row['axes'], frames, row.get('grounded_observations',{}))
+        row['consistency_review']['previous_review'] = previous
+        if row['consistency_review']['valid'] is True:
+            resolved = [e for e in row.get('errors',[]) if e in (
+                'unresolved_cross_axis_contradictions','consistency_review_missing_or_failed','consistency_review_failed')]
+            row.setdefault('resolved_errors', []).extend(resolved)
+            row['errors'] = [e for e in row.get('errors',[]) if e not in resolved]
+            consistency_repaired = True
+    if not rejected and not completion_repaired and not consistency_repaired:
         return row
     pr = row['instructional_presentation']
     rejected_keys = {json.dumps(r['claim'], sort_keys=True) for r in rejected}

@@ -6,6 +6,11 @@ from scripts.audit_score_evidence import audit
 
 
 class EvidenceExportAuditTests(unittest.TestCase):
+    def test_total_cannot_bypass_required_reviews(self):
+        errors = audit({'id':'unchecked','axes':{},'scoring':{'valid':True,'score':0}})['errors']
+        self.assertIn('accepted total lacks verified report consistency', errors)
+        self.assertIn('accepted total lacks verified task completion', errors)
+
     def test_missing_video_is_explicit_and_invented_zero_is_rejected(self):
         row = {'id': 'missing', 'errors': ['generation_missing_or_failed'],
                'scoring': {'valid': False, 'score': None}}
