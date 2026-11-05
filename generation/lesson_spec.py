@@ -1,17 +1,19 @@
 """Explicit lesson duration and storyboard validation; legacy clips stay readable."""
 import math
 
-VERSION = 'instructional-lesson-v2'
-CONTRACT_VERSION = 'instructional-lesson-contract-v2'
-LESSON_CONTRACTS = ('instructional-lesson-contract-v1', CONTRACT_VERSION)
+VERSION = 'instructional-lesson-v3'
+CONTRACT_VERSION = 'instructional-lesson-contract-v3'
+LESSON_CONTRACTS = ('instructional-lesson-contract-v1', 'instructional-lesson-contract-v2', CONTRACT_VERSION)
 
 
 def is_lesson(case):
-    return case.get('lesson_version') in ('instructional-lesson-v1',VERSION)
+    return case.get('lesson_version') in ('instructional-lesson-v1','instructional-lesson-v2',VERSION)
 
 
 def contract_version(case):
-    return CONTRACT_VERSION if case.get('lesson_version')==VERSION else 'instructional-lesson-contract-v1' if is_lesson(case) else 'strict-five-seconds-v5'
+    return (CONTRACT_VERSION if case.get('lesson_version')==VERSION else
+            'instructional-lesson-contract-v2' if case.get('lesson_version')=='instructional-lesson-v2' else
+            'instructional-lesson-contract-v1' if is_lesson(case) else 'strict-five-seconds-v5')
 
 
 def single_scene_outline(case):
@@ -32,6 +34,8 @@ def single_scene_outline(case):
 def duration_spec(case):
     if case.get('lesson_version')==VERSION and case.get('audio_narration_required') is not True:
         raise ValueError('current narrated lessons require explicit spoken narration')
+    if case.get('lesson_version')==VERSION and 'target_duration_s' not in case:
+        raise ValueError('adaptive lessons require a task-sized target duration')
     duration = case.get('target_duration_s', 120 if is_lesson(case) else 5)
     fps = 15
     if type(duration) not in (int, float) or not math.isfinite(duration):

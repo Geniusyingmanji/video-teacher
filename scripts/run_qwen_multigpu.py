@@ -228,7 +228,7 @@ def summarize(out, cases, finished=False):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
-    parser.add_argument('--prompts', type=Path, default=ROOT/'data/prompts/lesson_validation_10_v2.jsonl')
+    parser.add_argument('--prompts', type=Path, default=ROOT/'data/prompts/lesson_validation_10_v3.jsonl')
     parser.add_argument('--gpus', type=int, nargs='+', choices=[0,1], default=[0,1])
     parser.add_argument('--ports', type=int, nargs='+', default=[8000,8001])
     parser.add_argument('--max-attempts', type=int, default=3, choices=range(1,4))

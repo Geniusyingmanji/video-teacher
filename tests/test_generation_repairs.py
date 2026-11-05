@@ -14,9 +14,29 @@ from generation.strict_video_contract import make_contract, contract_text
 from generation.prompt_budget import request_budget
 from eval import grounded_observations
 from eval.benchmark_scoring import evidence_defects
+from generation.quality_gate import assess
+from scripts.build_lesson_prompts import revise
 
 
 class RepairTests(unittest.TestCase):
+    def test_current_quality_gate_requires_completion_and_presentation(self):
+        generation = {'contract_version':'instructional-lesson-contract-v3'}
+        evaluation = {'version':'video-teacher-2x8-v11', 'scoring':{'valid':True,'strict_pass':True},
+                      'task_completion':{'valid':True,'passed':False},
+                      'instructional_presentation':{'valid':True,'passed':False}}
+        result = assess(generation, evaluation)
+        self.assertFalse(result['checks']['task_completion'])
+        self.assertFalse(result['checks']['instructional_presentation'])
+
+    def test_duration_follows_requested_actions(self):
+        short = {'id':'short','prompt_text':'Label the point.','task_type':'explanation',
+                 'expected_narrative_order':['show point']}
+        long = {**short, 'id':'long','task_type':'problem_solving',
+                'expected_narrative_order':[f'operation {i}' for i in range(8)],
+                'expected_concepts':[f'concept {i}' for i in range(5)],
+                'expected_visual_elements':[f'element {i}' for i in range(6)]}
+        self.assertLess(revise(short)['target_duration_s'], revise(long)['target_duration_s'])
+
     def test_rejected_regions_never_freeze_and_accepted_regions_stay_fixed(self):
         bad = {'source_edit_regions':[[400,200,1200,1000]],'source_plan_validation':{'valid':False}}
         self.assertIsNone(validated_frozen(bad))

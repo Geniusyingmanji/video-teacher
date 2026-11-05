@@ -16,15 +16,27 @@ from generation.source_geometry import needs_source
 TIME = re.compile(r'\b(?:five|5|ten|10)[ -]seconds?\b(?=\s+(?:teaching|educational|worked|comparison|video|clip|animation|demonstration|explanation)\b)', re.I)
 
 
+def lesson_duration(case, source):
+    """Budget the requested teaching actions, rather than a difficulty-wide minute quota."""
+    steps = len(case.get('expected_narrative_order') or [])
+    concepts = len(case.get('expected_concepts') or [])
+    visuals = len(case.get('expected_visual_elements') or [])
+    seconds = 24 + 7 * min(steps, 10) + 3 * min(concepts, 8) + 2 * min(visuals, 8)
+    if case.get('task_type') == 'problem_solving':
+        seconds += 8  # Show and check intermediate states.
+    if case.get('difficulty') == 'high' or case.get('difficulty_v0_1') == 'graduate':
+        seconds += 10
+    if source:
+        seconds = min(seconds, 85)  # A bounded edit should not become a lecture.
+    return min(150, max(30, 5 * round(seconds / 5)))
+
+
 def revise(case, language='en-US'):
     if case.get('lesson_version'):
         raise ValueError('input must be original tasks, not an already revised lesson set')
     row = copy.deepcopy(case)
     source = needs_source(case)
-    # Source edits are naturally narrower tasks; do not inflate them into a full lecture.
-    duration = 60 if source or case.get('difficulty') in ('low','k12') else 120
-    if not source and (case.get('difficulty') == 'high' or case.get('difficulty_v0_1') == 'graduate'):
-        duration = 180
+    duration = lesson_duration(case, source)
     row['lesson_version'] = VERSION
     row['target_duration_s'] = duration
     row['audio_narration_required'] = True
@@ -32,11 +44,11 @@ def revise(case, language='en-US'):
     kind='worked_solution' if case.get('task_type')=='problem_solving' else 'knowledge_explanation'
     row['lesson_profile']={'kind':kind,
         'difficulty_group':'advanced' if case.get('difficulty')=='high' else 'simple' if case.get('difficulty') in ('low','k12') else 'standard',
-        'duration_reason':'bounded source operation' if source else 'simple objective' if duration==60 else 'advanced objective' if duration==180 else 'standard lesson'}
+        'duration_reason':'requested steps, concepts and visuals; bounded source edit' if source else 'requested steps, concepts and visuals'}
     row['revision_provenance'] = {
         'version': VERSION, 'original_case': copy.deepcopy(case),
         'original_case_sha256': hashlib.sha256(json.dumps(case,ensure_ascii=False,sort_keys=True).encode()).hexdigest(),
-        'changes': ['explicit duration', 'visible explanation and verification', 'paced chapters',
+        'changes': ['task-sized duration', 'visible explanation and verification', 'paced chapters',
                     'source reference viewport with separate teaching panel' if source else 'sequential standalone teaching diagrams'],
     }
     # Only presentation timing changes; never restore possibly inconsistent historical prompts.
@@ -77,7 +89,7 @@ def revise(case, language='en-US'):
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--source',type=Path,default=ROOT/'data/prompts/candidate_400.jsonl')
-    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v2.jsonl')
+    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v3.jsonl')
     p.add_argument('--language',choices=['zh-CN','en-US'],default='en-US')
     a=p.parse_args()
     if a.source.resolve()==a.out.resolve():p.error('preserve original tasks; output must be a separate version')

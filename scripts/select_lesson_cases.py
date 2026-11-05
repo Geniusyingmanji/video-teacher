@@ -14,13 +14,12 @@ IDS=['math_exp_02','phys_exp_02','math_prob_01','grade_ComputerScience_task_17',
 def select(rows):
     by_id={r['id']:r for r in rows}
     cases=[by_id[cid] for cid in IDS]
-    durations=collections.Counter(c['target_duration_s'] for c in cases)
     kinds=collections.Counter(c['task_type'] for c in cases)
-    if durations!={60:4,120:3,180:3} or kinds!={'explanation':5,'problem_solving':5}:
-        raise ValueError('validation set must retain predeclared timing and task-type coverage')
-    for duration in durations:
-        if {c['task_type'] for c in cases if c['target_duration_s']==duration}!={'explanation','problem_solving'}:
-            raise ValueError('each duration must include both explanation and solution')
+    if kinds!={'explanation':5,'problem_solving':5}:
+        raise ValueError('validation set must retain task-type coverage')
+    durations=[c['target_duration_s'] for c in cases]
+    if min(durations) < 30 or max(durations) > 180 or max(durations)-min(durations) < 30:
+        raise ValueError('validation set needs a useful span of task-sized durations')
     if not {'simple','standard','advanced'}<={c['lesson_profile']['difficulty_group'] for c in cases}:
         raise ValueError('difficulty coverage is incomplete')
     return cases
@@ -28,8 +27,8 @@ def select(rows):
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--source',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v2.jsonl')
-    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/lesson_validation_10_v2.jsonl')
+    p.add_argument('--source',type=Path,default=ROOT/'data/prompts/candidate_400_lessons_v3.jsonl')
+    p.add_argument('--out',type=Path,default=ROOT/'data/prompts/lesson_validation_10_v3.jsonl')
     a=p.parse_args()
     rows=[json.loads(x) for x in a.source.read_text().splitlines() if x.strip()]
     cases=select(rows)

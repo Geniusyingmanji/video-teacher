@@ -53,12 +53,12 @@ class LessonPipelineTests(unittest.TestCase):
     def test_all_400_revision_ids_original_obligations_and_durations(self):
         root=Path(__file__).resolve().parents[1]
         original=[json.loads(x) for x in (root/'data/prompts/candidate_400.jsonl').read_text().splitlines()]
-        revised=[json.loads(x) for x in (root/'data/prompts/candidate_400_lessons_v2.jsonl').read_text().splitlines()]
+        revised=[json.loads(x) for x in (root/'data/prompts/candidate_400_lessons_v3.jsonl').read_text().splitlines()]
         self.assertEqual(len(revised),400)
         self.assertEqual([r['id'] for r in original],[r['id'] for r in revised])
         for before,after in zip(original,revised):
             self.assertEqual(after,revise(before))
-            self.assertIn(duration_spec(after)['duration_seconds'],(60,120,180))
+            self.assertTrue(30 <= duration_spec(after)['duration_seconds'] <= 150)
             self.assertIs(after['audio_narration_required'],True)
             self.assertEqual(after['narration_language'],'en-US')
 
