@@ -1,0 +1,47 @@
+[
+  {
+    "id": "math_prob_01",
+    "time_s": 30.0,
+    "finding": "The main working area shows only a tiny white fragment while the caption says Divide both sides by 2; no legible equation is visible at this sampled time.",
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/math_prob_01_30.0s.png",
+    "frame_sha256": "de82b9c795d6b8f8b294083ab645ae7285ce0df6c9acd424faeea7c03c8a27e8",
+    "score": null,
+    "scope": "agent_visual_spot_check_of_actual_frame_not_human_label_or_full_video_rating"
+  },
+  {
+    "id": "grade_ComputerScience_task_17",
+    "time_s": 30.0,
+    "finding": "The source diagram overlaps the title; its upper and lower portions extend into the frame boundaries and caption region.",
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/grade_ComputerScience_task_17_30.0s.png",
+    "frame_sha256": "3c191a1d98a67f6517a5a0426e8fe9a9dbdf0a1ac4169306081395c67ac32bd4",
+    "score": null,
+    "scope": "agent_visual_spot_check_of_actual_frame_not_human_label_or_full_video_rating"
+  },
+  {
+    "id": "cs_prob_02",
+    "time_s": 60.0,
+    "finding": "The first array box is empty and digits overlap in the second box; the displayed three-box state is not legible as three separate values.",
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/cs_prob_02_60.0s.png",
+    "frame_sha256": "b17b46ce904342bb53acf5349012cf313677ef583bbc41bda0b23b761e38a31e",
+    "score": null,
+    "scope": "agent_visual_spot_check_of_actual_frame_not_human_label_or_full_video_rating"
+  },
+  {
+    "id": "cs_prob_02",
+    "time_s": 102.0,
+    "finding": "The first array box remains empty and digits overlap in the second box near the recap; this sampled state does not visibly demonstrate a sorted three-value array.",
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/cs_prob_02_102.0s.png",
+    "frame_sha256": "badda74045069864a6905db55c2d64e082cc073f8a23bd4ba1df00e7d43e5d6b",
+    "score": null,
+    "scope": "agent_visual_spot_check_of_actual_frame_not_human_label_or_full_video_rating"
+  },
+  {
+    "id": "lang_high_01",
+    "time_s": 90.0,
+    "finding": "Only the title and a bottom sentence are visible; the central diagram area is empty at this sampled time.",
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/lang_high_01_90.0s.png",
+    "frame_sha256": "e68ec750c67c74d4ad82ca76ae2f95f5a0e6a8b95a437ab5f2004b4ddf51abe7",
+    "score": null,
+    "scope": "agent_visual_spot_check_of_actual_frame_not_human_label_or_full_video_rating"
+  }
+]

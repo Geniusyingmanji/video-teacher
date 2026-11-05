@@ -1,0 +1,21 @@
+{
+  "total": 10,
+  "completed": [
+    "math_prob_01",
+    "med_exp_01",
+    "math_high_02",
+    "phys_exp_03",
+    "math_prob_02",
+    "math_exp_02",
+    "phys_exp_02",
+    "grade_ComputerScience_task_17"
+  ],
+  "pending": [
+    "cs_prob_02",
+    "lang_high_01"
+  ],
+  "running": [
+    "grade_ComputerScience_task_17",
+    "cs_prob_02"
+  ]
+}

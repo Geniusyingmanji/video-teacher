@@ -1,0 +1,19 @@
+{
+  "purpose": "context_budget_transport_probe_not_a_score",
+  "case": "lang_high_01",
+  "requested_output_tokens": 6000,
+  "status": "accepted",
+  "finish_reason": "stop",
+  "usage": {
+    "completion_tokens": 1,
+    "prompt_tokens": 29377,
+    "total_tokens": 29378,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": null
+  }
+}

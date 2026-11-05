@@ -1,0 +1,20 @@
+{
+  "validation_passed": true,
+  "purpose": "full_completion_schema_probe_not_a_total_score",
+  "case": "lang_high_01",
+  "requested_output_tokens": 6000,
+  "status": "accepted",
+  "finish_reason": "stop",
+  "usage": {
+    "completion_tokens": 2683,
+    "prompt_tokens": 29377,
+    "total_tokens": 32060,
+    "completion_tokens_details": {
+      "accepted_prediction_tokens": null,
+      "audio_tokens": null,
+      "reasoning_tokens": 0,
+      "rejected_prediction_tokens": null
+    },
+    "prompt_tokens_details": null
+  }
+}

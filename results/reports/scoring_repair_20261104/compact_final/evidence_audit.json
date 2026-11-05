@@ -1,0 +1,58 @@
+{
+  "passed": true,
+  "scope": "structural_citations_provenance_and_arithmetic_not_independent_semantic_validation",
+  "missing_ids": [],
+  "unexpected_ids": [],
+  "cases": [
+    {
+      "id": "math_exp_02",
+      "status": "unavailable_video",
+      "errors": []
+    },
+    {
+      "id": "phys_exp_02",
+      "status": "evaluation_failed",
+      "errors": []
+    },
+    {
+      "id": "math_prob_01",
+      "status": "scored",
+      "errors": []
+    },
+    {
+      "id": "grade_ComputerScience_task_17",
+      "status": "scored",
+      "errors": []
+    },
+    {
+      "id": "phys_exp_03",
+      "status": "unavailable_video",
+      "errors": []
+    },
+    {
+      "id": "math_prob_02",
+      "status": "unavailable_video",
+      "errors": []
+    },
+    {
+      "id": "cs_prob_02",
+      "status": "evaluation_failed",
+      "errors": []
+    },
+    {
+      "id": "med_exp_01",
+      "status": "unavailable_video",
+      "errors": []
+    },
+    {
+      "id": "lang_high_01",
+      "status": "evaluation_failed",
+      "errors": []
+    },
+    {
+      "id": "math_high_02",
+      "status": "unavailable_video",
+      "errors": []
+    }
+  ]
+}

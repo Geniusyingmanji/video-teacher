@@ -1,0 +1,16 @@
+[
+  {
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/phys_exp_02_45.80s.png",
+    "sha256": "d099f53216867cdd09f66b3df624be0dae8ec0a9a598d4edda515bcbd0d6a156",
+    "finding": "Convex lens, three orange rays and caption are visible; the caption is readable without persistent text overlap in this sampled frame.",
+    "score": null,
+    "scope": "agent_visual_spot_check_not_human_annotation_or_complete_video_rating"
+  },
+  {
+    "frame": "results/reports/scoring_repair_20261104/inspection_frames/cs_prob_02_102.0s.png",
+    "sha256": "badda74045069864a6905db55c2d64e082cc073f8a23bd4ba1df00e7d43e5d6b",
+    "finding": "At the recap the first array box is empty, values 3 and 2 overlap in the second box, and 1 remains in the third; a readable sorted triple is not shown in this sampled frame.",
+    "score": null,
+    "scope": "agent_visual_spot_check_not_human_annotation_or_complete_video_rating"
+  }
+]

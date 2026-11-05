@@ -1,0 +1,58 @@
+[
+  {
+    "id": "math_exp_02",
+    "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/generation_first_v1-attempt_0-qwen38-math_exp_02-attempt0/math_exp_02/narration/narrated.mp4",
+    "longest_signal_silence_s": 7.544167,
+    "total_signal_silence_s": 22.692584,
+    "silence_runs": 12,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  },
+  {
+    "id": "phys_exp_02",
+    "video": "/root/video-teacher/results/optimization_20261103/generation_first_v1/draft_artifacts/phys_exp_02/narration/narrated.mp4",
+    "longest_signal_silence_s": 5.289458,
+    "total_signal_silence_s": 14.516791999999999,
+    "silence_runs": 11,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  },
+  {
+    "id": "math_prob_01",
+    "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/generation_first_v1-attempt_0-qwen38-math_prob_01-attempt0/math_prob_01/narration/narrated.mp4",
+    "longest_signal_silence_s": 3.669458,
+    "total_signal_silence_s": 18.310707,
+    "silence_runs": 16,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  },
+  {
+    "id": "grade_ComputerScience_task_17",
+    "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/generation_first_v1-attempt_0-qwen38-grade_ComputerScience_task_17-attempt0/grade_ComputerScience_task_17/narration/narrated.mp4",
+    "longest_signal_silence_s": 4.236542,
+    "total_signal_silence_s": 16.599917,
+    "silence_runs": 11,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  },
+  {
+    "id": "phys_exp_03",
+    "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/generation_first_v1-attempt_0-qwen38-phys_exp_03-attempt0/phys_exp_03/narration/narrated.mp4",
+    "longest_signal_silence_s": 8.481792,
+    "total_signal_silence_s": 53.809042,
+    "silence_runs": 21,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  },
+  {
+    "id": "math_prob_02",
+    "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/generation_first_v1-attempt_0-qwen38-math_prob_02-attempt0/math_prob_02/narration/narrated.mp4",
+    "longest_signal_silence_s": 6.15725,
+    "total_signal_silence_s": 39.094043,
+    "silence_runs": 20,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  },
+  {
+    "id": "cs_prob_02",
+    "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/generation_first_v1-attempt_0-qwen38-cs_prob_02-attempt0/cs_prob_02/narration/narrated.mp4",
+    "longest_signal_silence_s": 5.717042,
+    "total_signal_silence_s": 43.39971,
+    "silence_runs": 24,
+    "method": "ffmpeg silencedetect -40dB min 0.5s; signal silence, not ASR or teaching score"
+  }
+]

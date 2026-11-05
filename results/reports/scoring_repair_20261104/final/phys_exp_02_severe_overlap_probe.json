@@ -1,0 +1,56 @@
+{
+  "observations": [
+    {
+      "frame": 1,
+      "visible_state": "The bottom caption 'Parallel In -> Converging Out' is clearly legible. There is no overlapping text."
+    },
+    {
+      "frame": 2,
+      "visible_state": "The bottom caption 'Parallel In -> Converging Out' is clearly legible. There is no overlapping text."
+    }
+  ],
+  "decision": "rejected",
+  "supporting_frames": [
+    1,
+    2
+  ],
+  "persistent_in_settled_frames": false,
+  "essential_content_unreadable": false,
+  "reason": "The allegation of overlapping and illegible captions is contradicted by the evidence. In both provided frames, the bottom caption is fully legible and does not overlap with any other text. The detail crops confirm the text is sharp and clear.",
+  "validation_errors": [],
+  "version": "localized-claim-grounding-v1",
+  "judge": {
+    "provider": "openai_compatible",
+    "base_url": "http://127.0.0.1:8001/v1",
+    "model": "qwen3.8-27b"
+  },
+  "video_sha256": "a9cda8c45a4d747e1abd9289f6a63a60381ee6f66958f077d934e617bca8adae",
+  "claim": {
+    "kind": "overlap",
+    "severity": "severe",
+    "essential": true,
+    "frames": [
+      13,
+      14
+    ],
+    "region": [
+      0.25,
+      0.75,
+      0.75,
+      0.95
+    ],
+    "finding": "Bottom captions overlap and become illegible during text transitions."
+  },
+  "sample_info": [
+    {
+      "source_frame_reference": 13,
+      "time_s": 42.333333333333336
+    },
+    {
+      "source_frame_reference": 14,
+      "time_s": 45.8
+    }
+  ],
+  "verification_code_sha256": "733599507ddc1fcc4856cb44de87a09ab913c60ca88bb753c2a14e7d494d72ad",
+  "scope": "independent_model_observation_of_exact_sampled_frames_and_crops_not_human_certification"
+}

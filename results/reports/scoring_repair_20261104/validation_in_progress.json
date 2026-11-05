@@ -1,0 +1,19 @@
+{
+  "started_utc": "2026-11-04T12:41:42.360210+00:00",
+  "source_run": "results/optimization_20261104/generation_first_gpu01_4workers_v11_20261104T044812Z",
+  "tests": {
+    "passed": 202,
+    "log": "tests.log"
+  },
+  "workers": 4,
+  "judge_base_urls": [
+    "http://127.0.0.1:8000/v1",
+    "http://127.0.0.1:8001/v1"
+  ],
+  "same_model_self_evaluation": true,
+  "status": "real_evaluation_running",
+  "git_head": "21b10281c7072fce8e2425ca9ed1786a7556889a",
+  "result_dir": "results/reports/scoring_repair_20261104/final",
+  "checkpoint_policy": "atomic per-window and per-axis snapshots",
+  "request_timeout_s": 900
+}

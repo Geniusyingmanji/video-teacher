@@ -1,0 +1,506 @@
+{
+  "purpose": "real_statement_consistency_component_check_not_a_total_score",
+  "id": "cs_prob_02",
+  "video_sha256": "8b6213b241fefb2032d35df99eef4c910c148455733e2869f87a8fe3cd9f868a",
+  "verification_code_sha256": "23a405e29872a0fe119a6672df1099ff4ab95b0774cacb69b54d0948f154846b",
+  "result": {
+    "version": "statement-grounded-consistency-v1",
+    "valid": true,
+    "conflicting_axes": [],
+    "uncertain_axes": [],
+    "axes": {
+      "visual_quality": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show empty first box, clipped '3', missing '2', and cut-off checkmark.",
+          "evidence_frames": [
+            10,
+            15,
+            17
+          ],
+          "report_statement": "The video suffers from severe visual corruption starting at frame 10. The array representation breaks, with the first box becoming empty and the value '2' disappearing entirely. The remaining digits are vertically clipped and partially illegible. This broken state persists through the 'sorted' verification and the final recap, directly contradicting the on-screen captions and the algorithmic logic. Additionally, the checkmark symbol is cut off at the right edge of the frame."
+        },
+        "legibility": {
+          "status": "agrees",
+          "observed": "Frame 10 shows clipped '3' and missing '2' in the array boxes.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The digit '3' in the second box is vertically clipped and partially illegible from frame 10 onwards. The value '2' is completely missing from the visual array representation starting at frame 10."
+        },
+        "text_stability": {
+          "status": "agrees",
+          "observed": "Frame 10 shows [empty, 3, 1] while frame 9 shows [1, 3, 2].",
+          "evidence_frames": [
+            9,
+            10
+          ],
+          "report_statement": "The visual array state changes to [empty, 3, 1] at frame 10, which is a corruption of the previous state [1, 3, 2]. This invalid state persists through the 'sorted' verification and the final recap, directly contradicting the correct result"
+        },
+        "shape_stability": {
+          "status": "agrees",
+          "observed": "Frame 10 shows empty first box and clipped '3' in second box.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The array representation is corrupted from frame 10 onwards. The first box becomes empty, and the value '2' disappears. The remaining digits are vertically clipped, breaking the visual identity of the array elements."
+        },
+        "artifact_control": {
+          "status": "agrees",
+          "observed": "Frame 17 shows a green checkmark cut off at the right edge.",
+          "evidence_frames": [
+            17
+          ],
+          "report_statement": "A green checkmark symbol appears to the right of the array from frame 17 onwards, but it is cut off at the right edge of the frame, appearing incomplete and intrusive."
+        },
+        "composition": {
+          "status": "agrees",
+          "observed": "Array is centered, but checkmark is cut off and digits are clipped.",
+          "evidence_frames": [
+            10,
+            17
+          ],
+          "report_statement": "The subject (the array) is generally well-framed in the center of the screen with good contrast. However, the checkmark symbol is cut off at the right edge, and the array values are clipped within their boxes, indicating poor layout control"
+        },
+        "motion": {
+          "status": "agrees",
+          "observed": "Frame 9 to 10 is a hard cut from [1, 3, 2] to [empty, 3, 1].",
+          "evidence_frames": [
+            9,
+            10
+          ],
+          "report_statement": "The transition from frame 9 to frame 10 is a hard cut where the array state changes from [1, 3, 2] to [empty, 3, 1]. This is not a smooth animation but a visual glitch that breaks the continuity of the sorting process."
+        }
+      },
+      "temporal_consistency": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array [empty, 3, 1] contradicting 'sorted' captions.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video exhibits a catastrophic failure in temporal consistency. While the initial state and the first swap (frames 2-9) are temporally coherent, the visual representation of the array becomes corrupted at frame 10. The value '2' disappears, the first box becomes empty, and the remaining digits are vertically clipped. This invalid state [empty, 3, 1] persists for the remainder of the video, directly contradicting the on-screen captions (e.g., 'Array is sorted') and the spoken narration (which claims the array is [1, 2, 3]). The transition from a valid state to a broken one is an unexplained jump that destroys the logical continuity of the algorithm demonstration."
+        },
+        "identity": {
+          "status": "agrees",
+          "observed": "Value '2' present in frame 9 is missing in frame 10.",
+          "evidence_frames": [
+            9,
+            10
+          ],
+          "report_statement": "The identity of the array elements is not preserved. The value '2' is present in frames 2-9 but is completely missing from frame 10 onwards. The first box, which contained '3' and then '1', becomes empty in frame 10. The digit '3' in the 10"
+        },
+        "motion_continuity": {
+          "status": "agrees",
+          "observed": "Frame 9 to 10 shows a discontinuous jump to a corrupted state.",
+          "evidence_frames": [
+            9,
+            10
+          ],
+          "report_statement": "The transition from frame 9 to frame 10 is a severe discontinuity. The array state changes from a valid [1, 3, 2] to a corrupted [empty, 3, 1] without any coherent motion or intermediate state. The values do not move to new positions; they"
+        },
+        "state_continuity": {
+          "status": "agrees",
+          "observed": "Frame 15 shows [empty, 3, 1] with caption 'Array is sorted.'",
+          "evidence_frames": [
+            15
+          ],
+          "report_statement": "The visual state is fundamentally inconsistent with the narrative. From frame 10 to 24, the visual array is [empty, 3, 1], yet the captions and narration describe a sorted array of [1, 2, 3]. The state of the array does not match the"
+        },
+        "transition_integrity": {
+          "status": "agrees",
+          "observed": "Frame 10 transition erases '2' and empties first box.",
+          "evidence_frames": [
+            9,
+            10
+          ],
+          "report_statement": "The transition at frame 10 erases necessary context. The value '2' is lost, and the first box is emptied, which contradicts the 'in-place swap' logic established earlier. This transition breaks the logical flow of the"
+        },
+        "action_completion": {
+          "status": "agrees",
+          "observed": "Final frames show [empty, 3, 1], not the sorted [1, 2, 3].",
+          "evidence_frames": [
+            24
+          ],
+          "report_statement": "The requested action of tracing the bubble sort algorithm is not completed. The visual demonstration freezes in a broken state after the second swap. The final sorted state [1, 2, 3] is never visually achieved, only"
+        },
+        "temporal_readability": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show visual state contradicting text and audio.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "While the initial steps are readable, the video becomes unreadable and confusing from frame 10 onwards. The viewer is presented with a visual state that contradicts the text and audio, making it impossible to follow the"
+        }
+      },
+      "signal_quality": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array with missing values and clipped digits.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video exhibits severe signal quality failures. While the initial frames (1-9) display clear, high-contrast text and diagrams, the visual representation of the array becomes corrupted starting at frame 10. The value '2' disappears, the first box becomes empty, and the digit '3' is vertically clipped, rendering the core educational content illegible and factually incorrect for the remainder of the video. This corruption persists through the 'sorted' verification and recap, making the essential content unusable."
+        },
+        "focus": {
+          "status": "agrees",
+          "observed": "Text and diagrams are sharp and in focus in all frames.",
+          "evidence_frames": [
+            1,
+            10,
+            24
+          ],
+          "report_statement": "The text and diagrams are generally sharp and in focus throughout the video. There is no evidence of blurring or defocusing in any of the sampled frames."
+        },
+        "exposure": {
+          "status": "agrees",
+          "observed": "Frame 10 shows vertically clipped '3' in the array box.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video uses a black background with white text, which is well-exposed. However, the digit '3' in the array is vertically clipped (cut off at the top and bottom) from frame 10 onwards, which constitutes destructive clipping of essential, "
+        },
+        "compression": {
+          "status": "agrees",
+          "observed": "No compression noise visible; issues are rendering errors.",
+          "evidence_frames": [
+            1,
+            10,
+            24
+          ],
+          "report_statement": "There is no visible compression noise, blocking, or generation artifacts that obscure the content. The visual issues are due to rendering errors (clipping, missing values), not compression."
+        },
+        "text_rendering": {
+          "status": "agrees",
+          "observed": "Frame 10 shows clipped '3' and missing '2' in the array.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "Text rendering is clean and stable in the initial frames (1-9). However, from frame 10 onwards, the digit '3' is rendered with a severe vertical clip, making it partially illegible. Additionally, the value '2' is completely missing from the"
+        },
+        "contrast": {
+          "status": "agrees",
+          "observed": "High contrast between white text and black background throughout.",
+          "evidence_frames": [
+            1,
+            10,
+            24
+          ],
+          "report_statement": "The contrast between the white text/lines and the black background is high and consistent throughout the video, ensuring that all rendered elements are easily distinguishable."
+        },
+        "frame_integrity": {
+          "status": "agrees",
+          "observed": "Frames are complete but content is corrupted from frame 10.",
+          "evidence_frames": [
+            10,
+            24
+          ],
+          "report_statement": "The frames are complete in terms of layout (no black screens or missing regions), but the content within the frames is severely corrupted from frame 10 onwards. The array state is invalid (missing a value, empty box), which constitutes a "
+        }
+      },
+      "conceptual_correctness": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array contradicting correct algorithmic result.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the value '2' disappearing and the first box becoming empty. This invalid state persists through the 'sorted' verification and the final recap, directly contradicting the correct algorithmic result [1, 2, 3] and the on-screen captions claiming the array is sorted."
+        },
+        "core_fact": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted array [empty, 3, 1] instead of [1, 2, 3].",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the "
+        },
+        "relationships": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted array state after second swap.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the "
+        },
+        "symbols": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted array with missing values.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the "
+        },
+        "steps": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted state after second swap step.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the "
+        },
+        "final_state": {
+          "status": "agrees",
+          "observed": "Frame 24 shows [empty, 3, 1], not the sorted [1, 2, 3].",
+          "evidence_frames": [
+            24
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the "
+        },
+        "no_contradiction": {
+          "status": "agrees",
+          "observed": "Frame 15 shows [empty, 3, 1] with 'Array is sorted' caption.",
+          "evidence_frames": [
+            15
+          ],
+          "report_statement": "The video fails to correctly demonstrate the bubble sort algorithm. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10. The array state changes to [empty, 3, 1], with the "
+        }
+      },
+      "narrative_structure": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array contradicting 'sorted' captions.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video fails to provide a coherent narrative for the bubble sort algorithm. While the initial setup and the first swap are presented correctly, the visual representation of the array becomes corrupted at the second swap (Frame 10), resulting in an empty box and a missing value. This broken state persists through the verification and recap, directly contradicting the captions and narration that claim the array is sorted. The sequence of events is therefore incoherent and the final state is not the intended result."
+        },
+        "setup": {
+          "status": "agrees",
+          "observed": "Frame 2 shows initial array [3, 1, 2] clearly.",
+          "evidence_frames": [
+            2
+          ],
+          "report_statement": "The initial state of the array [3, 1, 2] is clearly and correctly displayed in the first few frames, establishing a valid starting point for the problem."
+        },
+        "target": {
+          "status": "agrees",
+          "observed": "Frame 2 shows caption 'Goal: Sort [3, 1, 2] using bubble sort.'",
+          "evidence_frames": [
+            2
+          ],
+          "report_statement": "The goal of the task is explicitly stated in a caption ('Goal: Sort [3, 1, 2] using bubble sort'), making the intended outcome clear to the viewer."
+        },
+        "sequence": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted state used for subsequent steps.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The sequence of events is incoherent. After the first swap, the array state becomes corrupted (an empty box appears), and this incorrect state is used for all subsequent steps, including the final 'sorted' state. The visual progression does"
+        },
+        "transition": {
+          "status": "agrees",
+          "observed": "Frame 10 shows broken array state after second swap.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The key transition of the second swap is not shown correctly. The animation results in a broken array state where a value disappears and a box becomes empty, failing to demonstrate the in-place swap operation."
+        },
+        "completion": {
+          "status": "agrees",
+          "observed": "Frame 24 shows [empty, 3, 1] while claiming sorted.",
+          "evidence_frames": [
+            24
+          ],
+          "report_statement": "The resulting state is not the correct sorted array. The video displays a broken array [empty, 3, 1] while claiming it is sorted, making the final state factually incorrect and impossible to verify against the problem's goal."
+        },
+        "pace": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show long static hold on broken state.",
+          "evidence_frames": [
+            10,
+            24
+          ],
+          "report_statement": "The pacing is adequate for the first half of the video, allowing time for the initial setup and the first swap. However, the second half consists of a long, static hold on a broken and incorrect visual state, which is a significant pacing"
+        }
+      },
+      "pedagogical_clarity": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array contradicting algorithm logic.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video fails to provide a pedagogically clear explanation of bubble sort. While the initial setup and the first swap are visually correct, the visualization becomes corrupted at the second swap (Frame 10), where the value '2' disappears and the first box becomes empty. This incorrect state persists through the 'sorted' verification and the final recap, directly contradicting the algorithm's logic and the on-screen text. The visual evidence is fundamentally broken, making the core mechanism impossible to follow."
+        },
+        "single_focus": {
+          "status": "agrees",
+          "observed": "Frame 2 clearly states task to sort [3, 1, 2].",
+          "evidence_frames": [
+            2
+          ],
+          "report_statement": "The title and initial captions clearly state the task is to sort [3, 1, 2] using bubble sort, establishing a clear learning target for the audience."
+        },
+        "attention": {
+          "status": "agrees",
+          "observed": "Frame 5 shows yellow highlights on first two boxes.",
+          "evidence_frames": [
+            5
+          ],
+          "report_statement": "Yellow highlights effectively guide the viewer to the elements being compared during the first two steps, but the attention cues become meaningless when the visual state becomes corrupted and incorrect."
+        },
+        "explanation": {
+          "status": "agrees",
+          "observed": "Frame 10 shows invalid array state [empty, 3, 1].",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The explanation of the algorithm's mechanism is severely compromised. The visual representation of the array becomes invalid (showing [empty, 3, 1]) after the second swap, which contradicts the correct algorithmic result and makes the 'why'"
+        },
+        "readability": {
+          "status": "agrees",
+          "observed": "Frame 10 shows missing '2' and clipped '3' in array.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "While the text is generally legible, the core visual element—the array—becomes unreadable and incorrect. The value '2' is missing, and the digit '3' is vertically clipped, making it difficult to follow the state of the data."
+        },
+        "ambiguity": {
+          "status": "agrees",
+          "observed": "Frame 15 shows [empty, 3, 1] with 'Array is sorted' caption.",
+          "evidence_frames": [
+            15
+          ],
+          "report_statement": "There is severe ambiguity and contradiction. The visual array state [empty, 3, 1] directly conflicts with the on-screen caption 'Array is sorted' and the spoken narration claiming the array is [1, 2, 3]."
+        },
+        "takeaway": {
+          "status": "agrees",
+          "observed": "Frame 24 shows broken array with recap text.",
+          "evidence_frames": [
+            24
+          ],
+          "report_statement": "The final state fails to communicate the correct conclusion. The recap text is present, but it is displayed alongside a broken array visualization that does not show the sorted result [1, 2, 3], undermining the final takeaway."
+        }
+      },
+      "didactic_affordances": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array contradicting algorithm result.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video fails to provide a valid didactic demonstration of bubble sort. While the initial state and the first swap are shown correctly, the visual representation becomes corrupted at frame 10, where the value '2' disappears and the first box becomes empty. This invalid state persists through the 'sorted' verification and the final recap, directly contradicting the correct algorithmic result [1, 2, 3] and the on-screen captions. The visual evidence is therefore misleading and unusable for learning the algorithm."
+        },
+        "observable_change": {
+          "status": "agrees",
+          "observed": "Frame 10 shows visual error instead of valid swap.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video shows a state change for the first swap (frames 5-6), but the subsequent change (frame 10) is a visual error where a value disappears and a box becomes empty, rather than a valid swap."
+        },
+        "step_evidence": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted [empty, 3, 1] instead of [1, 2, 3].",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The first swap is visually demonstrated, but the second swap is not. The visual result of the second swap is a corrupted array state [empty, 3, 1] instead of the correct [1, 2, 3]."
+        },
+        "reference_anchor": {
+          "status": "agrees",
+          "observed": "Frame 10 shows missing '2' and empty first box.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The array boxes are stable, but the values within them are not. The disappearance of the value '2' and the emptying of the first box break the fundamental invariant of an in-place sort, making the visual representation unreliable."
+        },
+        "alignment": {
+          "status": "agrees",
+          "observed": "Frame 15 shows [empty, 3, 1] with 'Array is sorted' caption.",
+          "evidence_frames": [
+            15
+          ],
+          "report_statement": "The visual representation is severely misaligned with the algorithm being explained. The caption 'Array is sorted' (frame 15) and the checkmark (frame 17) are shown next to an array that is visually [empty, 3, 1], which is not sorted and is"
+        },
+        "inspectability": {
+          "status": "agrees",
+          "observed": "Frame 15 shows contradiction between text and visual array.",
+          "evidence_frames": [
+            15
+          ],
+          "report_statement": "The video is static and can be paused, but the information presented is incorrect. A student pausing the video at frame 15 would see a contradiction between the text and the visual array, which is not a useful state for inspection."
+        },
+        "diagnosability": {
+          "status": "agrees",
+          "observed": "Frame 10 shows production defect, not conceptual error.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video itself demonstrates a failure, but it does not allow a student to diagnose a *conceptual* error in their own work. The visual error is a production defect, not a pedagogical tool for identifying algorithmic mistakes."
+        }
+      },
+      "audience_appropriateness": {
+        "summary": {
+          "status": "agrees",
+          "observed": "Frames 10-24 show corrupted array contradicting narration.",
+          "evidence_frames": [
+            10,
+            15
+          ],
+          "report_statement": "The video is fundamentally unsuitable for the target audience due to a severe visual rendering error. From frame 10 onwards, the array representation is corrupted (missing values, clipped digits), directly contradicting the spoken narration and on-screen captions. This makes the core educational content (the sorting process) impossible to follow visually, rendering the video ineffective for an undergraduate CS student."
+        },
+        "prerequisites": {
+          "status": "agrees",
+          "observed": "Frame 10 shows corrupted array making verification impossible.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video assumes the audience knows the bubble sort algorithm, which is appropriate for an undergraduate CS student. However, the visual corruption makes it impossible to verify if the visual representation aligns with the prerequisite of "
+        },
+        "vocabulary": {
+          "status": "agrees",
+          "observed": "Frame 2 shows correct CS terminology in caption.",
+          "evidence_frames": [
+            2
+          ],
+          "report_statement": "The terminology used (e.g., 'bubble sort', 'in-place swap', 'pass') is correct and appropriate for the target audience. The captions are clear and use standard CS terminology."
+        },
+        "complexity": {
+          "status": "agrees",
+          "observed": "Frame 10 shows visual corruption adding confusing complexity.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The visual complexity is low, which is appropriate for the task. However, the visual corruption (missing values, clipped text) introduces a confusing and unnecessary complexity that hinders understanding."
+        },
+        "speed": {
+          "status": "agrees",
+          "observed": "Frame 10 shows broken visual representation of array state.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The pacing is generally slow enough for the audience to follow. However, the visual corruption makes it impossible to follow the changes in the array state, as the visual representation is broken."
+        },
+        "accessibility": {
+          "status": "agrees",
+          "observed": "Frame 10 shows missing values and clipped text.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The video has poor accessibility due to the visual corruption. The missing values and clipped text make it impossible to read the array state, which is a critical part of the educational content."
+        },
+        "task_fit": {
+          "status": "agrees",
+          "observed": "Frame 10 shows visual state not matching spoken explanation.",
+          "evidence_frames": [
+            10
+          ],
+          "report_statement": "The chosen representation (array as boxes) is appropriate for the task. However, the visual corruption makes it impossible to use the representation to learn the task, as the visual state does not match the spoken explanation or the on"
+        }
+      }
+    },
+    "source_statement_sha256": "9576115c57211eac1eaa7f20982404ef408cd2451cb13f07a9f0fca573fa5913",
+    "finding": "Report factual consistency checked against actual frames; video quality is assessed separately.",
+    "validation_errors": []
+  }
+}

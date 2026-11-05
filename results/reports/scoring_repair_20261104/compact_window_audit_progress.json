@@ -1,0 +1,29 @@
+{
+  "scope": "intermediate_structural_window_audit_not_final_scores",
+  "cases": [
+    {
+      "id": "lang_high_01",
+      "windows_checked": 9,
+      "errors": [],
+      "code_matches_current": true
+    },
+    {
+      "id": "cs_prob_02",
+      "windows_checked": 8,
+      "errors": [],
+      "code_matches_current": true
+    },
+    {
+      "id": "phys_exp_02",
+      "windows_checked": 6,
+      "errors": [],
+      "code_matches_current": true
+    },
+    {
+      "id": "math_prob_01",
+      "windows_checked": 6,
+      "errors": [],
+      "code_matches_current": true
+    }
+  ]
+}

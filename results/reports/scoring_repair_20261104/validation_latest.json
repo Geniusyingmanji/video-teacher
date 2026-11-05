@@ -1,0 +1,33 @@
+{
+  "started_utc": "2026-11-04T14:32:07.361441+00:00",
+  "status": "verification_running",
+  "code_commit": "64ae38620eaf4fb9a7f68d48689b92d5733baa59",
+  "scoring_code_sha256": "2d84bc3c45efa18204a7292468c5ea9f925672191fa339fda877f84c943c9916",
+  "verification_code_sha256": "23a405e29872a0fe119a6672df1099ff4ab95b0774cacb69b54d0948f154846b",
+  "tests": {
+    "passed": 224,
+    "log": "full_tests_20261105.log"
+  },
+  "base_output": "compact_final",
+  "verified_output": "compact_verified_v3",
+  "gpus": [
+    0,
+    1
+  ],
+  "same_model_self_evaluation": true,
+  "source_run": "results/optimization_20261104/generation_first_gpu01_4workers_v11_20261104T044812Z",
+  "preserved_generation_failures": 5,
+  "resumed_utc": "2026-11-05T01:16:07.373461+00:00",
+  "resume_code_commit": "f695577",
+  "transport_guard": {
+    "stop_token_ids": [
+      248046,
+      248044
+    ],
+    "scope": "new json_schema requests only"
+  },
+  "base_evidence_audit": {
+    "passed": true,
+    "path": "compact_final/evidence_audit.json"
+  }
+}

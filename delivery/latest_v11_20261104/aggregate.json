@@ -1,0 +1,99 @@
+{
+  "version": "video-teacher-2x8-v11",
+  "n_total": 10,
+  "n_valid": 0,
+  "n_failed": 10,
+  "ranking_publishable": false,
+  "ranking_score": null,
+  "diagnostic_mean_valid_only": null,
+  "strict_pass_rate": null,
+  "group_means": {
+    "video_quality": null,
+    "teaching_quality": null
+  },
+  "axis_means": {
+    "visual_quality": null,
+    "temporal_consistency": null,
+    "signal_quality": null,
+    "conceptual_correctness": null,
+    "narrative_structure": null,
+    "pedagogical_clarity": null,
+    "didactic_affordances": null,
+    "audience_appropriateness": null
+  },
+  "failed_ids": [
+    "math_exp_02",
+    "phys_exp_02",
+    "math_prob_01",
+    "grade_ComputerScience_task_17",
+    "phys_exp_03",
+    "math_prob_02",
+    "cs_prob_02",
+    "med_exp_01",
+    "lang_high_01",
+    "math_high_02"
+  ],
+  "spoken_teaching": {
+    "n_required": 10,
+    "n_transcribed": 5,
+    "n_reviewed": 0,
+    "n_passed": 0,
+    "failed_ids": [
+      "math_exp_02",
+      "phys_exp_02",
+      "math_prob_01",
+      "grade_ComputerScience_task_17",
+      "phys_exp_03",
+      "math_prob_02",
+      "cs_prob_02",
+      "med_exp_01",
+      "lang_high_01",
+      "math_high_02"
+    ]
+  },
+  "instructional_presentation": {
+    "n_total": 10,
+    "n_reviewed": 0,
+    "n_passed": 0,
+    "mean_valid_only": null
+  },
+  "task_completion": {
+    "n_total": 10,
+    "n_reviewed": 5,
+    "n_passed": 0,
+    "failed_ids": [
+      "math_exp_02",
+      "phys_exp_02",
+      "math_prob_01",
+      "grade_ComputerScience_task_17",
+      "phys_exp_03",
+      "math_prob_02",
+      "cs_prob_02",
+      "med_exp_01",
+      "lang_high_01",
+      "math_high_02"
+    ],
+    "pass_rate_all_cases": 0.0
+  },
+  "supplementary": {
+    "teaching_engagement": {
+      "rubric_version": "teaching-engagement-v1",
+      "included_in_total": false,
+      "n_total": 10,
+      "n_valid": 0,
+      "n_missing_or_failed": 10,
+      "mean_complete_only": null,
+      "diagnostic_mean_available_only": null,
+      "interpretation": "observable_design_only"
+    }
+  },
+  "bootstrap_95_ci_case_mean": null,
+  "bootstrap_seed": 20261031,
+  "bootstrap_iterations": 2000,
+  "strata": {
+    "discipline": {},
+    "task_type": {},
+    "difficulty": {},
+    "audio_narration_required": {}
+  }
+}

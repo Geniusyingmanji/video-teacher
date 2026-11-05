@@ -1,0 +1,962 @@
+{
+  "version": "video-teacher-2x8-v11",
+  "n_total": 10,
+  "n_valid": 2,
+  "n_failed": 8,
+  "ranking_publishable": false,
+  "ranking_score": null,
+  "diagnostic_mean_valid_only": 25.0,
+  "strict_pass_rate": null,
+  "group_means": {
+    "video_quality": 25.0,
+    "teaching_quality": 40.0
+  },
+  "axis_means": {
+    "visual_quality": 25.0,
+    "temporal_consistency": 25.0,
+    "signal_quality": 25.0,
+    "conceptual_correctness": 68.75,
+    "narrative_structure": 25.0,
+    "pedagogical_clarity": 25.0,
+    "didactic_affordances": 56.25,
+    "audience_appropriateness": 25.0
+  },
+  "failed_ids": [
+    "math_exp_02",
+    "phys_exp_02",
+    "phys_exp_03",
+    "math_prob_02",
+    "cs_prob_02",
+    "med_exp_01",
+    "lang_high_01",
+    "math_high_02"
+  ],
+  "assessment_coverage": {
+    "math_exp_02": {
+      "visual_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "temporal_consistency": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "signal_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "conceptual_correctness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "narrative_structure": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "pedagogical_clarity": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "didactic_affordances": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "audience_appropriateness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "instructional_presentation": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "task_completion": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "generation_missing_or_failed"
+      },
+      "teaching_engagement": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "total": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "spoken_teaching": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      }
+    },
+    "phys_exp_02": {
+      "visual_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "temporal_consistency": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "signal_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "conceptual_correctness": {
+        "status": "scored",
+        "score": 75.0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "narrative_structure": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "pedagogical_clarity": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "didactic_affordances": {
+        "status": "scored",
+        "score": 75,
+        "scale": "0..100",
+        "reason": null
+      },
+      "audience_appropriateness": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "instructional_presentation": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "task_completion": {
+        "status": "evaluation_failed",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "ValueError: task completion schema rejected: segment citation not supported by inspected requirement evidence; segment citation not supported by inspected requirement evidence; segment citation not supported by inspected requirement evidence"
+      },
+      "teaching_engagement": {
+        "status": "scored",
+        "score": 54.1667,
+        "scale": "0..100",
+        "reason": null
+      },
+      "total": {
+        "status": "evaluation_failed",
+        "score": null,
+        "scale": "0..100",
+        "reason": [
+          "task_completion_failed",
+          "task_completion_missing_or_invalid"
+        ]
+      },
+      "spoken_teaching": {
+        "status": "scored",
+        "score": 62.5,
+        "scale": "0..100",
+        "reason": null
+      }
+    },
+    "math_prob_01": {
+      "visual_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "temporal_consistency": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "signal_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "conceptual_correctness": {
+        "status": "scored",
+        "score": 75,
+        "scale": "0..100",
+        "reason": null
+      },
+      "narrative_structure": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "pedagogical_clarity": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "didactic_affordances": {
+        "status": "scored",
+        "score": 50,
+        "scale": "0..100",
+        "reason": null
+      },
+      "audience_appropriateness": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "instructional_presentation": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "task_completion": {
+        "status": "scored",
+        "score": 1.0,
+        "scale": "0..1 requirement coverage",
+        "reason": null
+      },
+      "teaching_engagement": {
+        "status": "scored",
+        "score": 62.5,
+        "scale": "0..100",
+        "reason": null
+      },
+      "total": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "spoken_teaching": {
+        "status": "scored",
+        "score": 62.5,
+        "scale": "0..100",
+        "reason": null
+      }
+    },
+    "grade_ComputerScience_task_17": {
+      "visual_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "temporal_consistency": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "signal_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "conceptual_correctness": {
+        "status": "scored",
+        "score": 62.5,
+        "scale": "0..100",
+        "reason": null
+      },
+      "narrative_structure": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "pedagogical_clarity": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "didactic_affordances": {
+        "status": "scored",
+        "score": 62.5,
+        "scale": "0..100",
+        "reason": null
+      },
+      "audience_appropriateness": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "instructional_presentation": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "task_completion": {
+        "status": "scored",
+        "score": 1.0,
+        "scale": "0..1 requirement coverage",
+        "reason": null
+      },
+      "teaching_engagement": {
+        "status": "scored",
+        "score": 62.5,
+        "scale": "0..100",
+        "reason": null
+      },
+      "total": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "spoken_teaching": {
+        "status": "scored",
+        "score": 37.5,
+        "scale": "0..100",
+        "reason": null
+      }
+    },
+    "phys_exp_03": {
+      "visual_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "temporal_consistency": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "signal_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "conceptual_correctness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "narrative_structure": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "pedagogical_clarity": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "didactic_affordances": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "audience_appropriateness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "instructional_presentation": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "task_completion": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "generation_missing_or_failed"
+      },
+      "teaching_engagement": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "total": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "spoken_teaching": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      }
+    },
+    "math_prob_02": {
+      "visual_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "temporal_consistency": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "signal_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "conceptual_correctness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "narrative_structure": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "pedagogical_clarity": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "didactic_affordances": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "audience_appropriateness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "instructional_presentation": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "task_completion": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "generation_missing_or_failed"
+      },
+      "teaching_engagement": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "total": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "spoken_teaching": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      }
+    },
+    "cs_prob_02": {
+      "visual_quality": {
+        "status": "scored",
+        "score": 0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "temporal_consistency": {
+        "status": "scored",
+        "score": 0.0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "signal_quality": {
+        "status": "scored",
+        "score": 0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "conceptual_correctness": {
+        "status": "scored",
+        "score": 0.0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "narrative_structure": {
+        "status": "scored",
+        "score": 0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "pedagogical_clarity": {
+        "status": "scored",
+        "score": 0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "didactic_affordances": {
+        "status": "scored",
+        "score": 16.675,
+        "scale": "0..100",
+        "reason": null
+      },
+      "audience_appropriateness": {
+        "status": "scored",
+        "score": 0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "instructional_presentation": {
+        "status": "scored",
+        "score": 0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "task_completion": {
+        "status": "evaluation_failed",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "ValueError: task completion schema rejected: segment citation not supported by inspected requirement evidence; segment citation not supported by inspected requirement evidence; segment citation not supported by inspected requirement evidence"
+      },
+      "teaching_engagement": {
+        "status": "scored",
+        "score": 25.0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "total": {
+        "status": "evaluation_failed",
+        "score": null,
+        "scale": "0..100",
+        "reason": [
+          "unresolved_cross_axis_contradictions"
+        ]
+      },
+      "spoken_teaching": {
+        "status": "scored",
+        "score": 12.5,
+        "scale": "0..100",
+        "reason": null
+      }
+    },
+    "med_exp_01": {
+      "visual_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "temporal_consistency": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "signal_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "conceptual_correctness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "narrative_structure": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "pedagogical_clarity": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "didactic_affordances": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "audience_appropriateness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "instructional_presentation": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "task_completion": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "generation_missing_or_failed"
+      },
+      "teaching_engagement": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "total": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "spoken_teaching": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      }
+    },
+    "lang_high_01": {
+      "visual_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "temporal_consistency": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "signal_quality": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "conceptual_correctness": {
+        "status": "scored",
+        "score": 37.5,
+        "scale": "0..100",
+        "reason": null
+      },
+      "narrative_structure": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "pedagogical_clarity": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "didactic_affordances": {
+        "status": "scored",
+        "score": 75.0,
+        "scale": "0..100",
+        "reason": null
+      },
+      "audience_appropriateness": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "instructional_presentation": {
+        "status": "scored",
+        "score": 25,
+        "scale": "0..100",
+        "reason": null
+      },
+      "task_completion": {
+        "status": "evaluation_failed",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "ValueError: task completion schema rejected: Judge output truncated; no score accepted; Judge output truncated; no score accepted; Judge output truncated; no score accepted"
+      },
+      "teaching_engagement": {
+        "status": "scored",
+        "score": 58.3333,
+        "scale": "0..100",
+        "reason": null
+      },
+      "total": {
+        "status": "evaluation_failed",
+        "score": null,
+        "scale": "0..100",
+        "reason": [
+          "task_completion_failed",
+          "task_completion_missing_or_invalid"
+        ]
+      },
+      "spoken_teaching": {
+        "status": "scored",
+        "score": 37.5,
+        "scale": "0..100",
+        "reason": null
+      }
+    },
+    "math_high_02": {
+      "visual_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "temporal_consistency": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "signal_quality": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "conceptual_correctness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "narrative_structure": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "pedagogical_clarity": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "didactic_affordances": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "audience_appropriateness": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "instructional_presentation": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "task_completion": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..1 requirement coverage",
+        "reason": "generation_missing_or_failed"
+      },
+      "teaching_engagement": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "total": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      },
+      "spoken_teaching": {
+        "status": "unavailable_video",
+        "score": null,
+        "scale": "0..100",
+        "reason": "generation_missing_or_failed"
+      }
+    }
+  },
+  "spoken_teaching": {
+    "n_required": 10,
+    "n_transcribed": 5,
+    "n_reviewed": 5,
+    "n_passed": 0,
+    "failed_ids": [
+      "math_exp_02",
+      "phys_exp_02",
+      "math_prob_01",
+      "grade_ComputerScience_task_17",
+      "phys_exp_03",
+      "math_prob_02",
+      "cs_prob_02",
+      "med_exp_01",
+      "lang_high_01",
+      "math_high_02"
+    ]
+  },
+  "instructional_presentation": {
+    "n_total": 10,
+    "n_reviewed": 5,
+    "n_passed": 0,
+    "mean_valid_only": 20.0
+  },
+  "task_completion": {
+    "n_total": 10,
+    "n_reviewed": 2,
+    "n_passed": 2,
+    "failed_ids": [
+      "math_exp_02",
+      "phys_exp_02",
+      "phys_exp_03",
+      "math_prob_02",
+      "cs_prob_02",
+      "med_exp_01",
+      "lang_high_01",
+      "math_high_02"
+    ],
+    "pass_rate_all_cases": 0.2
+  },
+  "supplementary": {
+    "teaching_engagement": {
+      "rubric_version": "teaching-engagement-v1",
+      "included_in_total": false,
+      "n_total": 10,
+      "n_valid": 5,
+      "n_missing_or_failed": 5,
+      "mean_complete_only": null,
+      "diagnostic_mean_available_only": 52.5,
+      "interpretation": "observable_design_only"
+    }
+  },
+  "bootstrap_95_ci_case_mean": null,
+  "bootstrap_seed": 20261031,
+  "bootstrap_iterations": 2000,
+  "strata": {
+    "discipline": {
+      "computer_science": {
+        "n": 1,
+        "mean_valid_only": 25.0
+      },
+      "mathematics": {
+        "n": 1,
+        "mean_valid_only": 25.0
+      }
+    },
+    "task_type": {
+      "problem_solving": {
+        "n": 2,
+        "mean_valid_only": 25.0
+      }
+    },
+    "difficulty": {
+      "low": {
+        "n": 1,
+        "mean_valid_only": 25.0
+      },
+      "medium": {
+        "n": 1,
+        "mean_valid_only": 25.0
+      }
+    },
+    "audio_narration_required": {
+      "True": {
+        "n": 2,
+        "mean_valid_only": 25.0
+      }
+    }
+  },
+  "per_case_sha256": "df94979c1738a58ecf071853ab46786dfddb48cc8794dc690047da52aa111e28",
+  "config": {
+    "sample_fps": 2.0,
+    "frame_max_px": 832,
+    "max_judge_frames": 24,
+    "judge": {
+      "provider": "openai_compatible",
+      "base_url": "http://127.0.0.1:8000/v1",
+      "model": "qwen3.8-27b"
+    },
+    "instructional_video_version": "instructional-video-v2-segmented",
+    "teaching_rubric_version": "6x6-v3",
+    "engagement_rubric_version": "teaching-engagement-v1",
+    "spoken_teaching": {
+      "model": "/root/models/faster-whisper-base",
+      "weight_sha256": "d01c3014881c9c6f3133c182f3d2887eb6ca1c789a7538c5c007196857a0a6a9",
+      "device": "cpu",
+      "compute_type": "int8",
+      "version": "spoken-teaching-v1"
+    },
+    "scoring_code_sha256": "2d84bc3c45efa18204a7292468c5ea9f925672191fa339fda877f84c943c9916",
+    "workers": 4,
+    "judge_base_urls": [
+      "http://127.0.0.1:8000/v1",
+      "http://127.0.0.1:8001/v1"
+    ],
+    "prompt_sha256": "ff51d84afdc7c8c6a1af1a7fb386d4c4b72a196dd6bd71f94fd9543d3aad108e",
+    "manifest_sha256": "2a11934717fad772f58aaa95dff551daac701a8c4746432eb5539d490178855d"
+  }
+}
