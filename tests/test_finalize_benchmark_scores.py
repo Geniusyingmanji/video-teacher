@@ -1,4 +1,5 @@
 import json
+import hashlib
 from pathlib import Path
 import tempfile
 import unittest
@@ -14,6 +15,7 @@ class FinalizeScoresTests(unittest.TestCase):
         (directory/'prompts.jsonl').write_text(json.dumps({'id': 'failed'})+'\n')
         (directory/'per_case.jsonl').write_text(json.dumps(row)+'\n')
         aggregate = {'n_total': 1, 'n_valid': 0, 'ranking_publishable': False,
+                     'per_case_sha256': hashlib.sha256((directory/'per_case.jsonl').read_bytes()).hexdigest(),
                      'assessment_coverage': {'failed': assessment_coverage(row)}}
         (directory/'aggregate.json').write_text(json.dumps(aggregate))
         return row, aggregate
@@ -50,6 +52,18 @@ class FinalizeScoresTests(unittest.TestCase):
             row, aggregate = self.fixture(directory)
             row['scoring']['score'] = 0
             (directory/'per_case.jsonl').write_text(json.dumps(row)+'\n')
+            aggregate['per_case_sha256'] = hashlib.sha256((directory/'per_case.jsonl').read_bytes()).hexdigest()
+            (directory/'aggregate.json').write_text(json.dumps(aggregate))
             with self.assertRaisesRegex(ValueError, 'evidence audit failed'):
                 finalize(directory, directory/'prompts.jsonl')
             self.assertFalse((directory/'scores.md').exists())
+
+    def test_changed_evidence_with_identical_scores_blocks_exports(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            row, _ = self.fixture(directory)
+            row['errors'].append('new_evidence')
+            (directory/'per_case.jsonl').write_text(json.dumps(row)+'\n')
+            with self.assertRaisesRegex(ValueError, 'complete matching'):
+                finalize(directory, directory/'prompts.jsonl')
+            self.assertFalse((directory/'finalization.json').exists())

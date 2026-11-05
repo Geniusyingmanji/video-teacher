@@ -19,6 +19,7 @@ def finalize(directory, prompts_path):
     coverage = {key: assessment_coverage(row) for key, row in rows.items()}
     valid = sum(row['scoring'].get('valid') is True for row in rows.values())
     if (not prompts or set(rows) != set(prompts)
+            or aggregate.get('per_case_sha256') != hashlib.sha256(target.read_bytes()).hexdigest()
             or aggregate.get('n_total') != len(rows)
             or aggregate.get('n_valid') != valid
             or aggregate.get('assessment_coverage') != coverage):

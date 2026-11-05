@@ -127,6 +127,7 @@ def main():
     rows=[completed[i] for i in prompts if i in completed]
     target.write_text(''.join(json.dumps(r,ensure_ascii=False)+'\n' for r in rows))
     aggregate=report(rows,prompts);aggregate['version']=VERSION
+    aggregate['per_case_sha256']=hashlib.sha256(target.read_bytes()).hexdigest()
     aggregate['n_requested']=len(prompts)
     aggregate['verification_policy']=code_hash()
     aggregate['base_report_dir']=str(args.base_dir)
