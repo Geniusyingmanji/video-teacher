@@ -148,6 +148,9 @@ def render(code: Path, scene_name: str, contract_path: Path):
     if lesson and not draft:
         from generation.lesson_codegen import validate_code
         validate_code(code.read_text())
+    if lesson and source:
+        from generation.lesson_codegen import validate_source_ownership
+        validate_source_ownership(code.read_text())
     viewport = contract.get('source_viewport')
     size = contract.get('source_size_pixels')
     source_regions = validate_regions(storyboard.get('source_edit_regions', []), required=bool(source), source_size=size)
@@ -161,6 +164,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
     paths = []
     layout_reports = []
     chapter_reports = []
+    layout_changes = []
     for phase in ('measure', 'final'):
         options = dict(pixel_width=854, pixel_height=480, frame_rate=15,
                        media_dir=str(code.parent / 'media'), disable_caching=True,
@@ -169,7 +173,8 @@ def render(code: Path, scene_name: str, contract_path: Path):
                        verbosity='WARNING')
         with tempconfig(options):
             scene = cls()
-            protected = [0,0,1,contract['teaching_panel'][1]] if lesson and source else viewport
+            scene.layout_contract = contract
+            protected = viewport
             guard = SourceFrameGuard(regions, initial_hold_frames=fps, protected_viewport=protected) if source and phase == 'final' else None
             if guard:
                 original_add_frame = scene.renderer.add_frame
@@ -191,19 +196,27 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 active_caption = [None]
                 def teaching_caption(text):
                     import textwrap
+                    width_fraction = (contract['teaching_panel'][2]-contract['teaching_panel'][0]) if source else .9
+                    wrap_width=max(12,int(42*width_fraction/.9))
                     lines = str(text).splitlines()
-                    lines = [part for line in lines for part in (textwrap.wrap(line, width=42, break_long_words=False) or [''])]
+                    lines = [part for line in lines for part in (textwrap.wrap(line, width=wrap_width, break_long_words=False) or [''])]
                     if len(lines) > 2 or any(len(line) > 42 for line in lines):
                         raise ValueError('caption exceeds two lines of 42 characters; split across teaching steps')
                     if active_caption[0] is not None:
                         scene.remove(active_caption[0])
                     label = Text('\n'.join(lines),font_size=26)
+                    from generation.layout_policy import tag
+                    tag(label,'caption')
                     active_caption[0] = label
-                    maximum_width = config.frame_width*.9
+                    maximum_width = config.frame_width*width_fraction
                     maximum_height = config.frame_height*(.25 if source else .15)
                     label.scale(min(1,maximum_width/max(label.width,.001),maximum_height/max(label.height,.001)))
                     if label.height/config.frame_height*config.pixel_height < 16:
                         raise ValueError('teaching caption below 16 pixels; split into shorter captions')
+                    if source:
+                        from generation.layout_policy import panel_box
+                        box=panel_box(contract['teaching_panel'],config.frame_width,config.frame_height)
+                        return label.move_to([(box[0]+box[2])/2,box[1]+label.height/2,0])
                     return label.move_to([0,-config.frame_height*.325,0])
                 scene.teaching_caption = teaching_caption
             verified_calls = set()
@@ -237,6 +250,7 @@ def render(code: Path, scene_name: str, contract_path: Path):
                     image.scale(min(config.frame_width*(vx1-vx0)/image.width, config.frame_height*(vy1-vy0)/image.height))
                     image.move_to([((vx0+vx1)/2-.5)*config.frame_width,(.5-(vy0+vy1)/2)*config.frame_height,0])
                     image.set_z_index(-1000)
+                    self.source_image = image
                     self.add(image)
                     if guard:
                         self.camera.capture_mobjects([image])
@@ -255,6 +269,10 @@ def render(code: Path, scene_name: str, contract_path: Path):
                         args, kwargs = (duration,), {'frozen_frame': True}
                     else:
                         kwargs['run_time'] = duration
+                if lesson and kind in ('play','wait'):
+                    from generation.layout_policy import arrange_labels
+                    pending=[getattr(animation,'mobject',None) for animation in args]
+                    layout_changes.extend(arrange_labels(scene,contract,pending))
                 nested = True
                 try:
                     result = function(*args, **kwargs)
@@ -352,9 +370,10 @@ def render(code: Path, scene_name: str, contract_path: Path):
                 abs(row['actual_start_s']-row['start_s']) > .25 for row in chapter_reports):
             delivery_warnings.append('Chapter timing differs from planned boundaries')
             diagnostics['teaching_timeline']['valid'] = False
+    diagnostics['layout_adjustments'] = layout_changes
     diagnostics['delivery_warnings'] = delivery_warnings
     (code.parent / 'strict_diagnostics.json').write_text(json.dumps(diagnostics, indent=2))
-    blocking_layout = any(f['kind'] in ('text_overlap', 'text_occluded_by_image', 'text_outside_frame')
+    blocking_layout = any(f['kind'] in ('text_overlap', 'text_occluded_by_image', 'text_outside_frame', 'image_overlap', 'text_over_source')
                           for report in layout_reports for f in report['failures'])
     if (not diagnostics['timing']['valid'] or (not draft and (blocking_layout or not diagnostics['layout']['valid']
             or not diagnostics.get('source_preservation', {'valid': True})['valid']))):

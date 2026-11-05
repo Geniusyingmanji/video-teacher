@@ -22,8 +22,25 @@ def check_layout(scene):
               and np.asarray(obj.get_pixel_array()).shape[-1] == 4
               and np.mean(np.asarray(obj.get_pixel_array())[:, :, 3] >= 250) > .95]
     failures = []
+    from generation.layout_policy import scene_box, overlaps
+    all_images=images  # Transparent annotation layers may intentionally share a footprint.
+    for i,obj in enumerate(all_images):
+        for other in all_images[:i]:
+            if overlaps(scene_box(obj),scene_box(other)):
+                failures.append({'kind':'image_overlap','bbox':scene_box(obj),'other_bbox':scene_box(other)})
+    source=getattr(scene,'source_image',None)
+
     for i, obj in enumerate(texts):
         label = str(getattr(obj, 'text', getattr(obj, 'tex_string', 'text')))[:100]
+        if source is not None and getattr(obj,'_layout_role',None) != 'source' and overlaps(scene_box(obj),scene_box(source)):
+            failures.append({'kind':'text_over_source','text':label,'bbox':scene_box(obj)})
+        panel=getattr(scene,'layout_contract',{}).get('teaching_panel')
+        if panel and getattr(obj,'_layout_role',None) != 'source' and obj is not getattr(scene,'title',None):
+            from generation.layout_policy import panel_box
+            bounds=panel_box(panel,config.frame_width,config.frame_height)
+            box=scene_box(obj)
+            if box[0]<bounds[0]-.001 or box[1]<bounds[1]-.001 or box[2]>bounds[2]+.001 or box[3]>bounds[3]+.001:
+                failures.append({'kind':'text_outside_teaching_panel','text':label,'bbox':box})
         x0, x1 = obj.get_left()[0], obj.get_right()[0]
         y0, y1 = obj.get_bottom()[1], obj.get_top()[1]
         if x0 < -config.frame_width/2+.05 or x1 > config.frame_width/2-.05 or y0 < -config.frame_height/2+.05 or y1 > config.frame_height/2-.05:
@@ -31,7 +48,8 @@ def check_layout(scene):
             failures.append({'kind': 'text_outside_frame', 'text': label,
                              'outside_fraction': max(0., 1-visible_area/(obj.width*obj.height)),
                              'bbox': [float(x0),float(y0),float(x1),float(y1)]})
-        if obj.height/config.frame_height*config.pixel_height < 16:
+        line_count=max(1,len(getattr(obj,'original_text','').splitlines()))
+        if obj.height/line_count/config.frame_height*config.pixel_height < 16:
             failures.append({'kind': 'text_too_small', 'text': label})
         for image in images:
             if (image.z_index, order[id(image)]) <= (obj.z_index, order[id(obj)]):

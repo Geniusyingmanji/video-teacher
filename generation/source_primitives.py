@@ -36,6 +36,8 @@ class SourcePrimitives:
         if label.height/config.frame_height*config.pixel_height < self.min_label_pixels:
             raise ValueError(f'source label would be below {self.min_label_pixels} rendered pixels; improve localization/layout')
         label.move_to(self.point((x0+x1)/2, (y0+y1)/2))
+        from generation.layout_policy import tag
+        tag(label,'source')
         if not replace:
             return label
         crop = np.array(self.image.crop((x0+3, y0+3, x1-3, y1-3)))
@@ -43,7 +45,7 @@ class SourcePrimitives:
         background = '#' + ''.join(f'{v:02x}' for v in median)
         patch = Rectangle(width=width, height=height, stroke_width=0, fill_color=background, fill_opacity=1)
         patch.move_to(label)
-        return VGroup(patch, label)
+        return tag(VGroup(patch, label),'source')
 
     def curve(self, points, box, color='#D62728', stroke_width=3):
         self.authorize(box)

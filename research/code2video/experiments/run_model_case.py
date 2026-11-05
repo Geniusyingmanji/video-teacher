@@ -83,7 +83,7 @@ if __name__ == '__main__':
         asset_image.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_image, asset_image)
         source_image = asset_image
-        topic += f' Source image is available at {source_image}. Use ImageMobject with this absolute path to preserve the supplied diagram.'
+        topic += f' Source image is available at {source_image}. The strict renderer loads this source exactly once as self.source_image. Do not load, copy, scale, move or animate another source ImageMobject. Use source_text/curve/highlight in original pixel boxes; put explanations inside teaching_panel.'
         from openai import OpenAI
         import os
         image_url = 'data:image/png;base64,' + base64.b64encode(source_image.read_bytes()).decode()

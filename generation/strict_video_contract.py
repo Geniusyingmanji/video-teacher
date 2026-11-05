@@ -45,8 +45,10 @@ def make_contract(case: dict, source_image: Path | None = None, generation_profi
         contract['rules'][2] = 'Use one continuous scene with clearly separated teaching chapters and persistent object identities.'
         # The source remains immutable in its viewport; explanatory diagrams have a separate area.
         if source_image:
-            contract['source_viewport'] = [0, 0, 1, .60]
-            contract['teaching_panel'] = [0, .65, 1, 1]
+            from PIL import Image
+            from generation.layout_policy import source_panels
+            with Image.open(source_image) as image:
+                contract['source_viewport'], contract['teaching_panel'] = source_panels(image.size)
         contract['pacing'] = {'max_wait_s': 4, 'max_time_rescale': 1.02,
                               'minimum_chapters': 3, 'maximum_chapter_s': 30}
     if source_image:
@@ -121,7 +123,7 @@ def storyboard_prompt(contract: dict, outline) -> str:
                 'Specify source_operations as [{id:str,kind:text|curve|highlight,step:int,box:[x0,y0,x1,y1],reason:str,text:str,points:[[x,y]]}]. '
                 'Steps are 1..18; only originally requested changes belong in source_edit_regions, whose union is at most 25% of the source. '
                 'Preserve all original prohibitions and objects in the reference viewport. Explanatory captions and extra teaching diagrams '
-                'must be in the lower teaching_panel, never on the reference. Plan source text large enough to render at least 16 pixels. '
+                'must be in the declared teaching_panel, never on the reference. Plan source text large enough to render at least 16 pixels. '
                 +'\nCHAPTER SCHEDULE:\n'+json.dumps(schedule)
                 +'\nREQUIREMENT CHECKLIST:\n'+json.dumps([r['id'] for r in contract['requirements']])
                 +contract_text(contract)+'\nOUTLINE:\n'+str(outline))
@@ -183,11 +185,11 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
                 'Never redefine runtime helpers begin_teaching_step, teaching_caption or source_text/curve/highlight. '
                 'Return finished executable code only: no placeholders, pass, ellipses, scratch calculations or plans to rewrite later. '
                 'Pass animations to self.play, never eager mutations. Preserve random seeds between rendering passes. '
-                'For source tasks the runtime draws the locked original in the upper viewport; never add another image, clear, shift or redraw it. '
+                'For source tasks the runtime draws the locked original ONCE in source_viewport as self.source_image; never instantiate ImageMobject for the source or add another image, clear, shift or redraw it. '
                 'Use self.source_text/curve/highlight with declared ORIGINAL pixel boxes for source changes. '
-                'Use self.teaching_caption(text) for every explanation in the reserved lower caption band; it replaces the previous runtime caption and returns a Text mobject to animate. Keep each caption at most two lines, 42 characters per line. Do not put equations, titles, or diagram objects in the caption band. '
-                'Other explanatory geometry must fit ENTIRELY within teaching_panel. Source protection checks every rendered frame. '
-                'For standalone diagrams use the full canvas with separate title, diagram and caption areas. '
+                'Use self.teaching_caption(text) for every explanation in the reserved caption area (inside teaching_panel for source tasks); it replaces the previous runtime caption and returns a Text mobject to animate. Keep each caption at most two lines, 42 characters per line. Do not put equations, titles, or diagram objects in the caption band. '
+                'Use a single aligned panel of teaching text, not loose text positioned relative to frame edges. Clear previous working before adding the next step. Other explanatory geometry must fit ENTIRELY within teaching_panel. Source protection checks every rendered frame. '
+                'For standalone diagrams use the full canvas with separate title, diagram and caption areas. Place axis names away from point labels and keep verification marks above or beside the diagram, never on a labelled node. '
                 'Reserve top 15% for one short title, middle 60% for the diagram, bottom 20% for the caption, with 5% outer margins. Use a consistent neutral background, one accent color, aligned labels and balanced whitespace. Call setup_layout(title, []) if using that helper; do not display full lecture paragraphs as persistent notes. '
                 'Use short captions one at a time, clear the previous caption, and reserve enough width for labels without shrinking text. '
                 +'\nCHAPTER ACTION BUDGETS (seconds):\n'+json.dumps(budgets)+'\n'
@@ -197,7 +199,7 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
             + base_class + '\nUse at most three meaningful animation steps. Keep all content readable. '
             'Before finalizing, list every required entity/value and ensure ALL are visibly present. '
             'For standalone diagrams use the full width, avoid dense lecture bullets. Keep labels in separate rows or outside the diagram with leader lines; at least 0.15 Manim units between labels. Use diagram height at least 3 Manim units, high-contrast strokes at least 3 pixels, and at most one short caption. Explicitly animate every required directional flow with moving markers or arrows; labels alone cannot demonstrate flow. '
-            'Never place two labels on the same side of adjacent segments without checking their bounding boxes. '
+            'Reserve clear space around graph nodes, focal points and intersections: labels and verification marks must not share a position. Never place two labels on the same side of adjacent segments without checking their bounding boxes. '
             'For sorting move the original number objects along distinct arc trajectories between slots; do not morph or cross-fade digits in place. '
             'For scientific structures preserve verified assets and do not redraw an approximation. '
             'Use real Manim CE primitives such as Text, Circle, Line, Arrow, VGroup and Dot; '
@@ -334,14 +336,30 @@ class ContractAPI:
                 'source_operations':array(operations,minItems=1 if source else 0,maxItems=32 if source else 0)})
         if code_request:
             structured['reasoning_effort'] = 'low' if draft else 'medium'
-        result = OpenAI(base_url=os.environ.get('LOCAL_BASE_URL', 'http://127.0.0.1:8000/v1'),
-                        api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=1200 if code_request else 600, max_retries=1).chat.completions.create(
-            model=os.environ.get('LOCAL_MODEL', 'qwen3.8-27b'),
-            messages=[{'role': 'user', 'content': content}], max_tokens=max_tokens, temperature=.3,
-            extra_body={'chat_template_kwargs': {'enable_thinking': code_request and not draft}}, **structured)
+        messages=[{'role':'user','content':content}]
+        for attempt in range(3):
+            result = OpenAI(base_url=os.environ.get('LOCAL_BASE_URL', 'http://127.0.0.1:8000/v1'),
+                            api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=1200 if code_request else 600, max_retries=1).chat.completions.create(
+                model=os.environ.get('LOCAL_MODEL', 'qwen3.8-27b'),
+                messages=messages, max_tokens=max_tokens, temperature=.3,
+                extra_body={'chat_template_kwargs': {'enable_thinking': code_request and not draft}}, **structured)
+            (logs / f'{name}.{attempt}.response.json').write_text(result.model_dump_json())
+            if result.choices[0].finish_reason == 'length':
+                raise RuntimeError('Model output truncated; task not accepted')
+            code=getattr(getattr(result.choices[0],'message',None),'content',None)
+            if not (code_request and current.get('source_image') and isinstance(code,str)):
+                break
+            from generation.lesson_codegen import validate_source_ownership
+            clean=code.strip()
+            if clean.startswith('```'):clean=clean.split('\n',1)[1].rsplit('```',1)[0]
+            try:
+                validate_source_ownership(clean)
+                break
+            except (SyntaxError,ValueError) as exc:
+                if attempt==2:raise
+                messages += [{'role':'assistant','content':code},
+                             {'role':'user','content':f'Code preflight rejected: {exc}. Return the complete corrected code, preserving the same task, chapter timing and narration.'}]
         (logs / f'{name}.response.json').write_text(result.model_dump_json())
-        if result.choices[0].finish_reason == 'length':
-            raise RuntimeError('Model output truncated; task not accepted')
         return result, result.usage.model_dump() if result.usage else {}
 
 
