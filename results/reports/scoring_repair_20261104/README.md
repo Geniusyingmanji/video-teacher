@@ -8,6 +8,7 @@
 
 - [最终基础评分](compact_final/aggregate.json)与[逐题证据](compact_final/per_case.jsonl)。
 - [基础评分全部维度与逐项明细 CSV](compact_final/all_scores.csv)，含逐窗口分值、要求状态和引用；复核后分数另行导出。
+- [基础评分速查表](compact_final/scores.md)及[执行完成记录](compact_final/finalization.json)；这是复核前基础阶段，不能代替最终复核结果。
 - [逐题复核检查点](compact_verified_v3/per_case.jsonl)；完成后将生成 `compact_verified_v3/aggregate.json`。
 - [基础评分离线证据审计](compact_final/evidence_audit.json)通过；仅验证来源、引用和计算，不证明模型观察必然正确。
 - [五条可播放英文旁白视频](../../../delivery/README.md)。
@@ -48,3 +49,11 @@ python scripts/audit_score_evidence.py \
 本轮为 Qwen3.8-27B 同模型生成和复核。结构校验、ASR 和采样帧复核不能替代直接听音、独立专家标注或跨模型校准。区分执行完成、生成成功、有效评分与教学质量验收。
 
 本地 Qwen/xgrammar 若复现终止 token 被拒绝的 HTTP 500，可在上述复核命令增加 `--structured-stop-token-id 248046 --structured-stop-token-id 248044`。这些 ID 仅适用于已确认的当前 tokenizer；其他评委默认不启用。详见[终止 token 防护说明](../../../docs/SCORING_REPAIR_20261104.md)。
+
+复核进程结束且生成汇总后，用以下命令执行收尾。它先核对原题集合、当前逐题数据与汇总，再审计证据；通过后才导出 `all_scores.csv`、`scores.md` 和 `finalization.json`。执行结束、生成成功、评分有效和质量验收通过分别计数；证据不足继续为空分。收尾工具的三项专项回归已通过，并已在真实基础评分上验证。
+
+```bash
+python scripts/finalize_benchmark_scores.py \
+  --results-dir results/reports/scoring_repair_20261104/compact_verified_v3 \
+  --prompts results/reports/scoring_repair_20261104/prompts.jsonl
+```
