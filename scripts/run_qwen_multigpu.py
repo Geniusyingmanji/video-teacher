@@ -48,6 +48,27 @@ def environment(gpu, port):
     return env
 
 
+def reusable_render(result, expected_version, timing):
+    from generation.strict_manim import inspect_exact
+    video = Path(result.get('video') or '')
+    return (result.get('complete') is True
+            and result.get('contract_version') == expected_version
+            and video.is_file()
+            and inspect_exact(video,timing['duration_seconds'],timing['fps'])['valid'])
+
+
+def run_worker_with_recovery(command, env, log, final_path):
+    """Retry process crashes using the same immutable run and its checkpoints."""
+    for restart in range(3):
+        code = subprocess.run(command,cwd=ROOT,env=env,stdout=log,stderr=subprocess.STDOUT).returncode
+        if code == 0 or final_path.exists():
+            return code
+        if restart < 2:
+            print(f'Worker exited {code}; restart {restart+1}/2 with render and evaluation checkpoints',
+                  file=log, flush=True)
+    return code
+
+
 def candidate_rank(candidate):
     result,evaluation,_ = candidate
     scoring=evaluation.get('scoring',{})
@@ -114,18 +135,22 @@ def run_case(args):
                 path = directory/f'{args.case}_feedback.json'
                 dump(path, feedback)
                 command += ['--quality-feedback', str(path)]
-            with (directory/f'{args.case}.log').open('w') as log:
-                process = subprocess.Popen(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
-                try:
-                    code = process.wait(timeout=7200)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGTERM)
+            existing = json.loads(result_path.read_text()) if result_path.exists() else {}
+            reusable = reusable_render(existing, expected_version, timing)
+            code = 0
+            if not reusable:
+                with (directory/f'{args.case}.log').open('a') as log:
+                    process = subprocess.Popen(command, cwd=ROOT, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
                     try:
-                        process.wait(timeout=15)
+                        code = process.wait(timeout=7200)
                     except subprocess.TimeoutExpired:
-                        os.killpg(process.pid, signal.SIGKILL)
-                        process.wait()
-                    code = 124
+                        os.killpg(process.pid, signal.SIGTERM)
+                        try:
+                            process.wait(timeout=15)
+                        except subprocess.TimeoutExpired:
+                            os.killpg(process.pid, signal.SIGKILL)
+                            process.wait()
+                        code = 124
             result = json.loads(result_path.read_text()) if result_path.exists() else {'error':f'generation exited {code} without result'}
             result['exit_code'] = code
             video = Path(result.get('video') or '')
@@ -134,7 +159,7 @@ def run_case(args):
             evaluation = ({'id':args.case,'version':SCORING_VERSION,'status':'deferred',
                            'scoring':{'valid':False,'strict_pass':False,'score':None},
                            'errors':['Full quality evaluation deferred: generation-first draft delivery']}
-                          if draft and not evaluate_draft else evaluate(case, {'status':'ok' if rendered else 'failed', 'video_path':str(video) if rendered else None, 'render_diagnostics':result.get('strict_diagnostics',{})}, previous=previous))
+                          if draft and not evaluate_draft else evaluate(case, {'status':'ok' if rendered else 'failed', 'video_path':str(video) if rendered else None, 'render_diagnostics':result.get('strict_diagnostics',{})}, previous=previous, checkpoint_path=str(directory/f'{args.case}_evaluation_checkpoint.json')))
             result['quality_gate'] = assess(result, evaluation)
             result['semantic_review_status'] = ('deferred_draft_delivery' if draft and not evaluate_draft else
                 'evaluated_pass' if result['quality_gate']['passed'] else 'evaluated_fail' if evaluation.get('scoring',{}).get('valid') else 'evaluation_invalid')
@@ -259,7 +284,7 @@ def main():
             except queue.Empty: return codes
             command = [sys.executable,'-u',__file__,'--out',str(args.out),'--case',cid,'--gpu',str(gpu),'--max-attempts',str(args.max_attempts)]
             with (args.out/f'worker_gpu{gpu}_{cid}.log').open('a') as log:
-                code = subprocess.run(command,cwd=ROOT,env=environment(gpu,port),stdout=log,stderr=subprocess.STDOUT).returncode
+                code = run_worker_with_recovery(command, environment(gpu,port), log, args.out/f'final_{cid}.json')
             codes.append({'id':cid,'exit_code':code,'gpu':gpu})
             print(json.dumps(codes[-1]),flush=True)
     with concurrent.futures.ThreadPoolExecutor(max_workers=len(args.gpus)*args.workers_per_gpu) as pool:

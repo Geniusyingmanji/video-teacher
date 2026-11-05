@@ -54,7 +54,7 @@ def validate(raw, required, frame_count, segments=None):
             'coverage': sum(row['status'] == 'met' for row in ordered) / len(ordered)}
 
 
-def review(case, frames):
+def review_legacy(case, frames):
     required = requirements(case)
     prompt = ('Audit task completion against the ACTUAL ordered video frames. Review EVERY obligation below. '
               'For the full prompt check every clause, prohibition, requested answer and target location. '
@@ -115,3 +115,9 @@ def defects(review):
              'reason': 'task_requirement_' + row['status'] + ':' + row['id'],
              'evidence_frames': row['evidence_frames'], 'segment_citations':row.get('segment_citations',[]), 'finding': row['finding']}
             for row in review.get('requirements', []) if row['status'] in ('missing', 'incorrect')]
+
+
+def review(case, frames):
+    """Use per-requirement schemas to prevent duplicate IDs and borrowed citations."""
+    from eval.verified_completion import review as grounded_review
+    return grounded_review(case, frames)

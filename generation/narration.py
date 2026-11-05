@@ -2,6 +2,8 @@
 import asyncio
 import hashlib
 import json
+import math
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -41,10 +43,12 @@ def fit_status(samples, slot_seconds):
 
 
 def fit_draft_speech(samples, slot_seconds):
-    """Preserve all speech; allow at most 35% tempo increase for small overruns."""
+    """Preserve speech within a bounded 0.8..1.35 tempo range."""
     seconds = len(samples)/RATE
-    factor = max(1., seconds/max(.1, slot_seconds-.4))
-    if factor > 1.35:
+    factor = (seconds/max(slot_seconds*.85, slot_seconds-2.5)
+              if fit_status(samples, slot_seconds) == 'too_short'
+              else max(1., seconds/max(.1, slot_seconds-.4)))
+    if not .8 <= factor <= 1.35:
         raise ValueError('speech overrun exceeds draft tempo allowance')
     if factor == 1:
         return samples, factor
@@ -58,15 +62,21 @@ def fit_draft_speech(samples, slot_seconds):
 
 
 def repair_text(api,chapter,measured,status,language):
+    slot = chapter['end_s']-chapter['start_s']
+    target_seconds = max(slot*.85, slot-2.5)
+    # Calibrate to the actual voice and previous script, rather than a fixed
+    # words/second ceiling which made the minimum duration unreachable.
+    words = len(re.findall(r"\b[\w]+(?:['’-][\w]+)*\b", chapter.get('narration','')))
+    target_words = max(8, math.ceil(words*target_seconds/max(measured,.1)))
     response,_=api('Rewrite ONLY the spoken narration of this teaching chapter. Return JSON {"narration":string}. '
         'Preserve the current task, quantities, answer, mathematical reasoning and the chapter visual evidence. '
         'Do not invent facts, change the question or add unrelated material. Use genuine explanation, not repetitions. '
-        'The speech must naturally occupy about 65..90 percent of the chapter at normal speaking speed, '
+        'The speech must end about two seconds before the chapter boundary at normal speaking speed, '
         'ending no more than four seconds before the chapter boundary. Explain each visible reasoning step; '
         'never add repeated filler to fill time. '
         f'Language: {language}. Previous speech measured {measured:.2f} seconds and was {status}. '
         f'The chapter lasts {chapter["end_s"]-chapter["start_s"]:.2f} seconds. '
-        f'For English, use at most {max(8,int((chapter["end_s"]-chapter["start_s"])*2.2))} words; express the key reason concisely. '
+        f'Target approximately {target_words} words (measured voice calibration), about {target_seconds:.2f} seconds. '
         'Do not include stage directions or SSML.\nCHAPTER:\n'+json.dumps(chapter,ensure_ascii=False),max_tokens=1500)
     text=response.choices[0].message.content.strip()
     if text.startswith('```'):text=text.split('\n',1)[1].rsplit('```',1)[0]
@@ -99,15 +109,16 @@ def attach(video,contract,output,api=None):
             slot=chapter['end_s']-chapter['start_s']
             raw=output/f'chapter_{index:03}.mp3'
             tempo = 1.
-            for attempt in range(3 if draft else 2):
+            for attempt in range(5 if draft else 3):
                 asyncio.run(synthesize(text,voice,raw))
                 samples=pcm(raw);status=fit_status(samples,slot)
                 if status=='fits':break
-                if draft and status == 'too_long' and len(samples)/RATE <= (slot-.4)*1.35:
+                bounded_short = (status == 'too_short' and len(samples)/RATE >= max(slot*.85,slot-2.5)*.8)
+                if draft and (bounded_short or status == 'too_long' and len(samples)/RATE <= (slot-.4)*1.35):
                     samples, tempo = fit_draft_speech(samples, slot)
                     delivery_warnings.append(f'{chapter["id"]}: speech tempo adjusted by {tempo:.3f}x')
                     break
-                if attempt==(2 if draft else 1) or api is None:raise ValueError(f'chapter {chapter["id"]} speech {status}: {len(samples)/RATE:.2f}s for {slot}s')
+                if attempt==(4 if draft else 2) or api is None:raise ValueError(f'chapter {chapter["id"]} speech {status}: {len(samples)/RATE:.2f}s for {slot}s')
                 text=repair_text(api,{**chapter,'narration':text},len(samples)/RATE,status,language)
             start=round((chapter['start_s']+.15)*RATE);end=start+len(samples)
             if end>round(chapter['end_s']*RATE) or end>len(mixed):raise ValueError('speech crosses its chapter boundary')

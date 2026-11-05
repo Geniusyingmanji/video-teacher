@@ -13,6 +13,7 @@ import math
 import os
 import random
 import shutil
+import sys
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 
@@ -37,7 +38,7 @@ def scoring_code_sha256() -> str:
                                     ("benchmark_scoring.py", "benchmark_operators.py", "frame_extractor.py",
                                      "benchmark_video_rubric.py", "rubric_6x6.py", "evidence_prompt.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
-                                     "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py",
+                                     "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py", "verified_completion.py", "verified_consistency.py",
                                      "narration.py", "delivery_pacing.py", "evidence_audit.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
 
 
@@ -128,6 +129,8 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["scoring"] = scoring.score_case({})
         result['assessment_coverage'] = assessment_coverage(result)
         return result
+    if ffmpeg == 'ffmpeg' and shutil.which(ffmpeg) is None:
+        ffmpeg = str(Path(sys.executable).parent/'ffmpeg')
     path = str(manifest["video_path"])
     try:
         video = Path(path)
@@ -284,7 +287,15 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                     result['axes'][name] = revised
                 result['consistency_review'] = grounded_observations.consistency(judged_case, observations, result['axes'], sampled)
                 if not result['consistency_review']['valid']:
-                    result['errors'].append('unresolved_cross_axis_contradictions')
+                    # Verify literal report statements with per-statement schemas;
+                    # broad axis conflict summaries can contradict their own findings.
+                    from eval.verified_consistency import review as verify_consistency
+                    prior_review = result['consistency_review']
+                    result['consistency_review'] = verify_consistency(
+                        judged_case, result['axes'], sampled, observations)
+                    result['consistency_review']['previous_review'] = prior_review
+                    if not result['consistency_review']['valid']:
+                        result['errors'].append('unresolved_cross_axis_contradictions')
         except Exception as exc:
             result['consistency_review'] = {'valid': False, 'error': f'{type(exc).__name__}: {exc}'[:600]}
             result['errors'].append('consistency_review_failed')

@@ -78,6 +78,28 @@ class NarrationTests(unittest.TestCase):
             self.assertFalse((root/'audio/narrated.mp4').exists())
             self.assertFalse(json.loads((root/'audio/narration.json').read_text())['valid'])
 
+    def test_draft_small_shortfall_slows_real_audio_without_padding(self):
+        samples=(np.sin(np.arange(round(speech.RATE*16.1))*.04)*5000).astype('<i2')
+        fitted,factor=speech.fit_draft_speech(samples,20.533333)
+        self.assertGreaterEqual(factor,.8)
+        self.assertLess(factor,1.)
+        self.assertEqual(speech.fit_status(fitted,20.533333),'fits')
+        with self.assertRaises(ValueError):
+            speech.fit_draft_speech(samples[:speech.RATE],20.533333)
+
+    def test_repair_word_target_uses_measured_voice_speed(self):
+        from types import SimpleNamespace
+        chapter = {**self.contract()['teaching_timeline'][0], 'end_s':22,
+                   'narration':' '.join(['word']*40)}
+        response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(
+            content='{"narration":"A revised explanation."}'))])
+        with patch('builtins.print'):
+            api = __import__('unittest.mock', fromlist=['Mock']).Mock(return_value=(response, {}))
+            speech.repair_text(api,chapter,13.73,'too_short','en-US')
+        prompt = api.call_args.args[0]
+        self.assertIn('approximately 57 words',prompt)
+        self.assertNotIn('use at most',prompt)
+
     def test_missing_script_is_rejected_before_tts(self):
         contract=self.contract();contract['teaching_timeline'][0].pop('narration')
         with tempfile.TemporaryDirectory() as directory,patch.object(speech,'synthesize') as call:
