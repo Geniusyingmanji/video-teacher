@@ -10,3 +10,5 @@
 
 本目录原 `scores.csv`、`scores_and_status.json`、`aggregate.json` 是旧评分记录，保留供追溯。
 最新复评与验收以 [评分修复报告](../results/reports/scoring_repair_20261104/README.md) 为准。生成成功不等于教学质量验收通过。
+
+[媒体清单](latest_v11_20261104/media_inventory.json)记录五条文件的 SHA-256、时长及音视频流。五条均为 H.264/AAC，时长分别为 60、120 或 180 秒，哈希与基础评分来源一致。该检查不等于旁白或教学质量验收。

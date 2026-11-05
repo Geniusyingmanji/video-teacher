@@ -7,6 +7,7 @@
 ## 结果位置
 
 - [最终基础评分](compact_final/aggregate.json)与[逐题证据](compact_final/per_case.jsonl)。
+- [基础评分全部维度与逐项明细 CSV](compact_final/all_scores.csv)，含逐窗口分值、要求状态和引用；复核后分数另行导出。
 - [逐题复核检查点](compact_verified_v3/per_case.jsonl)；完成后将生成 `compact_verified_v3/aggregate.json`。
 - [基础评分离线证据审计](compact_final/evidence_audit.json)通过；仅验证来源、引用和计算，不证明模型观察必然正确。
 - [五条可播放英文旁白视频](../../../delivery/README.md)。
