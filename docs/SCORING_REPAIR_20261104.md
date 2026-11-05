@@ -66,3 +66,5 @@ ASR、每个时间窗口和每个维度完成后，原子写入 `checkpoints/`�
 本地 xgrammar 在结构化输出中拒绝 Qwen 终止 token，导致复核请求持续 HTTP 500。复核命令增加可重复的 `--structured-stop-token-id`，仅为兼容服务的 `json_schema` 请求添加指定 token 的 `logit_bias=-100`；不修改 schema、输出预算或本地证据校验。该选项默认关闭，必须按实际 tokenizer 确认 ID。当前本地 Qwen 的终止 ID 为 `248046`、`248044`。
 
 防护在每个案例的独立进程内生效，退出或异常后恢复客户端工厂。结果保存防护参数及实现摘要；已验证缓存保留原始来源。恢复不完整案例时，优先沿用检查点中仍在显式允许列表内的服务地址，避免跨服务复用证据。四项专项回归覆盖参数保留、非结构化调用、异常恢复、非法 token ID 和服务选择。
+
+2026-11-05 完整回归：`python -m unittest discover -s tests`，224 项通过。固定十题复核从 `compact_verified_v3/claim_checkpoints/` 继续执行；完成情况以实际结果为准。
