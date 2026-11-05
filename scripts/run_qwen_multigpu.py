@@ -208,7 +208,7 @@ def main():
     parser.add_argument('--ports', type=int, nargs='+', default=[8000,8001])
     parser.add_argument('--max-attempts', type=int, default=3, choices=range(1,4))
     parser.add_argument('--resume', action='store_true')
-    parser.add_argument('--workers-per-gpu', type=int, choices=(1,2), default=1)
+    parser.add_argument('--workers-per-gpu', type=int, choices=(1,2), default=2)
     parser.add_argument('--generation-profile', choices=('strict','draft'), default='strict')
     parser.add_argument('--reuse-run', type=Path)
     parser.add_argument('--evaluate-draft', action='store_true', help='Evaluate delivered drafts without making quality a generation requirement')

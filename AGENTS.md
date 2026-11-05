@@ -1,5 +1,7 @@
 # User execution constraints
 
+- Standing loop confirmed 2026-11-05: rerun the same frozen ten cases on GPU 0/1 with two case workers per GPU. After each round inspect actual video quality and scoring logic, fix reproducible bugs, run relevant checks, push fixes to GitHub main, then start the next fresh round. Preserve all rounds and failed cases. Review includes English speech, synchronization, layout/readability, conceptual correctness, required steps, scoring citations, deductions/caps, and invalid-evaluation handling; render completion alone is not acceptance.
+
 - Use only GPU 0 and GPU 1. Keep GPU 2 and GPU 3 completely free, including model services and residual workers. This is the user's explicit standing instruction from 2026-11-03.
 - Complete code changes and relevant checks before starting the ten-case model validation. Use the frozen representative ten-case set, including one-, two- and three-minute videos, knowledge explanations and worked solutions, simple and advanced tasks. Do not replace failed cases.
 - Current lessons require English spoken narration matching the English tasks and labels. Background music is optional and disabled by default. Tones or music alone do not satisfy speech requirements.
