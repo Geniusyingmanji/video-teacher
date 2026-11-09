@@ -70,3 +70,22 @@ separate from full published-benchmark replication.
 No cross-paper metric establishes a universal “highest quality” method for
 our teaching tasks. Selection will use the same educational prompts and
 preserved outputs. Missing published artifacts are reported explicitly.
+
+### Access checks and runnable baseline
+
+The author TikZero+ main checkpoint downloaded successfully (revision
+`857956cb5dd540b048984f724bd0cf8c45fe2a7a`), and its upstream environment and
+TikZ compilation/rasterization smoke check pass. However, its text adapter
+also loads `meta-llama/Llama-3.2-1B`: this dependency returns a gated-repository
+401 in the current unauthenticated environment. DiagramAgent's Code_Agent
+weights likewise return 401. Public README access does not imply weight
+access. Authorized Hugging Face access is required for those author-model
+experiments; do not report them as completed or substitute another backbone
+under the author's model name.
+
+`research/code2image_prompts.jsonl` freezes six matched educational diagram
+tasks and concrete checks. `scripts/reproduce_tikzero.py` runs the author
+checkpoint once access is available. `scripts/reproduce_code2image_qwen.py`
+runs a separately labeled local Qwen SVG baseline on the same prompts. Both
+preserve actual prompts, generated code, rendered artifacts and failures.
+The current image pilot is not a published-benchmark reproduction.

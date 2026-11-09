@@ -1,0 +1,113 @@
+[
+  {
+    "fixture": "array",
+    "states": [
+      [
+        3,
+        1,
+        2
+      ],
+      [
+        1,
+        3,
+        2
+      ],
+      [
+        1,
+        2,
+        3
+      ]
+    ],
+    "final": {
+      "valid": true,
+      "values": [
+        1,
+        2,
+        3
+      ],
+      "one_value_per_slot": true
+    },
+    "video": "/root/video-teacher/results/fix_validation_20261109/state_regressions_v2/ArrayRegression/videos/480p15/ArrayRegression.mp4"
+  },
+  {
+    "fixture": "formula",
+    "states": [
+      "2x+5=17",
+      "2x=12",
+      "x=6",
+      "2\\cdot6+5=17"
+    ],
+    "layout": {
+      "time_s": 5.066666666666671,
+      "valid": true,
+      "text_count": 2,
+      "failures": []
+    },
+    "video": "/root/video-teacher/results/fix_validation_20261109/state_regressions_v2/FormulaRegression/videos/480p15/FormulaRegression.mp4"
+  },
+  {
+    "fixture": "source",
+    "guard": {
+      "valid": true,
+      "checked_frames": 2,
+      "max_changed_pixels": 0,
+      "unexpected_change_boxes_pixels": []
+    },
+    "boxes": [
+      [
+        426,
+        195,
+        526,
+        242
+      ],
+      [
+        418,
+        645,
+        514,
+        689
+      ]
+    ],
+    "canvas_regions": [
+      [
+        0.3118318912721821,
+        0.36669456066945616,
+        0.37140877779193165,
+        0.41651324965132497
+      ],
+      [
+        0.30706574035060213,
+        0.8436820083682008,
+        0.36425955140956173,
+        0.890320781032078
+      ]
+    ],
+    "source": "/root/video-teacher/data/sources/grade/selected_assets/before/grade_ComputerScience_task_17.png",
+    "viewport": [
+      0.04,
+      0.16,
+      0.48,
+      0.92
+    ],
+    "encoded_source_preservation": {
+      "valid": true,
+      "initial_source_mean_pixel_error": 2.459217245641426,
+      "max_changed_fraction_outside_edit_regions": 0.00025336075590926704,
+      "edit_regions": [
+        [
+          0.3118318912721821,
+          0.36669456066945616,
+          0.37140877779193165,
+          0.41651324965132497
+        ],
+        [
+          0.30706574035060213,
+          0.8436820083682008,
+          0.36425955140956173,
+          0.890320781032078
+        ]
+      ],
+      "unexpected_change_boxes_pixels": []
+    },
+    "video": "/root/video-teacher/results/fix_validation_20261109/state_regressions_v2/SourceRegression/videos/480p15/SourceRegression.mp4"
+  }
+]
