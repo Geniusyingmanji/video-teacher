@@ -1,5 +1,7 @@
 # User execution constraints
 
+- Session override confirmed 2026-11-09: the user explicitly requests all four GPUs (0–3), two case workers per GPU, fixes pushed to GitHub main, and research/reproduction of educational code-to-image and Code2Video methods. This supersedes the earlier GPU 0/1-only restriction below. Preserve the frozen ten cases and old runs. Evaluate quality fairly without a target high/low score distribution; unknown evidence is not zero. Full narrated-video inspection remains necessary after unit/render fixtures pass.
+
 - Standing loop confirmed 2026-11-05: rerun the same frozen ten cases on GPU 0/1 with two case workers per GPU. After each round inspect actual video quality and scoring logic, fix reproducible bugs, run relevant checks, push fixes to GitHub main, then start the next fresh round. Preserve all rounds and failed cases. Review includes English speech, synchronization, layout/readability, conceptual correctness, required steps, scoring citations, deductions/caps, and invalid-evaluation handling; render completion alone is not acceptance.
 
 - Use only GPU 0 and GPU 1. Keep GPU 2 and GPU 3 completely free, including model services and residual workers. This is the user's explicit standing instruction from 2026-11-03.

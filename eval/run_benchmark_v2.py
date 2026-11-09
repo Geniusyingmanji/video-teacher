@@ -49,7 +49,9 @@ def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
             "teaching_rubric_version": RUBRIC_VERSION,
             "engagement_rubric_version": teaching_engagement.VERSION,
             "spoken_teaching":narration.asr_config(),
-            "scoring_code_sha256": scoring_code_sha256()}
+            "scoring_code_sha256": scoring_code_sha256(),
+            "quality_policy": os.environ.get('VIDEO_TEACHER_SCORING_POLICY','legacy-v11'),
+            "quality_policy_sha256": file_sha256(Path(__file__).with_name('quality_scoring.py'))}
 
 
 def read_jsonl(path: str | Path) -> list[dict]:
@@ -128,6 +130,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["errors"].append("generation_missing_or_failed")
         result["scoring"] = scoring.score_case({})
         result['assessment_coverage'] = assessment_coverage(result)
+        if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') == 'quality-v12':
+            from eval.quality_scoring import apply
+            return apply(result)
         return result
     if ffmpeg == 'ffmpeg' and shutil.which(ffmpeg) is None:
         ffmpeg = str(Path(sys.executable).parent/'ffmpeg')
@@ -251,6 +256,10 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                     result['axes'][name] = saved
                     continue
                 judged = dimension.score(judged_case, sampled)
+                if os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12' and judged.get('score') is None:
+                    result['axes'][name]={**judged,'error':'criterion_evidence_uncertain'}
+                    save_checkpoint()
+                    continue
                 result["axes"][name] = {**judged, "score": _semantic_score(judged),
                                          "rubric_score_1_to_5": judged["score"],
                                          "method": "evidence_backed_6x6_vlm_v2"}
@@ -356,6 +365,9 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     if is_lesson(case) and result.get('instructional_presentation',{}).get('all_windows_reviewed') is not True:
         result['scoring'].update(valid=False,strict_pass=False,score=None,groups=None)
     result['assessment_coverage'] = assessment_coverage(result)
+    if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') == 'quality-v12':
+        from eval.quality_scoring import apply as apply_quality
+        result=apply_quality(result)
     if checkpoint_path:
         target = Path(checkpoint_path)
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -399,6 +411,9 @@ def bootstrap_ci(values: list[float], *, seed: int = 20261031,
 
 def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     rep = scoring.aggregate(rows)
+    if rows and all(row.get('version')=='video-teacher-quality-v12' for row in rows):
+        from eval.quality_scoring import aggregate
+        rep=aggregate(rows)
     rep['assessment_coverage'] = {r['id']: assessment_coverage(r) for r in rows}
     spoken=[r for r in rows if prompts[r['id']].get('audio_narration_required') is True]
     rep['spoken_teaching']={'n_required':len(spoken),
@@ -438,7 +453,9 @@ def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
 def cache_matches(previous: dict | None, case: dict, manifest: dict,
                   sample_fps: float, frame_max_px: int) -> bool:
     """Match provenance before reusing any independently validated dimension."""
-    if not previous or previous.get("version") != scoring.VERSION:
+    expected_version = ('video-teacher-quality-v12' if os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+                        else scoring.VERSION)
+    if not previous or previous.get("version") != expected_version:
         return False
     expected_case = hashlib.sha256(json.dumps(case, ensure_ascii=False, sort_keys=True,
                                               separators=(",", ":")).encode("utf-8")).hexdigest()
@@ -485,9 +502,12 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=0, help="Debug only; output is never ranking-publishable")
     parser.add_argument("--preflight", action="store_true", help="Validate inputs and local dependencies without calling the judge")
     parser.add_argument('--workers', type=int, default=1, help='Independent case evaluation processes')
+    parser.add_argument('--scoring-policy',choices=('quality-v12','legacy-v11'),default='quality-v12',
+                        help='v12 separates quality aggregation from acceptance; v11 reproduces old rules')
     parser.add_argument('--judge-base-url', action='append', default=[],
                         help='Existing compatible judge service; repeat to distribute cases')
     args = parser.parse_args()
+    os.environ['VIDEO_TEACHER_SCORING_POLICY']=args.scoring_policy
     if not math.isfinite(args.sample_fps) or args.sample_fps <= 0 or args.frame_max_px <= 0 or args.limit < 0 or args.workers < 1:
         parser.error("invalid sampling or limit")
     try:

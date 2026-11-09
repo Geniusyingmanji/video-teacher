@@ -91,20 +91,16 @@ def arrange_labels(scene, contract, pending=()):
     is deleted, truncated or reduced to make a crowded scene pass.
     """
     import numpy as np
-    from manim import Text, MarkupText, Tex, config
+    from manim import config
     objects=list(scene.get_mobject_family_members())
     for obj in pending:
         if hasattr(obj,'get_family'):objects.extend(obj.get_family())
-    texts=[];seen=set()
-    for obj in objects:
-        if id(obj) in seen or not isinstance(obj,(Text,MarkupText,Tex)) or obj.width<=0 or obj.height<=0:
-            continue
-        seen.add(id(obj));texts.append(obj)
+    texts = text_objects(objects)
     occupied=[];movable=[]
     for obj in texts:
         role=getattr(obj,'_layout_role',None)
         if role=='source':continue
-        if role in ('title','caption') or obj is getattr(scene,'title',None):occupied.append(scene_box(obj))
+        if role in ('title','caption','anchored') or obj is getattr(scene,'title',None):occupied.append(scene_box(obj))
         else:movable.append(obj)
     bounds=panel_box(contract.get('teaching_panel') or [.05,.18,.95,.73],config.frame_width,config.frame_height)
     changes=[]
@@ -119,3 +115,18 @@ def arrange_labels(scene, contract, pending=()):
                 changes.append({'text':getattr(obj,'text',getattr(obj,'tex_string','')),'from':original,'to':placed})
         occupied.append(scene_box(obj))
     return changes
+
+
+def text_objects(objects):
+    """Return complete text/formula owners once, never their component glyphs.
+
+    MathTex and Tex are siblings in Manim. Checking Tex alone silently misses
+    every mathematical formula; checking all descendants double counts glyphs.
+    """
+    from manim import Text, MarkupText, SingleStringMathTex
+    candidates=[];seen=set()
+    for obj in objects:
+        if id(obj) not in seen and isinstance(obj,(Text,MarkupText,SingleStringMathTex)) and obj.width>0 and obj.height>0:
+            candidates.append(obj);seen.add(id(obj))
+    children={id(child) for obj in candidates for child in obj.get_family()[1:]}
+    return [obj for obj in candidates if id(obj) not in children]

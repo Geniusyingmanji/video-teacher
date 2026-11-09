@@ -31,9 +31,9 @@ def assess(generation, evaluation):
     if generation.get('contract_version') in ('instructional-lesson-contract-v1','instructional-lesson-contract-v2','instructional-lesson-contract-v3'):
         checks['teaching_timeline'] = diagnostics.get('teaching_timeline',{}).get('valid') is True
     version = evaluation.get('version', '')
-    if version in tuple(f'video-teacher-2x8-v{number}' for number in range(6, 12)):
+    if version == 'video-teacher-quality-v12' or version in tuple(f'video-teacher-2x8-v{number}' for number in range(6, 12)):
         checks['task_completion'] = evaluation.get('task_completion', {}).get('valid') is True and evaluation.get('task_completion', {}).get('passed') is True
-    if version in tuple(f'video-teacher-2x8-v{number}' for number in range(7, 12)):
+    if version == 'video-teacher-quality-v12' or version in tuple(f'video-teacher-2x8-v{number}' for number in range(7, 12)):
         checks['instructional_presentation'] = evaluation.get('instructional_presentation',{}).get('valid') is True and evaluation.get('instructional_presentation',{}).get('passed') is True
     if generation.get('contract_version') in ('instructional-lesson-contract-v1','instructional-lesson-contract-v2','instructional-lesson-contract-v3'):
         checks['segment_coverage'] = evaluation.get('instructional_presentation',{}).get('all_windows_reviewed') is True

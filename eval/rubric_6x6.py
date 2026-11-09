@@ -90,6 +90,8 @@ Keep clarity (can the audience follow it) distinct from didactic affordances
 
 
 def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None) -> dict:
+    import os
+    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
     expected = [criterion_id for criterion_id, _ in (rubric or RUBRIC)[dimension]]
     criteria = raw.get("criteria")
     if not isinstance(criteria, list) or len(criteria) != 6:
@@ -99,6 +101,7 @@ def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None)
         raise ValueError("judge criterion IDs do not match rubric")
     scores = []
     ordered = []
+    uncertain=[]
     for criterion_id in expected:
         row = by_id[criterion_id]
         applicable = row.get("applicable")
@@ -106,10 +109,12 @@ def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None)
             raise ValueError(f"{criterion_id}: applicable must be boolean")
         score = row.get("score")
         if applicable:
-            if (not isinstance(score, (int, float)) or isinstance(score, bool)
+            if score is None and quality:
+                uncertain.append(criterion_id)
+            elif (not isinstance(score, (int, float)) or isinstance(score, bool)
                     or not math.isfinite(score) or not 1 <= score <= 5 or score * 2 != round(score * 2)):
                 raise ValueError(f"{criterion_id}: invalid score")
-            scores.append(float(score))
+            else:scores.append(float(score))
         elif score is not None:
             raise ValueError(f"{criterion_id}: inapplicable score must be null")
         evidence = row.get("evidence_frames")
@@ -118,11 +123,14 @@ def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None)
             for i in evidence
         ):
             raise ValueError(f"{criterion_id}: invalid frame evidence")
-        if applicable and score >= 3 and not evidence:
+        if applicable and score is not None and score >= 3 and not evidence:
             raise ValueError(f"{criterion_id}: positive score needs frame evidence")
         if not isinstance(row.get("finding"), str) or not row["finding"].strip():
             raise ValueError(f"{criterion_id}: missing finding")
         ordered.append(row)
+    if uncertain:
+        return {'score':None,'binary':'UNVERIFIED','criteria':ordered,'summary':str(raw.get('summary','')),
+                'uncertain_criteria':uncertain,'rubric_version':RUBRIC_VERSION}
     if len(scores) < 4:
         raise ValueError("fewer than four applicable criteria")
     score = round(sum(scores) / len(scores), 3)
@@ -147,7 +155,18 @@ def score_dimension(dimension: str, case: dict, frames: list) -> dict:
     content = frames_as_multimodal_content(
         frames, f"Dimension: {dimension}\nTask: {task}\nCriteria:\n{criteria}\n"
                 f"Frames are indexed 1..{len(frames)}. Return JSON only.")
-    return judge(chat, [{'role': 'system', 'content': SYSTEM}, {'role': 'user', 'content': content}],
+    import os
+    system=SYSTEM
+    if os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12':
+        system += (' Evaluate each criterion independently with neutral anchors; do not target low or high scores. '
+            'A local defect is not evidence that every axis fails. Cite the actual affected steps and duration. '
+            'Distinguish observed missing content from uncertainty caused by insufficient sampling or ASR. '
+            'Correct static explanatory diagrams may be sufficient when the task does not require a transformation. '
+            'Decorative motion is not required. Do not require content beyond the original task. '
+            'Do not classify an ASR-ambiguous technical term as a confirmed spoken factual error.')
+        system += (' If actual evidence cannot resolve an applicable criterion, keep applicable=true and score=null. '
+                   'Do not convert uncertainty to zero or to an adequate rating. A score of 3 means observed adequate performance.')
+    return judge(chat, [{'role': 'system', 'content': system}, {'role': 'user', 'content': content}],
                  [key for key, _ in RUBRIC[dimension]], len(frames),
                  lambda raw: validate_result(dimension, raw, len(frames)))
 

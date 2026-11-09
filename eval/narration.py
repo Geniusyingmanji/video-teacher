@@ -21,8 +21,10 @@ CRITERIA=['speech_accuracy','explanatory_coverage','visual_alignment','speech_pa
 
 @lru_cache(maxsize=1)
 def asr_config():
-    local=Path(__file__).resolve().parents[2]/'models/faster-whisper-base'
-    name=os.environ.get('VIDEO_TEACHER_ASR_MODEL',str(local) if (local/'model.bin').is_file() else 'base')
+    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+    default='small.en' if quality else 'base'
+    local=Path(__file__).resolve().parents[2]/('models/faster-whisper-small.en' if quality else 'models/faster-whisper-base')
+    name=os.environ.get('VIDEO_TEACHER_ASR_MODEL',str(local) if (local/'model.bin').is_file() else default)
     weight=Path(name)/'model.bin'
     digest=None
     if weight.is_file():
@@ -89,12 +91,19 @@ def review(case,transcript,ledger):
         +prompt_json({'task_requirements':requirements(case),
                     'criteria':CRITERIA,'actual_speech':speech,'video_windows':ledger_for_judge(ledger),
                     'measured_pacing_evidence':case.get('delivery_pacing_evidence',{})}))
+    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+    if quality:
+        prompt += ('\nDo not target low or high scores. If a near-homophone technical term may be an ASR error, '
+            'record the ambiguity in uncertainties with its speech IDs. Do not assert that the speaker made '
+            'a factual mistake based on that ambiguous recognition. Use an empty uncertainty array when none exists.')
     schema=response_format('spoken_teaching',{'criteria':array(obj({
         'id':{'type':'string','enum':CRITERIA},'finding':{'type':'string','minLength':1,'maxLength':480},
         'speech_ids':array({'type':'integer','enum':[r['id'] for r in speech]}),
         'window_ids':array({'type':'integer','enum':[r['id'] for r in ledger]}),
         'score':{'type':'number','enum':[1,1.5,2,2.5,3,3.5,4,4.5,5]}}),minItems=4,maxItems=4),
-        'summary':{'type':'string','minLength':1,'maxLength':700}})
+        'summary':{'type':'string','minLength':1,'maxLength':700},
+        **({'uncertainties':array(obj({'speech_ids':array({'type':'integer','enum':[r['id'] for r in speech]},minItems=1),
+              'finding':{'type':'string','minLength':1,'maxLength':480}}))} if quality else {})})
     def validate(raw):
         rows=raw.get('criteria',[])
         if len(rows)!=4 or {r.get('id') for r in rows}!=set(CRITERIA):raise ValueError('all four spoken-teaching criteria required')
@@ -107,6 +116,9 @@ def review(case,transcript,ledger):
             if not isinstance(row.get('finding'),str) or not row['finding'].strip():raise ValueError('spoken review finding missing')
         return raw
     raw=_ask([{'role':'user','content':prompt}],schema,validate,tokens=2500)
+    if quality and raw.get('uncertainties'):
+        return {**raw,'version':VERSION,'valid':False,'passed':False,'score':None,
+                'failures':['spoken_evidence_uncertain'],'interpretation':'ASR disagreement requires independent verification, not a zero score'}
     weakest=min(r['score'] for r in raw['criteria'])
     score=(weakest-1)*25
     return {**raw,'version':VERSION,'valid':True,'passed':weakest>=4,'score':score,

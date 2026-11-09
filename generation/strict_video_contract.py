@@ -40,6 +40,8 @@ def make_contract(case: dict, source_image: Path | None = None, generation_profi
                                   'text': 'Preserve every instruction and prohibition in task.prompt_text.',
                                   'text_ref': 'task.prompt_text'}
     if is_lesson(case):
+        if generation_profile == 'strict':
+            contract['chapter_frame_policy'] = 'per-chapter-v2'
         contract['task'] = {k:v for k,v in case.items() if k!='revision_provenance'}
         contract['task']['revision_provenance'] = {k:v for k,v in case.get('revision_provenance',{}).items() if k!='original_case'}
         contract['rules'][2] = 'Use one continuous scene with clearly separated teaching chapters and persistent object identities.'
@@ -150,6 +152,10 @@ def storyboard_prompt(contract: dict, outline) -> str:
 
 def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str:
     scene = section.id.title().replace('_', '') + 'Scene'
+    automatic_source=('\nThe trusted runtime executes every declared source_operation at its chapter step, '
+        'using 0.6 seconds per edit already subtracted from your action budgets. '
+        'Do not duplicate, remove, cover, or replace these source edits. Author explanations in the separate panel.\n'
+        if contract.get('execute_source_operations') else '')
     if contract['version'] in LESSON_CONTRACTS:
         budgets = []
         timeline = contract.get('teaching_timeline', [])
@@ -158,7 +164,9 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
             final_hold = 1 if index == len(timeline)-1 else 0
             budgets.append({'id': chapter['id'],
                             'code_start_s': chapter['start_s'] + initial_hold,
-                            'action_budget_s': chapter['end_s']-chapter['start_s']-initial_hold-final_hold})
+                            'action_budget_s': chapter['end_s']-chapter['start_s']-initial_hold-final_hold
+                                - (.6*sum(op['step']==index+1 for op in contract.get('source_operations',[]))
+                                   if contract.get('execute_source_operations') else 0)})
         return ('Write complete runnable Manim CE v0.19 Python code only. '+note+
                 f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'+base_class+
                 '\nAuthor the FULL lesson at its natural pace using explicit run_time and self.wait durations. '
@@ -178,6 +186,18 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
                 'Use 1..3 second transitions, short captions, settled states and waits no longer than 4 seconds, including consecutive waits. Never use a slow animation to pad duration. '
                 'Do not simulate teaching with repeated highlights, decorative movement or duplicated footage. '
                 'Clear old captions before new captions, track original object identities and slot occupancy after every manipulation. '
+                'For array swaps import generation.scene_state.ArraySlots: create ArraySlots(values), add array.group, '
+                'and call array.swap(self,i,j,run_time=...). This updates both values and slot-to-object mapping atomically. '
+                'For successive equations use generation.scene_state.FormulaSlot.replace(self,tex) and clear(self). '
+                'Never Transform an original object and later FadeOut only its unattached target. '
+                'For middle-third constructions generation.scene_state.cantor_intervals(level) returns exact interval endpoints. '
+                'Use interior_angles(vertices) to check triangle sectors and assert_closed_path(points) for a requested closed flow loop. '
+                'For continuous flow use FlowPath(points,closed=True or False) from generation.scene_state; '
+                'add its shape and use path.trace(self) so the marker follows exactly the visible connected path. '
+                'A closed loop must include its starting vertex as its final vertex. '
+                'Fixed diagram/array labels must be tagged with generation.layout_policy.tag(label,"anchored"); '
+                'leave space deliberately instead of relying on moving semantic labels away from their objects. '
+                'Tag labels placed outside diagram objects as external_label; never place captions or external labels on filled shapes. '
                 'Keep equations, units, answers and all original prohibitions correct. Use only real Manim primitives. '
                 'Use three-coordinate points [x,y,0] and polygon.get_vertices(). For angle geometry use Angle or '
                 'AngleFromThreePoints, angle_between_vectors and rotate about the actual angle vertex. '
@@ -193,7 +213,7 @@ def code_prompt(contract: dict, section, base_class: str, note: str = '') -> str
                 'Reserve top 15% for one short title, middle 60% for the diagram, bottom 20% for the caption, with 5% outer margins. Use a consistent neutral background, one accent color, aligned labels and balanced whitespace. Call setup_layout(title, []) if using that helper; do not display full lecture paragraphs as persistent notes. '
                 'Use short captions one at a time, clear the previous caption, and reserve enough width for labels without shrinking text. '
                 +'\nCHAPTER ACTION BUDGETS (seconds):\n'+json.dumps(budgets)+'\n'
-                +contract_text(contract)+'\nSTORYBOARD SECTION:\n'+json.dumps(vars(section),ensure_ascii=False))
+                +automatic_source+contract_text(contract)+'\nSTORYBOARD SECTION:\n'+json.dumps(vars(section),ensure_ascii=False))
     return ('Write complete runnable Manim CE v0.19 Python code only. ' + note
             + f'\nDefine {scene}(TeachingScene) with construct(self). Include this base class:\n'
             + base_class + '\nUse at most three meaningful animation steps. Keep all content readable. '

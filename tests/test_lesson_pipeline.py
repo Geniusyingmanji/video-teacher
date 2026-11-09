@@ -314,6 +314,22 @@ class LessonPipelineTests(unittest.TestCase):
             result=json.loads((root/'strict_diagnostics.json').read_text())
             self.assertTrue(result['source_preservation']['valid'])
             self.assertEqual(result['source_preservation']['pre_encoding']['checked_frames'],450)
+            # A reviewed plan is executed even when generated code omits the edit.
+            contract['execute_source_operations']=True
+            operation={'id':'answer','step':2,'kind':'text','text':'6','box':[200,100,600,240],
+                       'reason':'Fill the original answer target'}
+            contract['source_operations']=[operation]
+            (root/'contract.json').write_text(json.dumps(contract))
+            (root/'storyboard.json').write_text(json.dumps({'source_edit_regions':[[200,100,600,240]],
+                'source_operations':[operation],'teaching_timeline':chapters}))
+            code.write_text(code.read_text().replace('self.play(FadeIn(self.source_text("6",[200,100,600,240])),run_time=2)','self.wait(2)'))
+            run=subprocess.run([sys.executable,'-m','generation.strict_manim','--code',str(code),'--scene','Section1Scene',
+                '--contract',str(root/'contract.json')],capture_output=True,text=True,env=env,timeout=120)
+            self.assertEqual(run.returncode,0,run.stderr[-4000:])
+            result=json.loads((root/'strict_diagnostics.json').read_text())
+            self.assertEqual(result['source_operation_execution']['ids'],['answer'])
+            self.assertTrue(result['source_preservation']['valid'])
+            self.assertEqual([round(c['actual_start_s']) for c in result['teaching_timeline']['chapters']],[1,10,20])
 
 
 if __name__=='__main__':unittest.main()

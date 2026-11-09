@@ -111,12 +111,12 @@ class RepairTests(unittest.TestCase):
             self.assertTrue(any(abs(row['source_pixel_box'][0]-100)<8 and abs(row['source_pixel_box'][1]-80)<8 for row in candidates))
 
     def test_missing_worker_still_counts_in_ten_case_denominator(self):
-        from scripts.run_qwen_multigpu import summarize
+        from scripts.run_qwen_multigpu import summarize,SCORING_VERSION
         with tempfile.TemporaryDirectory() as tmp:
             c=summarize(Path(tmp),[{'id':f'case{i}'} for i in range(10)],finished=True)
             self.assertEqual(c['total'],10);self.assertEqual(c['processed'],0)
             self.assertFalse(c['complete'])
-            data=json.loads((Path(tmp)/__import__('eval.benchmark_scoring', fromlist=['VERSION']).VERSION/'aggregate.json').read_text())
+            data=json.loads((Path(tmp)/SCORING_VERSION/'aggregate.json').read_text())
             self.assertEqual(data['n_total'],10);self.assertEqual(data['n_failed'],10)
 
     def test_exact_text_budget_fails_before_network_and_reserves_images(self):

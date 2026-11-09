@@ -3,13 +3,12 @@ import numpy as np
 
 
 def check_layout(scene):
-    from manim import Text, MarkupText, Tex, ImageMobject, config
+    from manim import ImageMobject, VMobject, config
+    from generation.layout_policy import text_objects
     texts = []
-    for obj in scene.get_mobject_family_members():
-        if not isinstance(obj, (Text, MarkupText, Tex)) or obj.width <= 0 or obj.height <= 0:
-            continue
+    for obj in text_objects(scene.get_mobject_family_members()):
         # Exclude invisible objects retained by animation bookkeeping.
-        if not np.any(obj.get_fill_opacity() > 0.05):
+        if not any(np.any(child.get_fill_opacity() > 0.05) for child in obj.get_family()):
             continue
         if any(obj is old for old in texts):
             continue
@@ -29,6 +28,10 @@ def check_layout(scene):
             if overlaps(scene_box(obj),scene_box(other)):
                 failures.append({'kind':'image_overlap','bbox':scene_box(obj),'other_bbox':scene_box(other)})
     source=getattr(scene,'source_image',None)
+    text_family={id(child) for text in texts for child in text.get_family()}
+    geometry=[obj for obj in family if isinstance(obj,VMobject) and id(obj) not in text_family
+              and obj.width>0 and obj.height>0 and getattr(obj,'_layout_role',None)!='source'
+              and obj.width*obj.height < config.frame_width*config.frame_height*.8]
 
     for i, obj in enumerate(texts):
         label = str(getattr(obj, 'text', getattr(obj, 'tex_string', 'text')))[:100]
@@ -43,6 +46,13 @@ def check_layout(scene):
                 failures.append({'kind':'text_outside_teaching_panel','text':label,'bbox':box})
         x0, x1 = obj.get_left()[0], obj.get_right()[0]
         y0, y1 = obj.get_bottom()[1], obj.get_top()[1]
+        if getattr(obj,'_layout_role',None) in ('caption','external_label'):
+            for shape in geometry:
+                sx0,sy0,sx1,sy1=scene_box(shape)
+                area=max(0,min(x1,sx1)-max(x0,sx0))*max(0,min(y1,sy1)-max(y0,sy0))
+                if (area>.12*obj.width*obj.height and np.any(shape.get_fill_opacity()>.9)):
+                    failures.append({'kind':'text_occluded_by_geometry','text':label,'geometry':type(shape).__name__})
+                    break
         if x0 < -config.frame_width/2+.05 or x1 > config.frame_width/2-.05 or y0 < -config.frame_height/2+.05 or y1 > config.frame_height/2-.05:
             visible_area = max(0., min(x1, config.frame_width/2)-max(x0, -config.frame_width/2))*max(0., min(y1, config.frame_height/2)-max(y0, -config.frame_height/2))
             failures.append({'kind': 'text_outside_frame', 'text': label,

@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from generation.strict_video_contract import VERSION
 from generation.lesson_spec import contract_version, duration_spec
-from eval.benchmark_scoring import VERSION as SCORING_VERSION
+from eval.quality_scoring import VERSION as SCORING_VERSION
 
 
 def dump(path, data):
@@ -45,6 +45,7 @@ def environment(gpu, port):
         MKL_NUM_THREADS='1', NUMEXPR_NUM_THREADS='1')
     env['PATH'] = '/root/code2video-env/bin:' + env['PATH']
     env['PYTHONPATH'] = str(ROOT) + os.pathsep + env.get('PYTHONPATH', '')
+    env['VIDEO_TEACHER_SCORING_POLICY']=os.environ.get('VIDEO_TEACHER_SCORING_POLICY','quality-v12')
     return env
 
 
@@ -120,6 +121,8 @@ def run_case(args):
                 '--prompts', str(args.out/'prompts.jsonl'), '--out', str(directory),
                 '--strict-contract', '--attempt', str(attempt)]
             command += ['--generation-profile',profile]
+            if config.get('visual_critic'):
+                command += ['--visual-critic','--critic-rounds',str(config.get('critic_rounds',2))]
             if attempt == 0 and draft and config.get('reuse_run'):
                 previous_run = Path(config['reuse_run'])
                 candidates_to_reuse = list((ROOT/'research/code2video/Code2Video/src/CASES').glob(
@@ -129,7 +132,7 @@ def run_case(args):
                         (path.parent/f'{args.case}.mp4').is_file(),path.stat().st_mtime))
                     command += ['--reuse-scene-from',str(old_code.parent)]
             if feedback:
-                if draft:
+                if draft and not config.get('repair_quality',False):
                     # Generation retries carry actionable runtime errors, not the full quality ledger.
                     feedback = {key: feedback[key] for key in ('generation_error','source_plan_validation','instruction') if key in feedback}
                 path = directory/f'{args.case}_feedback.json'
@@ -168,7 +171,7 @@ def run_case(args):
         candidates.append((result,evaluation,attempt))
         frozen = validated_frozen(result, frozen)
         feedback = feedback_for(result, evaluation, frozen)
-        if draft and result.get('complete') and Path(result.get('video') or '').is_file():
+        if draft and not config.get('repair_quality',False) and result.get('complete') and Path(result.get('video') or '').is_file():
             break
         if result.get('complete') and Path(result.get('video') or '').is_file():
             feedback['review_frames'] = []
@@ -206,7 +209,7 @@ def summarize(out, cases, finished=False):
             from eval.benchmark_scoring import score_case
             rows.append(dict(id=case['id'], status='failed', video_path=None, quality_passed=False,
                              error='worker exited without final result'))
-            evaluations.append(dict(id=case['id'], scoring=score_case({}), errors=['worker_missing_final']))
+            evaluations.append(dict(id=case['id'], version=SCORING_VERSION,scoring=score_case({}), errors=['worker_missing_final']))
     dump(out/'generation_summary.json', rows)
     (out/'manifest.jsonl').write_text(''.join(json.dumps(row,ensure_ascii=False)+'\n' for row in rows))
     directory = out/SCORING_VERSION; directory.mkdir(exist_ok=True)
@@ -229,7 +232,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--out', type=Path, required=True)
     parser.add_argument('--prompts', type=Path, default=ROOT/'data/prompts/lesson_validation_10_v3.jsonl')
-    parser.add_argument('--gpus', type=int, nargs='+', choices=[0,1], default=[0,1])
+    parser.add_argument('--gpus', type=int, nargs='+', choices=[0,1,2,3], default=[0,1])
     parser.add_argument('--ports', type=int, nargs='+', default=[8000,8001])
     parser.add_argument('--max-attempts', type=int, default=3, choices=range(1,4))
     parser.add_argument('--resume', action='store_true')
@@ -237,9 +240,12 @@ def main():
     parser.add_argument('--generation-profile', choices=('strict','draft'), default='strict')
     parser.add_argument('--reuse-run', type=Path)
     parser.add_argument('--evaluate-draft', action='store_true', help='Evaluate delivered drafts without making quality a generation requirement')
+    parser.add_argument('--repair-quality',action='store_true',help='Keep applying quality feedback to rendered drafts')
+    parser.add_argument('--visual-critic',action='store_true')
+    parser.add_argument('--critic-rounds',type=int,choices=(1,2),default=2)
     parser.add_argument('--prepare-only', action='store_true')
     parser.add_argument('--case')
-    parser.add_argument('--gpu', type=int, choices=[0,1])
+    parser.add_argument('--gpu', type=int, choices=[0,1,2,3])
     args = parser.parse_args(); args.out = args.out.resolve()
     if args.case:
         run_case(args); return 0
@@ -253,7 +259,8 @@ def main():
     args.out.mkdir(parents=True, exist_ok=True)
     commit = subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
     config = dict(git_commit=commit, ids=[case['id'] for case in cases], gpus=args.gpus, ports=args.ports,
-        evaluate_draft=args.evaluate_draft,generation_profile=args.generation_profile,workers_per_gpu=args.workers_per_gpu,
+        evaluate_draft=args.evaluate_draft,repair_quality=args.repair_quality,visual_critic=args.visual_critic,
+        critic_rounds=args.critic_rounds,generation_profile=args.generation_profile,workers_per_gpu=args.workers_per_gpu,
         reuse_run=str(args.reuse_run.resolve()) if args.reuse_run else None,
         contract_versions={c['id']:contract_version(c) for c in cases},
         timing={c['id']:duration_spec(c) for c in cases},
@@ -267,7 +274,7 @@ def main():
     config_path = args.out/'run_config.json'
     if args.resume:
         previous = json.loads(config_path.read_text())
-        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_versions','timing','scoring_version','prompt_sha256','max_attempts','implementation_sha256','generation_profile','reuse_run','evaluate_draft']):
+        if any(previous.get(key)!=config[key] for key in ['git_commit','ids','contract_versions','timing','scoring_version','prompt_sha256','max_attempts','implementation_sha256','generation_profile','reuse_run','evaluate_draft','repair_quality','visual_critic','critic_rounds']):
             parser.error('resume requires the identical code, task, contract and scoring configuration')
     elif any(args.out.iterdir()):
         parser.error('fresh run requires empty output directory')

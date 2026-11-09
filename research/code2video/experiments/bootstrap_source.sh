@@ -11,6 +11,13 @@ else
   git -C "$task_root/Code2Video" apply --check "$task_root/experiments/code2video-local.patch"
   git -C "$task_root/Code2Video" apply "$task_root/experiments/code2video-local.patch"
 fi
+runtime_patch="$task_root/experiments/sample10-runtime-fixes.patch"
+if git -C "$task_root/Code2Video" apply --reverse --check "$runtime_patch" 2>/dev/null; then
+  echo "Runtime repair patch already applied."
+else
+  git -C "$task_root/Code2Video" apply --check "$runtime_patch"
+  git -C "$task_root/Code2Video" apply "$runtime_patch"
+fi
 for resource in assets json_files prompts; do
   if [[ ! -e "$task_root/Code2Video/src/$resource" ]]; then
     ln -s "../$resource" "$task_root/Code2Video/src/$resource"

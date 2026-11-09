@@ -42,7 +42,12 @@ if __name__ == '__main__':
     parser.add_argument('--quality-feedback', type=Path)
     parser.add_argument('--generation-profile', choices=('strict','draft'), default='strict')
     parser.add_argument('--reuse-scene-from', type=Path)
+    parser.add_argument('--visual-critic',action='store_true',help='Enable the author visual Critic through the local VLM')
+    parser.add_argument('--critic-rounds',type=int,choices=(1,2),default=2)
     args = parser.parse_args()
+    if args.visual_critic:
+        from generation.local_critic import request
+        agent_module.request_gemini_video_img=request
     started = time.monotonic()
     source = args.prompts or ROOT.parents[1] / 'data/prompts/pilot_v0_1.jsonl'
     case = next(json.loads(row) for row in source.read_text().splitlines()
@@ -99,7 +104,7 @@ if __name__ == '__main__':
             return response, response.usage.model_dump() if response.usage else {}
     agent = TeachingVideoAgent(0, topic,
         folder=ROOT / ('Code2Video/src/CASES/' + ((args.out.parent.name + '-' + args.out.name) if args.out else 'VIDEOTEACHER') + f'-qwen38-{args.case_id}-attempt{args.attempt}'),
-        cfg=RunConfig(api=api, use_feedback=False, use_assets=False,
+        cfg=RunConfig(api=api, use_feedback=args.visual_critic, use_assets=False,feedback_rounds=args.critic_rounds,
             max_code_token_length=8192 if lesson else 4096, max_fix_bug_tries=2, max_regenerate_tries=2))
     draft = lesson and args.generation_profile == 'draft'
     if args.reuse_scene_from:
@@ -182,6 +187,9 @@ if __name__ == '__main__':
             else:
                 raise ValueError('Storyboard validation exhausted: ' + source_validation['finding'])
             contract.pop('storyboard_repair', None)
+            if needs_source and not draft:
+                contract['execute_source_operations'] = True
+                contract['source_operations'] = agent.enhanced_storyboard['source_operations']
             source_validation = {'valid': True, 'finding': 'Storyboard and task coverage validated'} if not needs_source else source_validation
             contract_path.write_text(json.dumps(contract, ensure_ascii=False, indent=2))
         if args.strict_five_seconds and needs_source and not lesson:
@@ -207,7 +215,7 @@ if __name__ == '__main__':
         generation_error = f'{type(exc).__name__}: {exc}'
         video = None
     result = dict(model='Qwen/Qwen3.8-27B', source_case_id=case['id'],
-        topic=topic, use_feedback=False, use_assets=False,
+        topic=topic, use_feedback=args.visual_critic, use_assets=False,
         layout_policy_version='safe_areas_v1',
         elapsed_seconds=time.monotonic()-started, token_usage=agent.token_usage,
         token_usage_scope='parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR',
