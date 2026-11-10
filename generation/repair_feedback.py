@@ -26,6 +26,7 @@ def feedback_for(result, evaluation, frozen=None):
                 'findings': findings[:16],
                 'render_diagnostics': compact(result.get('strict_diagnostics', {})),
                 'generation_error': result.get('error'),
+                'render_failure_logs': compact(result.get('render_failure_logs', [])),
                 'evaluation_errors': evaluation.get('errors', []),
                 'consistency_review': evaluation.get('consistency_review'),
                 'grounded_observations': compact(evaluation.get('grounded_observations', {})),

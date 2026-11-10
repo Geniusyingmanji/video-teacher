@@ -1,0 +1,439 @@
+{
+  "date_utc": "2026-11-10T03:06:21.613391+00:00",
+  "source_run": "results/qwen38_four_gpu_repair10_20261109",
+  "completion": {
+    "total": 10,
+    "processed": 10,
+    "generated": 2,
+    "quality_passed": 0,
+    "execution_finished": true,
+    "complete": false,
+    "generation_profile": "strict",
+    "quality_review_deferred": false,
+    "scoring_version": "video-teacher-quality-v12",
+    "contract_versions": {
+      "math_exp_02": "instructional-lesson-contract-v3",
+      "phys_exp_02": "instructional-lesson-contract-v3",
+      "math_prob_01": "instructional-lesson-contract-v3",
+      "grade_ComputerScience_task_17": "instructional-lesson-contract-v3",
+      "phys_exp_03": "instructional-lesson-contract-v3",
+      "math_prob_02": "instructional-lesson-contract-v3",
+      "cs_prob_02": "instructional-lesson-contract-v3",
+      "med_exp_01": "instructional-lesson-contract-v3",
+      "lang_high_01": "instructional-lesson-contract-v3",
+      "math_high_02": "instructional-lesson-contract-v3"
+    },
+    "same_model_self_evaluation": true
+  },
+  "attempt_categories": {
+    "storyboard": 4,
+    "speech_timing": 13,
+    "missing_error": 8,
+    "complete": 2,
+    "context_budget": 2,
+    "layout": 1
+  },
+  "attempts": [
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_cs_prob_02.json",
+      "complete": false,
+      "failure_stage": "storyboard",
+      "error": "ValueError: Storyboard validation exhausted: timeline omits current task requirements: expected_visual_elements:3",
+      "category": "storyboard"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_grade_ComputerScience_task_17.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 26.28s for 20.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_lang_high_01.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 18.94s for 19.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_math_exp_02.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: TypeError: Mobject.__init__() got an unexpected keyword argument 'origin'",
+      "render_logs": [
+        {
+          "path": "/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_0-qwen38-math_exp_02-attempt0/math_exp_02/section_1_render.log",
+          "tail": "\n\nAnimation 0: FadeIn(Polygon):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                    \n\nAnimation 1: FadeIn(Polygon):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                    \n\nAnimation 2: FadeIn(Polygon):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                    \n\nAnimation 4: FadeIn(Text('Equilateral')), etc.:   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 4: FadeIn(Text('Equilateral')), etc.:  78%|███████▊  | 18/23 [00:00<00:00, 175.51it/s]\n                                                                                                \n\nAnimation 6: FadeIn(Text('Three different shapes, one common rule')):   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 6: FadeIn(Text('Three different shapes, one common rule')):  61%|██████    | 14/23 [00:00<00:00, 132.38it/s]\n                                                                                                                      \n\nAnimation 8: FadeIn(Text('Sum of interior angles = ?')):   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 8: FadeIn(Text('Sum of interior angles = ?')):  83%|████████▎ | 19/23 [00:00<00:00, 180.87it/s]\n                                                                                                         \n\nAnimation 10: FadeOut(Polygon), etc.:   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 10: FadeOut(Polygon), etc.:  30%|███       | 7/23 [00:00<00:00, 60.97it/s]\nAnimation 10: FadeOut(Polygon), etc.:  61%|██████    | 14/23 [00:00<00:00, 64.00it/s]\nAnimation 10: FadeOut(Polygon), etc.:  91%|█████████▏| 21/23 [00:00<00:00, 64.86it/s]\n                                                                                     \n\nAnimation 12: Transform(Polygon):   0%|          | 0/23 [00:00<?, ?it/s]\n                                                                        \nTraceback (most recent call last):\n  File \"/root/video-teacher/generation/strict_manim.py\", line 455, in <module>\n    render(args.code.resolve(), args.scene, args.contract.resolve())\n  File \"/root/video-teacher/generation/strict_manim.py\", line 356, in render\n    scene.render()\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 237, in render\n    self.construct()\n  File \"/root/video-teacher/generation/strict_manim.py\", line 353, in construct\n    old_construct()\n  File \"/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_0-qwen38-math_exp_02-attempt0/math_exp_02/section_1.py\", line 83, in construct\n    sector_A = Sector(\n               ^^^^^^^\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 940, in __init__\n    super().__init__(inner_radius=0, outer_radius=radius, **kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 894, in __init__\n    super().__init__(\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 334, in __init__\n    super().__init__(**kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 109, in __init__\n    super().__init__(**kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/types/vectorized_mobject.py\", line 161, in __init__\n    super().__init__(**kwargs)\nTypeError: Mobject.__init__() got an unexpected keyword argument 'origin'\n"
+        }
+      ]
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_math_high_02.json",
+      "complete": false,
+      "failure_stage": "storyboard",
+      "error": "ValueError: Storyboard validation exhausted: timeline omits current task requirements: expected_visual_elements:3",
+      "category": "storyboard"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_math_prob_01.json",
+      "complete": true,
+      "failure_stage": null,
+      "error": null,
+      "category": "complete"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_math_prob_02.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 20.71s for 20.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_med_exp_01.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 21.38s for 18.733333333333334s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_phys_exp_02.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_4 speech too_long: 17.54s for 17.46666666666667s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_0/model_result_phys_exp_03.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 18.50s for 18.333333333333332s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_cs_prob_02.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_2 speech too_long: 20.09s for 18.733333333333334s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_grade_ComputerScience_task_17.json",
+      "complete": false,
+      "failure_stage": "storyboard",
+      "error": "ValueError: Storyboard validation exhausted: The plan fails due to a critical pacing violation: the narration for 'chapter_1' is estimated to be 26.28 seconds long, which exceeds the chapter's allocated duration of 20.0 seconds. This prevents the video from rendering correctly. The narration must be shortened to fit within the 20-second window.",
+      "category": "storyboard"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_lang_high_01.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 19.70s for 19.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_math_exp_02.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs.",
+      "render_logs": []
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_math_high_02.json",
+      "complete": true,
+      "failure_stage": null,
+      "error": null,
+      "category": "complete"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_math_prob_01.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": "ValueError: Prompt budget exceeded before API call: text=29066, reserved=7168, limit=32768; compact supplemental context",
+      "category": "context_budget"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_math_prob_02.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 19.70s for 20.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_med_exp_01.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs.",
+      "render_logs": []
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_phys_exp_02.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: TypeError: Circle.__init__() got multiple values for argument 'radius'",
+      "render_logs": [
+        {
+          "path": "/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_1-qwen38-phys_exp_02-attempt1/phys_exp_02/section_1_render.log",
+          "tail": "\n\nAnimation 0: Write(Line):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                \n\nAnimation 1: Create(VGroup of 2 submobjects):   0%|          | 0/45 [00:00<?, ?it/s]\n                                                                                    \n\nAnimation 2: FadeIn(Text('Convex Lens')):   0%|          | 0/23 [00:00<?, ?it/s]\n                                                                                \n\nAnimation 3: FadeIn(Text('Principal Axis')):   0%|          | 0/23 [00:00<?, ?it/s]\n                                                                                   \n\nAnimation 4: FadeIn(Text('Convex lens: thicker in middle')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                   \n\nAnimation 6: FadeOut(Text('Convex lens: thicker in middle')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                   \n\nAnimation 7: FadeIn(Text('Principal axis through center')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                  \n\nAnimation 9: FadeOut(Text('Principal axis through center')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                  \n\nAnimation 10: Create(Line):   0%|          | 0/38 [00:00<?, ?it/s]\n                                                                  \n\nAnimation 11: Create(Line):   0%|          | 0/38 [00:00<?, ?it/s]\n                                                                  \n\nAnimation 12: Create(Line):   0%|          | 0/38 [00:00<?, ?it/s]\n                                                                  \n\nAnimation 13: FadeIn(Text('3 parallel rays enter from left')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                     \n\nAnimation 15: FadeOut(Text('3 parallel rays enter from left')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                     \n\nAnimation 16: FadeIn(Text('Rays are parallel to the axis')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                   \n\nAnimation 18: FadeOut(Text('Rays are parallel to the axis')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                   \n\nAnimation 19: Create(Line):   0%|          | 0/38 [00:00<?, ?it/s]\n                                                                  \n\nAnimation 20: Create(Line):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                  \n\nAnimation 21: Create(Line):   0%|          | 0/38 [00:00<?, ?it/s]\n                                                                  \n\nAnimation 22: FadeIn(Dot):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                 \n\nAnimation 23: FadeIn(Text('F')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                       \n\nAnimation 24: FadeIn(Text('Rays bend inward at the lens')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                  \n\nAnimation 26: FadeOut(Text('Rays bend inward at the lens')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                  \n\nAnimation 27: FadeIn(Text('All rays meet at focal point F')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                    \n\nAnimation 29: FadeOut(Text('All rays meet at focal point F')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                    \n\nAnimation 30: Create(VGroup of 2 submobjects):   0%|          | 0/23 [00:00<?, ?it/s]\n                                                                                     \nTraceback (most recent call last):\n  File \"/root/video-teacher/generation/strict_manim.py\", line 455, in <module>\n    render(args.code.resolve(), args.scene, args.contract.resolve())\n  File \"/root/video-teacher/generation/strict_manim.py\", line 356, in render\n    scene.render()\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 237, in render\n    self.construct()\n  File \"/root/video-teacher/generation/strict_manim.py\", line 353, in construct\n    old_construct()\n  File \"/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_1-qwen38-phys_exp_02-attempt1/phys_exp_02/section_1.py\", line 107, in construct\n    F_ring = Circle([3, 0, 0], radius=0.3, color=RED, stroke_width=2)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: Circle.__init__() got multiple values for argument 'radius'\n"
+        }
+      ]
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_1/model_result_phys_exp_03.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: TypeError: Unexpected argument Dot passed to Scene.play().",
+      "render_logs": [
+        {
+          "path": "/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_1-qwen38-phys_exp_03-attempt1/phys_exp_03/section_1_render.log",
+          "tail": "\n\nAnimation 0: FadeIn(Rectangle), etc.:   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                            \n\nAnimation 2: FadeIn(Text('Beaker heated from below')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                             \n\nAnimation 3: FadeIn(Arrow), etc.:   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                        \n\nAnimation 5: FadeIn(Arrow), etc.:   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                        \n\nAnimation 7: MoveAlongPath(Dot):   0%|          | 0/45 [00:00<?, ?it/s]\n                                                                       \nTraceback (most recent call last):\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 907, in compile_animations\n    animations.append(prepare_animation(arg))\n                      ^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/animation/animation.py\", line 581, in prepare_animation\n    raise TypeError(f\"Object {anim} cannot be converted to an animation\")\nTypeError: Object Dot cannot be converted to an animation\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/root/video-teacher/generation/strict_manim.py\", line 455, in <module>\n    render(args.code.resolve(), args.scene, args.contract.resolve())\n  File \"/root/video-teacher/generation/strict_manim.py\", line 356, in render\n    scene.render()\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 237, in render\n    self.construct()\n  File \"/root/video-teacher/generation/strict_manim.py\", line 353, in construct\n    old_construct()\n  File \"/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_1-qwen38-phys_exp_03-attempt1/phys_exp_03/section_1.py\", line 90, in construct\n    self.play(loop_path.trace(self), run_time=3.0)\n  File \"/root/video-teacher/generation/strict_manim.py\", line 348, in <lambda>\n    scene.play = lambda *a, **kw: event('play', old_play, *a, **kw)\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/video-teacher/generation/strict_manim.py\", line 327, in event\n    result = function(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 1125, in play\n    self.renderer.play(self, *args, **kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/renderer/cairo_renderer.py\", line 71, in play\n    scene.compile_animation_data(*args, **kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 1236, in compile_animation_data\n    self.animations = self.compile_animations(*animations, **play_kwargs)\n                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 915, in compile_animations\n    raise TypeError(\nTypeError: Unexpected argument Dot passed to Scene.play().\n"
+        }
+      ]
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_cs_prob_02.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_4 speech too_long: 21.89s for 18.733333333333334s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_grade_ComputerScience_task_17.json",
+      "complete": false,
+      "failure_stage": "storyboard",
+      "error": "ValueError: Storyboard validation exhausted: The plan fails due to a critical pacing violation: the narration for 'chapter_1' is estimated to be 26.28 seconds long, which exceeds the chapter's allocated duration of 20.0 seconds. This prevents the video from rendering correctly. The narration must be shortened to fit within the 20-second window.",
+      "category": "storyboard"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_lang_high_01.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 19.54s for 19.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_math_exp_02.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: TypeError: Mobject.__init__() got an unexpected keyword argument 'center'",
+      "render_logs": [
+        {
+          "path": "/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_2-qwen38-math_exp_02-attempt2/math_exp_02/section_1_render.log",
+          "tail": "\n\nAnimation 0: FadeIn(Text('Three different triangles')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                              \n\nAnimation 1: Create(Polygon):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                    \n\nAnimation 2: Create(Polygon):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                    \n\nAnimation 3: Create(Polygon):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                    \n\nAnimation 4: Write(VGroup of 3 submobjects):   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 4: Write(VGroup of 3 submobjects):  87%|████████▋ | 20/23 [00:00<00:00, 192.96it/s]\n                                                                                             \n\nAnimation 6: FadeOut(Text('Three different triangles')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                              \n\nAnimation 7: FadeIn(Text('All share the same angle property')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                      \n\nAnimation 9: FadeOut(Text('All share the same angle property')):   0%|          | 0/8 [00:00<?, ?it/s]\n                                                                                                      \n\nAnimation 11: FadeOut(Polygon), etc.:   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 11: FadeOut(Polygon), etc.:  61%|██████    | 14/23 [00:00<00:00, 134.32it/s]\n                                                                                      \n\nAnimation 12: FadeIn(Text('Focusing on the scalene triangle')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                      \nTraceback (most recent call last):\n  File \"/root/video-teacher/generation/strict_manim.py\", line 455, in <module>\n    render(args.code.resolve(), args.scene, args.contract.resolve())\n  File \"/root/video-teacher/generation/strict_manim.py\", line 356, in render\n    scene.render()\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 237, in render\n    self.construct()\n  File \"/root/video-teacher/generation/strict_manim.py\", line 353, in construct\n    old_construct()\n  File \"/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_2-qwen38-math_exp_02-attempt2/math_exp_02/section_1.py\", line 101, in construct\n    red_sector, angle_A = make_sector(A, B, C, radius, RED)\n                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_2-qwen38-math_exp_02-attempt2/math_exp_02/section_1.py\", line 91, in make_sector\n    return Sector(\n           ^^^^^^^\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 940, in __init__\n    super().__init__(inner_radius=0, outer_radius=radius, **kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 894, in __init__\n    super().__init__(\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 334, in __init__\n    super().__init__(**kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/geometry/arc.py\", line 109, in __init__\n    super().__init__(**kwargs)\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/mobject/types/vectorized_mobject.py\", line 161, in __init__\n    super().__init__(**kwargs)\nTypeError: Mobject.__init__() got an unexpected keyword argument 'center'\n"
+        }
+      ]
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_math_high_02.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": "ValueError: Prompt budget exceeded before API call: text=28355, reserved=7168, limit=32768; compact supplemental context",
+      "category": "context_budget"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_math_prob_01.json",
+      "complete": false,
+      "failure_stage": "layout",
+      "error": "Rejected render: layout",
+      "category": "layout"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_math_prob_02.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 27.38s for 20.0s",
+      "category": "speech_timing"
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_med_exp_01.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: TypeError: Mobject.__getattr__.<locals>.getter() takes 1 positional argument but 2 were given",
+      "render_logs": [
+        {
+          "path": "/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_2-qwen38-med_exp_01-attempt2/med_exp_01/section_1_render.log",
+          "tail": "\nTraceback (most recent call last):\n  File \"/root/video-teacher/generation/strict_manim.py\", line 455, in <module>\n    render(args.code.resolve(), args.scene, args.contract.resolve())\n  File \"/root/video-teacher/generation/strict_manim.py\", line 356, in render\n    scene.render()\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 237, in render\n    self.construct()\n  File \"/root/video-teacher/generation/strict_manim.py\", line 353, in construct\n    old_construct()\n  File \"/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_2-qwen38-med_exp_01-attempt2/med_exp_01/section_1.py\", line 47, in construct\n    tubule.get_point_from_proportion(0.12), UP, buff=0.35\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nTypeError: Mobject.__getattr__.<locals>.getter() takes 1 positional argument but 2 were given\n"
+        }
+      ]
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_phys_exp_02.json",
+      "complete": false,
+      "failure_stage": "planning_or_generation",
+      "error": null,
+      "category": "missing_error",
+      "recovered_error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: ValueError: lesson has consecutive empty holds longer than the pacing limit",
+      "render_logs": [
+        {
+          "path": "/root/video-teacher/research/code2video/Code2Video/src/CASES/qwen38_four_gpu_repair10_20261109-attempt_2-qwen38-phys_exp_02-attempt2/phys_exp_02/section_1_render.log",
+          "tail": "\n\nAnimation 0: Create(Line):   0%|          | 0/30 [00:00<?, ?it/s]\n                                                                 \n\nAnimation 1: Create(ArcBetweenPoints), etc.:   0%|          | 0/38 [00:00<?, ?it/s]\n                                                                                   \n\nAnimation 2: FadeIn(Text('Convex Lens')), etc.:   0%|          | 0/23 [00:00<?, ?it/s]\nAnimation 2: FadeIn(Text('Convex Lens')), etc.:  83%|████████▎ | 19/23 [00:00<00:00, 185.65it/s]\n                                                                                                \n\nAnimation 4: FadeIn(Text('A convex lens is thicker in the center')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                           \n\nAnimation 6: FadeOut(Text('A convex lens is thicker in the center')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 6: FadeOut(Text('A convex lens is thicker in the center')): 100%|██████████| 15/15 [00:00<00:00, 143.60it/s]\n                                                                                                                      \n\nAnimation 7: FadeIn(Text('Parallel rays converge at focal point F')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 7: FadeIn(Text('Parallel rays converge at focal point F')): 100%|██████████| 15/15 [00:00<00:00, 144.32it/s]\n                                                                                                                      \n\nAnimation 9: FadeOut(Text('Parallel rays converge at focal point F')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 9: FadeOut(Text('Parallel rays converge at focal point F')): 100%|██████████| 15/15 [00:00<00:00, 141.59it/s]\n                                                                                                                       \n\nAnimation 10: Create(Line), etc.:   0%|          | 0/45 [00:00<?, ?it/s]\n                                                                        \n\nAnimation 11: FadeIn(Arrow), etc.:   0%|          | 0/23 [00:00<?, ?it/s]\n                                                                         \n\nAnimation 12: FadeIn(Text('Three parallel rays enter from the left')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 12: FadeIn(Text('Three parallel rays enter from the left')): 100%|██████████| 15/15 [00:00<00:00, 143.26it/s]\n                                                                                                                       \n\nAnimation 14: FadeOut(Text('Three parallel rays enter from the left')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 14: FadeOut(Text('Three parallel rays enter from the left')):  93%|█████████▎| 14/15 [00:00<00:00, 133.86it/s]\n                                                                                                                        \n\nAnimation 15: FadeIn(Text('Rays are parallel BEFORE the lens')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 15: FadeIn(Text('Rays are parallel BEFORE the lens')): 100%|██████████| 15/15 [00:00<00:00, 143.91it/s]\n                                                                                                                 \n\nAnimation 17: FadeOut(Text('Rays are parallel BEFORE the lens')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 17: FadeOut(Text('Rays are parallel BEFORE the lens')): 100%|██████████| 15/15 [00:00<00:00, 143.60it/s]\n                                                                                                                  \n\nAnimation 19: Create(Line), etc.:   0%|          | 0/45 [00:00<?, ?it/s]\n                                                                        \n\nAnimation 20: FadeIn(Dot), etc.:   0%|          | 0/23 [00:00<?, ?it/s]\n                                                                       \n\nAnimation 21: FadeIn(Text('Rays bend toward the axis (refraction)')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 21: FadeIn(Text('Rays bend toward the axis (refraction)')):  93%|█████████▎| 14/15 [00:00<00:00, 131.26it/s]\n                                                                                                                      \n\nAnimation 23: FadeOut(Text('Rays bend toward the axis (refraction)')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 23: FadeOut(Text('Rays bend toward the axis (refraction)')):  93%|█████████▎| 14/15 [00:00<00:00, 130.58it/s]\n                                                                                                                       \n\nAnimation 24: FadeIn(Text('All 3 rays meet at focal point F')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                      \n\nAnimation 26: FadeOut(Text('All 3 rays meet at focal point F')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                       \n\nAnimation 28: Indicate(Dot):   0%|          | 0/45 [00:00<?, ?it/s]\n                                                                   \n\nAnimation 29: FadeIn(Text('Parallel rays converge at F')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                 \n\nAnimation 31: FadeOut(Text('Parallel rays converge at F')):   0%|          | 0/15 [00:00<?, ?it/s]\n                                                                                                  \n\nAnimation 32: FadeIn(Text('Convex lens focuses parallel light to F')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 32: FadeIn(Text('Convex lens focuses parallel light to F')):  93%|█████████▎| 14/15 [00:00<00:00, 136.85it/s]\n                                                                                                                       \n\nAnimation 34: FadeOut(Text('Convex lens focuses parallel light to F')):   0%|          | 0/15 [00:00<?, ?it/s]\nAnimation 34: FadeOut(Text('Convex lens focuses parallel light to F')):  87%|████████▋ | 13/15 [00:00<00:00, 125.45it/s]\n                                                                                                                        \nTraceback (most recent call last):\n  File \"/root/video-teacher/generation/strict_manim.py\", line 455, in <module>\n    render(args.code.resolve(), args.scene, args.contract.resolve())\n  File \"/root/video-teacher/generation/strict_manim.py\", line 356, in render\n    scene.render()\n  File \"/root/code2video-env/lib/python3.12/site-packages/manim/scene/scene.py\", line 237, in render\n    self.construct()\n  File \"/root/video-teacher/generation/strict_manim.py\", line 354, in construct\n    self.wait(1)\n  File \"/root/video-teacher/generation/strict_manim.py\", line 349, in <lambda>\n    scene.wait = lambda *a, **kw: event('wait', old_wait, *a, **kw)\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/root/video-teacher/generation/strict_manim.py\", line 344, in event\n    raise ValueError('lesson has consecutive empty holds longer than the pacing limit')\nValueError: lesson has consecutive empty holds longer than the pacing limit\n"
+        }
+      ]
+    },
+    {
+      "path": "results/qwen38_four_gpu_repair10_20261109/attempt_2/model_result_phys_exp_03.json",
+      "complete": false,
+      "failure_stage": "narration",
+      "error": "ValueError: chapter chapter_1 speech too_long: 22.08s for 18.333333333333332s",
+      "category": "speech_timing"
+    }
+  ],
+  "cases": [
+    {
+      "id": "cs_prob_02",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "grade_ComputerScience_task_17",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "lang_high_01",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "math_exp_02",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "math_high_02",
+      "status": "ok",
+      "video_exists_now": true,
+      "evaluation_valid": true,
+      "score": 93.4166,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "instructional_presentation_not_accepted"
+      ]
+    },
+    {
+      "id": "math_prob_01",
+      "status": "ok",
+      "video_exists_now": true,
+      "evaluation_valid": true,
+      "score": 92.5278,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "instructional_presentation_not_accepted"
+      ]
+    },
+    {
+      "id": "math_prob_02",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "med_exp_01",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "phys_exp_02",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    },
+    {
+      "id": "phys_exp_03",
+      "status": "failed",
+      "video_exists_now": false,
+      "evaluation_valid": false,
+      "score": null,
+      "quality_passed": false,
+      "acceptance_failures": [
+        "task_completion_unverified",
+        "instructional_presentation_unverified",
+        "narration_review_unverified",
+        "consistency_unverified"
+      ]
+    }
+  ],
+  "environment_limits": [
+    "NVIDIA-SMI cannot communicate with NVIDIA driver",
+    "HTTP health requests to 127.0.0.1:8000-8003 denied with Operation not permitted"
+  ],
+  "claims": {
+    "new_generation_run": false,
+    "full_video_quality_review_completed": false,
+    "quality_fixed": false
+  }
+}

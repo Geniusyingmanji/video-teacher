@@ -252,6 +252,12 @@ if __name__ == '__main__':
                               and (not needs_source or diagnostics.get('source_preservation', {}).get('valid') is True))))
         result['delivery_warnings'] = diagnostics.get('delivery_warnings',[]) + (narration_result or {}).get('delivery_warnings',[])
         result['semantic_review_status'] = 'pending_eight_axis_self_evaluation'
+    if not result['complete']:
+        from generation.render_failure import render_failure
+        fallback_error, render_logs = render_failure(agent.output_dir)
+        result['render_failure_logs'] = render_logs
+        if not generation_error:
+            generation_error = fallback_error
     if generation_error:
         result['error'] = generation_error
         if failure_stage:result['failure_stage']=failure_stage
