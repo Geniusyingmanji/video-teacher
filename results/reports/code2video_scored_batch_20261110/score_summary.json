@@ -1,0 +1,570 @@
+{
+  "policy": "quality-v12",
+  "reviews": [
+    {
+      "gpu": 0,
+      "scoring": {
+        "valid": false,
+        "score": null,
+        "groups": {
+          "video_quality": 57.6389,
+          "teaching_quality": 48.3333,
+          "spoken_teaching": null
+        },
+        "weights": {
+          "video_quality": 0.4,
+          "teaching_quality": 0.4,
+          "spoken_teaching": 0.2
+        },
+        "axis_scores_after_caps": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "axis_scores": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "numeric_caps_applied": false,
+        "strict_pass": false,
+        "acceptance_failures": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "gates": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "errors": [
+          "spoken_teaching_unverified"
+        ],
+        "calibration_status": "declared criterion-based policy; external human validity not yet established",
+        "spoken_teaching_score": null,
+        "presentation_score": 25.0,
+        "ranking_eligible": false
+      },
+      "coverage": {
+        "visual_quality": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "temporal_consistency": {
+          "status": "scored",
+          "score": 27.0833,
+          "scale": "0..100",
+          "reason": null
+        },
+        "signal_quality": {
+          "status": "scored",
+          "score": 87.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "conceptual_correctness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "narrative_structure": {
+          "status": "scored",
+          "score": 50.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "pedagogical_clarity": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "didactic_affordances": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "audience_appropriateness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "instructional_presentation": {
+          "status": "scored",
+          "score": 25.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "task_completion": {
+          "status": "scored",
+          "score": 0.625,
+          "scale": "0..1 requirement coverage",
+          "reason": null
+        },
+        "teaching_engagement": {
+          "status": "scored",
+          "score": 41.6667,
+          "scale": "0..100",
+          "reason": null
+        },
+        "total": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": [
+            "spoken_teaching_unverified"
+          ]
+        },
+        "spoken_teaching": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": "ValueError: actual speech track is absent or unverified"
+        }
+      },
+      "errors": [
+        "speech_transcription_failed"
+      ]
+    },
+    {
+      "gpu": 1,
+      "scoring": {
+        "valid": false,
+        "score": null,
+        "groups": {
+          "video_quality": 57.6389,
+          "teaching_quality": 48.3333,
+          "spoken_teaching": null
+        },
+        "weights": {
+          "video_quality": 0.4,
+          "teaching_quality": 0.4,
+          "spoken_teaching": 0.2
+        },
+        "axis_scores_after_caps": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "axis_scores": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "numeric_caps_applied": false,
+        "strict_pass": false,
+        "acceptance_failures": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "gates": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "errors": [
+          "spoken_teaching_unverified"
+        ],
+        "calibration_status": "declared criterion-based policy; external human validity not yet established",
+        "spoken_teaching_score": null,
+        "presentation_score": 25.0,
+        "ranking_eligible": false
+      },
+      "coverage": {
+        "visual_quality": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "temporal_consistency": {
+          "status": "scored",
+          "score": 27.0833,
+          "scale": "0..100",
+          "reason": null
+        },
+        "signal_quality": {
+          "status": "scored",
+          "score": 87.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "conceptual_correctness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "narrative_structure": {
+          "status": "scored",
+          "score": 50.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "pedagogical_clarity": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "didactic_affordances": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "audience_appropriateness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "instructional_presentation": {
+          "status": "scored",
+          "score": 25.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "task_completion": {
+          "status": "scored",
+          "score": 0.625,
+          "scale": "0..1 requirement coverage",
+          "reason": null
+        },
+        "teaching_engagement": {
+          "status": "scored",
+          "score": 41.6667,
+          "scale": "0..100",
+          "reason": null
+        },
+        "total": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": [
+            "spoken_teaching_unverified"
+          ]
+        },
+        "spoken_teaching": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": "ValueError: actual speech track is absent or unverified"
+        }
+      },
+      "errors": [
+        "speech_transcription_failed"
+      ]
+    },
+    {
+      "gpu": 2,
+      "scoring": {
+        "valid": false,
+        "score": null,
+        "groups": {
+          "video_quality": 57.6389,
+          "teaching_quality": 48.3333,
+          "spoken_teaching": null
+        },
+        "weights": {
+          "video_quality": 0.4,
+          "teaching_quality": 0.4,
+          "spoken_teaching": 0.2
+        },
+        "axis_scores_after_caps": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "axis_scores": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "numeric_caps_applied": false,
+        "strict_pass": false,
+        "acceptance_failures": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "gates": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "errors": [
+          "spoken_teaching_unverified"
+        ],
+        "calibration_status": "declared criterion-based policy; external human validity not yet established",
+        "spoken_teaching_score": null,
+        "presentation_score": 25.0,
+        "ranking_eligible": false
+      },
+      "coverage": {
+        "visual_quality": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "temporal_consistency": {
+          "status": "scored",
+          "score": 27.0833,
+          "scale": "0..100",
+          "reason": null
+        },
+        "signal_quality": {
+          "status": "scored",
+          "score": 87.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "conceptual_correctness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "narrative_structure": {
+          "status": "scored",
+          "score": 50.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "pedagogical_clarity": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "didactic_affordances": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "audience_appropriateness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "instructional_presentation": {
+          "status": "scored",
+          "score": 25.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "task_completion": {
+          "status": "scored",
+          "score": 0.625,
+          "scale": "0..1 requirement coverage",
+          "reason": null
+        },
+        "teaching_engagement": {
+          "status": "scored",
+          "score": 41.6667,
+          "scale": "0..100",
+          "reason": null
+        },
+        "total": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": [
+            "spoken_teaching_unverified"
+          ]
+        },
+        "spoken_teaching": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": "ValueError: actual speech track is absent or unverified"
+        }
+      },
+      "errors": [
+        "speech_transcription_failed"
+      ]
+    },
+    {
+      "gpu": 3,
+      "scoring": {
+        "valid": false,
+        "score": null,
+        "groups": {
+          "video_quality": 57.6389,
+          "teaching_quality": 48.3333,
+          "spoken_teaching": null
+        },
+        "weights": {
+          "video_quality": 0.4,
+          "teaching_quality": 0.4,
+          "spoken_teaching": 0.2
+        },
+        "axis_scores_after_caps": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "axis_scores": {
+          "visual_quality": 58.3333,
+          "temporal_consistency": 27.0833,
+          "signal_quality": 87.5,
+          "conceptual_correctness": 58.3333,
+          "narrative_structure": 50.0,
+          "pedagogical_clarity": 37.5,
+          "didactic_affordances": 37.5,
+          "audience_appropriateness": 58.3333
+        },
+        "numeric_caps_applied": false,
+        "strict_pass": false,
+        "acceptance_failures": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "gates": [
+          "task_completion_not_accepted",
+          "instructional_presentation_not_accepted",
+          "narration_review_unverified"
+        ],
+        "errors": [
+          "spoken_teaching_unverified"
+        ],
+        "calibration_status": "declared criterion-based policy; external human validity not yet established",
+        "spoken_teaching_score": null,
+        "presentation_score": 25.0,
+        "ranking_eligible": false
+      },
+      "coverage": {
+        "visual_quality": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "temporal_consistency": {
+          "status": "scored",
+          "score": 27.0833,
+          "scale": "0..100",
+          "reason": null
+        },
+        "signal_quality": {
+          "status": "scored",
+          "score": 87.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "conceptual_correctness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "narrative_structure": {
+          "status": "scored",
+          "score": 50.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "pedagogical_clarity": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "didactic_affordances": {
+          "status": "scored",
+          "score": 37.5,
+          "scale": "0..100",
+          "reason": null
+        },
+        "audience_appropriateness": {
+          "status": "scored",
+          "score": 58.3333,
+          "scale": "0..100",
+          "reason": null
+        },
+        "instructional_presentation": {
+          "status": "scored",
+          "score": 25.0,
+          "scale": "0..100",
+          "reason": null
+        },
+        "task_completion": {
+          "status": "scored",
+          "score": 0.625,
+          "scale": "0..1 requirement coverage",
+          "reason": null
+        },
+        "teaching_engagement": {
+          "status": "scored",
+          "score": 41.6667,
+          "scale": "0..100",
+          "reason": null
+        },
+        "total": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": [
+            "spoken_teaching_unverified"
+          ]
+        },
+        "spoken_teaching": {
+          "status": "evaluation_failed",
+          "score": null,
+          "scale": "0..100",
+          "reason": "ValueError: actual speech track is absent or unverified"
+        }
+      },
+      "errors": [
+        "speech_transcription_failed"
+      ]
+    }
+  ],
+  "note": "Four repeated local-model reviews of ONE video, not four independent cases. Unknown scores remain null; missing narration is not waived."
+}

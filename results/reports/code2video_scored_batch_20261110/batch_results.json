@@ -1,0 +1,362 @@
+[
+  {
+    "id": "case_01",
+    "topic": "Basics of linear algebra and vectors",
+    "gpu": 0,
+    "port": 8000,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Basics of linear algebra and vectors",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_01/0-Basics_of_linear_algebra_and_vectors",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_01/0-Basics_of_linear_algebra_and_vectors/Basics_of_linear_algebra_and_vectors.mp4",
+      "sections": 4,
+      "rendered_sections": 4,
+      "token_usage": {
+        "prompt_tokens": 6970,
+        "completion_tokens": 11147,
+        "total_tokens": 18117
+      },
+      "complete": true,
+      "seconds": 2280.7099864009942,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_01_Basics of linear algebra and vectors.mp4",
+      "sha256": "e0a1556a8eccdbc4e1753e34f947bd058819c3a2e5968494a89bd45b07319c7f"
+    }
+  },
+  {
+    "id": "case_03",
+    "topic": "The determinant",
+    "gpu": 1,
+    "port": 8001,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "The determinant",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_03/0-The_determinant",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_03/0-The_determinant/The_determinant.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 8512,
+        "completion_tokens": 14565,
+        "total_tokens": 23077
+      },
+      "complete": true,
+      "seconds": 2682.1717353819986,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_03_The determinant.mp4",
+      "sha256": "7ab4f71fad33f9996f029c11e0044a7ea78e0fbdc3d6c8b450ffcb69646b647d"
+    }
+  },
+  {
+    "id": "case_04",
+    "topic": "Matrix multiplication as composition of linear transformations",
+    "gpu": 1,
+    "port": 8001,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Matrix multiplication as composition of linear transformations",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_04/0-Matrix_multiplication_as_composition_of_linear_transformations",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_04/0-Matrix_multiplication_as_composition_of_linear_transformations/Matrix_multiplication_as_composition_of_linear_transformations.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 7244,
+        "completion_tokens": 13561,
+        "total_tokens": 20805
+      },
+      "complete": true,
+      "seconds": 2911.8064444600022,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_04_Matrix multiplication as composition of linear transformations.mp4",
+      "sha256": "eb51c93dd79b974748a1560eeaf1d17f5eed071abb9ddb62be77e2773563be99"
+    }
+  },
+  {
+    "id": "case_02",
+    "topic": "Dot products and duality",
+    "gpu": 0,
+    "port": 8000,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Dot products and duality",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_02/0-Dot_products_and_duality",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_02/0-Dot_products_and_duality/Dot_products_and_duality.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 7054,
+        "completion_tokens": 11734,
+        "total_tokens": 18788
+      },
+      "complete": true,
+      "seconds": 3123.728357709013,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_02_Dot products and duality.mp4",
+      "sha256": "e9b6e44c89dd574afaaa95b6acc7d52a463143951eb943a668e2fe1ab72e926b"
+    }
+  },
+  {
+    "id": "case_07",
+    "topic": "Fractal dimension",
+    "gpu": 3,
+    "port": 8003,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Fractal dimension",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_07/0-Fractal_dimension",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_07/0-Fractal_dimension/Fractal_dimension.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 8848,
+        "completion_tokens": 15276,
+        "total_tokens": 24124
+      },
+      "complete": true,
+      "seconds": 3225.5243461680075,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_07_Fractal dimension.mp4",
+      "sha256": "d833cb0ed0950bd2293b15c42d40ed91c0e25b58f2a69caab319cf968cf4b354"
+    }
+  },
+  {
+    "id": "case_05",
+    "topic": "Eigenvectors, eigenvalues, and eigenbasis",
+    "gpu": 2,
+    "port": 8002,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Eigenvectors, eigenvalues, and eigenbasis",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_05/0-Eigenvectors_eigenvalues_and_eigenbasis",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_05/0-Eigenvectors_eigenvalues_and_eigenbasis/Eigenvectors_eigenvalues_and_eigenbasis.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 8011,
+        "completion_tokens": 11078,
+        "total_tokens": 19089
+      },
+      "complete": true,
+      "seconds": 3558.6007145869953,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_05_Eigenvectors, eigenvalues, and eigenbasis.mp4",
+      "sha256": "d72915172dd34b2edbcda0fcc2d666b43ca16c2325fa88dd0159c34866158205"
+    }
+  },
+  {
+    "id": "case_08",
+    "topic": "Proof of Snell's law",
+    "gpu": 3,
+    "port": 8003,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Proof of Snell's law",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_08/0-Proof_of_Snells_law",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_08/0-Proof_of_Snells_law/Proof_of_Snells_law.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 7529,
+        "completion_tokens": 11656,
+        "total_tokens": 19185
+      },
+      "complete": true,
+      "seconds": 3651.027295844018,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_08_Proof of Snell's law.mp4",
+      "sha256": "faf6f3d2aaaa3bec242fd58f934c352f0adcc9896f8e612be93cf0893d8155c4"
+    }
+  },
+  {
+    "id": "case_06",
+    "topic": "Change of basis",
+    "gpu": 2,
+    "port": 8002,
+    "exit_code": 0,
+    "generation": {
+      "method": "Code2Video author Planner/Coder/Critic with local model substitution",
+      "topic": "Change of basis",
+      "source_commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+      "source_diff_sha256": "75eb0de5acf8de4244a50569bc0310e4192b5b0fb48a71f74c385631d93f54ef",
+      "substitutions": [
+        "Qwen3.8-27B for author API models",
+        "8 ordered frames for native video Critic input"
+      ],
+      "project_lesson_contract": false,
+      "project_narration_or_scoring": false,
+      "optional_assets": false,
+      "retry_limits": {
+        "fix": 3,
+        "regenerate": 3,
+        "critic": 2
+      },
+      "scope": "one author-listed topic; not original API-model or full MMMC benchmark replication",
+      "output_dir": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_06/0-Change_of_basis",
+      "video": "/root/video-teacher/research/code2video/Code2Video/src/CASES/author_case_06/0-Change_of_basis/Change_of_basis.mp4",
+      "sections": 5,
+      "rendered_sections": 5,
+      "token_usage": {
+        "prompt_tokens": 6928,
+        "completion_tokens": 12734,
+        "total_tokens": 19662
+      },
+      "complete": true,
+      "seconds": 4242.888544827991,
+      "decode_audit": {
+        "exit_code": 0,
+        "stderr": ""
+      }
+    },
+    "delivered": {
+      "path": "/root/video-teacher/delivery/最终视频/Code2Video_新增8题_20261110/case_06_Change of basis.mp4",
+      "sha256": "f35352cf2e6f80fd36cab0ff20806b2b6d7f6f09f64972d6d713d726dd7571b6"
+    }
+  }
+]
