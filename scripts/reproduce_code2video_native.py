@@ -35,10 +35,10 @@ class LoggedAPI:
             model='qwen3.8-27b', messages=[{'role': 'user', 'content': prompt}],
             max_tokens=max_tokens, temperature=.6,
             extra_body={'chat_template_kwargs': {'enable_thinking': False}})
+        (self.directory / (name + '.response.json')).write_text(result.model_dump_json(indent=2))
         if result.choices[0].finish_reason == 'length':
             raise RuntimeError('Local model output truncated; increase max_tokens')
         usage = result.usage.model_dump() if result.usage else {}
-        (self.directory / (name + '.response.json')).write_text(result.model_dump_json(indent=2))
         return result, usage
 
 
@@ -51,6 +51,7 @@ def main():
     p.add_argument('--resume', action='store_true')
     args = p.parse_args()
     args.out.mkdir(parents=True, exist_ok=args.resume)
+    os.environ['PATH'] = str(Path(sys.executable).parent) + os.pathsep + os.environ.get('PATH', '')
     os.environ['LOCAL_BASE_URL'] = f'http://127.0.0.1:{args.port}/v1'
     os.environ['LOCAL_MODEL'] = 'qwen3.8-27b'
     from agent import TeachingVideoAgent, RunConfig

@@ -6,7 +6,7 @@
 |---|---|---|---|
 | [TikZilla-8B-RL](https://huggingface.co/nllg/TikZilla-8B-RL) | 作者公开完整权重，原模型卡提示与采样配置，同一组六道教学题 | 原始响应带空 think 标签；精确提取 LaTeX 正文后 6/6 编译成功并生成 PNG | 六张均已检查，各有未满足的题目要求；编译成功不代表教学图正确 |
 | [DeTikZify v2.5 8B](https://github.com/potamides/DeTikZify) | 作者公开权重及作者代码，四张参考图转 TikZ | 4/4 编译成功并生成 PNG | 发现标签、结构与几何失真，不能作为合格重建 |
-| [Code2Video](https://github.com/showlab/Code2Video) | 作者 Planner/Coder/Critic 流程，API 模型替换为 Qwen3.8-27B | 当前运行中，作者题单的 Linear transformations and matrices | 尚无全片验收结论 |
+| [Code2Video](https://github.com/showlab/Code2Video) | 作者 Planner/Coder/Critic 流程，API 模型替换为 Qwen3.8-27B | 运行中断；已保存第 1、2、5 段优化视频，缺少第 3、4 段及最终合片 | 尚无全片验收结论 |
 
 ## TikZilla 的可复查结果
 
@@ -33,3 +33,14 @@
 本轮直接调用作者 GENERATE_VIDEO，保留其大纲、分镜、Coder、渲染与 Critic 流程；不接入本项目额外的 lesson contract、配音或评分逻辑。Qwen 替换作者 API 模型，Critic 使用八张有序视频抽帧替代原服务的原生视频输入；可选图标服务关闭，重试上限另行记录。上游运行补丁及源码差异会保留。不声称这是原 API 模型成绩，也不把无配音的作者流程成片当作本项目英文讲解视频验收通过。
 
 脚本：scripts/reproduce_tikzilla.py、scripts/compile_tikzilla_outputs.py、scripts/reproduce_detikzify.py、scripts/reproduce_code2video_native.py。完整本地运行目录位于 results/tikzilla_author_20261110、results/detikzify_author_20261110、results/code2video_native_20261110；日志位于 logs/reproduction_20261110。旧轮次未改写。
+
+## 续接与视频汇总（2026-11-10）
+
+续接核查未发现最终 report.json 或完整合片。日志最后记录在 03:33 UTC，不能继续标为正在运行。
+当前环境拒绝本地模型端口连接（Operation not permitted），因此尚未恢复模型生成，也未完成全片验收。
+
+全部已有视频已复制到 `delivery/all_generated_videos_20261110/`：1688 个文件，含 129 个非缓存视频及 1559 个渲染缓存片段。
+同目录 manifest.json 保存来源与 SHA-256；原件未修改。非缓存视频包括章节与测试，不能视为全部完整成片。
+运行 `python3 scripts/collect_generated_videos.py --out delivery/all_generated_videos_20261110` 可重新汇总；已有同名但内容改变的文件会报错，避免覆盖。
+
+GitHub 推送尝试失败：无法解析 github.com。未完成远端同步。
