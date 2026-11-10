@@ -6,7 +6,7 @@
 |---|---|---|---|
 | [TikZilla-8B-RL](https://huggingface.co/nllg/TikZilla-8B-RL) | 作者公开完整权重，原模型卡提示与采样配置，同一组六道教学题 | 原始响应带空 think 标签；精确提取 LaTeX 正文后 6/6 编译成功并生成 PNG | 六张均已检查，各有未满足的题目要求；编译成功不代表教学图正确 |
 | [DeTikZify v2.5 8B](https://github.com/potamides/DeTikZify) | 作者公开权重及作者代码，四张参考图转 TikZ | 4/4 编译成功并生成 PNG | 发现标签、结构与几何失真，不能作为合格重建 |
-| [Code2Video](https://github.com/showlab/Code2Video) | 作者 Planner/Coder/Critic 流程，API 模型替换为 Qwen3.8-27B | 运行中断；已保存第 1、2、5 段优化视频，缺少第 3、4 段及最终合片 | 尚无全片验收结论 |
+| [Code2Video](https://github.com/showlab/Code2Video) | 作者 Planner/Coder/Critic 流程，API 模型替换为 Qwen3.8-27B | 已恢复运行；复用第 1、2、5 段，修复第 3、4 段后合片 | 尚无全片验收结论 |
 
 ## TikZilla 的可复查结果
 
@@ -44,3 +44,10 @@
 运行 `python3 scripts/collect_generated_videos.py --out delivery/all_generated_videos_20261110` 可重新汇总；已有同名但内容改变的文件会报错，避免覆盖。
 
 GitHub 推送尝试失败：无法解析 github.com。未完成远端同步。
+
+### 访问恢复与续跑
+
+环境访问权限更新后，github.com DNS、GitHub 远端访问、GPU 及本地 Qwen 端口均恢复。
+提交 c4c798f 已成功推送，远端 main 已核对。此前网络阻塞记录为历史状态。
+已启动恢复运行，保存恢复前完整快照，复用第 1、2、5 段优化视频；由作者修复及 Critic 流程处理第 3、4 段。
+续跑日志：logs/reproduction_20261110/code2video_resume.log。仅在全部章节有输出时合片；完成与质量以最终报告及实际视频检查为准。

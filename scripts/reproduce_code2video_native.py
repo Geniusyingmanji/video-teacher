@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 from pathlib import Path
 import subprocess
 import sys
@@ -67,6 +68,10 @@ def main():
                     max_feedback_gen_code_tries=2, max_mllm_fix_bugs_tries=2,
                     feedback_rounds=2)
     folder = SOURCE / 'src/CASES' / args.out.name
+    backup = None
+    if args.resume and folder.exists():
+        backup = args.out / ('resume_snapshot_' + uuid.uuid4().hex)
+        shutil.copytree(folder, backup)
     report = {'method': 'Code2Video author Planner/Coder/Critic with local model substitution',
               'topic': args.topic, 'source_commit': subprocess.check_output(
                   ['git', '-C', str(SOURCE), 'rev-parse', 'HEAD'], text=True).strip(),
@@ -84,7 +89,27 @@ def main():
     try:
         instance = TeachingVideoAgent(0, args.topic, folder=folder, cfg=cfg)
         report['output_dir'] = str(instance.output_dir)
-        video = instance.GENERATE_VIDEO()
+        if args.resume:
+            instance.generate_outline()
+            instance.generate_storyboard()
+            reused = []
+            for section in instance.sections:
+                optimized = instance.output_dir / 'optimized_videos' / f'{section.id}_optimized.mp4'
+                if optimized.is_file():
+                    instance.section_videos[section.id] = str(optimized)
+                    reused.append(section.id)
+                    continue
+                code = instance.output_dir / f'{section.id}.py'
+                if code.is_file():
+                    instance.section_codes[section.id] = code.read_text()
+                else:
+                    instance.generate_section_code(section)
+                instance.render_section(section)
+            report['reused_sections'] = reused
+            report['resume_snapshot'] = str(backup) if backup else None
+            video = instance.merge_videos() if len(instance.section_videos) == len(instance.sections) else None
+        else:
+            video = instance.GENERATE_VIDEO()
         report.update(video=video, sections=len(instance.sections), rendered_sections=len(instance.section_videos),
                       token_usage=instance.token_usage,
                       complete=bool(video and Path(video).is_file() and instance.sections and
