@@ -1,0 +1,27 @@
+<think>
+
+</think>
+
+\documentclass[tikz]{standalone}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows.meta, decorations.pathreplacing, positioning, shapes, calc}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \draw (-3,0) -- (3,0);
+    \draw (0,0) arc (180:170:2);
+    \draw (0,0) arc (180:190:2);
+    \draw[->] (-2.5,0.5) -- (0.5,0.5);
+    \draw[->] (-2.5,0.25) -- (0.5,0.25);
+    \draw[->] (-2.5,0) -- (0.5,0);
+    \draw[->] (0.5,0.5) -- (2.5,0);
+    \draw[->] (0.5,0.25) -- (2.5,0);
+    \draw[->] (0.5,0) -- (2.5,0);
+    \node at (0,-0.5) {Convex Lens};
+    \node at (2.5,-0.3) {F};
+\end{tikzpicture}
+
+\end{document}

@@ -1,0 +1,14 @@
+{
+  "case": {
+    "id": "cantor",
+    "source_case": "math_high_02",
+    "text": "A precise educational Cantor set construction diagram on a white background. Four aligned rows show stages n=0,1,2,3 of the unit interval. Each next stage removes the open middle third of every remaining interval. Draw exactly 1,2,4,8 equal-length segments respectively, with lengths 1, 1/3, 1/9, 1/27. Label remaining total length (2/3)^n and keep the endpoints aligned across stages.",
+    "checks": [
+      "segment counts 1 2 4 8",
+      "correct middle-third positions and lengths",
+      "remaining measure formula correct"
+    ]
+  },
+  "actual_prompt": "Generate a complete LaTeX document that contains a TikZ figure according to the following requirements:\nA precise educational Cantor set construction diagram on a white background. Four aligned rows show stages n=0,1,2,3 of the unit interval. Each next stage removes the open middle third of every remaining interval. Draw exactly 1,2,4,8 equal-length segments respectively, with lengths 1, 1/3, 1/9, 1/27. Label remaining total length (2/3)^n and keep the endpoints aligned across stages.\nWrap your code using \\documentclass[tikz]{standalone}, and include \\begin{document}...\\end{document}. Only output valid LaTeX code with no extra text.",
+  "formatted_input": "<|im_start|>user\nGenerate a complete LaTeX document that contains a TikZ figure according to the following requirements:\nA precise educational Cantor set construction diagram on a white background. Four aligned rows show stages n=0,1,2,3 of the unit interval. Each next stage removes the open middle third of every remaining interval. Draw exactly 1,2,4,8 equal-length segments respectively, with lengths 1, 1/3, 1/9, 1/27. Label remaining total length (2/3)^n and keep the endpoints aligned across stages.\nWrap your code using \\documentclass[tikz]{standalone}, and include \\begin{document}...\\end{document}. Only output valid LaTeX code with no extra text.<|im_end|>\n<|im_start|>assistant\n"
+}

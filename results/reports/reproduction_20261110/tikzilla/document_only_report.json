@@ -1,0 +1,70 @@
+{
+  "cases": [
+    {
+      "id": "bubble_sort",
+      "raw_sha256": "70e77bfefcbf4a69b61bdc5fe41437dc81c5762242636d0da184411e4d9b2c3e",
+      "operation": "extract exact documentclass through end{document} substring; no code fixes",
+      "content_review": "pending",
+      "compile_status": 0,
+      "rasterizable": true,
+      "has_content": true,
+      "prefix_removed": "<think>\n\n</think>\n\n",
+      "suffix_removed": ""
+    },
+    {
+      "id": "cantor",
+      "raw_sha256": "45e815edce03e3d423333820be9105286181765f772a25b3a08d5cbc27c2de2c",
+      "operation": "extract exact documentclass through end{document} substring; no code fixes",
+      "content_review": "pending",
+      "compile_status": 0,
+      "rasterizable": true,
+      "has_content": true,
+      "prefix_removed": "<think>\n\n</think>\n\n",
+      "suffix_removed": ""
+    },
+    {
+      "id": "convection",
+      "raw_sha256": "93f3b64e7421d59172459bc4f4205ab239a5909a3dbf55bfb68be931dd079091",
+      "operation": "extract exact documentclass through end{document} substring; no code fixes",
+      "content_review": "pending",
+      "compile_status": 0,
+      "rasterizable": true,
+      "has_content": true,
+      "prefix_removed": "<think>\n\n</think>\n\n",
+      "suffix_removed": ""
+    },
+    {
+      "id": "lens",
+      "raw_sha256": "9ca270056b1f05da05f8bff390faf90da471e5c1b26393464cd5baa29f96a7b9",
+      "operation": "extract exact documentclass through end{document} substring; no code fixes",
+      "content_review": "pending",
+      "compile_status": 0,
+      "rasterizable": true,
+      "has_content": true,
+      "prefix_removed": "<think>\n\n</think>\n\n",
+      "suffix_removed": ""
+    },
+    {
+      "id": "nephron",
+      "raw_sha256": "33586ce9db2b8a80ac10604ced9c3e91cc0ccd8522a5be5c9cb1e1bb313658e8",
+      "operation": "extract exact documentclass through end{document} substring; no code fixes",
+      "content_review": "pending",
+      "compile_status": 0,
+      "rasterizable": true,
+      "has_content": true,
+      "prefix_removed": "<think>\n\n</think>\n\n",
+      "suffix_removed": ""
+    },
+    {
+      "id": "triangle",
+      "raw_sha256": "d968e27a4ea55a8b02fb6665a7ce9572d723fe7ae134234403a2718d747f49a1",
+      "operation": "extract exact documentclass through end{document} substring; no code fixes",
+      "content_review": "pending",
+      "compile_status": 0,
+      "rasterizable": true,
+      "has_content": true,
+      "prefix_removed": "<think>\n\n</think>\n\n",
+      "suffix_removed": ""
+    }
+  ]
+}

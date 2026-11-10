@@ -1,0 +1,53 @@
+{
+  "scope": "manual visual review of all six actual PNGs and generated source; no independent human calibration",
+  "results": [
+    {
+      "id": "triangle",
+      "content_accepted": false,
+      "findings": [
+        "Rendered figure is dominated by a large block copying the prompt; the triangle and copied sectors are largely cropped. The generated source does define a closed triangle.",
+        "Copied sectors have different vertices and do not demonstrate a straight angle; triangle vertex labels are misplaced."
+      ]
+    },
+    {
+      "id": "lens",
+      "content_accepted": false,
+      "findings": [
+        "Three incoming parallel rays and outgoing rays converging at F are present.",
+        "Lens arcs and ray refraction positions are misaligned, and focal length f is omitted."
+      ]
+    },
+    {
+      "id": "bubble_sort",
+      "content_accepted": false,
+      "findings": [
+        "The three requested arrays appear in the correct order.",
+        "Equal-sized boxes and arrows marking the two specific adjacent swaps are absent; arrows connect entire rows instead."
+      ]
+    },
+    {
+      "id": "convection",
+      "content_accepted": false,
+      "findings": [
+        "Container, heater and red/blue paths appear.",
+        "The red and blue paths are disconnected; labels for rising/sinking do not match the requested left/right circulation."
+      ]
+    },
+    {
+      "id": "cantor",
+      "content_accepted": false,
+      "findings": [
+        "Four stage labels appear.",
+        "Intervals remain continuous lines with tick marks rather than 1,2,4,8 segments; remaining lengths 8/9 and 26/27 are incorrect for stages 2 and 3."
+      ]
+    },
+    {
+      "id": "nephron",
+      "content_accepted": false,
+      "findings": [
+        "Structure names appear in approximately the requested sequence.",
+        "A horizontal label chain replaces the U-shaped connected tubule; there is no distinct capillary path or properly grounded exchange arrows."
+      ]
+    }
+  ]
+}

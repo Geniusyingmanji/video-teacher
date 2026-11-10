@@ -1,0 +1,31 @@
+{
+  "checked_utc": "2026-11-10T03:12:03.537848+00:00",
+  "repositories": {
+    "DeTikZify": {
+      "url": "https://github.com/potamides/DeTikZify",
+      "commit": "13ac429925f0125ce5117676450134f400499d0d"
+    },
+    "Code2Video": {
+      "url": "https://github.com/showlab/Code2Video",
+      "commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f"
+    },
+    "DiagramAgent": {
+      "url": "https://github.com/DiagramAgent/DiagramAgent_official",
+      "commit": "71b8b7948bf60ed746811d3d81af8dc603990cb7"
+    }
+  },
+  "detikzify_model": {
+    "repo": "nllg/detikzify-v2.5-8b",
+    "revision": "f17cd7872bb23879ccf76fda90e56e21b8ee4e51",
+    "gated": false
+  },
+  "access_rechecks": {
+    "meta-llama/Llama-3.2-1B": "GatedRepoError HTTP 401; no cached Hugging Face token",
+    "DiagramAgent/Code_Agent": "GatedRepoError HTTP 401; no cached Hugging Face token"
+  },
+  "user_model_instruction": "Use local Qwen for API models; author specialized checkpoints remain separate experiments",
+  "allocation": {
+    "GPU0": "Code2Video author flow with Qwen",
+    "GPU3": "temporarily replace idle endpoint 8003 with author DeTikZify; restore after inference"
+  }
+}

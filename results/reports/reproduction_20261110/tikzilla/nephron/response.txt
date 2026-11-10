@@ -1,0 +1,44 @@
+<think>
+
+</think>
+
+\documentclass[tikz]{standalone}
+
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usetikzlibrary{arrows.meta, decorations.pathreplacing, positioning, shapes, calc}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \draw (0,0) circle (0.5cm);
+    \node at (0,0) {Glomerulus};
+    \draw (0.5,0) -- (1.5,0);
+    \node at (2.5,0) {Bowman's Capsule};
+    \draw (3.5,0) -- (5,0);
+    \node at (6,0) {Proximal Tubule};
+    \draw (7,0) -- (8.5,0);
+    \node at (9.5,0) {Descending Limb};
+    \draw (10.5,0) .. controls (10.7,1) and (11.3,1) .. (11.5,0);
+    \node at (12,0) {U-shaped Loop};
+    \node at (12,-0.5) {of Henle};
+    \draw (11.5,0) -- (13,0);
+    \node at (14,0) {Ascending Limb};
+    \draw (15,0) -- (16.5,0);
+    \node at (17.5,0) {Distal Tubule};
+    \draw (18.5,0) -- (19.5,0);
+    \node at (20.5,0) {Collecting duct};
+    \draw[->] (1,1) -- (1.5,0.5);
+    \node at (1,1.2) {Filtrate};
+    \draw[->] (6.75,-1) -- (6.75,-0.5);
+    \draw[->] (6.75,-1.5) -- (6.75,-2);
+    \node at (6.75,-1.75) {Reabsorption};
+    \node at (6.75,-2.5) {from tubule to blood};
+    \draw[->] (17.5,-1) -- (17.5,-0.5);
+    \draw[->] (17.5,-1.5) -- (17.5,-2);
+    \node at (17.5,-1.75) {Secretion};
+    \node at (17.5,-2.5) {from blood to tubule};
+    \node at (9,-3) {Simplified educational nephron, not medical treatment guide};
+\end{tikzpicture}
+
+\end{document}
