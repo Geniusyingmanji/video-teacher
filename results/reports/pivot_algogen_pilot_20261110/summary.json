@@ -1,0 +1,296 @@
+[
+  {
+    "method": "pivot",
+    "source": "/root/research/PIVOT",
+    "commit": "ffc28ae3d05e2f2f2c3e58dc38e9aca7f1ac1d0b",
+    "source_patch_sha256": "e8b1a8353741d5379678e1f4acf4d1d3a1ee50c7693d4e16595129e91daf84f2",
+    "adapter_sha256": "87a5b2eda8574d6d0c6e035da7197a90c5c9818d11ed2513821de43fa7bc6083",
+    "model_substitution": "All author chat models replaced by local Qwen3.8-27B; four replicas",
+    "inference_adaptation": "thinking disabled; omitted completion budget becomes 8192; existing budgets retained",
+    "scope": "one author-pipeline inference pilot; not original-model or full benchmark reproduction",
+    "dependency_fix": "Author Manim 0.19.1 requires NumPy>=2; replace conflicting NumPy 1.26.4 pin with 2.2.6. edge-tts 7.2.8 returned 403; use verified 7.3.1.",
+    "command": [
+      "/root/pivot-env/bin/python",
+      "-u",
+      "-m",
+      "video_tutor.cli",
+      "--only",
+      "The determinant",
+      "--language",
+      "en",
+      "--report",
+      "/root/video-teacher/results/pivot_algogen_pilot_20261110/pivot/author_report.json"
+    ],
+    "dependencies": {
+      "manim": "0.19.1",
+      "numpy": "2.2.6",
+      "openai": "1.61.1",
+      "pillow": "11.3.0",
+      "scipy": "1.17.1"
+    },
+    "exit_code": 0,
+    "seconds": 476.6384441870032,
+    "videos": [],
+    "rendered_video": false,
+    "quality_accepted": false,
+    "acceptance_status": "render/decode pilot only; full teaching-quality review still required",
+    "author_sessions": [
+      {
+        "path": "/root/video-teacher/results/pivot_algogen_pilot_20261110/pivot/outputs/en/The_determinant/session.json",
+        "data": {
+          "session_id": "en_The_determinant",
+          "topic": "The determinant",
+          "level": "Basic",
+          "state": "watching_video",
+          "script": {
+            "title": "Understanding the Determinant of a 2x2 Matrix",
+            "description": "A visual introduction to the determinant, explaining its geometric meaning as signed area and demonstrating the calculation formula with a worked example.",
+            "total_duration": 75,
+            "level": "Basic",
+            "learning_objectives": [
+              "Explain the geometric interpretation of the determinant as signed area.",
+              "Apply the formula ad - bc to calculate the determinant of a 2x2 matrix."
+            ],
+            "prerequisite": "Basic understanding of 2D vectors and coordinate axes",
+            "language": "en",
+            "shots": [
+              {
+                "shot_number": 1,
+                "pedagogical_role": "objective",
+                "title": "Learning Objective",
+                "content": "Title card 'The Determinant' appears in center. Below it, text lists: '1. Understand geometric meaning' and '2. Calculate using ad - bc'. Background is dark blue with subtle grid lines.",
+                "narration": "Welcome to this lesson on the determinant. By the end of this video, you will be able to explain what the determinant represents geometrically and apply the standard formula to calculate it for any two-by-two matrix.",
+                "key_elements": [
+                  "Title: The Determinant",
+                  "Objective 1: Geometric Meaning",
+                  "Objective 2: Calculation Formula"
+                ],
+                "duration": 12
+              },
+              {
+                "shot_number": 2,
+                "pedagogical_role": "prerequisite",
+                "title": "Matrix as Vectors",
+                "content": "A 2x2 matrix [[a, b], [c, d]] is shown. Arrows transform the columns into vectors v1=(a,c) and v2=(b,d) originating from the origin on a Cartesian plane.",
+                "narration": "First, let's look at a two-by-two matrix. You can view its columns as two vectors in two-dimensional space. These two vectors define a transformation that maps the standard basis vectors to new positions.",
+                "key_elements": [
+                  "Matrix [[a, b], [c, d]]",
+                  "Vector v1",
+                  "Vector v2",
+                  "Origin"
+                ],
+                "duration": 12
+              },
+              {
+                "shot_number": 3,
+                "pedagogical_role": "explanation",
+                "title": "Geometric Interpretation",
+                "content": "A parallelogram is formed by the two vectors. The area inside is shaded orange. A small counter-clockwise arrow indicates positive orientation. Text 'Signed Area' appears.",
+                "narration": "The determinant represents the signed area of the parallelogram formed by these two vectors. If the vectors are linearly dependent, the area is zero. The sign tells us the orientation of the basis transformation.",
+                "key_elements": [
+                  "Parallelogram shape",
+                  "Shaded Area",
+                  "Orientation Arrow",
+                  "Label: Signed Area"
+                ],
+                "duration": 12
+              },
+              {
+                "shot_number": 4,
+                "pedagogical_role": "explanation",
+                "title": "The Formula",
+                "content": "The matrix fades, leaving the formula det(A) = ad - bc. The variables a, b, c, d are color-coded to match their positions in the matrix diagram which reappears briefly.",
+                "narration": "To calculate this area, we use the formula: a times d minus b times c. Here, a and d are the diagonal elements, while b and c are the off-diagonal elements. This algebraic expression gives us the precise numerical value of the signed area.",
+                "key_elements": [
+                  "Formula: ad - bc",
+                  "Color-coded variables",
+                  "Matrix reference"
+                ],
+                "duration": 12
+              },
+              {
+                "shot_number": 5,
+                "pedagogical_role": "worked_example",
+                "title": "Worked Example Setup",
+                "content": "A specific matrix [[2, 1], [3, 4]] is displayed. The corresponding vectors are drawn on the plane. The parallelogram is shaded to show the region of interest.",
+                "narration": "Let's apply this to a specific example. Consider the matrix with rows two, one, and three, four. We identify a as two, b as one, c as three, and d as four. We will now calculate the determinant for this specific case.",
+                "key_elements": [
+                  "Matrix [[2, 1], [3, 4]]",
+                  "Vectors on plane",
+                  "Shaded Parallelogram"
+                ],
+                "duration": 12
+              },
+              {
+                "shot_number": 6,
+                "pedagogical_role": "worked_example",
+                "title": "Calculation Steps",
+                "content": "Step-by-step calculation appears: (2*4) - (1*3). First term 8 is highlighted in green. Second term 3 is highlighted in red. Subtraction 8 - 3 = 5 is shown.",
+                "narration": "We multiply the diagonal elements: two times four equals eight. Then we multiply the off-diagonal elements: one times three equals three. Subtracting the second product from the first, we get eight minus three, which equals five. This is our determinant.",
+                "key_elements": [
+                  "Step 1: 2 * 4 = 8",
+                  "Step 2: 1 * 3 = 3",
+                  "Final: 8 - 3 = 5"
+                ],
+                "duration": 15
+              }
+            ],
+            "manim_pseudocode": "Scene 1: Title animation with fade-in text. Scene 2: Matrix object morphs into vectors using morphing animations. Scene 3: Parallelogram polygon created from vector endpoints, filled with color, orientation arrow drawn. Scene 4: Formula written using WriteTex, color coding via set_color. Scene 5: Specific matrix values inserted, vectors updated, area shaded. Scene 6: Calculation steps appear sequentially with highlights, final result boxed."
+          },
+          "video_path": null,
+          "audio_paths": null,
+          "questions": [
+            {
+              "id": 1,
+              "type": "multiple_choice",
+              "question": "Consider a 2x2 matrix [[-7, 10], [8, -9]]. Using the determinant formula det(A) = ad - bc, what is the value of the determinant?",
+              "options": [
+                "A. 17",
+                "B. -17",
+                "C. 15",
+                "D. -15"
+              ],
+              "correct_answer": "B",
+              "explanation": "For the matrix [[-7, 10], [8, -9]], the elements are a = -7, b = 10, c = 8, and d = -9. Using the formula det(A) = ad - bc, we calculate (-7 * -9) - (10 * 8). The product ad is 63, and the product bc is 80. Subtracting these values gives 63 - 80 = -17.",
+              "difficulty": "medium"
+            }
+          ],
+          "quiz_results": null,
+          "advanced_session": null,
+          "explanation_sessions": null,
+          "created_at": 1794297974.8542032,
+          "updated_at": 1794298451.0172284,
+          "root_dir": "/root/video-teacher/results/pivot_algogen_pilot_20261110/pivot/outputs/en/The_determinant",
+          "kind": "main",
+          "language": "en"
+        }
+      }
+    ]
+  },
+  {
+    "method": "algogen",
+    "source": "/root/research/ALGOGEN-lab",
+    "commit": "1bb093c76499135ecf54fc8030219a4e7ee4424c",
+    "source_patch_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "adapter_sha256": "87a5b2eda8574d6d0c6e035da7197a90c5c9818d11ed2513821de43fa7bc6083",
+    "model_substitution": "All author chat models replaced by local Qwen3.8-27B; four replicas",
+    "inference_adaptation": "thinking disabled; omitted completion budget becomes 8192; existing budgets retained",
+    "scope": "one author-pipeline inference pilot; not original-model or full benchmark reproduction",
+    "author_input": "example/sorting_leetcode_179_seed_02.txt (Largest Number)",
+    "command": [
+      "/root/algogen-env/bin/python",
+      "-u",
+      "run_pipeline.py",
+      "--only",
+      "sorting_leetcode_179_seed_02",
+      "--case-root",
+      "/root/video-teacher/results/pivot_algogen_pilot_20261110/algogen/outputs"
+    ],
+    "dependencies": {
+      "manim": "0.18.1",
+      "numpy": "1.26.4",
+      "openai": "1.96.1",
+      "pillow": "12.0.0",
+      "scipy": "1.17.1"
+    },
+    "exit_code": 0,
+    "seconds": 691.1468612499884,
+    "videos": [
+      {
+        "source": "/root/video-teacher/results/pivot_algogen_pilot_20261110/algogen/outputs/sorting_leetcode_179_seed_02/llm_video.mp4",
+        "probe": {
+          "streams": [
+            {
+              "index": 0,
+              "codec_name": "h264",
+              "codec_long_name": "H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10",
+              "profile": "High",
+              "codec_type": "video",
+              "codec_tag_string": "avc1",
+              "codec_tag": "0x31637661",
+              "width": 1920,
+              "height": 1080,
+              "coded_width": 1920,
+              "coded_height": 1080,
+              "closed_captions": 0,
+              "film_grain": 0,
+              "has_b_frames": 2,
+              "pix_fmt": "yuv420p",
+              "level": 42,
+              "chroma_location": "left",
+              "field_order": "progressive",
+              "refs": 1,
+              "is_avc": "true",
+              "nal_length_size": "4",
+              "id": "0x1",
+              "r_frame_rate": "60/1",
+              "avg_frame_rate": "60/1",
+              "time_base": "1/15360",
+              "start_pts": 0,
+              "start_time": "0.000000",
+              "duration_ts": 45312,
+              "duration": "2.950000",
+              "bit_rate": "862519",
+              "bits_per_raw_sample": "8",
+              "nb_frames": "177",
+              "extradata_size": 47,
+              "disposition": {
+                "default": 1,
+                "dub": 0,
+                "original": 0,
+                "comment": 0,
+                "lyrics": 0,
+                "karaoke": 0,
+                "forced": 0,
+                "hearing_impaired": 0,
+                "visual_impaired": 0,
+                "clean_effects": 0,
+                "attached_pic": 0,
+                "timed_thumbnails": 0,
+                "non_diegetic": 0,
+                "captions": 0,
+                "descriptions": 0,
+                "metadata": 0,
+                "dependent": 0,
+                "still_image": 0
+              },
+              "tags": {
+                "language": "und",
+                "handler_name": "VideoHandler",
+                "vendor_id": "[0][0][0][0]",
+                "encoder": "Lavc60.31.102 libx264"
+              }
+            }
+          ],
+          "format": {
+            "filename": "/root/video-teacher/results/pivot_algogen_pilot_20261110/algogen/outputs/sorting_leetcode_179_seed_02/llm_video.mp4",
+            "nb_streams": 1,
+            "nb_programs": 0,
+            "format_name": "mov,mp4,m4a,3gp,3g2,mj2",
+            "format_long_name": "QuickTime / MOV",
+            "start_time": "0.000000",
+            "duration": "2.950000",
+            "size": "321043",
+            "bit_rate": "870625",
+            "probe_score": 100,
+            "tags": {
+              "major_brand": "isom",
+              "minor_version": "512",
+              "compatible_brands": "isomiso2avc1mp41",
+              "encoder": "Lavf60.16.100",
+              "comment": "Rendered with Manim Community v0.18.1"
+            }
+          }
+        },
+        "decode_exit": 0,
+        "decode_error": "",
+        "sha256": "2d4d95b0f8a428cb5463f08a448b46f9b62fa4a7e88862289ad78ad779e50b89",
+        "delivered": "/root/video-teacher/delivery/最终视频/ALGOGEN_试跑/最大数排序.mp4"
+      }
+    ],
+    "rendered_video": true,
+    "quality_accepted": false,
+    "acceptance_status": "render/decode pilot only; full teaching-quality review still required",
+    "author_aes_completed": true
+  }
+]
