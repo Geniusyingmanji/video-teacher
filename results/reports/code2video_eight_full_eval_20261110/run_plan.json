@@ -1,0 +1,19 @@
+{
+  "policy": "quality-v12",
+  "gpus": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "ports": [
+    8000,
+    8001,
+    8002,
+    8003
+  ],
+  "workers": 8,
+  "cases": 8,
+  "narration_required": true,
+  "notes": "Unknown remains null; eight windows or more per video. Do not change original videos."
+}

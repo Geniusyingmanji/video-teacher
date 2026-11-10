@@ -1,0 +1,9 @@
+id,topic,video_quality,teaching_quality,presentation,total,passed,all_windows_reviewed
+case_01,向量基础,63.8889,48.3333,25.0,,False,True
+case_02,点积与对偶,44.4445,36.25,16.6667,,False,True
+case_03,行列式,80.5555,55.0,25.0,,False,True
+case_04,矩阵乘法,43.75,41.25,4.1667,,False,True
+case_05,特征向量与特征值,75.6944,59.1667,29.1667,,False,True
+case_06,基变换,50.0,48.3333,29.1667,,False,True
+case_07,分形维数,58.3333,54.1667,50.0,,False,True
+case_08,斯涅尔定律,37.5,32.9167,8.3333,,False,True

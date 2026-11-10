@@ -1,0 +1,274 @@
+[
+  {
+    "id": "case_01",
+    "topic": "向量基础",
+    "video_quality": 63.8889,
+    "teaching_quality": 48.3333,
+    "total": null,
+    "presentation": 25.0,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 8,
+    "window_count": 8,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 62.5,
+      "temporal_consistency": 37.5,
+      "signal_quality": 91.6667,
+      "conceptual_correctness": 58.3333,
+      "narrative_structure": 45.8333,
+      "pedagogical_clarity": 41.6667,
+      "didactic_affordances": 37.5,
+      "audience_appropriateness": 58.3333
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_02",
+    "topic": "点积与对偶",
+    "video_quality": 44.4445,
+    "teaching_quality": 36.25,
+    "total": null,
+    "presentation": 16.6667,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 9,
+    "window_count": 9,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 37.5,
+      "temporal_consistency": 54.1667,
+      "signal_quality": 41.6667,
+      "conceptual_correctness": 37.5,
+      "narrative_structure": 45.8333,
+      "pedagogical_clarity": 31.25,
+      "didactic_affordances": 29.1667,
+      "audience_appropriateness": 37.5
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_03",
+    "topic": "行列式",
+    "video_quality": 80.5555,
+    "teaching_quality": 55.0,
+    "total": null,
+    "presentation": 25.0,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 9,
+    "window_count": 9,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 70.8333,
+      "temporal_consistency": 75.0,
+      "signal_quality": 95.8333,
+      "conceptual_correctness": 66.6667,
+      "narrative_structure": 70.8333,
+      "pedagogical_clarity": 41.6667,
+      "didactic_affordances": 37.5,
+      "audience_appropriateness": 58.3333
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_04",
+    "topic": "矩阵乘法",
+    "video_quality": 43.75,
+    "teaching_quality": 41.25,
+    "total": null,
+    "presentation": 4.1667,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 10,
+    "window_count": 10,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 33.3333,
+      "temporal_consistency": 25.0,
+      "signal_quality": 72.9167,
+      "conceptual_correctness": 41.6667,
+      "narrative_structure": 52.0833,
+      "pedagogical_clarity": 29.1667,
+      "didactic_affordances": 35.4167,
+      "audience_appropriateness": 47.9167
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_05",
+    "topic": "特征向量与特征值",
+    "video_quality": 75.6944,
+    "teaching_quality": 59.1667,
+    "total": null,
+    "presentation": 29.1667,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 7,
+    "window_count": 7,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 60.4167,
+      "temporal_consistency": 83.3333,
+      "signal_quality": 83.3333,
+      "conceptual_correctness": 66.6667,
+      "narrative_structure": 58.3333,
+      "pedagogical_clarity": 29.1667,
+      "didactic_affordances": 45.8333,
+      "audience_appropriateness": 95.8333
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_06",
+    "topic": "基变换",
+    "video_quality": 50.0,
+    "teaching_quality": 48.3333,
+    "total": null,
+    "presentation": 29.1667,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 7,
+    "window_count": 7,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 45.8333,
+      "temporal_consistency": 45.8333,
+      "signal_quality": 58.3333,
+      "conceptual_correctness": 47.9167,
+      "narrative_structure": 54.1667,
+      "pedagogical_clarity": 39.5833,
+      "didactic_affordances": 54.1667,
+      "audience_appropriateness": 45.8333
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_07",
+    "topic": "分形维数",
+    "video_quality": 58.3333,
+    "teaching_quality": 54.1667,
+    "total": null,
+    "presentation": 50.0,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 10,
+    "window_count": 10,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 37.5,
+      "temporal_consistency": 50.0,
+      "signal_quality": 87.5,
+      "conceptual_correctness": 62.5,
+      "narrative_structure": 58.3333,
+      "pedagogical_clarity": 54.1667,
+      "didactic_affordances": 58.3333,
+      "audience_appropriateness": 37.5
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  },
+  {
+    "id": "case_08",
+    "topic": "斯涅尔定律",
+    "video_quality": 37.5,
+    "teaching_quality": 32.9167,
+    "total": null,
+    "presentation": 8.3333,
+    "passed": false,
+    "all_windows_reviewed": true,
+    "reviewed_windows": 9,
+    "window_count": 9,
+    "audio_detected": false,
+    "errors": [
+      "speech_transcription_failed"
+    ],
+    "scoring_errors": [
+      "spoken_teaching_unverified"
+    ],
+    "axes": {
+      "visual_quality": 8.3333,
+      "temporal_consistency": 33.3333,
+      "signal_quality": 70.8333,
+      "conceptual_correctness": 50.0,
+      "narrative_structure": 52.0833,
+      "pedagogical_clarity": 25.0,
+      "didactic_affordances": 22.9167,
+      "audience_appropriateness": 14.5833
+    },
+    "acceptance_failures": [
+      "task_completion_not_accepted",
+      "instructional_presentation_not_accepted",
+      "narration_review_unverified"
+    ]
+  }
+]
