@@ -109,7 +109,10 @@ def attach(video,contract,output,api=None):
             slot=chapter['end_s']-chapter['start_s']
             raw=output/f'chapter_{index:03}.mp3'
             tempo = 1.
-            for attempt in range(5 if draft else 3):
+            # Measured voice calibration may need several steps for numbers and
+            # formula-heavy scripts. Keep strict timing checks on every attempt.
+            max_synthesis_attempts = 6
+            for attempt in range(max_synthesis_attempts):
                 asyncio.run(synthesize(text,voice,raw))
                 samples=pcm(raw);status=fit_status(samples,slot)
                 if status=='fits':break
@@ -118,7 +121,7 @@ def attach(video,contract,output,api=None):
                     samples, tempo = fit_draft_speech(samples, slot)
                     delivery_warnings.append(f'{chapter["id"]}: speech tempo adjusted by {tempo:.3f}x')
                     break
-                if attempt==(4 if draft else 2) or api is None:raise ValueError(f'chapter {chapter["id"]} speech {status}: {len(samples)/RATE:.2f}s for {slot}s')
+                if attempt == max_synthesis_attempts-1 or api is None:raise ValueError(f'chapter {chapter["id"]} speech {status}: {len(samples)/RATE:.2f}s for {slot}s')
                 text=repair_text(api,{**chapter,'narration':text},len(samples)/RATE,status,language)
             start=round((chapter['start_s']+.15)*RATE);end=start+len(samples)
             if end>round(chapter['end_s']*RATE) or end>len(mixed):raise ValueError('speech crosses its chapter boundary')

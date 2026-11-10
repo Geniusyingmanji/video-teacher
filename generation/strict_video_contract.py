@@ -67,10 +67,10 @@ def make_contract(case: dict, source_image: Path | None = None, generation_profi
 
 
 def contract_text(contract: dict) -> str:
-    from generation.repair_feedback import compact
+    from generation.repair_feedback import bounded_feedback
     current = dict(contract)
     if 'quality_feedback' in current:
-        current['quality_feedback'] = compact(current['quality_feedback'])
+        current['quality_feedback'] = bounded_feedback(current['quality_feedback'])
     draft = ('\nDELIVERY PRIORITY: Produce a working narrated video first. Layout, label size, coverage metadata and small timing deviations are review warnings. '
              'Preserve the actual task and explain it in English. Do not spend output on timing scratch-work. '
              'Up to 25% authored timing deviation is accepted and normalized by the renderer.\n') if current.get('generation_profile') == 'draft' else ''
@@ -284,6 +284,7 @@ def install_prompts(agent_module, contract: dict):
 class ContractAPI:
     contract: dict
     output: Path
+    include_render_diagnostics: bool = True
 
     def __call__(self, prompt, max_tokens=4096):
         from openai import OpenAI
@@ -291,7 +292,7 @@ class ContractAPI:
         storyboard = self.output / 'storyboard.json'
         if storyboard.exists():
             current['allowed_source_edit_regions'] = json.loads(storyboard.read_text()).get('source_edit_regions', [])
-        from generation.repair_feedback import compact
+        from generation.repair_feedback import bounded_feedback
         from generation.prompt_budget import request_budget
         text = str(prompt)
         from generation.lesson_codegen import is_code_request
@@ -302,8 +303,8 @@ class ContractAPI:
         if 'AUTHORITATIVE TASK CONTRACT' not in text:
             text += contract_text(current)
         diagnostics = self.output / 'strict_diagnostics.json'
-        if diagnostics.exists():
-            text += '\nPREVIOUS ACTUAL RENDER DIAGNOSTICS (fix their cause, never widen target boxes):\n' + json.dumps(compact(json.loads(diagnostics.read_text())), ensure_ascii=False)
+        if self.include_render_diagnostics and diagnostics.exists():
+            text += '\nPREVIOUS ACTUAL RENDER DIAGNOSTICS (historical evidence; fix their cause, never widen target boxes):\n' + json.dumps(bounded_feedback(json.loads(diagnostics.read_text()), max_chars=6000), ensure_ascii=False)
         content = [{'type': 'text', 'text': text}]
         if current.get('source_image'):
             data = base64.b64encode(Path(current['source_image']).read_bytes()).decode()
@@ -359,7 +360,10 @@ class ContractAPI:
         messages=[{'role':'user','content':content}]
         for attempt in range(3):
             result = OpenAI(base_url=os.environ.get('LOCAL_BASE_URL', 'http://127.0.0.1:8000/v1'),
-                            api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=1200 if code_request else 600, max_retries=1).chat.completions.create(
+                            # Two concurrent requests share roughly 26 tokens/s.
+                            # A 16K code response can exceed the old 20-minute
+                            # read timeout even while the server is progressing.
+                            api_key=os.environ.get('LOCAL_API_KEY', 'local'), timeout=2400 if code_request else 600, max_retries=1).chat.completions.create(
                 model=os.environ.get('LOCAL_MODEL', 'qwen3.8-27b'),
                 messages=messages, max_tokens=max_tokens, temperature=.3,
                 extra_body={'chat_template_kwargs': {'enable_thinking': code_request and not draft}}, **structured)

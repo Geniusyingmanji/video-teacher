@@ -19,6 +19,23 @@ from eval.benchmark_operators import narration_presence
 
 
 class NarrationTests(unittest.TestCase):
+    def test_strict_speech_retries_past_third_failure_without_relaxing_timing(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            async def fake_tts(text, voice, path):
+                path.write_bytes(b'placeholder')
+            tone = (np.sin(np.arange(speech.RATE*12)*.04)*5000).astype('<i2')
+            fitting = tone[:speech.RATE*8]
+            with patch.object(speech, 'synthesize', side_effect=fake_tts), \
+                    patch.object(speech, 'pcm', side_effect=[tone]*3+[fitting]*3), \
+                    patch.object(speech, 'repair_text', return_value='Revised speech.') as repair, \
+                    patch.object(speech.subprocess, 'run'):
+                _, report = speech.attach(root/'video.mp4', self.contract(), root/'audio', api=object())
+            self.assertEqual(repair.call_count, 3)
+            self.assertEqual(report['chapters'][0]['synthesis_attempt'], 4)
+            self.assertTrue(report['valid'])
+            self.assertTrue(all(row['tempo_factor'] == 1 for row in report['chapters']))
+
     def contract(self):
         case={'id':'voice_fixture','lesson_version':VERSION,'target_duration_s':30,
               'prompt_text':'Solve 2x+5=17. Explain and verify the answer.',

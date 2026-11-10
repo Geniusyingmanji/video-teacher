@@ -1,5 +1,6 @@
 """Bounded repair messages; full evidence stays on disk, task text stays intact."""
 from copy import deepcopy
+import json
 
 
 def compact(value, *, depth=0):
@@ -14,6 +15,23 @@ def compact(value, *, depth=0):
     if isinstance(value, str):
         return value[:1600]
     return value
+
+
+def bounded_feedback(value, max_chars=12000):
+    """Bound supplemental evidence as a whole; full reports remain on disk."""
+    value = compact(value)
+    result = {}
+    priority = ('frozen_source_edit_regions', 'gate_failures', 'generation_error',
+                'instruction', 'findings', 'source_plan_validation', 'review_frames')
+    for key in dict.fromkeys((*priority, *value)):
+        if key not in value:
+            continue
+        candidate = {**result, key: value[key]}
+        if len(json.dumps(candidate, ensure_ascii=False)) <= max_chars:
+            result = candidate
+        else:
+            result[key] = '[full evidence retained on disk]'
+    return result
 
 
 def feedback_for(result, evaluation, frozen=None):

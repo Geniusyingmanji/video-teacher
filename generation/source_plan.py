@@ -81,10 +81,19 @@ def compile_plan(plan, contract):
 
 def review_plan(api, plan, contract):
     """A separate, grounded planning check; no model score is silently promoted."""
+    from generation.strict_video_contract import ContractAPI
+    if isinstance(api, ContractAPI):
+        # Do not leak failed attempts into a reviewer judging the new plan.
+        current = {key: value for key, value in contract.items()
+                   if key not in ('quality_feedback', 'storyboard_repair')}
+        api = ContractAPI(current, api.output, include_render_diagnostics=False)
     geometry = {'validated_by_code': True, 'source_size_pixels': contract['source_size_pixels'],
                 'edit_union_fraction': region_union_area(plan['source_edit_regions']) / (contract['source_size_pixels'][0]*contract['source_size_pixels'][1])}
     prompt = ('Geometry and the 25% union area limit have already been checked by deterministic code. '
               'Use those supplied measurements; focus on semantic correctness and task coverage. '
+              'Review ONLY the proposed plan below. Previous quality_feedback, render diagnostics and '
+              'generation errors describe older attempts, not defects in this plan. Narration synthesis '
+              'duration is checked separately after rendering; do not reject source edits because older speech overran. '
               'Inspect the actual supplied source image and the proposed source-pixel edits against the CURRENT task. '
               'Check EVERY requested answer, its exact target position, graph/board rules and unchanged objects. '
               'Reject missing answers, guessed unrelated diagrams, incorrect spatial locations, paths through blockers, '

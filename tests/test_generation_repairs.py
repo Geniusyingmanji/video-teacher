@@ -8,7 +8,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from generation.repair_feedback import compact, validated_frozen, feedback_for
+from generation.repair_feedback import compact, bounded_feedback, validated_frozen, feedback_for
 from generation.source_plan import validate_plan, compile_plan
 from generation.strict_video_contract import make_contract, contract_text
 from generation.prompt_budget import request_budget
@@ -19,6 +19,37 @@ from scripts.build_lesson_prompts import revise
 
 
 class RepairTests(unittest.TestCase):
+    def test_nested_feedback_has_total_budget_and_keeps_actionable_errors(self):
+        evidence = {f'field_{i}': {f'detail_{j}': 'evidence '*500
+                    for j in range(20)} for i in range(20)}
+        feedback = {'render_diagnostics': evidence, 'generation_error': 'speech too_long',
+                    'gate_failures': ['narration_generated'],
+                    'frozen_source_edit_regions': [[1, 2, 3, 4]],
+                    'review_frames': ['one.jpg']}
+        result = bounded_feedback(feedback)
+        self.assertLess(len(json.dumps(result, ensure_ascii=False)), 12000)
+        for key in ('generation_error', 'gate_failures', 'frozen_source_edit_regions', 'review_frames'):
+            self.assertEqual(result[key], feedback[key])
+        self.assertIn('retained on disk', result['render_diagnostics'])
+
+    def test_plan_review_excludes_historical_failures_but_keeps_task(self):
+        from generation.source_plan import review_plan
+        from generation.strict_video_contract import ContractAPI
+        from types import SimpleNamespace
+        plan, contract = self.plan()
+        contract.update(task={'prompt_text': 'Complete both probabilities.'},
+                        quality_feedback={'generation_error': 'old speech too_long'},
+                        storyboard_repair={'error': 'old rejected plan'})
+        response = SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(
+            content='{"valid": true, "finding": "Both answers match."}'))])
+        with patch.object(ContractAPI, '__call__', autospec=True, return_value=(response, {})) as call:
+            review_plan(ContractAPI(contract, Path('/unused')), plan, contract)
+        scoped = call.call_args.args[0]
+        self.assertEqual(scoped.contract['task'], contract['task'])
+        self.assertNotIn('quality_feedback', scoped.contract)
+        self.assertNotIn('storyboard_repair', scoped.contract)
+        self.assertFalse(scoped.include_render_diagnostics)
+
     def test_current_quality_gate_requires_completion_and_presentation(self):
         generation = {'contract_version':'instructional-lesson-contract-v3'}
         evaluation = {'version':'video-teacher-2x8-v11', 'scoring':{'valid':True,'strict_pass':True},
