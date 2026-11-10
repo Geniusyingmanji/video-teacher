@@ -1,0 +1,13 @@
+{
+  "duration_seconds": 73.066667,
+  "streams": [
+    {
+      "type": "video",
+      "codec": "h264"
+    }
+  ],
+  "decode": "full ffmpeg decode passed; no errors",
+  "sha256": "a9ff3254a6d28ad6baa3b949a8839f6698342594dc5a06dbecae8202825eac8c",
+  "content_review": "Sampled overview only. Small explanatory text and low-contrast objects visible; no full temporal teaching-quality acceptance. No audio stream.",
+  "cost_limit": "Author token_usage does not cover all direct fixer and Critic calls; not total cost."
+}

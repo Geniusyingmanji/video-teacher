@@ -24,8 +24,9 @@ def main():
         digest = hashlib.file_digest(source.open('rb'), 'sha256').hexdigest()
         if destination.exists():
             if hashlib.file_digest(destination.open('rb'), 'sha256').hexdigest() != digest:
-                raise RuntimeError(f'Existing delivery differs: {destination}')
-        else:
+                name = hashlib.sha256(relative.encode()).hexdigest()[:16] + '__' + digest[:16] + '__' + source.name
+                destination = out / name
+        if not destination.exists():
             shutil.copy2(source, destination)
         records.append({'source': relative, 'file': name, 'bytes': source.stat().st_size,
                         'sha256': digest, 'render_cache_fragment': 'partial_movie_files' in source.parts})

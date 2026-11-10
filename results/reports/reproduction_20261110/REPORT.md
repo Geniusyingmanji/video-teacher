@@ -6,7 +6,7 @@
 |---|---|---|---|
 | [TikZilla-8B-RL](https://huggingface.co/nllg/TikZilla-8B-RL) | 作者公开完整权重，原模型卡提示与采样配置，同一组六道教学题 | 原始响应带空 think 标签；精确提取 LaTeX 正文后 6/6 编译成功并生成 PNG | 六张均已检查，各有未满足的题目要求；编译成功不代表教学图正确 |
 | [DeTikZify v2.5 8B](https://github.com/potamides/DeTikZify) | 作者公开权重及作者代码，四张参考图转 TikZ | 4/4 编译成功并生成 PNG | 发现标签、结构与几何失真，不能作为合格重建 |
-| [Code2Video](https://github.com/showlab/Code2Video) | 作者 Planner/Coder/Critic 流程，API 模型替换为 Qwen3.8-27B | 已恢复运行；复用第 1、2、5 段，修复第 3、4 段后合片 | 尚无全片验收结论 |
+| [Code2Video](https://github.com/showlab/Code2Video) | 作者 Planner/Coder/Critic 流程，API 模型替换为 Qwen3.8-27B | 已完成 5/5 章节与最终合片；73.07 秒，完整解码通过 | 无音轨；抽帧发现小字与低对比度，未通过完整教学质量验收 |
 
 ## TikZilla 的可复查结果
 
@@ -51,3 +51,12 @@ GitHub 推送尝试失败：无法解析 github.com。未完成远端同步。
 提交 c4c798f 已成功推送，远端 main 已核对。此前网络阻塞记录为历史状态。
 已启动恢复运行，保存恢复前完整快照，复用第 1、2、5 段优化视频；由作者修复及 Critic 流程处理第 3、4 段。
 续跑日志：logs/reproduction_20261110/code2video_resume.log。仅在全部章节有输出时合片；完成与质量以最终报告及实际视频检查为准。
+
+### 最终生成状态（2026-11-10 04:20 UTC）
+
+续跑完成，5/5 章节生成并合片，续跑耗时 2449.17 秒；复用第 1、2、5 段。
+最终视频为 73.066667 秒，H.264、854×480、15 fps，无音轨。ffmpeg 全程解码通过，无错误。
+[生成报告](code2video_report.json)、[媒体审计](code2video_media_audit.json)、[抽帧概览](code2video_overview.jpg) 已保留。
+抽帧可见说明文字较小、部分对象对比度低；未做完整时序教学质量验收，不能宣称质量通过。
+作者 token_usage 不覆盖所有直接修复与 Critic 调用，不能视为本轮总消耗。
+视频已补入统一交付目录，便于查找的文件名为 Code2Video_Linear_transformations_and_matrices_FINAL.mp4；manifest.json 保存全部来源和哈希。
