@@ -1,0 +1,50 @@
+[
+  {
+    "id": "case_01",
+    "topic": "Basics of linear algebra and vectors",
+    "gpu": 0,
+    "port": 8000
+  },
+  {
+    "id": "case_02",
+    "topic": "Dot products and duality",
+    "gpu": 0,
+    "port": 8000
+  },
+  {
+    "id": "case_03",
+    "topic": "The determinant",
+    "gpu": 1,
+    "port": 8001
+  },
+  {
+    "id": "case_04",
+    "topic": "Matrix multiplication as composition of linear transformations",
+    "gpu": 1,
+    "port": 8001
+  },
+  {
+    "id": "case_05",
+    "topic": "Eigenvectors, eigenvalues, and eigenbasis",
+    "gpu": 2,
+    "port": 8002
+  },
+  {
+    "id": "case_06",
+    "topic": "Change of basis",
+    "gpu": 2,
+    "port": 8002
+  },
+  {
+    "id": "case_07",
+    "topic": "Fractal dimension",
+    "gpu": 3,
+    "port": 8003
+  },
+  {
+    "id": "case_08",
+    "topic": "Proof of Snell's law",
+    "gpu": 3,
+    "port": 8003
+  }
+]
