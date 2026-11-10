@@ -2,6 +2,17 @@
 
 
 def assess(generation, evaluation):
+    if evaluation.get('version') == 'video-teacher-quality-v13':
+        from eval.dimension_scoring import apply
+        evaluation.update(apply(evaluation, generation))
+        scoring = evaluation['scoring']
+        return {'passed': scoring['strict_pass'],
+                'status': scoring['evaluation_status'],
+                'checks': {name: d['score'] is not None and d['score'] >= d['threshold']
+                           for name, d in evaluation['dimensions'].items()},
+                'failures': scoring['dimension_failures'],
+                'unverified': scoring['errors'],
+                'quality_evidence': {'dimensions': evaluation['dimensions'], 'scoring': scoring}}
     diagnostics = generation.get('strict_diagnostics', {})
     contract_source = diagnostics.get('source_preservation')
     def supported(axis, keys):

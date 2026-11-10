@@ -91,7 +91,7 @@ Keep clarity (can the audience follow it) distinct from didactic affordances
 
 def validate_result(dimension: str, raw: dict, frame_count: int, *, rubric=None) -> dict:
     import os
-    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13')
     expected = [criterion_id for criterion_id, _ in (rubric or RUBRIC)[dimension]]
     criteria = raw.get("criteria")
     if not isinstance(criteria, list) or len(criteria) != 6:
@@ -157,7 +157,7 @@ def score_dimension(dimension: str, case: dict, frames: list) -> dict:
                 f"Frames are indexed 1..{len(frames)}. Return JSON only.")
     import os
     system=SYSTEM
-    if os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12':
+    if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13'):
         system += (' Evaluate each criterion independently with neutral anchors; do not target low or high scores. '
             'A local defect is not evidence that every axis fails. Cite the actual affected steps and duration. '
             'Distinguish observed missing content from uncertainty caused by insufficient sampling or ASR. '

@@ -45,6 +45,14 @@ def aggregate_quality(axes, *, speech_score=None, narration_required=False, acce
 
 
 def apply(evaluation):
+    import os
+    if os.environ.get("VIDEO_TEACHER_SCORING_POLICY") == "quality-v13":
+        from eval.dimension_scoring import apply as apply_dimensions
+        return apply_dimensions(evaluation)
+    return apply_v12(evaluation)
+
+
+def apply_v12(evaluation):
     """Use independent criterion ratings, retaining legacy decisions as diagnostics.
 
     Observed failures still fail acceptance. A missing/ambiguous comparison is

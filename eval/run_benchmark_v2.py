@@ -39,7 +39,7 @@ def scoring_code_sha256() -> str:
                                      "benchmark_video_rubric.py", "rubric_6x6.py", "evidence_prompt.py",
                                      "run_benchmark_v2.py", "teaching_engagement.py", "judges/gpt55.py",
                                      "judges/structured_rubric.py", "judges/structured_json.py", "grounded_observations.py", "task_completion.py", "numeric_evidence.py", "instructional_video.py", "verified_completion.py", "verified_consistency.py",
-                                     "narration.py", "delivery_pacing.py", "evidence_audit.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
+                                     "dimension_scoring.py", "quality_scoring.py", "narration.py", "delivery_pacing.py", "evidence_audit.py", "../generation/task_requirements.py", "../generation/lesson_spec.py"))).hexdigest()
 
 
 def evaluation_config(sample_fps: float, frame_max_px: int) -> dict:
@@ -101,6 +101,7 @@ def assessment_coverage(result):
                 'total': result.get('scoring', {})}
     if result.get('narration_required'):
         sections['spoken_teaching'] = result.get('narration_review', {})
+    sections.update(result.get('dimensions', {}))
     for name, section in sections.items():
         value = section.get('score')
         # Completion has an evidence-backed coverage ratio, not a quality score.
@@ -130,7 +131,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["errors"].append("generation_missing_or_failed")
         result["scoring"] = scoring.score_case({})
         result['assessment_coverage'] = assessment_coverage(result)
-        if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') == 'quality-v12':
+        if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13'):
             from eval.quality_scoring import apply
             return apply(result)
         return result
@@ -166,7 +167,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
         result["source_frame_count"] = len(frames)
         judged_case = {**case, 'actual_duration_s': len(frames)/fps}
         result['render_geometry'] = manifest.get('render_diagnostics', {}).get('layout', {})
-        if is_lesson(case):
+        if is_lesson(case) or os.environ.get('VIDEO_TEACHER_SCORING_POLICY') == 'quality-v13':
             target=duration_spec(case)
             result['duration_validation']={'valid':len(frames)==target['frame_count'] and abs(fps-target['fps'])<1e-6,
                                            **target,'actual_duration_s':len(frames)/fps}
@@ -256,7 +257,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
                     result['axes'][name] = saved
                     continue
                 judged = dimension.score(judged_case, sampled)
-                if os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12' and judged.get('score') is None:
+                if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13') and judged.get('score') is None:
                     result['axes'][name]={**judged,'error':'criterion_evidence_uncertain'}
                     save_checkpoint()
                     continue
@@ -365,7 +366,7 @@ def evaluate(case: dict, manifest: dict, *, sample_fps: float = 2.0,
     if is_lesson(case) and result.get('instructional_presentation',{}).get('all_windows_reviewed') is not True:
         result['scoring'].update(valid=False,strict_pass=False,score=None,groups=None)
     result['assessment_coverage'] = assessment_coverage(result)
-    if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') == 'quality-v12':
+    if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13'):
         from eval.quality_scoring import apply as apply_quality
         result=apply_quality(result)
     if checkpoint_path:
@@ -414,25 +415,34 @@ def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
     if rows and all(row.get('version')=='video-teacher-quality-v12' for row in rows):
         from eval.quality_scoring import aggregate
         rep=aggregate(rows)
+    elif rows and all(row.get('version') == 'video-teacher-quality-v13' for row in rows):
+        from eval.dimension_scoring import aggregate
+        rep=aggregate(rows)
     rep['assessment_coverage'] = {r['id']: assessment_coverage(r) for r in rows}
-    spoken=[r for r in rows if prompts[r['id']].get('audio_narration_required') is True]
-    rep['spoken_teaching']={'n_required':len(spoken),
-        'n_transcribed':sum(r.get('speech_transcript',{}).get('valid') is True for r in spoken),
-        'n_reviewed':sum(r.get('narration_review',{}).get('valid') is True for r in spoken),
-        'n_passed':sum(r.get('narration_review',{}).get('passed') is True for r in spoken),
-        'failed_ids':[r['id'] for r in spoken if r.get('narration_review',{}).get('passed') is not True]}
-    rep['instructional_presentation'] = {
-        'n_total':len(rows),
-        'n_reviewed':sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows),
-        'n_passed':sum(r.get('instructional_presentation',{}).get('passed') is True for r in rows),
-        'mean_valid_only':(sum(r['instructional_presentation']['score'] for r in rows if r.get('instructional_presentation',{}).get('valid') is True) /
-            sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows)) if any(r.get('instructional_presentation',{}).get('valid') is True for r in rows) else None}
-    rep['task_completion'] = {
-        'n_total': len(rows),
-        'n_reviewed': sum(r.get('task_completion', {}).get('valid') is True for r in rows),
-        'n_passed': sum(r.get('task_completion', {}).get('passed') is True for r in rows),
-        'failed_ids': [r['id'] for r in rows if r.get('task_completion', {}).get('passed') is not True],
-        'pass_rate_all_cases': sum(r.get('task_completion', {}).get('passed') is True for r in rows)/len(rows) if rows else None}
+    if rep.get('version') != 'video-teacher-quality-v13':
+        spoken=[r for r in rows if prompts[r['id']].get('audio_narration_required') is True]
+        rep['spoken_teaching']={'n_required':len(spoken),
+            'n_transcribed':sum(r.get('speech_transcript',{}).get('valid') is True for r in spoken),
+            'n_reviewed':sum(r.get('narration_review',{}).get('valid') is True for r in spoken),
+            'n_passed':sum(r.get('narration_review',{}).get('passed') is True for r in spoken),
+            'failed_ids':[r['id'] for r in spoken if r.get('narration_review',{}).get('passed') is not True]}
+        rep['instructional_presentation'] = {
+            'n_total':len(rows),
+            'n_reviewed':sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows),
+            'n_passed':sum(r.get('instructional_presentation',{}).get('passed') is True for r in rows),
+            'mean_valid_only':(sum(r['instructional_presentation']['score'] for r in rows if r.get('instructional_presentation',{}).get('valid') is True) /
+                sum(r.get('instructional_presentation',{}).get('valid') is True for r in rows)) if any(r.get('instructional_presentation',{}).get('valid') is True for r in rows) else None}
+        rep['task_completion'] = {
+            'n_total': len(rows),
+            'n_reviewed': sum(r.get('task_completion', {}).get('valid') is True for r in rows),
+            'n_passed': sum(r.get('task_completion', {}).get('passed') is True for r in rows),
+            'failed_ids': [r['id'] for r in rows if r.get('task_completion', {}).get('passed') is not True],
+            'pass_rate_all_cases': sum(r.get('task_completion', {}).get('passed') is True for r in rows)/len(rows) if rows else None}
+    if rep.get('version') == 'video-teacher-quality-v13':
+        for section, dimension in [('spoken_teaching', 'spoken_teaching'),
+                                   ('instructional_presentation', 'instructional_presentation'),
+                                   ('task_completion', 'task_completeness')]:
+            rep[section] = rep.get('dimension_summary', {}).get(dimension, {})
     rep['supplementary'] = {'teaching_engagement': teaching_engagement.aggregate(rows)}
     valid = [r for r in rows if r["scoring"]["valid"]]
     rep["bootstrap_95_ci_case_mean"] = (bootstrap_ci([r["scoring"]["score"] for r in valid])
@@ -453,7 +463,7 @@ def report(rows: list[dict], prompts: dict[str, dict]) -> dict:
 def cache_matches(previous: dict | None, case: dict, manifest: dict,
                   sample_fps: float, frame_max_px: int) -> bool:
     """Match provenance before reusing any independently validated dimension."""
-    expected_version = ('video-teacher-quality-v12' if os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+    expected_version = ('video-teacher-' + os.environ['VIDEO_TEACHER_SCORING_POLICY'] if os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13')
                         else scoring.VERSION)
     if not previous or previous.get("version") != expected_version:
         return False
@@ -502,8 +512,8 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=0, help="Debug only; output is never ranking-publishable")
     parser.add_argument("--preflight", action="store_true", help="Validate inputs and local dependencies without calling the judge")
     parser.add_argument('--workers', type=int, default=1, help='Independent case evaluation processes')
-    parser.add_argument('--scoring-policy',choices=('quality-v12','legacy-v11'),default='quality-v12',
-                        help='v12 separates quality aggregation from acceptance; v11 reproduces old rules')
+    parser.add_argument('--scoring-policy',choices=('quality-v13','quality-v12','legacy-v11'),default='quality-v13',
+                        help='v13 derives acceptance from dimensions; v12 and v11 reproduce historical policies')
     parser.add_argument('--judge-base-url', action='append', default=[],
                         help='Existing compatible judge service; repeat to distribute cases')
     args = parser.parse_args()

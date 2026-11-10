@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from generation.strict_video_contract import VERSION
 from generation.lesson_spec import contract_version, duration_spec
-from eval.quality_scoring import VERSION as SCORING_VERSION
+SCORING_VERSION = 'video-teacher-' + os.environ.get('VIDEO_TEACHER_SCORING_POLICY', 'quality-v13')
 
 
 def dump(path, data):
@@ -45,7 +45,7 @@ def environment(gpu, port):
         MKL_NUM_THREADS='1', NUMEXPR_NUM_THREADS='1')
     env['PATH'] = '/root/code2video-env/bin:' + env['PATH']
     env['PYTHONPATH'] = str(ROOT) + os.pathsep + env.get('PYTHONPATH', '')
-    env['VIDEO_TEACHER_SCORING_POLICY']=os.environ.get('VIDEO_TEACHER_SCORING_POLICY','quality-v12')
+    env['VIDEO_TEACHER_SCORING_POLICY']=os.environ.get('VIDEO_TEACHER_SCORING_POLICY','quality-v13')
     return env
 
 

@@ -21,7 +21,7 @@ CRITERIA=['speech_accuracy','explanatory_coverage','visual_alignment','speech_pa
 
 @lru_cache(maxsize=1)
 def asr_config():
-    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13')
     default='small.en' if quality else 'base'
     local=Path(__file__).resolve().parents[2]/('models/faster-whisper-small.en' if quality else 'models/faster-whisper-base')
     name=os.environ.get('VIDEO_TEACHER_ASR_MODEL',str(local) if (local/'model.bin').is_file() else default)
@@ -91,7 +91,7 @@ def review(case,transcript,ledger):
         +prompt_json({'task_requirements':requirements(case),
                     'criteria':CRITERIA,'actual_speech':speech,'video_windows':ledger_for_judge(ledger),
                     'measured_pacing_evidence':case.get('delivery_pacing_evidence',{})}))
-    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY')=='quality-v12'
+    quality=os.environ.get('VIDEO_TEACHER_SCORING_POLICY') in ('quality-v12', 'quality-v13')
     if quality:
         prompt += ('\nDo not target low or high scores. If a near-homophone technical term may be an ASR error, '
             'record the ambiguity in uncertainties with its speech IDs. Do not assert that the speaker made '

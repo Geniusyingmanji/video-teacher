@@ -149,7 +149,8 @@ class OperatorTests(unittest.TestCase):
             'valid':True, 'passed':True, 'requirements':[], 'failures':[], 'coverage':1})
         completion.start(); self.addCleanup(completion.stop)
         presentation = patch.object(runner.instructional_video,'assess',return_value={
-            'valid':True,'passed':True,'score':100,'failures':[]})
+            'valid':True,'passed':True,'score':100,'failures':[],
+            'criteria':[{'id':'layout_readability','score':5,'evidence_frames':[1]}]})
         presentation.start(); self.addCleanup(presentation.stop)
         observer.start(); reviewer.start()
         self.addCleanup(observer.stop); self.addCleanup(reviewer.stop)
