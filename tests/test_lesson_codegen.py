@@ -11,6 +11,11 @@ from generation.strict_video_contract import ContractAPI, make_contract, storybo
 
 
 class LessonCodegenTests(unittest.TestCase):
+    def test_preflight_catches_observed_text_keyword_failure(self):
+        with self.assertRaisesRegex(ValueError, 'use weight=BOLD'):
+            validate_code('from manim import *\nlabel = Text("vs.", font_weight=BOLD)')
+        self.assertIsNone(validate_code('from manim import *\nlabel = Text("vs.", weight=BOLD)'))
+
     def test_preflight_reports_multiple_real_failures_together(self):
         code = '''from manim import *
 class Section1Scene(Scene):

@@ -25,6 +25,8 @@ def validate_code(source):
                 findings.append(f'line {node.lineno}: construct contains an unfinished pass or ellipsis placeholder')
         if isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
             name = node.func.id
+            if name in ('Text', 'MarkupText') and any(keyword.arg == 'font_weight' for keyword in node.keywords):
+                findings.append(f'line {node.lineno}: {name} uses unsupported font_weight; use weight=BOLD instead')
             if name in invalid_calls:
                 findings.append(f'line {node.lineno}: {name} is not a supported Manim primitive; {invalid_calls[name]}')
             points = node.args if name == 'Polygon' else node.args[:2] if name in ('Line', 'Arrow') else node.args[:1] if name == 'Dot' else []
