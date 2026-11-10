@@ -1,0 +1,90 @@
+{
+  "captured_at_utc": "2026-11-10T14:24:19.006758+00:00",
+  "source_run": "results/qwen38_four_gpu_full10_20261110T082127Z",
+  "completion": {
+    "total": 10,
+    "processed": 10,
+    "generated": 3,
+    "quality_passed": 0,
+    "execution_finished": true,
+    "complete": false,
+    "generation_profile": "strict",
+    "quality_review_deferred": false,
+    "scoring_version": "video-teacher-quality-v12",
+    "contract_versions": {
+      "math_exp_02": "instructional-lesson-contract-v3",
+      "phys_exp_02": "instructional-lesson-contract-v3",
+      "math_prob_01": "instructional-lesson-contract-v3",
+      "grade_ComputerScience_task_17": "instructional-lesson-contract-v3",
+      "phys_exp_03": "instructional-lesson-contract-v3",
+      "math_prob_02": "instructional-lesson-contract-v3",
+      "cs_prob_02": "instructional-lesson-contract-v3",
+      "med_exp_01": "instructional-lesson-contract-v3",
+      "lang_high_01": "instructional-lesson-contract-v3",
+      "math_high_02": "instructional-lesson-contract-v3"
+    },
+    "same_model_self_evaluation": true
+  },
+  "cases": [
+    {
+      "id": "cs_prob_02",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "ValueError: chapter chapter_1 speech too_long: 18.89s for 18.733333333333334s"
+    },
+    {
+      "id": "grade_ComputerScience_task_17",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "ValueError: chapter chapter_1 speech too_long: 21.94s for 20.0s"
+    },
+    {
+      "id": "lang_high_01",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "ValueError: chapter chapter_3 speech too_long: 21.38s for 19.0s"
+    },
+    {
+      "id": "math_exp_02",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "ValueError: Storyboard validation exhausted: timeline omits current task requirements: expected_visual_elements:3"
+    },
+    {
+      "id": "math_high_02",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "ValueError: chapter chapter_3 speech too_long: 20.04s for 17.53333333333333s"
+    },
+    {
+      "id": "math_prob_01",
+      "status": "ok",
+      "quality_passed": false,
+      "error": null
+    },
+    {
+      "id": "math_prob_02",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "Rejected render: layout"
+    },
+    {
+      "id": "med_exp_01",
+      "status": "failed",
+      "quality_passed": false,
+      "error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: ValueError: lesson authored duration 69.267s differs from 75s; refusing to stretch or truncate"
+    },
+    {
+      "id": "phys_exp_02",
+      "status": "ok",
+      "quality_passed": false,
+      "error": null
+    },
+    {
+      "id": "phys_exp_03",
+      "status": "ok",
+      "quality_passed": false,
+      "error": null
+    }
+  ]
+}
