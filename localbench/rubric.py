@@ -1,5 +1,5 @@
 """Candidate ten-dimension protocol; calibrated results are not yet available."""
-VERSION = 'localbench-ten-dimensions-dev14-integer-r4'
+VERSION = 'localbench-ten-dimensions-dev15-integer-r5'
 
 # Reporting hierarchy only. Existing seven-leaf teaching weights are preserved.
 TEACHING_GROUPS = {

@@ -10,7 +10,7 @@ from functools import lru_cache
 from PIL import Image, ImageColor, ImageDraw, ImageFont
 
 WIDTH, HEIGHT, FPS = 1024, 576, 12
-VERSION = 'localbench-scene-v11-spatial-label-contrast'
+VERSION = 'localbench-scene-v12-computed-linear-algebra'
 FONT_CANDIDATES = ['/System/Library/Fonts/Supplemental/Arial Unicode.ttf',
                    '/Library/Fonts/Arial Unicode.ttf',
                    '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
@@ -25,6 +25,19 @@ def font(size):
         if Path(path).exists():
             return ImageFont.truetype(path, size)
     return ImageFont.load_default(size=size)
+
+
+@lru_cache(maxsize=1)
+def renderer_fingerprint():
+    """Bind rendering code and the actual selected font across relocations."""
+    import hashlib
+    import PIL
+    from .common import digest
+    sources={p.relative_to(Path(__file__).parent).as_posix():hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.rglob('*.py')}
+    face=font(24);face_path=getattr(face,'path',None)
+    path=Path(face_path) if isinstance(face_path,(str,Path)) else None
+    return digest({'sources':sources,'pillow':PIL.__version__,
+                   'font_sha256':hashlib.sha256(path.read_bytes()).hexdigest() if path and path.is_file() else 'builtin'})
 
 
 def unsupported_glyphs(text, size=24):
@@ -80,6 +93,8 @@ def arithmetic(expression, variables=None):
 def validate_plan(plan, case):
     if plan.get('case_id') != case['id']:
         raise ValueError('case id mismatch')
+    from .scientific_audit import validate_plan_math
+    validate_plan_math(plan,case)
     scenes = plan.get('scenes')
     if not isinstance(scenes, list) or not 4 <= len(scenes) <= 8:
         raise ValueError('4..8 teaching scenes required')
@@ -154,6 +169,11 @@ def validate_plan(plan, case):
                 compile_voice(primitive)
                 if any(primitive[k] not in case.get('prompt_text','') for k in ('active_sentence','passive_sentence')):
                     raise ValueError('voice examples must be copied from the public task')
+                continue
+            if kind == 'linear_algebra':
+                from .linear_algebra import compile_state
+                if len(primitives)!=1:raise ValueError('linear_algebra owns the diagram panel')
+                compile_state(primitive)
                 continue
             if kind == 'flow_path':
                 from .flow import compile_flow
@@ -301,6 +321,10 @@ def render_frame(scene, progress, *, index=0, total=6, mode='code'):
             if p['type']=='voice_mapping':
                 from .voice import draw_voice
                 boxes.extend(draw_voice(image,p))
+                continue
+            if p['type']=='linear_algebra':
+                from .linear_algebra import draw as draw_algebra
+                boxes.extend(draw_algebra(image,p,progress))
                 continue
             appear = p.get('appear', 0)
             if progress < appear:
@@ -515,3 +539,18 @@ Do not invent unsupported primitives, LaTeX markup, icons or external images. Un
 For shapes behind text, list the shape first. Rect w/h are normalized; circle r is relative to panel height.
 If you use appear/motion, ensure spoken timing matches. Changing states between scenes is also allowed.
 Do not add unrelated curriculum content just to fill time. Reasoning and examples may explain a single event.'''
+
+PLAN_SYSTEM += """
+For 2-D dot products, linear maps, composition or change of basis, use the computed linear_algebra
+primitive as the ONLY diagram primitive. Values and arrows are computed from one numeric state;
+never add separate text readouts or independently authored result vectors. Schemas:
+{type:"linear_algebra",operation:"dot",u:[1,0],v:[0,1],v_end:[1,1]} (v_end optional)
+{type:"linear_algebra",operation:"map",matrix:[[2,0],[0,1]],v:[1,1]}
+{type:"linear_algebra",operation:"composition",first:[[2,0],[0,1]],second:[[1,1],[0,1]],v:[1,1]}
+{type:"linear_algebra",operation:"basis",basis:[[1,1],[0,1]],v:[3,2]}
+These are examples of schema only; use the PUBLIC task's values, never replace givens. Basis columns
+are world vectors; new coordinates are B^-1 v and must reconstruct the same world vector.
+For declared algebraic derivations, scenes may include derivation:{equations:["2*x+5=17","x=6"],
+nonzero:[],substitutions:{}}. Unsupported or unproved steps remain blocked; declarations do not
+certify physical premises. Check each operation, not only the final answer.
+"""

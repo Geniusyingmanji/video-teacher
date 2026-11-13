@@ -104,6 +104,8 @@ def assemble(agent, plan, audio, directory):
 
 
 def generate_code2video(case, out, client, settings, tts):
+    from .scientific_audit import validate_public
+    validate_public(public_case(case))
     directory = (Path(out)/case['id']).resolve(); directory.mkdir(parents=True, exist_ok=True)
     verify_source(settings['upstream']['source_dir'])
     public = public_case(case)

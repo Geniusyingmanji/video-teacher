@@ -25,6 +25,7 @@ def build(destination):
     files.update((ROOT/'scripts').glob('*.py'))
     files.add(ROOT/'tests/fixtures/layout_language_overflow.jpg')
     files.update(ROOT/'data'/name for name in ('source_tasks.jsonl', 'tasks.jsonl', 'tasks.summary.json', 'development_membership.json'))
+    files.update((ROOT/'data/reference_corrections').glob('*.json'))
     # Source metadata is compact; media must be selected from current task inputs.
     # Do not bundle duplicate before/ copies, target images, or unrelated samples.
     files.update(p for p in (ROOT/'data/sources').rglob('*') if p.is_file() and p.suffix.lower() in {'.json', '.jsonl', '.pgn'})

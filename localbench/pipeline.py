@@ -55,6 +55,9 @@ def synthesize(plan, directory, tts=None):
     authored = [s.get('authored_duration_s', s['duration_s']) for s in scenes]
     target = sum(s['duration_s'] for s in scenes)
     rate = 155
+    measurement_history=[]
+    history_path=directory/'timing_attempts.json'
+    if history_path.exists():measurement_history=json.loads(history_path.read_text())
     for attempt in range(5):
         measurements = []
         for i, scene in enumerate(scenes):
@@ -84,6 +87,9 @@ def synthesize(plan, directory, tts=None):
                 scene['spoken_unit_timing'] = cached.get('spoken_unit_timing')
             with wave.open(str(speech)) as f:
                 measurements.append(f.getnframes()/f.getframerate())
+        measurement_history.append({'attempt':len(measurement_history),'rate':rate,'target_s':target,
+            'spoken_seconds':measurements,'text_hashes':[digest(spoken_text(s)) for s in scenes]})
+        write_json(history_path,measurement_history)
         try:
             counts = speech_frames(plan, measurements)
             break
@@ -199,13 +205,17 @@ def encode(plan, directory, audio_path, *, mode, copy_audio=False):
     if abs(metadata['duration']-frames/FPS)>.15:
         raise ValueError('encoded duration mismatch')
     raw_video.unlink()
-    return {'mode':mode,'video_path':str(output.resolve()),'duration_s':metadata['duration'],
+    from .scene import renderer_fingerprint
+    return {'mode':mode,'video_path':str(output.resolve()),'plan_sha256':digest(plan),
+            'scene_version':VERSION,'renderer_sha256':renderer_fingerprint(),'duration_s':metadata['duration'],
             'fps':metadata['fps'],'frame_count':actual_frames,'size':metadata['size'],
             'sha256':hashlib.sha256(output.read_bytes()).hexdigest(),
             'render_seconds':round(time.monotonic()-started,3),'complete':True}
 
 
 def generate_one(case, out, client, modes, use_state=False, plans_from=None, review_content=False, source_regions=False, plain_json_plans=False, source_graphs=False, tts=None, source_overlays=False, layout_policy='repair', spatial_graphs=False, spatial_contracts=False):
+    from .scientific_audit import validate_public
+    validate_public(public_case(case))
     if layout_policy not in {'repair','report','repair_then_report'}:raise ValueError('invalid layout policy')
     if spatial_graphs and spatial_contracts:raise ValueError('choose optional spatial primitives or task-first spatial contracts, not both')
     last_renderable=None
@@ -215,6 +225,8 @@ def generate_one(case, out, client, modes, use_state=False, plans_from=None, rev
     state=derive_state(public) if use_state else None
     if use_state and state is None:
         print(case['id'],'no executable state adapter; using general primitives',flush=True)
+    from .scientific_audit import audit_case
+    write_json(directory/'public_scientific_audit.json',audit_case(public,public_only=True))
     write_json(directory/'public_input.json', public)
     status = {'id':case['id'],'run_directory':str(directory.resolve()),'public_input_hash':digest(public),'scene_version':VERSION,
               'method':'declarative_code_scene_pilot','is_code2video_reproduction':False,
@@ -425,6 +437,8 @@ Return no arithmetic_checks: actual numeric states are computed in code.\n'''+js
                     purpose=f'narration_repair:{case["id"]}:{index}',max_tokens=500)
                 if not isinstance(repaired,dict) or not isinstance(repaired.get('narration'),str) or not 5<=len(repaired['narration'].split())<=90:
                     raise ValueError('narration repair did not return a valid bounded English narration')
+                if len(repaired['narration'].split())>limit or len(repaired['narration'].split())>=len(before.split()):
+                    raise ValueError('narration repair failed the measured word reduction bound')
                 if repaired['narration']==before:
                     raise ValueError('narration repair made no change to overflowing speech')
                 scene['narration']=repaired['narration']
@@ -442,6 +456,8 @@ Return no arithmetic_checks: actual numeric states are computed in code.\n'''+js
         write_json(directory/'plan.json',plan)
         from .chart import plan_chart_receipts
         write_json(directory/'chart_computation.json',plan_chart_receipts(plan))
+        from .linear_algebra import receipts as algebra_receipts
+        write_json(directory/'linear_algebra_computation.json',algebra_receipts(plan))
         from .flow import plan_flow_receipts
         write_json(directory/'flow_computation.json',plan_flow_receipts(plan))
         for mode in modes:

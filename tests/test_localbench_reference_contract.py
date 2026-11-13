@@ -137,9 +137,9 @@ def test_source_reference_cannot_claim_review_without_image_observation(tmp_path
 
 def test_semantic_protocol_requires_contract_and_keeps_old_protocols_addressable():
     from localbench.judge import evaluation_version
-    assert evaluation_version()== 'localbench-ten-dimensions-dev14-integer-r4'
-    assert evaluation_version({'case_id':'x'})=='localbench-ten-dimensions-dev14-integer-r4+reference-contract-v1'
-    assert evaluation_version({'case_id':'x'},True)=='localbench-ten-dimensions-dev14-integer-r4+reference-contract-v1+semantic-outcomes-v1'
+    assert evaluation_version()== 'localbench-ten-dimensions-dev15-integer-r5'
+    assert evaluation_version({'case_id':'x'})=='localbench-ten-dimensions-dev15-integer-r5+reference-contract-v1'
+    assert evaluation_version({'case_id':'x'},True)=='localbench-ten-dimensions-dev15-integer-r5+reference-contract-v1+semantic-outcomes-v1'
     with pytest.raises(ValueError,match='requires'):evaluation_version(None,True)
 
 

@@ -77,5 +77,5 @@ def test_applicability_drift_triggers_bounded_repair_not_automatic_score_edit(tm
     assert c.calls == 2 and not errors
     assert result['task_completeness']['applicable_criteria_count'] == 6
     assert bad['dimensions']['task_completeness']['criteria']['verification']['score'] is None
-    assert evaluation_version().endswith('integer-r4')
-    assert evaluation_version(applicability=a).endswith('integer-r4+applicability-v1')
+    assert evaluation_version().endswith('integer-r5')
+    assert evaluation_version(applicability=a).endswith('integer-r5+applicability-v1')

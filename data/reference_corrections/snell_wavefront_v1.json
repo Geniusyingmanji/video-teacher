@@ -1,0 +1,21 @@
+{
+  "id": "snell_wavefront_reference_v1",
+  "version": "corrected-wavefront-reference-v1",
+  "scope": "Worked reference correction; not a new experiment, not a replacement of historical scores or an addition to the frozen 400-task set.",
+  "review_status": "offline_mathematical_consistency_checked_not_expert_certified",
+  "public_task": {
+    "prompt_text": "Derive Snell's law using Huygens wavefront geometry. Define positive refractive indices n1 and n2 and speeds v1=c/n1, v2=c/n2. At t=0 point A of incident wavefront AB first touches the interface, while B is still in medium 1. During the SAME positive time interval dt, B propagates distance BC=v1*dt to the interface at C; the secondary wave from A reaches D with AD=v2*dt. The transmitted wavefront CD is tangent at D, so AD is perpendicular to CD. AB is perpendicular to BC. The triangles ABC and ADC share interface segment AC as their HYPOTENUSE, not a leg. With incidence and refraction angles measured from the respective ray to the normal, show sin(theta1)=BC/AC and sin(theta2)=AD/AC. Hence sin(theta1)/sin(theta2)=v1/v2 (or cross-multiply to avoid division by a zero sine). Obtain sin(theta1)/v1=sin(theta2)/v2 and substitute v=c/n to conclude n1*sin(theta1)=n2*sin(theta2). Preserve one coherent A/B/C/D diagram throughout. Distinguish wavefronts from rays. Verify with n1=1, n2=1.5, theta1=30 degrees, so sin(theta2)=1/3. Do not use a QED label as a substitute for checking the intermediate relationships. State that the construction assumes propagating transmitted rays; total internal reflection requires a different case analysis."
+  },
+  "algebraic_check": {
+    "equations": [
+      "sin(theta1)/v1=sin(theta2)/v2",
+      "n1*sin(theta1)=n2*sin(theta2)"
+    ],
+    "nonzero": ["c", "n1", "n2"],
+    "substitutions": {"v1": "c/n1", "v2": "c/n2"}
+  },
+  "sources": [
+    "https://openstax.org/books/university-physics-volume-3/pages/1-6-huygenss-principle",
+    "https://openstax.org/books/university-physics-volume-3/pages/1-3-refraction"
+  ]
+}

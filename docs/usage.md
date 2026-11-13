@@ -180,3 +180,21 @@ CLI 默认 API 并发 8、渲染并发 2、评测并发 4；本项目恢复运�
 General 默认逐帧分批检查全部解码帧，另对全部定时语音窗口分批核对同步；模型调用量和本地证据空间显著高于旧抽帧协议。既有预算限制仍有效，预算耗尽记覆盖不完整和未验证，不静默跳过批次。恢复实验时先小批量测真实用量，再预先设置预算。
 
 安装系统 `ffprobe`（通常随 `ffmpeg` 软件包提供），用于区分真正无音轨和音频解码/探测故障。只装 imageio 的 ffmpeg 不一定包含 ffprobe；探测工具不可用时不会推断“没有音轨”。代码和协议变化后使用新输出目录；本次修复不自动重评历史结果。报告新增“质量验收”与验收率，执行成功及高 General 均分均不自动表示验收通过。
+
+### 对已有声明式成片做局部修复
+
+```bash
+.venv/bin/python teacher.py repair --data data/tasks.jsonl \
+  --manifest results/source/manifest.json --ids TASK_ID \
+  --patch /path/outside/repo/patch.json --out results/local_patch
+```
+
+patch.json 示例（哈希必须来自实际源片和计划，不能使用占位值）：
+
+```json
+{"case_id":"TASK_ID","video_sha256":"ACTUAL_MEDIA_SHA256","plan_sha256":"CANONICAL_PLAN_DIGEST","replacements":[{"scene":1,"field":"caption","old_text":"Entire current caption","new_text":"Entire corrected caption"}]}
+```
+
+`plan_sha256` 使用 `localbench.common.digest(json.loads(plan_file.read_text()))`，视频哈希使用 `localbench.provenance.file_hash(video)`。源 manifest 必须带匹配的 public_input_hash，并明确只有一条完整 code 成片。字幕修复不请求模型；旁白修复通过可选 `--config` 的 tts 设置合成，因此其后端可能需要联网。此命令不是恢复实验的授权；本次验证使用离线测试音频和假模型回答。
+
+生成的语音调度另保存 timing_attempts.json，记录每次实际语音时长、语速、目标时长和文本哈希。重写必须满足实测字数上限且实际减少字数；仅“换个说法但更长”不再作为有效收敛。文件时长覆盖和 ASR 活跃语音覆盖仍分别解释，不能把这些记录当成完整费用账单。

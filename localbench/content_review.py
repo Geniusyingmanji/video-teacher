@@ -49,6 +49,9 @@ def text_fields(scene):
 def review_fields(scene):
     fields=text_fields(scene)
     for j,p in enumerate(scene.get('primitives',[])):
+        if p.get('type')=='linear_algebra':
+            for key,value in p.items():
+                if key not in {'type','operation'}:fields[f'primitives/{j}/{key}']=json.dumps(value,separators=(',',':'))
         if p.get('type')=='chart':
             for n,s in enumerate(p.get('series',[])):
                 if isinstance(s.get('expression'),str):fields[f'primitives/{j}/series/{n}/expression']=s['expression']
@@ -56,10 +59,12 @@ def review_fields(scene):
 
 
 def review_input(case, plan):
+    from .linear_algebra import receipts
     # Strict public_case() projection prevents accidentally forwarding full benchmark rows.
     return {'public_task':public_case(case), 'scenes':[
         {'scene':i, 'texts':review_fields(s), 'read_only_fields':sorted(set(review_fields(s))-set(text_fields(s))),
-         'diagram':s.get('primitives',[])}
+         'diagram':s.get('primitives',[]),
+         'computed_linear_state':[{**r,'scene':i} for r in receipts({'scenes':[s]})]}
         for i,s in enumerate(plan['scenes'])]}
 
 

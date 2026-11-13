@@ -35,12 +35,12 @@ def test_reference_contract_handoff_selects_explicit_experiment(tmp_path):
 
 def test_semantic_handoff_keeps_protocol_and_commands_consistent(tmp_path):
     config={'reference_contracts':str(tmp_path/'contracts'),
-            'semantic_outcomes':True,'scoring_protocol':'localbench-ten-dimensions-dev14-integer-r4+reference-contract-v1+semantic-outcomes-v1'}
+            'semantic_outcomes':True,'scoring_protocol':'localbench-ten-dimensions-dev15-integer-r5+reference-contract-v1+semantic-outcomes-v1'}
     commands=command_plan(config,tmp_path/'data.jsonl',['a'],tmp_path/'out')
     assert '--semantic-outcomes' in commands['evaluation']
     assert '--semantic-outcomes' not in commands['generation']
     with pytest.raises(ValueError,match='differs'):
-        command_plan({**config,'scoring_protocol':'localbench-ten-dimensions-dev14-integer-r4+reference-contract-v1'},
+        command_plan({**config,'scoring_protocol':'localbench-ten-dimensions-dev15-integer-r5+reference-contract-v1'},
                      tmp_path/'data.jsonl',['a'],tmp_path/'out')
 
 
@@ -49,4 +49,4 @@ def test_semantic_protocol_needs_contract_and_boolean_flag():
         scoring_protocol({'semantic_outcomes':True})
     with pytest.raises(ValueError,match='boolean'):
         scoring_protocol({'semantic_outcomes':'false'})
-    assert scoring_protocol({})=='localbench-ten-dimensions-dev14-integer-r4'
+    assert scoring_protocol({})=='localbench-ten-dimensions-dev15-integer-r5'

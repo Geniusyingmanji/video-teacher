@@ -37,6 +37,8 @@ def metadata(path, *, decode=False):
 
 
 def generate_native(case, out, client, api, tts):
+    from .scientific_audit import validate_public
+    validate_public(public_case(case))
     directory = Path(out)/case['id']; directory.mkdir(parents=True, exist_ok=True)
     public = public_case(case)
     write_json(directory/'public_input.json', public)

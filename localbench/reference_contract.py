@@ -206,6 +206,9 @@ def validate_contract(raw, case, *, frozen=False):
     if not isinstance(raw.get('concerns'),list) or any(not isinstance(x,str) for x in raw['concerns']):
         raise ValueError('reference concerns must be strings')
     if frozen:
+        if raw['concerns']:raise ValueError('unresolved reference concerns must be adjudicated before freezing')
+        from .scientific_audit import audit_case
+        if audit_case(case,contract=raw)['issues']:raise ValueError('reference scientific conflict; correct and refreeze task/reference')
         if raw.get('version')!=VERSION or raw.get('public_input_hash')!=digest(public_case(case)) or raw.get('reference_hash')!=reference_hash(case):
             raise ValueError('reference contract is stale for this task/reference/version')
         source_hash=public_source_hash(case)
@@ -250,6 +253,8 @@ def validate_requirement_findings(raw, contract, allowed_ids, observed_ids=None)
             raise ValueError('requirement finding must cite actual supplied media evidence')
         if observed_ids is not None and not any(x in observed_ids for x in ids):
             raise ValueError('requirement finding needs generated-video/audio evidence, not source alone')
+        from .finding_consistency import validate as validate_finding
+        validate_finding(f)
         normalized.append(f)
     return normalized
 

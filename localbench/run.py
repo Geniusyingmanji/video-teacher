@@ -227,6 +227,9 @@ def improve(case, result, directory, client, *, tts=None, piano_bridge=False, la
 
 
 def execute(args):
+    if args.command=='repair':
+        from .local_repair import execute as execute_repair
+        return execute_repair(args)
     if args.command == 'student':
         from .student_run import execute as execute_student
         return execute_student(args)
@@ -398,6 +401,8 @@ def execute(args):
             attempts = list((base/id_/'attempts').glob('attempt_*'))
             base = base/id_/'attempts'/f'attempt_{len(attempts)+1:03d}'
         try:
+            from .scientific_audit import validate_public
+            validate_public(public_case(case))
             if code2video_settings:
                 from .code2video import generate_code2video
                 result = generate_code2video(case, base, gen_client, code2video_settings, tts)
@@ -413,7 +418,7 @@ def execute(args):
             regions = args.command == 'method' and has_source and 'shade' in first
             graphs = args.command == 'method' and has_source and 'shortest path' in first and 'red' in first
             overlays = has_source and not regions and not graphs and 'replace' not in first
-            result = generate_one(case, base, gen_client, ['code'], use_state=args.command == 'method',
+            result = generate_one(case, base, gen_client, ['code'], use_state=args.command == 'method', review_content=args.command == 'method',
                                   source_regions=regions, source_graphs=graphs, source_overlays=overlays, tts=tts,
                                   layout_policy='report' if args.command=='bench' else 'repair_then_report',
                                   spatial_graphs=spatial_graphs and args.command=='method',
@@ -540,7 +545,7 @@ def execute(args):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['bench', 'method', 'evaluate', 'student', 'doctor'])
+    parser.add_argument('command', choices=['bench', 'method', 'evaluate', 'student', 'doctor', 'repair'])
     parser.add_argument('--config', type=Path, help='JSON service configuration; keep real credentials outside repo')
     parser.add_argument('--model')
     parser.add_argument('--url')
@@ -556,6 +561,7 @@ def main():
                         help='code generation framework; Code2Video requires its pinned sources and Docker image')
     parser.add_argument('--out', type=Path, default=ROOT/'results/localbench/collaborator_run')
     parser.add_argument('--manifest', type=Path)
+    parser.add_argument('--patch', type=Path, help='repair: exact bound text replacements; no model planning calls')
     parser.add_argument('--mode', help='explicit artifact mode when importing a multi-mode manifest')
     parser.add_argument('--resume', action='store_true')
     parser.add_argument('--retry-incomplete', action='store_true', help='with --resume, retry null/partial evaluations and retain previous evidence')

@@ -74,3 +74,5 @@
 
 
 [code2video.py](code2video.py) 调用固定官方生成流程；[code2video_source.py](code2video_source.py) 校验上游源码，[code2video_runtime.py](code2video_runtime.py) 配置隔离 Manim 执行。命令维护在[根 README](../README.md#官方-code2video-接入与调用)。
+
+数值和参考检查：[scientific_audit.py](scientific_audit.py)、[finding_consistency.py](finding_consistency.py)、[linear_algebra.py](linear_algebra.py)。绑定原片的修复入口：[local_repair.py](local_repair.py)。

@@ -120,7 +120,8 @@ an omission. Disagreements in factual meaning still require reference_concerns.
 Also return requirement_findings:[{requirement_id,verdict:"met"|"missing"|"unverified",
 evidence_ids:[actual final-frame/audio IDs],reason:"specific observation"}], exactly once per
 enumerated requirement. A missing requested demonstration needs visible evidence of absence.
-Use unverified for insufficient evidence, not for an observed omission. No score is computed
+Use unverified for insufficient evidence, not for an observed omission. Include fulfillment: complete|partial|absent|incorrect|uncertain for each requirement; met is allowed only for complete.
+A checkmark/QED or assertion of correctness is not a checking operation. No score is computed
 from this checklist automatically; make the criterion ratings consistent with your evidence.
 For completeness deductions, name the unmet public outcome, not a preferred artistic form.
 '''
@@ -178,10 +179,25 @@ def assess_teaching(client, messages, wanted, allowed_ids, generated_ids, case_i
     dimensions={};accepted_raw={};pending=list(wanted);reviews=[];metadata={};findings=[]
     current=list(messages)
     for attempt in range(2):
+        if attempt and len(pending)>1:
+            # A large response failed: reduce output scope, not repeat the same
+            # oversized JSON. Successful sibling ratings remain untouched.
+            for name in list(pending):
+                subset=list(messages)+[{'role':'user','content':
+                    'Re-evaluate ONLY this invalid dimension: '+name+'. Return exactly its six criteria. '
+                    'Do not return other dimensions or requirement_findings. '+STRICT_INSTRUCTIONS}]
+                child,child_raw,_=assess_teaching(client,subset,[name],allowed_ids,generated_ids,case_id,
+                    out/'split_dimensions'/name,errors,applicability=applicability)
+                dimensions.update(child);accepted_raw.update(child_raw.get('dimensions',{}))
+                for key in ('major_findings','reference_concerns'):
+                    metadata.setdefault(key,[]).extend(child_raw.get(key,[]))
+            reviews.append({'attempt':attempt,'requested_dimensions':list(pending),'recovery':'split_dimension_calls'})
+            pending=[]
+            break
         raw=None;failures={}
         try:
             raw=client.chat(current,purpose=('video_judge:' if not attempt else 'video_judge_schema_repair:')+case_id,
-                            max_tokens=(21000 if contract else 18000) if not attempt else min(18000,2500*len(pending)+1500))
+                            max_tokens=min(18000,3000*len(pending)+1500) if not attempt else min(18000,2500*len(pending)+1500))
             write_json(out/('raw_visual_judge.json' if not attempt else 'raw_visual_judge_repaired.json'),raw)
             normalized=normalize_dimension_nesting(raw,pending)
             for name in pending:
@@ -213,18 +229,25 @@ def assess_teaching(client, messages, wanted, allowed_ids, generated_ids, case_i
         def invalid(message=failures[name]):raise ValueError(message)
         dimensions.update(independent_stage('teaching:'+name,[name],invalid,errors))
     if contract and not findings:
-        # A valid dimension response can still omit the mandatory checklist.
-        # Repair that independent schema without discarding accepted ratings.
-        repair_messages=list(messages)+[{'role':'user','content':
-            'Return ONLY a JSON object with the complete requirement_findings list for the same supplied media and public requirements. '
-            'Do not return or change dimension ratings. Each requirement needs requirement_id, verdict (met, missing, or unverified), '
-            'evidence_ids and a concrete reason. Previous checklist error: '+metadata.get('requirement_error','Missing checklist.')}]
+        recovered=[]
         try:
-            repaired=client.chat(repair_messages,purpose='public_requirement_findings_repair:'+case_id,max_tokens=6000)
-            write_json(out/'raw_requirement_findings_repaired.json',repaired)
-            findings=validate_requirement_findings(repaired,contract,allowed_ids,observed_ids=generated_ids)
+            for start in range(0,len(contract['requirements']),5):
+                subset={**contract,'requirements':contract['requirements'][start:start+5]}
+                ids=[r['id'] for r in subset['requirements']]
+                repair_messages=list(messages)+[{'role':'user','content':
+                    'Return ONLY requirement_findings for this recovery subset: '+json.dumps(ids)+'. '
+                    'Do not return or change dimension ratings or other requirements. Each needs requirement_id, verdict '
+                    '(met, missing, unverified), fulfillment (complete, partial, absent, incorrect, uncertain), '
+                    'evidence_ids and reason. Partial/absent/uncertain cannot be met. A checkmark, QED or final answer '
+                    'alone does not demonstrate a requested verification. Previous error: '+metadata.get('requirement_error','Missing checklist.')}]
+                repaired=client.chat(repair_messages,purpose=f'public_requirement_findings_repair:{case_id}:{start}',max_tokens=3500)
+                path=out/('raw_requirement_findings_repaired.json' if start==0 else f'raw_requirement_findings_repaired_{start}.json')
+                write_json(path,repaired)
+                recovered.extend(validate_requirement_findings(repaired,subset,allowed_ids,observed_ids=generated_ids))
+            findings=recovered
         except Exception as exc:
             metadata['requirement_error']=str(exc)[:600]
+            write_json(out/'partial_requirement_findings.json',recovered)
     if contract and not findings:
         error=metadata.get('requirement_error','Required public-task findings are unavailable.')
         errors.append({'stage':'public_requirement_findings','error_type':'ValueError','error':error,
@@ -353,8 +376,11 @@ def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcr
     if applicability is not None:
         from .applicability import validate_annotation
         validate_annotation(applicability,case)
+    from .scientific_audit import audit_case
+    scientific_audit=audit_case(case,contract=contract)
     effective_version=evaluation_version(contract,semantic_outcomes,transcript_guard,applicability)
     out.mkdir(parents=True,exist_ok=True)
+    write_json(out/'scientific_audit.json',scientific_audit)
     if applicability is not None:
         write_json(out/'criterion_applicability.json',applicability)
     if prepared_evidence is None:
@@ -390,7 +416,7 @@ def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcr
         summary['utterance_timebase']='absolute seconds from beginning of final video'
         safe_audio.append(summary)
     context={'public_task':{k:case.get(k) for k in ('prompt_text','task_type','pedagogical_target_audience','target_duration_s')},
-             'reference':reference,'actual_audio':safe_audio,'video_duration_s':packet['metadata']['duration'],
+             'reference':reference,'reference_scientific_audit':scientific_audit,'actual_audio':safe_audio,'video_duration_s':packet['metadata']['duration'],
              'rubric':{k:DIMENSIONS[k] for k in wanted},'sampling':packet['sampling'],
              'temporal_limit':packet['temporal_limit'],'timeline_findings':packet['timeline_review']}
     if applicability is not None:
@@ -496,7 +522,7 @@ approximate; do not infer subsecond accuracy or rapid speech from expanded numbe
             'scoring':scoring,'major_findings':raw.get('major_findings',[]),
             'verification_conflicts':conflicts,'critical_verification':verification,'timeline_review':timeline,
             'auxiliary_verification_status':verification['status'],
-            'reference_concerns':raw.get('reference_concerns',[]),'evidence_path':str((out/'evidence/packet.json').resolve()),
+            'reference_concerns':raw.get('reference_concerns',[])+scientific_audit['issues']+[{'reason':c,'affected':['conceptual_correctness','task_completeness']} for c in (contract or {}).get('concerns',[])],'scientific_audit':scientific_audit,'evidence_path':str((out/'evidence/packet.json').resolve()),
             'human_calibration':'pending','scope':'small_development_batch_not_published_benchmark'}
     if contract:
         result.update(reference_contract_hash=digest(contract),reference_review_status=contract['review_status'],
