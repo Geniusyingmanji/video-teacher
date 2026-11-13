@@ -212,6 +212,19 @@ def assess_teaching(client, messages, wanted, allowed_ids, generated_ids, case_i
         def invalid(message=failures[name]):raise ValueError(message)
         dimensions.update(independent_stage('teaching:'+name,[name],invalid,errors))
     if contract and not findings:
+        # A valid dimension response can still omit the mandatory checklist.
+        # Repair that independent schema without discarding accepted ratings.
+        repair_messages=list(messages)+[{'role':'user','content':
+            'Return ONLY a JSON object with the complete requirement_findings list for the same supplied media and public requirements. '
+            'Do not return or change dimension ratings. Each requirement needs requirement_id, verdict (met, missing, or unverified), '
+            'evidence_ids and a concrete reason. Previous checklist error: '+metadata.get('requirement_error','Missing checklist.')}]
+        try:
+            repaired=client.chat(repair_messages,purpose='public_requirement_findings_repair:'+case_id,max_tokens=6000)
+            write_json(out/'raw_requirement_findings_repaired.json',repaired)
+            findings=validate_requirement_findings(repaired,contract,allowed_ids,observed_ids=generated_ids)
+        except Exception as exc:
+            metadata['requirement_error']=str(exc)[:600]
+    if contract and not findings:
         error=metadata.get('requirement_error','Required public-task findings are unavailable.')
         errors.append({'stage':'public_requirement_findings','error_type':'ValueError','error':error,
                        'affected_dimensions':['task_completeness']})

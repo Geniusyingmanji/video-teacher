@@ -1,0 +1,2343 @@
+{
+  "audited_at_utc": "2026-11-13",
+  "server_head": "273f14b",
+  "current_main_base": "5a9e666",
+  "scope": "Offline extraction and ffprobe only; no new judging, full audiovisual acceptance, or rescore. Remote R100-R106 evidence is not present on this server.",
+  "legacy_full10": {
+    "completion": {
+      "total": 10,
+      "processed": 10,
+      "generated": 3,
+      "quality_passed": 0,
+      "execution_finished": true,
+      "complete": false,
+      "generation_profile": "strict",
+      "quality_review_deferred": false,
+      "scoring_version": "video-teacher-quality-v12",
+      "contract_versions": {
+        "math_exp_02": "instructional-lesson-contract-v3",
+        "phys_exp_02": "instructional-lesson-contract-v3",
+        "math_prob_01": "instructional-lesson-contract-v3",
+        "grade_ComputerScience_task_17": "instructional-lesson-contract-v3",
+        "phys_exp_03": "instructional-lesson-contract-v3",
+        "math_prob_02": "instructional-lesson-contract-v3",
+        "cs_prob_02": "instructional-lesson-contract-v3",
+        "med_exp_01": "instructional-lesson-contract-v3",
+        "lang_high_01": "instructional-lesson-contract-v3",
+        "math_high_02": "instructional-lesson-contract-v3"
+      },
+      "same_model_self_evaluation": true
+    },
+    "completion_source": {
+      "path": "results/qwen38_four_gpu_full10_20261110T082127Z/completion.json",
+      "sha256": "c274011960b229c83c7bfb2068b6572c38aa5ab70417039b097987f8b1e86fe0"
+    },
+    "cases": [
+      {
+        "id": "cs_prob_02",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_cs_prob_02.json",
+          "sha256": "77e38311af05b835c743e83fcd38583649bcf47f8ede1b825daea7e30bc03315"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "grade_ComputerScience_task_17",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_grade_ComputerScience_task_17.json",
+          "sha256": "2b4d5527752e8d81587acb4cd90ccf98b729d05cfdc4482b3e0c1172b0879d41"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "lang_high_01",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_lang_high_01.json",
+          "sha256": "8d96cdf21f39f35f3f44ccbe38149b18d3855f720eeb863daecd2a5b244c3311"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "math_exp_02",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_math_exp_02.json",
+          "sha256": "196a72203f6345d20f05a2d58d1d35f4020526cb299fcc4bb65ebe2372c82015"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "math_high_02",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_math_high_02.json",
+          "sha256": "14e7f7bbd84f934f3ba40f396918e04e47b81d21b3810a83a2920e71b1cce552"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "math_prob_01",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_math_prob_01.json",
+          "sha256": "7eb17d21a5d389850a67a6194f6e0e696c65da8103cdd8fa38537501911e9e5c"
+        },
+        "selected_attempt": 0,
+        "generation_status": "ok",
+        "quality_passed": false,
+        "scoring": {
+          "valid": true,
+          "score": 94.3611,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "instructional_presentation_not_accepted"
+          ],
+          "presentation_score": 54.1667,
+          "spoken_teaching_score": 93.75
+        },
+        "media": {
+          "exists": true,
+          "sha256": "d23b5f68b7676694a14ede2c00e1ab8e85ac37afbefcddc52570e41fde5fd84d",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio"
+              }
+            ],
+            "format": {
+              "duration": "75.000000"
+            }
+          }
+        }
+      },
+      {
+        "id": "math_prob_02",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_math_prob_02.json",
+          "sha256": "1239e0d2d1be5cac742afbdb52f6c4e09d3419bc8e3288642302d8ee1065e786"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "med_exp_01",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_med_exp_01.json",
+          "sha256": "5e33d084bde2198626e82b2a6669972f57796824f533222a751de7e175ba5562"
+        },
+        "selected_attempt": 0,
+        "generation_status": "failed",
+        "quality_passed": false,
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "task_completion_unverified",
+            "instructional_presentation_unverified",
+            "narration_review_unverified",
+            "consistency_unverified"
+          ],
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "media": null
+      },
+      {
+        "id": "phys_exp_02",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_phys_exp_02.json",
+          "sha256": "245c862e5f014e82f0349d409ed6f19c013fa3de93737242a4a64f82439f89f7"
+        },
+        "selected_attempt": 2,
+        "generation_status": "ok",
+        "quality_passed": false,
+        "scoring": {
+          "valid": true,
+          "score": 94.375,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "instructional_presentation_not_accepted",
+            "narration_review_not_accepted"
+          ],
+          "presentation_score": 62.5,
+          "spoken_teaching_score": 84.375
+        },
+        "media": {
+          "exists": true,
+          "sha256": "a6f23f6eab310870cb7ed69215f5a49861465aa440f5525f12dd82a3abe17b66",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio"
+              }
+            ],
+            "format": {
+              "duration": "70.000000"
+            }
+          }
+        }
+      },
+      {
+        "id": "phys_exp_03",
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/final_phys_exp_03.json",
+          "sha256": "a8c7b674e761b6ab9c6e855b0c969aeb91a8dd58113e59609293651ce806fdf1"
+        },
+        "selected_attempt": 1,
+        "generation_status": "ok",
+        "quality_passed": false,
+        "scoring": {
+          "valid": true,
+          "score": 98.7778,
+          "strict_pass": false,
+          "acceptance_failures": [
+            "instructional_presentation_not_accepted"
+          ],
+          "presentation_score": 62.5,
+          "spoken_teaching_score": 100.0
+        },
+        "media": {
+          "exists": true,
+          "sha256": "7ad067d8582d06c0325aea4bc6b14eed7faf83c7db2d4ff3066c07f76dd0ed16",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              },
+              {
+                "codec_name": "aac",
+                "codec_type": "audio"
+              }
+            ],
+            "format": {
+              "duration": "55.000000"
+            }
+          }
+        }
+      }
+    ],
+    "attempts": [
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_cs_prob_02.json",
+          "sha256": "c9df5909418577ef82230e617494635c2839d5fb65b8030b49f55d1706ac31c5"
+        },
+        "id": "cs_prob_02",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "ValueError: chapter chapter_1 speech too_long: 18.89s for 18.733333333333334s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_grade_ComputerScience_task_17.json",
+          "sha256": "5d949eaa5428595a436e4f8703f0356efa60e4121c6691769a3aaa9cfd44cae5"
+        },
+        "id": "grade_ComputerScience_task_17",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "ValueError: chapter chapter_1 speech too_long: 21.94s for 20.0s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_lang_high_01.json",
+          "sha256": "70d8801a946fef6c9f0d2f6163fa74b6deae756fdf92e24f26a0d9831e3cd3d5"
+        },
+        "id": "lang_high_01",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "ValueError: chapter chapter_3 speech too_long: 21.38s for 19.0s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_math_exp_02.json",
+          "sha256": "2c43983259145ea8f5ef54235613f005ea4fe101a24542f550cd70df98de2343"
+        },
+        "id": "math_exp_02",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "ValueError: Storyboard validation exhausted: timeline omits current task requirements: expected_visual_elements:3",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_math_high_02.json",
+          "sha256": "86acf18d286d1cac90790b0d5b2ee7d907a34d27bbc66b30c1554a3ad573f656"
+        },
+        "id": "math_high_02",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "ValueError: chapter chapter_3 speech too_long: 20.04s for 17.53333333333333s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_math_prob_01.json",
+          "sha256": "dee9d65205207988b399c47caf1fd29eede0f663d7ac3f2840e9cdf2a9ec4d1a"
+        },
+        "id": "math_prob_01",
+        "attempt": "attempt_0",
+        "complete": true,
+        "error": null,
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_math_prob_02.json",
+          "sha256": "5c1e2673828f9c1e0eeb2c087fa5b59f522e3579a1154d49c2e1871ba30c3609"
+        },
+        "id": "math_prob_02",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "Rejected render: layout",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_med_exp_01.json",
+          "sha256": "143b583773744e01c67bf190287b35d18e7aa5930985cbae49eade3725287839"
+        },
+        "id": "med_exp_01",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: ValueError: lesson authored duration 69.267s differs from 75s; refusing to stretch or truncate",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_phys_exp_02.json",
+          "sha256": "f11a60be2c6b95738b68c4551626ca8ca792f5eaa01073e71981f8d0cff36c0b"
+        },
+        "id": "phys_exp_02",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "Rejected render: layout",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_0/model_result_phys_exp_03.json",
+          "sha256": "db8e26a9751622b4c61e16770a15bce9a62014f81c4fe55c69bd27b1935b7d51"
+        },
+        "id": "phys_exp_03",
+        "attempt": "attempt_0",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_cs_prob_02.json",
+          "sha256": "80903fddf512ad4c959cf69c5f257b387a55b43f266ac331e7744849b0f770bb"
+        },
+        "id": "cs_prob_02",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_grade_ComputerScience_task_17.json",
+          "sha256": "1c93bfcd0e388a796477ede6da2685e75d92b480f884e35ec6a0ed3f400f0ee6"
+        },
+        "id": "grade_ComputerScience_task_17",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "ValueError: Storyboard validation exhausted: The plan fails due to a generation error: the narration for chapter_1 is too long (21.94s) for the allocated 20s duration. The narration text needs to be shortened to fit within the time limit.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_lang_high_01.json",
+          "sha256": "6c19fc2f9a3bef7b1d7e28dd36a0c972b2b020a650943a7c3f06ef34a2e26acf"
+        },
+        "id": "lang_high_01",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "Rejected render: layout",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_math_exp_02.json",
+          "sha256": "4378cac8d0cd13671242ae2e276f702f6b8a879d439df8940f22168c4c56321c"
+        },
+        "id": "math_exp_02",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: ValueError: lesson has consecutive empty holds longer than the pacing limit",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_math_high_02.json",
+          "sha256": "89f5133d3fb178e1e5f6084e3966e20069ebe61ba59ff90c3a9f4f3cda0438d2"
+        },
+        "id": "math_high_02",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_math_prob_01.json",
+          "sha256": "e138d843ac221387d77c9d8aa743bbd7c1bb808c18dab69015e504520a4c9985"
+        },
+        "id": "math_prob_01",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "ValueError: Prompt budget exceeded before API call: text=31276, reserved=7168, limit=32768; compact supplemental context",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_math_prob_02.json",
+          "sha256": "539557e0b06303b4b7f8087c96c9c404d26f7c48211c9a7e3c90ee1e9c74c6ae"
+        },
+        "id": "math_prob_02",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs. Last render diagnostic: ValueError: lesson has consecutive empty holds longer than the pacing limit",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_med_exp_01.json",
+          "sha256": "ef1f1a1e7336e23f5a4f2f51f138b9cd3877b9a0a792f52eb2ecb56d2475b624"
+        },
+        "id": "med_exp_01",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "Rejected render: layout",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_phys_exp_02.json",
+          "sha256": "9033d8a9de996849fbcfc5c0c514d2b7f5aa32e241198e104476512c92cbd951"
+        },
+        "id": "phys_exp_02",
+        "attempt": "attempt_1",
+        "complete": false,
+        "error": "ValueError: chapter chapter_3 speech too_long: 17.69s for 17.53333333333333s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_1/model_result_phys_exp_03.json",
+          "sha256": "389c86ab51ed3c521d0f00688680acd05b73457abc3aa56da106b7e8a594b912"
+        },
+        "id": "phys_exp_03",
+        "attempt": "attempt_1",
+        "complete": true,
+        "error": null,
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_cs_prob_02.json",
+          "sha256": "8f6eb8dd36fc0929cf48711faf8f17d2634f756f9f638d5ad3c1fcec4512c5b4"
+        },
+        "id": "cs_prob_02",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "ValueError: chapter chapter_2 speech too_long: 22.82s for 18.733333333333334s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_grade_ComputerScience_task_17.json",
+          "sha256": "5ba95284c83a91bee498ee946293785b6a1c7d37bef43acbddc62c1f6ceee8bf"
+        },
+        "id": "grade_ComputerScience_task_17",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "ValueError: Storyboard validation exhausted: The plan fails due to a generation error: the narration for chapter_1 is too long (21.94s) for the allocated 20s duration. The narration text needs to be shortened to fit within the time limit.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_lang_high_01.json",
+          "sha256": "ef229ee5386a9fdb52c67605230b55817bd0b979a154958a2618e36f978614db"
+        },
+        "id": "lang_high_01",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "ValueError: chapter chapter_3 speech too_long: 21.00s for 19.0s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_math_exp_02.json",
+          "sha256": "e34f9d8071c842f60a077b9169ce03d5be6634ebe70686eacd71e791e13f99bb"
+        },
+        "id": "math_exp_02",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_math_high_02.json",
+          "sha256": "a28fd043765652f504a819a37c6a062c444bffc71ee0832edbf00f2fb719676f"
+        },
+        "id": "math_high_02",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "Rejected render: layout",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_math_prob_01.json",
+          "sha256": "51d3cd1da89733fb73c5cb43c4ef4944041b108df2825f94315c5707ceb11efc"
+        },
+        "id": "math_prob_01",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "ValueError: chapter chapter_1 speech too_short: 14.02s for 18.733333333333334s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_math_prob_02.json",
+          "sha256": "c7af05eb8e1b2cb2808b5de4c20e341f1c5bf36897ebfdc4f8aa03072a5851e1"
+        },
+        "id": "math_prob_02",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "ValueError: chapter chapter_2 speech too_long: 19.70s for 20.0s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_med_exp_01.json",
+          "sha256": "7127093cfab683f97fcce9ad4a281f52350b8688e0a1690a28287bdfceaecfe1"
+        },
+        "id": "med_exp_01",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "ValueError: chapter chapter_1 speech too_long: 19.46s for 18.733333333333334s",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_phys_exp_02.json",
+          "sha256": "372f10740fcfe0d3951e964cfb90d43545baf5feafc5c775de88bc3f8a6353c6"
+        },
+        "id": "phys_exp_02",
+        "attempt": "attempt_2",
+        "complete": true,
+        "error": null,
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      },
+      {
+        "source": {
+          "path": "results/qwen38_four_gpu_full10_20261110T082127Z/attempt_2/model_result_phys_exp_03.json",
+          "sha256": "7aa3655fd483ac3a42ca6b4fbd377bcc922cde18b5ef1b17c8fbcbf7fc46a7bf"
+        },
+        "id": "phys_exp_03",
+        "attempt": "attempt_2",
+        "complete": false,
+        "error": "Video generation returned no complete video; inspect preserved section render logs.",
+        "token_usage_scope": "parent planner/storyboard/coder calls; excludes worker repair, narration rewrite, TTS and ASR"
+      }
+    ]
+  },
+  "code2video_v13": {
+    "sources": [
+      {
+        "path": "results/code2video_eight_v13_20261111T093643Z/eval/per_case.jsonl",
+        "sha256": "ea9a24409155001b31d5d6cf8eb728f40514a2fc67f510856e85b0168e951ebe"
+      },
+      {
+        "path": "results/code2video_eight_v13_20261111T093643Z/eval/aggregate.json",
+        "sha256": "16f4fadbb81dc3aa5269cfd443c9f8e06271136c526d4d66967c3f0c0e83eab2"
+      }
+    ],
+    "summary": {
+      "version": "video-teacher-quality-v13",
+      "n_total": 8,
+      "n_valid": 0,
+      "ranking_publishable": false,
+      "ranking_score": null
+    },
+    "error_counts": {
+      "speech_transcription_failed": 8,
+      "lesson_segment_coverage_failed": 8,
+      "grounded_observations_failed": 8,
+      "conceptual_correctness_failed": 6,
+      "consistency_review_failed": 8,
+      "consistency_review_missing_or_failed": 8,
+      "task_completion_failed": 5,
+      "task_completion_missing_or_invalid": 5,
+      "temporal_consistency_failed": 4,
+      "didactic_affordances_failed": 1
+    },
+    "cases": [
+      {
+        "id": "case_01",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "e0a1556a8eccdbc4e1753e34f947bd058819c3a2e5968494a89bd45b07319c7f",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": 56.9444,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "temporal_consistency",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "audience_appropriateness",
+            "video_quality"
+          ],
+          "gates": [
+            "temporal_consistency",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "audience_appropriateness",
+            "video_quality"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "conceptual_correctness_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "temporal_consistency",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "audience_appropriateness",
+            "video_quality"
+          ],
+          "axis_scores": {
+            "visual_quality": 68.75,
+            "temporal_consistency": 31.25,
+            "signal_quality": 70.8333,
+            "conceptual_correctness": null,
+            "narrative_structure": 62.5,
+            "pedagogical_clarity": 39.5833,
+            "didactic_affordances": 47.9167,
+            "audience_appropriateness": 58.3333,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 68.75,
+            "temporal_consistency": 31.25,
+            "signal_quality": 70.8333,
+            "conceptual_correctness": null,
+            "narrative_structure": 62.5,
+            "pedagogical_clarity": 39.5833,
+            "didactic_affordances": 47.9167,
+            "audience_appropriateness": 58.3333,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 68.75,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": 31.25,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 70.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 62.5,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 39.5833,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 47.9167,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 58.3333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 70.73333333333333,
+                  "fps": 15,
+                  "frame_count": 1061,
+                  "actual_duration_s": 70.73333333333333
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "grounded_observations_failed",
+          "conceptual_correctness_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "e0a1556a8eccdbc4e1753e34f947bd058819c3a2e5968494a89bd45b07319c7f",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "70.733333"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_02",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "e9b6e44c89dd574afaaa95b6acc7d52a463143951eb943a668e2fe1ab72e926b",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": 54.1666,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "visual_quality",
+            "temporal_consistency",
+            "signal_quality",
+            "conceptual_correctness",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "gates": [
+            "visual_quality",
+            "temporal_consistency",
+            "signal_quality",
+            "conceptual_correctness",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "visual_quality",
+            "temporal_consistency",
+            "signal_quality",
+            "conceptual_correctness",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "axis_scores": {
+            "visual_quality": 58.3333,
+            "temporal_consistency": 45.8333,
+            "signal_quality": 58.3333,
+            "conceptual_correctness": 62.5,
+            "narrative_structure": 70.8333,
+            "pedagogical_clarity": 47.9167,
+            "didactic_affordances": 56.25,
+            "audience_appropriateness": 64.5833,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 58.3333,
+            "temporal_consistency": 45.8333,
+            "signal_quality": 58.3333,
+            "conceptual_correctness": 62.5,
+            "narrative_structure": 70.8333,
+            "pedagogical_clarity": 47.9167,
+            "didactic_affordances": 56.25,
+            "audience_appropriateness": 64.5833,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 58.3333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": 45.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 58.3333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": 62.5,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 70.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 47.9167,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 56.25,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 64.5833,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 82.06666666666666,
+                  "fps": 15,
+                  "frame_count": 1231,
+                  "actual_duration_s": 82.06666666666666
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "task_completion_failed",
+          "grounded_observations_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed",
+          "task_completion_missing_or_invalid"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "e9b6e44c89dd574afaaa95b6acc7d52a463143951eb943a668e2fe1ab72e926b",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "82.066667"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_03",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "7ab4f71fad33f9996f029c11e0044a7ea78e0fbdc3d6c8b450ffcb69646b647d",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": null,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "gates": [
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "temporal_consistency_unverified",
+            "conceptual_correctness_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "axis_scores": {
+            "visual_quality": 66.6667,
+            "temporal_consistency": null,
+            "signal_quality": 91.6667,
+            "conceptual_correctness": null,
+            "narrative_structure": 72.9167,
+            "pedagogical_clarity": 56.25,
+            "didactic_affordances": 50.0,
+            "audience_appropriateness": 70.8333,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 66.6667,
+            "temporal_consistency": null,
+            "signal_quality": 91.6667,
+            "conceptual_correctness": null,
+            "narrative_structure": 72.9167,
+            "pedagogical_clarity": 56.25,
+            "didactic_affordances": 50.0,
+            "audience_appropriateness": 70.8333,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 66.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 91.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 72.9167,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 56.25,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 50.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 70.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 87.0,
+                  "fps": 15,
+                  "frame_count": 1305,
+                  "actual_duration_s": 87.0
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "task_completion_failed",
+          "grounded_observations_failed",
+          "conceptual_correctness_failed",
+          "temporal_consistency_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed",
+          "task_completion_missing_or_invalid"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "7ab4f71fad33f9996f029c11e0044a7ea78e0fbdc3d6c8b450ffcb69646b647d",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "87.000000"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_04",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "eb51c93dd79b974748a1560eeaf1d17f5eed071abb9ddb62be77e2773563be99",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": 44.4444,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "visual_quality",
+            "temporal_consistency",
+            "conceptual_correctness",
+            "narrative_structure",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "gates": [
+            "visual_quality",
+            "temporal_consistency",
+            "conceptual_correctness",
+            "narrative_structure",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "visual_quality",
+            "temporal_consistency",
+            "conceptual_correctness",
+            "narrative_structure",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "axis_scores": {
+            "visual_quality": 33.3333,
+            "temporal_consistency": 25.0,
+            "signal_quality": 75.0,
+            "conceptual_correctness": 37.5,
+            "narrative_structure": 56.25,
+            "pedagogical_clarity": 39.5833,
+            "didactic_affordances": 37.5,
+            "audience_appropriateness": 66.6667,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 33.3333,
+            "temporal_consistency": 25.0,
+            "signal_quality": 75.0,
+            "conceptual_correctness": 37.5,
+            "narrative_structure": 56.25,
+            "pedagogical_clarity": 39.5833,
+            "didactic_affordances": 37.5,
+            "audience_appropriateness": 66.6667,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 33.3333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": 25.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 75.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": 37.5,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 56.25,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 39.5833,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 37.5,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 66.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 97.6,
+                  "fps": 15,
+                  "frame_count": 1464,
+                  "actual_duration_s": 97.6
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "grounded_observations_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "eb51c93dd79b974748a1560eeaf1d17f5eed071abb9ddb62be77e2773563be99",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "97.600000"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_05",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "d72915172dd34b2edbcda0fcc2d666b43ca16c2325fa88dd0159c34866158205",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": 63.1945,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "temporal_consistency",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "gates": [
+            "temporal_consistency",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "conceptual_correctness_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "temporal_consistency",
+            "pedagogical_clarity",
+            "didactic_affordances",
+            "video_quality"
+          ],
+          "axis_scores": {
+            "visual_quality": 68.75,
+            "temporal_consistency": 41.6667,
+            "signal_quality": 79.1667,
+            "conceptual_correctness": null,
+            "narrative_structure": 62.5,
+            "pedagogical_clarity": 52.0833,
+            "didactic_affordances": 54.1667,
+            "audience_appropriateness": 70.8333,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 68.75,
+            "temporal_consistency": 41.6667,
+            "signal_quality": 79.1667,
+            "conceptual_correctness": null,
+            "narrative_structure": 62.5,
+            "pedagogical_clarity": 52.0833,
+            "didactic_affordances": 54.1667,
+            "audience_appropriateness": 70.8333,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 68.75,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": 41.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 79.1667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 62.5,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 52.0833,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 54.1667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 70.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 69.86666666666666,
+                  "fps": 15,
+                  "frame_count": 1048,
+                  "actual_duration_s": 69.86666666666666
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "task_completion_failed",
+          "grounded_observations_failed",
+          "conceptual_correctness_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed",
+          "task_completion_missing_or_invalid"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "d72915172dd34b2edbcda0fcc2d666b43ca16c2325fa88dd0159c34866158205",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "69.866667"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_06",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "f35352cf2e6f80fd36cab0ff20806b2b6d7f6f09f64972d6d713d726dd7571b6",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": null,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "gates": [
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "temporal_consistency_unverified",
+            "conceptual_correctness_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "axis_scores": {
+            "visual_quality": 68.75,
+            "temporal_consistency": null,
+            "signal_quality": 66.6667,
+            "conceptual_correctness": null,
+            "narrative_structure": 70.8333,
+            "pedagogical_clarity": 45.8333,
+            "didactic_affordances": 33.3333,
+            "audience_appropriateness": 62.5,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 68.75,
+            "temporal_consistency": null,
+            "signal_quality": 66.6667,
+            "conceptual_correctness": null,
+            "narrative_structure": 70.8333,
+            "pedagogical_clarity": 45.8333,
+            "didactic_affordances": 33.3333,
+            "audience_appropriateness": 62.5,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 68.75,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 66.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 70.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 45.8333,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 33.3333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 62.5,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 68.8,
+                  "fps": 15,
+                  "frame_count": 1032,
+                  "actual_duration_s": 68.8
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "task_completion_failed",
+          "grounded_observations_failed",
+          "conceptual_correctness_failed",
+          "temporal_consistency_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed",
+          "task_completion_missing_or_invalid"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "f35352cf2e6f80fd36cab0ff20806b2b6d7f6f09f64972d6d713d726dd7571b6",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "68.800000"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_07",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "d833cb0ed0950bd2293b15c42d40ed91c0e25b58f2a69caab319cf968cf4b354",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": null,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "visual_quality",
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "gates": [
+            "visual_quality",
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "temporal_consistency_unverified",
+            "conceptual_correctness_unverified",
+            "instructional_presentation_unverified",
+            "task_completeness_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "visual_quality",
+            "pedagogical_clarity",
+            "didactic_affordances"
+          ],
+          "axis_scores": {
+            "visual_quality": 54.1667,
+            "temporal_consistency": null,
+            "signal_quality": 66.6667,
+            "conceptual_correctness": null,
+            "narrative_structure": 70.8333,
+            "pedagogical_clarity": 50.0,
+            "didactic_affordances": 50.0,
+            "audience_appropriateness": 66.6667,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 54.1667,
+            "temporal_consistency": null,
+            "signal_quality": 66.6667,
+            "conceptual_correctness": null,
+            "narrative_structure": 70.8333,
+            "pedagogical_clarity": 50.0,
+            "didactic_affordances": 50.0,
+            "audience_appropriateness": 66.6667,
+            "instructional_presentation": null,
+            "task_completeness": null,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 54.1667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 66.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 70.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 50.0,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": 50.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 66.6667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 90.46666666666667,
+                  "fps": 15,
+                  "frame_count": 1357,
+                  "actual_duration_s": 90.46666666666667
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "task_completion_failed",
+          "grounded_observations_failed",
+          "conceptual_correctness_failed",
+          "temporal_consistency_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed",
+          "task_completion_missing_or_invalid"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "d833cb0ed0950bd2293b15c42d40ed91c0e25b58f2a69caab319cf968cf4b354",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "90.466667"
+            }
+          }
+        }
+      },
+      {
+        "id": "case_08",
+        "version": "video-teacher-quality-v13",
+        "video_sha256_recorded": "faf6f3d2aaaa3bec242fd58f934c352f0adcc9896f8e612be93cf0893d8155c4",
+        "scoring": {
+          "valid": false,
+          "score": null,
+          "groups": {
+            "video_quality": null,
+            "teaching_quality": null,
+            "spoken_teaching": null
+          },
+          "weights": {
+            "video_quality": 0.4,
+            "teaching_quality": 0.4,
+            "spoken_teaching": 0.2
+          },
+          "strict_pass": false,
+          "acceptance_failures": [
+            "visual_quality",
+            "narrative_structure",
+            "pedagogical_clarity",
+            "audience_appropriateness"
+          ],
+          "gates": [
+            "visual_quality",
+            "narrative_structure",
+            "pedagogical_clarity",
+            "audience_appropriateness"
+          ],
+          "errors": [
+            "unresolved_evidence",
+            "incomplete_video_review",
+            "speech_evidence_unverified",
+            "temporal_consistency_unverified",
+            "conceptual_correctness_unverified",
+            "didactic_affordances_unverified",
+            "instructional_presentation_unverified",
+            "spoken_teaching_unverified"
+          ],
+          "evaluation_status": "unverified",
+          "dimension_failures": [
+            "visual_quality",
+            "narrative_structure",
+            "pedagogical_clarity",
+            "audience_appropriateness"
+          ],
+          "axis_scores": {
+            "visual_quality": 45.8333,
+            "temporal_consistency": null,
+            "signal_quality": 75.0,
+            "conceptual_correctness": null,
+            "narrative_structure": 58.3333,
+            "pedagogical_clarity": 37.5,
+            "didactic_affordances": null,
+            "audience_appropriateness": 54.1667,
+            "instructional_presentation": null,
+            "task_completeness": 100.0,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "axis_scores_after_caps": {
+            "visual_quality": 45.8333,
+            "temporal_consistency": null,
+            "signal_quality": 75.0,
+            "conceptual_correctness": null,
+            "narrative_structure": 58.3333,
+            "pedagogical_clarity": 37.5,
+            "didactic_affordances": null,
+            "audience_appropriateness": 54.1667,
+            "instructional_presentation": null,
+            "task_completeness": 100.0,
+            "instruction_following": 100.0,
+            "spoken_teaching": null
+          },
+          "numeric_caps_applied": false,
+          "ranking_eligible": false,
+          "presentation_score": null,
+          "spoken_teaching_score": null
+        },
+        "dimensions": {
+          "visual_quality": {
+            "score": 45.8333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.visual_quality"
+          },
+          "temporal_consistency": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "axes.temporal_consistency"
+          },
+          "signal_quality": {
+            "score": 75.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.signal_quality"
+          },
+          "conceptual_correctness": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 70,
+            "source": "axes.conceptual_correctness"
+          },
+          "narrative_structure": {
+            "score": 58.3333,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.narrative_structure"
+          },
+          "pedagogical_clarity": {
+            "score": 37.5,
+            "status": "scored",
+            "threshold": 70,
+            "source": "axes.pedagogical_clarity"
+          },
+          "didactic_affordances": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "axes.didactic_affordances"
+          },
+          "audience_appropriateness": {
+            "score": 54.1667,
+            "status": "scored",
+            "threshold": 60,
+            "source": "axes.audience_appropriateness"
+          },
+          "instructional_presentation": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "instructional_presentation.criteria and measured layout",
+            "criteria": []
+          },
+          "task_completeness": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "task_completion.coverage"
+          },
+          "instruction_following": {
+            "score": 100.0,
+            "status": "scored",
+            "threshold": 60,
+            "source": "measured instruction-following criteria",
+            "criteria": [
+              {
+                "id": "duration",
+                "score": 100,
+                "evidence": {
+                  "valid": true,
+                  "duration_seconds": 85.53333333333333,
+                  "fps": 15,
+                  "frame_count": 1283,
+                  "actual_duration_s": 85.53333333333333
+                }
+              }
+            ]
+          },
+          "spoken_teaching": {
+            "score": null,
+            "status": "unverified",
+            "threshold": 60,
+            "source": "narration_review.criteria"
+          }
+        },
+        "errors": [
+          "speech_transcription_failed",
+          "lesson_segment_coverage_failed",
+          "grounded_observations_failed",
+          "conceptual_correctness_failed",
+          "didactic_affordances_failed",
+          "temporal_consistency_failed",
+          "consistency_review_failed",
+          "consistency_review_missing_or_failed"
+        ],
+        "narration": {
+          "detected": false,
+          "reason": "audio_stream_missing"
+        },
+        "presentation": {
+          "valid": false,
+          "all_windows_reviewed": false,
+          "error": "one or more windows could not be verified"
+        },
+        "media": {
+          "exists": true,
+          "sha256": "faf6f3d2aaaa3bec242fd58f934c352f0adcc9896f8e612be93cf0893d8155c4",
+          "probe": {
+            "programs": [],
+            "streams": [
+              {
+                "codec_name": "h264",
+                "codec_type": "video",
+                "width": 854,
+                "height": 480
+              }
+            ],
+            "format": {
+              "duration": "85.533333"
+            }
+          }
+        }
+      }
+    ]
+  }
+}
