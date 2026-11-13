@@ -1,0 +1,501 @@
+{
+  "scope": "Known development membership, including related tasks; exclusion from future reserve selection is retained after experiment cleanup. Not an unseen/test certification.",
+  "cases": [
+    {
+      "id": "art_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "art_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "art_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "art_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "art_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "art_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "art_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "bio_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "bio_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "bio_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "bio_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "bio_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cand_hs_art_05",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cand_hs_civ_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cand_med_cs_gap_05",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "chem_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "civ_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cs_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cs_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cs_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cs_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cs_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "cs_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "disciplinegen_biology_834d184294c39985",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "disciplinegen_biology_cf797d51a318cd19",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "disciplinegen_biology_d463e086c0d85b7b",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "disciplinegen_mathematics_1ace1e12820c6491",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "econ_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "geo_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_ComputerScience_task_17",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_biology_task_10",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_biology_task_57",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_chemistry_task_10",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_chemistry_task_2",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_computerscience_task_1",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_100",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_114",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_118",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_134",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_140",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_150",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_158",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_eco_task_42",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_eco_task_52",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_eco_task_56",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_eco_task_60",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_eco_task_64",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_eco_task_70",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_engineering_task_2",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_geography_task_1",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_geography_task_13",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_geography_task_14",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_geography_task_25",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_geography_task_3",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_geography_task_7",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_his_task_1",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_his_task_16",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_his_task_17",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_his_task_19",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_math_math_1",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_math_math_112",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_math_math_4",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_math_math_40",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_math_math_41",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_math_math_95",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_music_task_10",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_music_task_11",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_music_task_14",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_music_task_15",
+      "reason": "related_to_development"
+    },
+    {
+      "id": "grade_physics_task_12",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "grade_physics_task_68",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "hist_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_high_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "lang_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "math_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "math_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "math_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "math_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "math_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "med_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "med_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "med_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "med_prob_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "med_prob_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "phys_exp_01",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "phys_exp_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "phys_exp_03",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "phys_high_02",
+      "reason": "direct_local_evidence"
+    },
+    {
+      "id": "phys_prob_01",
+      "reason": "direct_local_evidence"
+    }
+  ]
+}

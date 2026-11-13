@@ -1,0 +1,12 @@
+{
+  "n": 400,
+  "source_hash": "399cb0b1ed18150fbcf93b5514708476fb207c2e0d077fee56376a3be90cdb02",
+  "expert_approved": 0,
+  "structurally_generation_ready": 400,
+  "scope": {
+    "candidate": 400
+  },
+  "issues": {
+    "difficulty_needs_independent_annotation": 296
+  }
+}

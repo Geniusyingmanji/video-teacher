@@ -1,9 +1,0 @@
-{
-  "directory": "/root/video-teacher/delivery/all_generated_videos_20261110",
-  "files": 1836,
-  "render_cache_fragments": 1700,
-  "non_cache_videos": 136,
-  "code2video_complete": true,
-  "code2video_status": "5/5 sections, final merge and full decode passed; no audio; teaching-quality acceptance pending",
-  "final_video": "Code2Video_Linear_transformations_and_matrices_FINAL.mp4"
-}

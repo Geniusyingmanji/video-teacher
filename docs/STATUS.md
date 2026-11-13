@@ -1,112 +1,35 @@
-# Current status — 2026-11-03
+# 当前状态快照
 
-当前采用 [英文有声教学 v2 / scoring v9](NARRATED_LESSONS_V2.md)：400 题有独立的 60/120/180 秒版本，题目、提示词、章节渲染、配音和实际音轨评估同步修改。语音合成及 CPU 识别的英文连通测试通过；代码检查后用 GPU 0、1 运行同一代表十题，知识讲解和解题各五题，时长 4/3/3 分布。GPU 2、3 已停止服务并确认显存均为 0 MiB。旧无声试跑已中止并保留，不能当作新有声版成绩。
+日期：2026-11-12，R106 结束后。方法迭代和模型调用暂停。未来恢复执行时，应先更新本页日期和运行指针。
 
-历史完整十题（contract v5 / scoring v6）自动通过 4/10。四个有效结果均值 97.88 有幸存者偏差和满分饱和问题，见 [实跑分析](SAMPLE10_V6_ANALYSIS_2026-11-03.md)。旧成绩保留，不能当作分钟级 v8 结果。下面保留历史 pilot 状态。
+## Benchmark
 
-# Project status — local v1 assembled 2026-10-20
+- 候选池 400 题，统一覆盖 13 个学科；体育与棋类 25 题按普通学科参与。讲解 155、解题 245。
+- 最近本地清单：开发 124、预留候选 276；专家批准记录 0，未认证为正式留出集。[原始清单](../results/localbench/continuous_method_20261112/round102_repeated_connections/reserve_inventory_after_trials/summary.json)
+- General 已实现十维、六十项整数 rubric；视频和教学各 50%。Specific 与学生诊断单列。
+- 前缀提问、回答轨迹及固定知识点学生试验已实现，但与默认 CLI 并非一个完全统一的协议。
+- 400 题正式实验、人工校准、可靠的 judge／学生检错能力尚未完成。
 
-The offline first version can be rebuilt with `python -m scripts.build_v1` and
-opened at the generated `results/v1/index.html`. Its manifest
-checks the 60 prompt IDs against five checked-in standard-evaluation arms and
-two checked-in Qwen3-VL proxy arms. It also renders three example contracts into
-five-second deterministic MP4 clips and
-the convex-lens interaction. See [`V1_LOCAL.md`](V1_LOCAL.md) for the exact
-scope and the steps requiring models or human raters. The checked-in visual
-probes were generated after seeing each model's output, so their proxy scores
-are diagnostic and cannot support cross-model learner comparisons.
+## 方法与最近结果
 
-The historical status and submission audit below describes the earlier pilot;
-use the v1 manifest to inspect which artifacts are actually present locally.
+| 运行 | 结果 | 证据 |
+| --- | --- | --- |
+| R100 四题开发对比 | 已完成；没有稳定整体教学收益证据 | [冻结协议](../results/localbench/continuous_method_20261112/round100_four_case_transfer/PROTOCOL.md) |
+| R102 生物对象连接 | 50 秒视频，7/7 处跨场景连接修复并核验；Specific 87.5→100，候选学生 1/2 完成，仍有读图漏检 | [完整报告](../results/localbench/continuous_method_20261112/round102_repeated_connections/REPORT.md) |
+| R103 透视题完整 CLI | 85 秒视频已生成；尺寸阶段未成功应用，普通修复删去一条道路边线；正式 General 总分 null，专项四问 100 | [CLI 报告](../results/localbench/continuous_method_20261112/round103_perspective_full_cli/method/REPORT.md) |
+| R104 尺寸原型 | 树木只修好一侧；另一条同题横截线视频无改动 | [运行目录](../results/localbench/continuous_method_20261112/round104_size_projection/) |
+| R105 尺寸原型 | 树木候选失败，保留原片；横截线无改动 | [失败记录](../results/localbench/continuous_method_20261112/round105_grounded_size_order/cases/trees/size/result.json) |
+| R106 尺寸原型 | 树木绑定被判为同一不可区分深度，保留原片；横截线无改动 | [失败记录](../results/localbench/continuous_method_20261112/round106_depth_layer_sizes/cases/trees/size/result.json) |
 
-This is the canonical current-status page. Historical experiment details remain
-in `docs/reports/`, `docs/REPORT.md`, and the Git history. “Implemented” below
-means that code or study infrastructure exists; it does not mean that the
-corresponding paper evidence has been collected.
+R103 的记录中视频质量约 97.92、教学质量约 65.48，因转写证据争议未解决而没有正式总分。专项满分不等于完整视频满分。R104–R106 使用同一已知透视开发题的既有成片，不是多个未见任务的迁移验证。
 
-## Current scope and defensible result
 
-rise-teacher currently supports a reproducible 60-case short instructional-clip
-pilot over 12 disciplines. Standard evaluation results exist for Wan 1.3B and
-5B configurations at 3 s and 5 s, and Qwen3-VL-2B TeachQuiz-T results exist for
-the two 3 s configurations. A 22-case graduate stress set has standard results
-for Wan1.3B only.
+## 后续待办（尚未执行）
 
-The claim supported today is deliberately narrow:
+1. Benchmark：补题目裁定、冻结问题包与人工／缺陷控制校准。
+2. 方法：收敛到教学关系约束和成片反馈，完成有明确对照的小规模配对实验。
+3. 工程：统一研究协议与 CLI，补全小模型学生画像和问题包覆盖。
 
-> In this 60-case pilot with two Wan configurations and one Qwen3-VL-2B
-> learner proxy, automated visual-rubric scores had low correlation with
-> normalized simulated learning gain.
+本页是当前进度入口；各轮结果不作为最新累计统计。所有 API 用量以运行账本为准，本页没有重新汇总费用。
 
-This is not evidence that standard video evaluation fails to predict human
-learning, that TeachQuiz-T is human-validated, or that the benchmark ranks T2V
-model families.
-
-## Completed evidence
-
-- 60-case pilot prompts, first frames, quiz/probe data, and schema validation.
-- Standard automated evaluation for six Wan configuration/duration variants
-  represented in `results/`, plus Wan1.3B on 22 graduate cases.
-- TeachQuiz-T Qwen3-VL results for Wan5B-3s and Wan1.3B-3s.
-- Six video-only rubric dimensions and a pre/post/random-control TeachQuiz-T
-  pipeline.
-- A blinded human-study exporter, rater UI, validation, reliability, and
-  judge--human analysis code. No real ratings have been collected yet.
-- A reproducible 100-case GRADE + DisciplineGen draft. It is not release-ready.
-- Paired uncertainty analysis for the three existing matched standard-eval
-  comparisons, including case-bootstrap CIs, Cohen's dz, paired sign-flip
-  tests, and Holm correction:
-  - `analysis/paired_wan5b_vs_wan13b_3s.md`
-  - `analysis/paired_wan5b_5s_vs_3s.md`
-  - `analysis/paired_wan13b_5s_vs_3s.md`
-
-## What the paired analysis changes
-
-- Wan5B-3s vs Wan1.3B-3s: the aggregate difference is -0.0683 in favour of
-  Wan1.3B, but its 95% CI crosses zero (`[-0.1775, 0.0425]`). The current data
-  do not establish an aggregate winner.
-- Wan5B 5s vs 3s: aggregate change is small and uncertain. Narrative structure
-  improves by 0.2000, but does not survive Holm correction at 0.05. Visual
-  quality decreases by 0.4167 (`95% CI [-0.6000, -0.2417]`, Holm p=0.0008).
-- Wan1.3B 5s vs 3s: no analysed headline dimension has a CI excluding zero.
-
-These results supersede prose that inferred winners from unpaired means alone.
-
-## Submission blockers
-
-1. **Collect human validation:** 60 videos × 3 raters; report ordinal alpha and
-   per-dimension judge--human correlations.
-2. **Add an independent T2V family:** current headline model comparisons remain
-   within Wan.
-3. **Complete matched TI2V vs T2V:** the existing defect-oriented TI2V result is
-   only `n=6`, not a benchmark-scale controlled comparison.
-4. **Complete graduate evidence:** run Wan5B on the same 22 cases and canonical
-   Qwen3-VL TeachQuiz-T for both configurations.
-5. **Test learner dependence:** repeat TeachQuiz-T with a second frozen weak
-   student model.
-6. **Apply uncertainty analysis to every new final comparison:** the machinery
-   now exists, but future model/TI2V/learner results must also use it.
-7. **Clear the release gate:** verify redistribution rights, finish disciplinary
-   and image review, resolve duplicate music rows, and document exclusions.
-
-## Scope-dependent gaps
-
-- Audio-narration and triple-modal evaluation require audio-capable outputs.
-- Current 3–5 s videos support claims about short clips, not full lessons.
-- Generation variance is unknown because there is one seed per prompt.
-- A public benchmark requires a larger frozen and reviewed test split.
-- The first-frame strict PASS rate remains about 25/60 for the original pilot.
-
-## Recommended execution order
-
-1. Freeze and distribute the human-rating packet; collect ratings.
-2. Run the matched 60-case TI2V/T2V experiment.
-3. Complete Wan5B graduate generation/evaluation and graduate TeachQuiz-T.
-4. Run a second student model.
-5. Add an independent model family.
-6. Apply paired uncertainty analysis to every completed comparison.
-7. Finish licensing/curation review, then freeze the release evidence package.
-
-For detailed claim boundaries and required release artifacts, see
-`docs/PAPER_READINESS.md`. For the prioritized experimental backlog, see
-`docs/plan.md`.
+仓库保留最近 R100–R106 开发批次的原始成功、失败和评分；更早试跑、重复实现及旧文档已清理。部分旧运行引用的上游文件已删除，这些记录用于结果核查，不保证旧运行可完整重放。当前 124 道开发成员另存于 [development_membership.json](../data/development_membership.json)。

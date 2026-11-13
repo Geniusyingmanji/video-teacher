@@ -1,0 +1,30 @@
+{
+  "math_exp_02": [
+    {
+      "id": "prerequisite_ready",
+      "description": "English-reading secondary-school learner with the listed geometry prerequisites. Report only what the video supports.",
+      "known": {"K0": "A triangle has three vertices and interior angles.", "K1": "A straight angle measures 180 degrees.", "K2": "Rigid translation and rotation preserve an angle's measure.", "K3": "Corresponding and alternate interior angles for parallel lines."},
+      "not_assumed": ["A proof or general explanation of the triangle angle-sum result."]
+    },
+    {
+      "id": "needs_geometric_bridge",
+      "description": "English-reading learner beginning angle geometry; a fixed prerequisite hypothesis, not a requirement to be confused.",
+      "known": {"K0": "A triangle has three corners.", "K1": "Angles can be compared and measured in degrees.", "K2": "A straight angle measures 180 degrees."},
+      "not_assumed": ["Why moving or rotating an angle preserves its measure.", "Parallel-line angle theorems.", "A proof of the triangle angle-sum result."]
+    }
+  ],
+  "math_prob_01": [
+    {
+      "id": "prerequisite_ready",
+      "description": "English-reading learner beginning worked linear-equation examples, with the listed arithmetic and equality prerequisites.",
+      "known": {"K0": "Integer addition, subtraction, multiplication and division.", "K1": "A letter can stand for an unknown number; 2x means twice x.", "K2": "Applying the same addition, subtraction or nonzero division to both sides preserves equality."},
+      "not_assumed": ["The solution or step sequence for this particular equation."]
+    },
+    {
+      "id": "needs_equality_bridge",
+      "description": "English-reading arithmetic learner new to algebraic equality transformations; do not force confusion when the video explains them.",
+      "known": {"K0": "Integer addition, subtraction, multiplication and division.", "K1": "An equals sign says the two numerical values are the same.", "K2": "A letter can represent an unknown number."},
+      "not_assumed": ["Why the same operation is applied to both sides of an equation.", "The convention that 2x means twice x.", "The solution to this equation."]
+    }
+  ]
+}

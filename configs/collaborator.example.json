@@ -1,0 +1,17 @@
+{
+  "generator": {
+    "model": "qwen3.8-flash",
+    "url": "https://YOUR-SERVICE/compatible-mode/v1",
+    "api_key_env": "VIDEO_TEACHER_API_KEY"
+  },
+  "judge": {
+    "model": "qwen3.8-flash"
+  },
+  "audio_judge": {
+    "model": "qwen3.5-omni-flash",
+    "json_format": false
+  },
+  "tts": {
+    "backend": "auto"
+  }
+}

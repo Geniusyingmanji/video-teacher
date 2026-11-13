@@ -1,11 +1,17 @@
-# User execution constraints
+# 当前执行约束
 
-- Session override confirmed 2026-11-09: the user explicitly requests all four GPUs (0–3), two case workers per GPU, fixes pushed to GitHub main, and research/reproduction of educational code-to-image and Code2Video methods. This supersedes the earlier GPU 0/1-only restriction below. Preserve the frozen ten cases and old runs. Evaluate quality fairly without a target high/low score distribution; unknown evidence is not zero. Full narrated-video inspection remains necessary after unit/render fixtures pass.
+- 禁止从本地执行 `git push`，包括 GitHub 或其他远程；只有用户后续明确更改此要求才可变更。
+- 文档默认使用 Markdown。完整文件结构直接维护在根 `README.md`，不再另存首页历史副本。
+- 当前方法迭代和付费模型调用已暂停；当前授权范围为本地代码与文档维护、分批运行入口和必要离线检查。不得自行恢复实验。
+- Benchmark 统一包含 400 道候选题、13 个学科；体育与棋类作为普通学科参与，不划分主集与扩展集。`core` 与 `all` 均包含所有学科。
+- 任务为约 50–105 秒完整英文旁白教学视频，覆盖讲解与解题。先完成 benchmark，再验证代码介入生成方法。
+- General 为视频质量和教学质量两组，各占 50%；教学分内容、组织、表达，七个叶维度等权。共 10 维、每维 6 项，各项只用整数 1–5。
+- Specific 与模拟学生诊断单独报告，不自动混入 General 总分。未知证据、API 失败和未解决冲突保留缺失；不人为设定高低分分布。
+- 方法生成只读取公开题目、受众、时长与允许的原图；私有答案、评分参考和最终分数不进入生成。
+- 评测以真实成片和音轨为证据。区分生成完成、评分有效和教学质量；不把模型判断当作专家真值。
+- 所有失败与未完成任务计入实验分母；不得仅保留成功样本或改写成绩。用户明确要求移除的停用材料不再归档保留。
+- 凭据保存在仓库外，不打印或写入文档、运行报告、源码包。
+- 用户恢复实验后，默认 API 并发 4、渲染并发 2；记录实际请求和 token，费用以真实价格或账单为准。
+- 原生视频服务实测继续暂缓，除非用户恢复该路径。
 
-- Standing loop confirmed 2026-11-05: rerun the same frozen ten cases on GPU 0/1 with two case workers per GPU. After each round inspect actual video quality and scoring logic, fix reproducible bugs, run relevant checks, push fixes to GitHub main, then start the next fresh round. Preserve all rounds and failed cases. Review includes English speech, synchronization, layout/readability, conceptual correctness, required steps, scoring citations, deductions/caps, and invalid-evaluation handling; render completion alone is not acceptance.
-
-- Use only GPU 0 and GPU 1. Keep GPU 2 and GPU 3 completely free, including model services and residual workers. This is the user's explicit standing instruction from 2026-11-03.
-- Complete code changes and relevant checks before starting the ten-case model validation. Use the frozen representative ten-case set, including one-, two- and three-minute videos, knowledge explanations and worked solutions, simple and advanced tasks. Do not replace failed cases.
-- Current lessons require English spoken narration matching the English tasks and labels. Background music is optional and disabled by default. Tones or music alone do not satisfy speech requirements.
-- Preserve legacy tasks, failed runs, original constraints and previous scores. Distinguish render success, verified evaluation, and teaching-quality acceptance.
-- Current priority (2026-11-03): deliver playable narrated videos first using `--generation-profile draft`. Treat label size, layout, coverage metadata, and small timing deviations as review warnings; defer full quality evaluation. Preserve strict results and label draft delivery separately from quality acceptance. Keep four case workers on GPU 0/1.
+- 代码交付不传视频、音频、实验结果或模型权重；图片按当前题目输入白名单收集。实验媒体在本地保留，协作者默认回传逐题评分、失败、配置与用量记录。

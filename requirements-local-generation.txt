@@ -1,8 +1,0 @@
-# Additional CPU dependencies for strict local Code2Video generation.
-# Install into the existing Manim/code2video environment, not the vLLM environment.
-rdkit>=2024.9,<2027
-tokenizers>=0.22,<0.24
-imageio>=2.34,<3
-imageio-ffmpeg>=0.5,<1
-edge-tts>=7.3,<8
-faster-whisper>=1.2,<2

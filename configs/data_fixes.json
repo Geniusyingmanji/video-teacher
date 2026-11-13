@@ -1,0 +1,34 @@
+{
+  "version": "editorial-draft-20261111",
+  "status": "development_assignments_not_expert_validation",
+  "audiences": {
+    "grade_math_math_95": "K-12 (grades 9-10), familiar with Cartesian coordinates and function graphs",
+    "grade_math_math_41": "K-12 (grades 8-10), familiar with coordinates and reflections",
+    "grade_math_math_40": "K-12 (grades 9-10), familiar with coordinates and point symmetry",
+    "grade_chemistry_task_2": "K-12 (grades 11-12), introductory organic chemistry and esterification",
+    "grade_biology_task_57": "Undergraduate introductory microbiology, familiar with bacterial growth and oxygen requirements",
+    "grade_physics_task_12": "K-12 (grades 9-10), introductory geometric optics",
+    "grade_math_math_4": "K-12 (grades 8-10), familiar with ratios and similar triangles",
+    "grade_math_math_1": "K-12 (grades 9-10), familiar with the Pythagorean theorem and radicals",
+    "grade_physics_task_68": "K-12 (grades 11-12), familiar with magnetic force and circular motion",
+    "grade_ComputerScience_task_17": "Undergraduate introductory probability, familiar with Markov transition diagrams",
+    "disciplinegen_biology_cf797d51a318cd19": "K-12 (grades 10-12), introductory human biology and blood components",
+    "disciplinegen_biology_d463e086c0d85b7b": "K-12 (grades 9-10), introductory genetics and homologous chromosomes"
+  },
+  "boilerplate_replacement": {
+    "from": "preserve intermediate values and units",
+    "to": "preserve relevant quantities, labels, and units where applicable"
+  },
+  "prompt_replacements": {
+    "grade_biology_task_57": {
+      "from": "On the supplied thioglycolate tube, change growth from bottom-only to growth at all depths, densest near the oxygen-rich surface.",
+      "to": "Use the supplied bottom-only growth pattern as a reference for an obligate anaerobe. Illustrate a facultative anaerobe instead: growth at all depths, densest near the oxygen-rich surface. Explain that these are different oxygen-response categories, not the same culture changing organism type."
+    }
+  },
+  "adjudication_notes": [
+    "A relevant misconception need not be prescribed uniquely; this is permitted teaching choice, not a major ambiguity.",
+    "The fixed reference instruction explicitly permits originally authorized target marks to change; replacing authorized x/y labels is not a contradiction.",
+    "The supplied math_1 and math_4 images were visually checked: the lower right triangle supports sqrt(17^2+6^2), and the stated similar triangles support scale factor 14/7.",
+    "Explicit answers in a worked-video task are allowed but should be distinguished from tasks where the system must independently find the answer."
+  ]
+}

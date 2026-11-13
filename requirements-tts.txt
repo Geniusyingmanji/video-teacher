@@ -1,0 +1,2 @@
+# Optional network TTS; macOS say and Linux espeak-ng do not need this package.
+edge-tts>=7,<8

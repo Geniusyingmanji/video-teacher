@@ -1,340 +1,132 @@
-# rise-teacher
+# RISE-Teacher
 
-2026-11-04 更新：[评分链路修复与固定十题复评](results/reports/scoring_repair_20261104/README.md)，以及[五条可下载的英文旁白视频](delivery/README.md)。保留旧成绩和失败生成记录，区分有效评分与教学质量验收。
+完整教学视频的 benchmark 与代码介入生成方法。400 道候选题、13 个学科，覆盖讲解和解题，目标约 50–105 秒英文旁白视频。先完成 benchmark，再验证方法收益。
 
-当前采用 [1–3 分钟英文有声教学 / v9](docs/NARRATED_LESSONS_V2.md)：题目、视频提示词、章节时间线、配音和逐窗口评估使用同一时长。知识讲解和解题都要求实际解释；配乐可选，默认关闭。只使用 GPU 0、1，GPU 2、3 完全空闲。历史五秒和无声题及成绩保留；旧十题 v6 自动通过 4/10，97.88 分仅是四个有效结果均值，详见 [失效分析](docs/SAMPLE10_V6_ANALYSIS_2026-11-03.md)。
+当前为开发阶段：全库实验与人工校准尚未完成；方法迭代和付费调用暂停。**禁止从本地执行 git push。**
 
-## 一键运行视频评测
+## Benchmark 与方法
 
-在仓库根目录安装评测所需依赖（Python 3.10+）：
+- **General**：视频质量，以及教学质量下的内容、组织、表达；10 维 × 6 项整数 1–5。视频与教学各占 50%。
+- **Specific**：逐题知识问题评分，与 General 并列。
+- **模拟学生**：分段理解、疑问与图示对应诊断，独立报告。
+- **方法**：公开任务 → 课程规划 → 声明式场景／可执行状态 → 校验、配音、渲染 → 成片反馈修复 → 可选关系约束 → 独立评测。
 
-```powershell
-python -m pip install openai httpx opencv-python-headless numpy pillow imageio-ffmpeg
+已有局部关系修复结果，尚无稳定跨题教学收益或 RSI 证据。[当前状态与结果](docs/status.md)。
+
+## 数据分布
+
+| 学科 | 讲解 | 解题 | 合计 |
+| --- | ---: | ---: | ---: |
+| 数学 | 7 | 32 | 39 |
+| 物理 | 18 | 19 | 37 |
+| 化学 | 18 | 19 | 37 |
+| 生物 | 18 | 19 | 37 |
+| 医学 | 11 | 8 | 19 |
+| 计算机科学 | 18 | 19 | 37 |
+| 历史 | 11 | 25 | 36 |
+| 地理 | 19 | 18 | 37 |
+| 经济与金融 | 14 | 23 | 37 |
+| 社会与公民教育 | 5 | 7 | 12 |
+| 语言与文学 | 5 | 8 | 13 |
+| 艺术与音乐 | 11 | 23 | 34 |
+| 体育与棋类 | 0 | 25 | 25 |
+| **合计** | **155** | **245** | **400** |
+
+体育与棋类为普通学科，`--suite all` 与 `--suite core` 均选择全部 400 题。开发成员 124 题、预留候选 276 题；预留候选尚未认证为正式未见测试集。
+
+## 文件结构
+
+```text
+video-teacher/
+├── README.md                 # 项目说明与完整目录导航
+├── AGENTS.md                 # 当前操作约束
+├── teacher.py                # bench / method / evaluate / student / doctor
+├── requirements.txt          # 当前运行依赖
+├── requirements-tts.txt      # 可选网络配音
+├── localbench/               # 当前唯一实现
+│   ├── run.py, pipeline.py   # CLI、规划与生成
+│   ├── scene.py, state.py    # 渲染与领域状态
+│   ├── rubric.py, judge.py   # General 评分与汇总
+│   ├── student*.py           # 分段学生和知识诊断
+│   └── student_questions/    # 逐题问题、评分与回答轨迹
+├── configs/                  # 服务示例、学生画像、题目编辑规则
+├── data/
+│   ├── source_tasks.jsonl    # 带来源的构建输入
+│   ├── tasks.jsonl           # 当前统一 400 题
+│   ├── tasks.summary.json    # 题库状态
+│   ├── development_membership.json  # 已知开发成员
+│   └── sources/              # 来源元数据与素材
+├── docs/
+│   ├── benchmark.md          # 数据、范围、输入边界
+│   ├── evaluation.md         # 维度、权重、六十项细则
+│   ├── method.md             # 代码介入生成与修复
+│   ├── student.md            # Specific 与模拟学生
+│   ├── usage.md              # 安装、配置、命令与输出
+│   ├── research.md           # 相关工作与方法启发
+│   └── status.md             # 当前进度与近期结果
+├── scripts/                  # 打包、包验证、排版验证三个工具
+├── tests/                    # 当前实现的离线回归与排版样例
+├── results/                  # 本地实验媒体、评分与失败，不随代码交付
+└── dist/                     # 本地分发产物与可选 ASR 权重包，不随代码交付
 ```
 
-配置支持图片输入及 Chat Completions JSON 模式的 API，然后执行一条命令：
+## 使用与源码入口
 
-```powershell
-$env:VIDEO_TEACHER_API_KEY = '你的 API Key'
-$env:VIDEO_TEACHER_BASE_URL = 'https://你的接口地址/v1'
-$env:VIDEO_TEACHER_MODEL = '你的视觉模型名'
-python scripts/run_benchmark_once.py --manifest '你的视频清单/manifest.jsonl'
-```
+安装、服务配置和 Linux 命令见[使用说明](docs/usage.md)。凭据放仓库外。源码按职责查阅 [localbench/README.md](localbench/README.md)。
 
-脚本默认评测 `data/prompts/pilot_v0_1.jsonl` 的 60 题，先检查输入与本地视频，再运行全部八维评分。清单中每条 `video_path` 必须指向运行机器上真实存在的视频；其他题集可加 `--prompts 路径`，输出目录可加 `--out 路径`。结果写入 `results/benchmark_v2/{per_case.jsonl,aggregate.json}`。中断后原命令可直接续跑；预检查失败时不会调用 API。只想预检查可加 `--check-only`。完整维度、评分规则和结果解释见 [评测协议](docs/BENCHMARK_V2.md)。
-
-评测 400 题时使用下面的命令。`--full-400` 自动选择 400 题候选集，并检查题目恰好有 400 个唯一 ID；只有清单也包含这 400 个 ID 且视频文件齐全，才开始调用 API。
-
-```powershell
-python scripts/run_benchmark_once.py --full-400 --manifest '400个视频的manifest.jsonl'
-```
-
-`--full-400` 当前默认使用英文有声 `candidate_400_lessons_v2.jsonl`；历史任务可显式传入旧 `--prompts`。当前**没有 400 个已生成视频的清单**，不能声称已完成全库质量验证。候选题仍需人工内容审核。取得完整清单后，上述命令输出 `results/benchmark_400_lessons_v2/per_case.jsonl` 和 `aggregate.json`：
-
-```json
-{"id":"题目ID","version":"video-teacher-2x8-v9","axes":{"visual_quality":{"score":75,"criteria":[{"id":"legibility","score":4,"applicable":true,"evidence_frames":[1],"finding":"具体观察"}]}},"scoring":{"valid":true,"score":75,"groups":{"video_quality":75,"teaching_quality":75},"strict_pass":true,"errors":[],"gates":[]},"errors":[]}
-```
-
-上例省略其余七维、视频诊断、instructional_presentation 和 narration_review 等必需字段；v9 总分同时受呈现与口述教学分约束，严重布局、过程或口述错误不能靠其他维度抵消。实际文件包含完整记录。汇总重点看 `n_total`、`n_valid`、`n_failed`、`failed_ids`、`spoken_teaching`、`ranking_publishable`、`ranking_score`、`axis_means`、`group_means`。只有完整 400 题全部有效时才允许完整排名；失败题保留在分母。
-
-## Benchmark scoring (2x8-v9)
-
-The current benchmark implementation groups eight subcategories under **video
-quality** and **teaching quality**, with equal category weight, evidence-backed
-VLM rubrics, full-frame signal operators, strict gates, complete-case ranking,
-and paired model comparisons. Run `python -m eval.run_benchmark_v2 --prompts
-PROMPTS.jsonl --manifest MANIFEST.jsonl --out OUTPUT_DIR`; see
-[the scoring protocol](docs/BENCHMARK_V2.md) for every algorithm, threshold,
-output field, and validation limit. TeachQuiz-T remains a separate learner
-proxy. All scores and tables below this section are historical pilot results
-from the earlier rubric, not 2x8-v4 results.
-
-Round-two portable image probe: [setup and run guide](docs/ROUND2_PORTABLE.md).
-
-## 本地研究原型 v1
-
-在仓库根目录运行 `python -m scripts.build_v1`，然后打开生成的
-`results/v1/index.html`。该命令从三份已验证知识契约生成 5 秒代码视频，
-并整合 60 题数据、交互教学样例和仓库已有的自动评分与代理测验结果。
-范围、复现步骤与尚待收集的证据见[第一版说明](docs/V1_LOCAL.md)。
-
-The current code and 400-candidate audit is in
-[`docs/CODE_AND_400_AUDIT.md`](docs/CODE_AND_400_AUDIT.md).
-For a read-only check of the matched model experiment, run
-`python -m scripts.pipeline_preflight`. The offline v1 build and the model
-experiment have different prerequisites; see
-[`docs/PAPER_EXECUTION_GATES.md`](docs/PAPER_EXECUTION_GATES.md).
-Current verified progress is summarized in
-[`docs/PROJECT_PROGRESS_2026-10-26.md`](docs/PROJECT_PROGRESS_2026-10-26.md).
-
-Code2Video research, local Qwen inference, and trial scripts are in
-[`research/code2video/`](research/code2video/README.md).
-
-Benchmark for evaluating text-to-video models on **multi-discipline knowledge-explanation and problem-solving** tasks, with **two complementary metrics**:
-
-1. **Standard eval** — GPT-5.5 scores 6 pedagogy-aware dimensions (Conceptual Correctness, Narrative Structure, Visual Quality, Pedagogical Clarity, Didactic Affordances, Audience Appropriateness).
-2. **TeachQuiz-T** — a weak student VLM (Qwen3-VL-2B) takes pre/post quizzes around each generated video; we measure the *normalized learning gain*.
-
-Pilot finding: **standard eval explains <5% of variance in normalized gain for one frozen VLM learner proxy**. This motivates studying TeachQuiz-T as a complementary metric; it is not yet evidence about human learning. See [`docs/STATUS.md`](docs/STATUS.md), [`docs/TEACHQUIZ_REPORT.md`](docs/TEACHQUIZ_REPORT.md), and the [`paper-readiness audit`](docs/PAPER_READINESS.md) for results and claim boundaries.
-
-The in-progress 100-case GRADE + DisciplineGen-1M data expansion is documented
-in [`docs/MULTISOURCE_PILOT.md`](docs/MULTISOURCE_PILOT.md). It is
-schema-valid but intentionally remains outside the released benchmark until its
-curation and redistribution gates pass.
-
----
-
-## End-to-end pipeline
-
-```
-┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
-│       DATA        │ ─▶ │    GENERATION     │ ─▶ │       EVAL        │ ─▶ │     ANALYSIS      │
-├───────────────────┤    ├───────────────────┤    ├───────────────────┤    ├───────────────────┤
-│ prompts (60-82)   │    │ Wan2.1-T2V-1.3B   │    │ standard 6-dim    │    │ paper_stats       │
-│ first_frames      │    │ Wan2.2-TI2V-5B    │    │ (GPT-5.5 judge)   │    │ dim correlation   │
-│ teachquiz probes  │    │ (3s or 5s, 24fps) │    │ TeachQuiz-T       │    │ eval↔TeachQuiz r² │
-│                   │    │                   │    │ (Qwen3-VL learner)│    │ per-difficulty    │
-└───────────────────┘    └───────────────────┘    └───────────────────┘    └───────────────────┘
-       data/                  generation/                eval/                docs/{reports,analysis}/
-```
-
-### Stage 1 — DATA (`data/`)
-
-| Subdir | Content |
-|---|---|
-| `data/prompts/` | 60-case pilot_v0_1 + 82-case pilot_v0_2 + 22 high-difficulty addon (12 disciplines × explanation/problem_solving × k12/undergrad/professional/graduate) |
-| `data/first_frames/` | 60 PNG first-frame images (832×480) for TI2V conditioning. Currently from Azure GPT-Image-1 (25/60 judged PASS by the strict opening-frame judge). Optional inputs to the TI2V runner. |
-| `data/first_frames_mmmu/` | Retrieval metadata for the alternative path that sources first frames from MMMU + AI2D benchmark datasets (candidates + GPT-5.5 selections). |
-| `data/teachquiz/` | Pre/post quizzes and auto-generated visual probes (60×3 questions per model) for the TeachQuiz-T learning-gain metric. |
-
-### Stage 2 — GENERATION (`generation/`)
+服务配置完成后，先小批量验证；以下生成与评测命令需要模型 API：
 
 ```bash
-# Pure text-to-video (Wan2.1-T2V-1.3B)
-CUDA_VISIBLE_DEVICES=3 python -m generation.runners.wan_runner \
-    --prompts data/prompts/pilot_v0_1.jsonl \
-    --out /data/zyf/rise-teacher/generations/wan2_1_t2v_1_3b/pilot_v0_1 \
-    --num-frames 121 --height 480 --width 832 --steps 30 --fps 24    # 5s @ 24fps
-
-# Text-Image-to-video (Wan2.2-TI2V-5B) — uses first frames
-CUDA_VISIBLE_DEVICES=1 python -m generation.runners.wan_ti2v_runner \
-    --prompts data/prompts/pilot_v0_1.jsonl \
-    --first-frames data/first_frames \
-    --out /data/zyf/rise-teacher/generations/wan2_2_ti2v_5b_ff/pilot_v0_1 \
-    --num-frames 121 --height 480 --width 832 --steps 30
+# 本地预检，不调用模型
+.venv/bin/python teacher.py doctor --num 5
+# 同五题：基线生成 + General 评测
+.venv/bin/python teacher.py bench --num 5 --out results/bench5
+# 同五题：我们的方法 + General 评测
+.venv/bin/python teacher.py method --num 5 --out results/method5
+# 已有成片单独重评五题
+.venv/bin/python teacher.py evaluate --manifest results/method5/manifest.json --num 5 --out results/review5
+# 确认后调度全部 400 题；bench 可使用相同参数
+.venv/bin/python teacher.py method --suite all --out results/method400 --api-workers 4 --max-calls 32000 --max-tokens 240000000
 ```
 
-Outputs `{<id>.mp4, manifest.jsonl}` per case.
+`--num N` 按题库固定顺序取 N 题；`--offset K --num N` 跳过 K 题再取 N 题。同一题库与参数下，基线和方法选择相同题目。`--ids` 可显式选跨学科样例。不传选题参数时，生成默认三题；已有视频的 `evaluate`／`student` 默认取输入清单全部题目。`--suite all` 或 `--num 400` 选择全库；超出可选数量会报错，不静默少跑。
 
-### Stage 3 — EVAL (`eval/`)
+每批使用独立输出目录；`--resume` 只续跑相同题集、配置和源码，不能把五题目录直接扩成 400 题。完整 400 题尚未全量验收，预算需要按小批实耗调整。默认一键入口评 General；学生诊断需显式配置和对应画像，Specific 问题协议仍为独立研究入口。
 
-**Standard eval** — GPT-5.5 vision judge scores 8 evenly-spaced frames per video:
+## 需要保留和回传的文件
 
-```bash
-python -m eval.run_eval \
-    --prompts data/prompts/pilot_v0_1.jsonl \
-    --manifest /data/zyf/rise-teacher/generations/wan2_1_t2v_1_3b/pilot_v0_1/manifest.jsonl \
-    --out /data/zyf/rise-teacher/outputs/eval_pilot_v0_1 \
-    --sample-fps 2 --frame-max-px 384
-# Produces per_case.jsonl + aggregate.json (per_dim_mean, per_discipline,
-# per_task_type, per_difficulty)
-```
+### 运行项目
 
-**TeachQuiz-T** — weak student takes pre-video → post-video probe quiz, learning gain = (post − max(pre, random)) / (1 − max(pre, random)):
+协作者使用 `scripts/build_collaborator_bundle.py` 生成的源码包，不要直接压缩整个工作目录。打包器自动收集：
 
-```bash
-python -m eval.run_teachquiz \
-    --student qwen3vl \
-    --student-model-path /data/zyf/rise-teacher/models/Qwen3-VL-2B-Instruct \
-    --probe data/teachquiz/visual_probe_auto_5b.jsonl \
-    --manifest /data/zyf/rise-teacher/generations/wan2_2_ti2v_5b/pilot_v0_1/manifest.jsonl \
-    --out /data/zyf/rise-teacher/outputs/teachquiz_5b_qwen3vl_autoprobe
-```
+- `teacher.py`、`localbench/`：当前入口与全部实现。
+- `requirements.txt`、可选 `requirements-tts.txt`：依赖。
+- `configs/`、400 题及来源元数据：无密钥配置示例、题库和开发成员清单。
+- **181 张题目输入图**：178 张当前 GRADE 输入图，以及 3 张题目声明的生成来源图；另含 1 张排版测试图。不带重复图、答案图或无关题目的图片。
+- `README.md`、`AGENTS.md`、`docs/`、`scripts/`、`tests/`：运行说明、约束、打包工具与离线验证。
 
-### Stage 4 — ANALYSIS (`scripts/` → `docs/`)
+**视频不用传。源码包排除全部实验视频、音频、`results/`、`dist/`、Git 历史、虚拟环境、缓存和模型权重。** 本地素材目录可保留原始参考数据，它的大小不等于源码包大小。模型服务密钥放仓库外；ASR 权重按服务器联网条件另行准备。
 
-```bash
-python scripts/gen_paper_stats.py            # → docs/paper_stats.md / paper_stats.json
-python scripts/dim_correlation.py            # → docs/analysis/dim_correlation_*.md
-python scripts/eval_vs_teachquiz_correlation.py  # → docs/analysis/eval_vs_teachquiz_corr.md
-python scripts/gen_teachquiz_report.py       # → docs/TEACHQUIZ_REPORT.md
-python scripts/render_report.py              # → docs/reports/PILOT_REPORT*.md
-python scripts/compare_standard_eval.py \     # paired CI/effect/permutation analysis
-  --left results/eval_pilot_v0_1/per_case.jsonl \
-  --right results/eval_pilot_v0_1_wan13b/per_case.jsonl \
-  --left-label Wan5B-3s --right-label Wan1.3B-3s \
-  --out docs/analysis/paired_wan5b_vs_wan13b_3s.md
-```
+### 一次实验的结果
 
----
+**本地保留完整输出目录，默认回传评分与运行记录，不传视频、音频或整套抽帧。** 需要回传：
 
-## Headline results (current)
+- `REPORT.md`、`summary.json`、`scores.csv`、`manifest.json`、`run_config.json`。
+- `generation_inputs.jsonl`、`evaluation_tasks.jsonl`，以及各题 `scores.json`、失败／错误记录。
+- `api_usage.json`、`api/usage.jsonl`；学生启用时附逐题诊断 JSON 与汇总。
 
-| Configuration | N | mean | CC | NS | VQ |
-|---|---|---|---|---|---|
-| Wan5B-3s | 60 | 1.754 | 1.45 | 1.50 | 2.896 |
-| Wan5B-3s-ext6 (6 dims) | 60 | 1.820 | 1.567 | 1.517 | 2.946 |
-| Wan1.3B-3s | 60 | **1.823** | 1.567 | 1.45 | 3.021 |
-| Wan5B-5s | 60 | 1.789 | 1.567 | 1.70 | 2.479 |
-| Wan1.3B-5s | 60 | 1.788 | 1.517 | 1.40 | 3.050 |
-| **Wan1.3B-v0.2-high** (graduate) | 22 | **1.486** | 1.227 | **1.091** | 2.727 |
+不要只回传均分，失败和缺失也要保留。报告中的视频与图片链接用于本地复核，接收评分文件不代表已接收媒体。下表说明需要在实验机器本地保留的内容：
 
-**TeachQuiz-T (Qwen3-VL-2B student, auto visual probes):**
+| 文件／目录 | 保留用途 |
+| --- | --- |
+| `REPORT.md`、`summary.json`、`scores.csv` | 可读报告、逐题状态、各维度分数与覆盖率 |
+| `manifest.json`、`generation_inputs.jsonl`、`evaluation_tasks.jsonl` | 本次实际选题、公开生成输入、评测任务与媒体对应关系 |
+| `generation/`、方法修复产物目录 | 最终 MP4、场景计划、旁白、生成与修复收据、失败原因；至少保留清单引用的全部媒体 |
+| `evaluation/` | 每题逐项分数、真实抽帧／音轨证据、原始模型响应、核查与错误 |
+| `student/`、`students.json`（启用时） | 学生原始回答、疑问、复核、缺失与失败；单独问题协议的题包和评分也一起保留 |
+| `api/`、`api_usage.json` | 调用记录、服务端用量、预算与缓存；用于核对费用和续跑 |
+| `run_config.json`、`source_snapshot/` | 本次无密钥配置与对应的一份源码快照，用于核对运行所用实现 |
 
-| Model | N valid | NG | PGR |
-|---|---|---|---|
-| Wan5B | 52/60 | **0.760** | 88.5% |
-| Wan1.3B | 53/60 | 0.730 | 83.0% |
+单独 `evaluate`／`student` 输出可能引用原生成目录的视频；原视频与来源清单需要在本地一起保留，回传评分记录时不要求附视频。失败任务、空分和本次重试证据与成功任务共同保留。评测任务和参考答案可供评测者核查，不能作为生成输入。
 
-**Standard eval vs TeachQuiz-T correlation:** r²(5B)=4.5%, r²(1.3B)=0.9%.
-
-Paired uncertainty analysis does **not** establish an aggregate winner between
-Wan5B-3s and Wan1.3B-3s: left-minus-right mean difference -0.0683, 95% case-
-bootstrap CI [-0.1775, 0.0425]. See `docs/analysis/paired_*.md`; raw mean
-differences should not be interpreted as significant without these paired
-analyses.
-
----
-
-## Repository layout
-
-```
-data/
-├── prompts/              # case definitions (pilot_v0_1, pilot_v0_2, high-difficulty addon)
-├── first_frames/         # 60 GPT-Image-1 first-frame PNGs + check_report.jsonl
-├── first_frames_mmmu/    # MMMU/AI2D retrieval metadata (candidates, selections)
-└── teachquiz/            # quizzes + auto-generated visual probes
-
-generation/
-└── runners/
-    ├── wan_runner.py        # Wan2.1-T2V (pure text)
-    └── wan_ti2v_runner.py   # Wan2.2-TI2V-5B (text + first frame)
-
-eval/
-├── dimensions/           # CC, NS, VQ + PC, DA, AA + learning_gain
-├── judges/gpt55.py       # Azure OpenAI keyless GPT-5.5 client
-├── students/             # qwen3vl, qwen25vl, smolvlm2, gpt55_student, dummy
-├── run_eval.py           # standard 3/6-dim evaluation
-└── run_teachquiz.py      # pre/post quiz with weak student
-
-scripts/                  # 33 scripts: build prompts, generate/check/regen first frames,
-                          # download MMMU/AI2D, run analyses, render reports, orchestrate
-                          # full pipeline (run_full_pipeline.sh, finalize_*.sh)
-
-docs/
-├── STATUS.md             # current state (always up-to-date)
-├── plan.md, survey.md    # design + literature review
-├── REPORT.md             # narrative for paper
-├── TEACHQUIZ.md          # TeachQuiz-T design + TEACHQUIZ_REPORT.md results
-├── paper_stats.md        # headline numbers (auto-generated)
-├── reports/              # 13 per-config pilot reports
-└── analysis/             # 9 dim-correlation files + eval-vs-teachquiz
-```
-
----
-
-## Dimension status
-
-All 6 standard-eval dimensions are pilot-ready; learning gain is the headline contribution:
-
-| Dim | Status | Source |
-|---|---|---|
-| Conceptual Correctness | ✅ pilot | RISE-Video reasoning alignment |
-| Narrative Structure | ✅ pilot | PhyEduVideo logic flow + ordered-beat verification |
-| Visual Quality | ✅ pilot | RISE-Video VQ (mean of 4 sub-axes) |
-| Pedagogical Clarity | ✅ extended | chunking / emphasis / legibility / signposting |
-| Didactic Affordances | ✅ extended | PhyEduVideo element layout |
-| Audience Appropriateness | ✅ extended | depth / vocabulary / prior knowledge / engagement |
-| **Learning Gain (TeachQuiz-T)** | ✅ pilot | normalized pre→post gain, auto-probes |
-| Audio–Narration Alignment | ⏳ pending | needs audio-capable model |
-| Triple-Modal Alignment | ⏳ pending | needs audio + vision joint judge |
-
----
-
-## Environment
-
-First-time setup:
-
-```bash
-cd /home/azureuser/workspace-gzy/zyf/rise-teacher
-conda env create -f environment.yml          # Python 3.10, torch 2.5.1+cu121, ~5 min
-cp .envrc.example .envrc                     # then edit Azure endpoint + paths
-```
-
-Every shell:
-
-```bash
-source .envrc                # activates the `rise-teacher` conda env and exports HF / Azure / CUDA env vars
-```
-
-For exact pin-for-pin reproducibility (after `conda activate rise-teacher`):
-
-```bash
-pip install -r requirements.txt --extra-index-url https://download.pytorch.org/whl/cu121
-```
-
-**Important paths:**
-
-- Code: `/home/azureuser/workspace-gzy/zyf/rise-teacher/`
-- Generations / eval outputs: `/data/zyf/rise-teacher/{generations,outputs}/`
-- Models: `/data/zyf/rise-teacher/models/{Wan2.2-TI2V-5B-Diffusers, Wan2.1-T2V-1.3B-Diffusers, Qwen3-VL-2B-Instruct}`
-- External datasets (MMMU 389M, AI2D 488M): `/home/azureuser/workspace-gzy/zyf/datasets/`
-
-**GPT-5.5 keyless auth** — `eval/judges/gpt55.py` shells out to `az account get-access-token` and caches the bearer; requires `az login` to be active.
-
----
-
-## Quick reproduction (60-case pilot, Wan1.3B, 3s)
-
-```bash
-# 1. Build prompts (one-time)
-python scripts/build_pilot_prompts.py
-
-# 2. Generate 60 videos
-CUDA_VISIBLE_DEVICES=3 python -m generation.runners.wan_runner \
-    --prompts data/prompts/pilot_v0_1.jsonl \
-    --out /data/zyf/rise-teacher/generations/wan2_1_t2v_1_3b/pilot_v0_1 \
-    --num-frames 73 --height 480 --width 832 --steps 30 --fps 24    # 3s
-
-# 3. Standard eval (≈30 min via GPT-5.5)
-python -m eval.run_eval \
-    --prompts data/prompts/pilot_v0_1.jsonl \
-    --manifest /data/zyf/rise-teacher/generations/wan2_1_t2v_1_3b/pilot_v0_1/manifest.jsonl \
-    --out /data/zyf/rise-teacher/outputs/eval_pilot_v0_1_wan13b
-
-# 4. TeachQuiz-T (≈20 min via local Qwen3-VL)
-CUDA_VISIBLE_DEVICES=2 python -m eval.run_teachquiz \
-    --student qwen3vl \
-    --student-model-path /data/zyf/rise-teacher/models/Qwen3-VL-2B-Instruct \
-    --probe data/teachquiz/visual_probe_auto_1_3b.jsonl \
-    --manifest /data/zyf/rise-teacher/generations/wan2_1_t2v_1_3b/pilot_v0_1/manifest.jsonl \
-    --out /data/zyf/rise-teacher/outputs/teachquiz_13b_qwen3vl_autoprobe
-
-# 5. Analysis & reports
-python scripts/gen_paper_stats.py
-python scripts/dim_correlation.py \
-    --per-case /data/zyf/rise-teacher/outputs/eval_pilot_v0_1_wan13b/per_case.jsonl \
-    --label "Wan1.3B-3s" --out docs/analysis/dim_correlation_13b_3s.md
-python scripts/eval_vs_teachquiz_correlation.py
-python scripts/gen_teachquiz_report.py
-```
-
-Or run the full chained pipeline:
-
-```bash
-bash scripts/run_full_pipeline.sh
-```
-
----
-
-## See also
-
-- [`docs/STATUS.md`](docs/STATUS.md) — always-current project state
-- [`docs/plan.md`](docs/plan.md) — original design doc
-- [`docs/survey.md`](docs/survey.md) — literature review
-- [`docs/REPORT.md`](docs/REPORT.md) — paper narrative
-- [`docs/TEACHQUIZ.md`](docs/TEACHQUIZ.md) — TeachQuiz-T design
-- [`docs/TEACHQUIZ_REPORT.md`](docs/TEACHQUIZ_REPORT.md) — learning-gain results
-- [`docs/paper_stats.md`](docs/paper_stats.md) — headline numbers (auto-generated)
-- [`docs/HUMAN_EVAL_PROTOCOL.md`](docs/HUMAN_EVAL_PROTOCOL.md) — blinded human-validation protocol
-- [`docs/PAPER_READINESS.md`](docs/PAPER_READINESS.md) — evidence gaps and allowed claim language
+不用回传视频、音频、完整抽帧目录、`.venv/`、`.local-cache/`、旧安装包、历史源码副本或私有服务配置。当前实验凭据不得放进结果包。详细命令与输出说明见[使用说明](docs/usage.md)。
