@@ -19,6 +19,15 @@ def affected_dimensions(affected, fallback):
     return sorted(names) if names and names <= set(DIMENSIONS) else list(fallback)
 
 
+def reference_findings(concerns):
+    """Older panel files wrap each judge's list, including empty lists."""
+    for concern in concerns:
+        if isinstance(concern,dict) and isinstance(concern.get('concerns'),list):
+            yield from reference_findings(concern['concerns'])
+        else:
+            yield concern
+
+
 def invalid_reasons(result):
     """Also understands immutable legacy files at read/compare time."""
     reasons = {name: [] for name in DIMENSIONS}
@@ -41,7 +50,7 @@ def invalid_reasons(result):
             block([name], d['evidence_status'])
     for conflict in result.get('verification_conflicts', []):
         block(affected_dimensions([conflict.get('criterion')], VISUAL), 'unresolved_verification_conflict')
-    for concern in result.get('reference_concerns', []):
+    for concern in reference_findings(result.get('reference_concerns', [])):
         # Unstructured concerns cannot silently count as resolved.
         block(affected_dimensions(concern.get('affected') if isinstance(concern, dict) else None, TEACHING),
               'unresolved_reference_concern')

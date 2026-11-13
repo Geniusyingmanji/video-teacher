@@ -137,3 +137,28 @@ def test_global_context_is_bounded_without_discarding_late_critical_findings():
     assert summary['total_checks'] == 51 and summary['checks_omitted_from_global_context'] == 19
     assert len(raw['checks']) == 51 and raw['windows']
     assert 'windows' not in summary
+
+
+def test_panel_cannot_reintroduce_invalid_member_criteria_or_hide_major_vote(tmp_path):
+    from localbench.judge_panel import criterion_vote, aggregate_panel
+    from tests.test_localbench_evidence_policy import scored
+    from localbench.judge import evaluation_version
+    from localbench.rubric import aggregate_dimensions
+    member = {'id': 'one', 'result': scored()}
+    member['result']['reference_concerns'] = [{'affected': ['conceptual_correctness.facts']}]
+    assert criterion_vote(member, 'conceptual_correctness', 'facts')['status'] == 'unverified'
+    # A two-versus-three rating split has range one. It still needs adjudication
+    # before a major independent defect can disappear into a median of three.
+    members = [{'id': str(i), 'result': scored()} for i in range(3)]
+    for i, m in enumerate(members):
+        row = m['result']['dimensions']['conceptual_correctness']['criteria']['facts']
+        row.update(score=2 if i == 0 else 3, severity='major' if i == 0 else 'moderate')
+        m['result']['dimensions']['conceptual_correctness']['score'] = 87.5
+        m['result']['scoring'] = aggregate_dimensions(m['result']['dimensions'])
+    prepared = {'packet': {'video_sha256': 'fixture', 'metadata': {}}, 'audio': []}
+    got = aggregate_panel({'id': 'a'}, prepared, members, tmp_path, evaluation_version())
+    assert got['dimensions']['conceptual_correctness']['score'] is None
+    assert got['dimensions']['conceptual_correctness']['criteria']['facts']['candidate_median'] == 3
+    assert got['scoring']['overall'] is None
+    assert got['acceptance']['status'] != 'passed'
+    assert got['verification_conflicts']

@@ -12,17 +12,19 @@ from .score_validity import valid_score, invalid_reasons
 from .acceptance import assess as assess_acceptance
 
 
-def build_report(out, cases, generated, evaluated, students=None):
+def build_report(out, cases, generated, evaluated, students=None, *, specific_requested=False):
     out = Path(out)
     generation = {r['id']: r for r in generated}
     scores = {r['case_id']: r for r in evaluated}
     student_results = {r['case_id']: r for r in students or []}
+    specific_requested = specific_requested or any('specific' in r for r in evaluated)
     rows = []
     for case in cases:
         id_ = case['id']; gen = generation.get(id_, {}); score = scores.get(id_, {})
         artifact = next((a for a in gen.get('artifacts', []) if a.get('complete')), {})
         scoring = score.get('scoring', {})
         row = {'id': id_, 'discipline': case.get('discipline_canonical', case.get('discipline')),
+               'framework': gen.get('framework'), 'upstream_commit': gen.get('upstream_commit'),
                'task_type': case.get('task_type'), 'generation_status': gen.get('status', 'not_started'),
                'evaluation_status': score.get('evaluation_status', score.get('status', 'not_started')),
                'quality_check_status':score.get('output_checks',{}).get('status','unverified'),
@@ -40,6 +42,14 @@ def build_report(out, cases, generated, evaluated, students=None):
         row['acceptance_status']=acceptance['status']
         row['acceptance_failures']=acceptance['failures']
         row['acceptance_unverified']=acceptance['unverified']
+        panel, specific = score.get('judge_panel', {}), score.get('specific', {})
+        row.update(judge_count=panel.get('expected_judges'),
+                   complete_judges=panel.get('complete_judges'),
+                   pending_judge_criteria=panel.get('pending_criteria'),
+                   specific_status=specific.get('status', 'not_evaluated' if specific_requested else 'not_requested'),
+                   specific=specific.get('specific_score'),
+                   specific_scored_questions=specific.get('scored_questions'),
+                   specific_planned_questions=specific.get('planned_questions'))
         row['rubric_version'] = score.get('rubric_version')
         if students is not None:
             learner = student_results.get(id_, {})
@@ -71,6 +81,12 @@ def build_report(out, cases, generated, evaluated, students=None):
                'quality_check_statuses':dict(Counter(r['quality_check_status'] for r in rows)),
                'scope': 'All selected cases retained. Missing/invalid evaluation is null, not zero. Development rubric, human calibration pending.',
                'cases': rows}
+    specific_valid = [r['specific'] for r in rows if r['specific'] is not None]
+    summary['specific_evaluation'] = {
+        'requested_cases': n if specific_requested else 0,
+        'scored_cases': len(specific_valid),
+        'mean_among_valid': sum(specific_valid)/len(specific_valid) if specific_valid else None,
+        'weight_in_general': 0}
     if students is not None:
         planned_profiles = sum(r.get('metrics', {}).get('planned_profiles', 0) for r in students)
         complete_profiles = sum(r.get('metrics', {}).get('complete_profiles', 0) for r in students)
@@ -104,6 +120,18 @@ def build_report(out, cases, generated, evaluated, students=None):
               '十个叶维度与逐题错误见 `scores.csv`、`summary.json`；证据见 `evaluation/`。',
               '视频／教学各占 50%。教学内七叶维度等权，因此内容／组织／表达在教学内分别占 2/7、3/7、2/7。',
               'API 台账见 `api/usage.jsonl`。运行配置中不保存 API key。', '']
+    if any(r['judge_count'] for r in rows):
+        lines += ['## 三评委与 Specific', '',
+                  '视觉／教学准则需三份有效整数评分，逐项取中位数；极差达到 2 分或缺评时留空待复核。音频是共享听音模型的独立单评，不计作三票。Specific 独立于 General。', '',
+                  '| 题号 | General 完整评委 | 待复核准则 | Specific 状态 | Specific | 有效问题/计划问题 |',
+                  '| --- | --- | ---: | --- | ---: | --- |']
+        for r in rows:
+            def count(value): return '—' if value is None else str(value)
+            lines.append(f'| {r["id"]} | {count(r["complete_judges"])}/{count(r["judge_count"])} | {count(r["pending_judge_criteria"])} | '
+                         f'{r["specific_status"]} | {fmt(r["specific"])} | '
+                         f'{count(r["specific_scored_questions"])}/{count(r["specific_planned_questions"])} |')
+        lines += ['', '每位评委的分数、理由和证据见 `evaluation/<id>/judges/<judge_id>/scores.json`；'
+                  '分歧与缺评见 `evaluation/<id>/review_queue.json`。Specific 明细见同题 `specific/`。', '']
     if students is not None:
         lines += ['## 第三块：模拟学生诊断', '',
                   '学生复述理解并提出疑问，另一个模型回查画面与转写证据。下表是核验器的判断，尚非独立确认的事实；有据标签不代表内容正确或学生学会。',

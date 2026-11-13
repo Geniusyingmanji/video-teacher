@@ -1,0 +1,16 @@
+{
+  "repository": "https://github.com/showlab/Code2Video",
+  "commit": "1142d8e14cdc2806df85aedb0fbb5dca474caa0f",
+  "files": {
+    "LICENSE": "79035a25d23b01e511ae3ecb39db92c31b3dad2972e5b2637101c9708c05ae20",
+    "src/agent.py": "9181ab52b2d97b5031ca217d9e9f532a38b6a5609d3f3fc315dd67bbe78f0e9f",
+    "src/utils.py": "1adc29c13ce86aed9b6fc6004cd8fe0b1d7b2fe44714ee7c7c16c065c0999e9c",
+    "src/scope_refine.py": "b83e3557e295a501b0f546e5303d1d198717223d393d26900d80548b758cb964",
+    "prompts/base_class.py": "04e0c6cca529adb6838970db66d2ebc49b88e779bc87b3b17da2b54500449ffe",
+    "prompts/stage1.py": "f58f8d57de8b1b83d6239b573d069981cc4a8eef1e750d09a20fbb8adf80d2e7",
+    "prompts/stage2.py": "5653bb6f7000c11b737cb9ff48fd553c439ced9761cdbd5a587ff27f41407a1f",
+    "prompts/stage3.py": "766ab63374a20b5a957fff6bcee02f2834fbc9a005c83700fc4a72d26939bc3b",
+    "prompts/stage4.py": "9242fda1aa30070869e5a001fca28957e548b0194d8f9fefaad24e755a4efd49",
+    "assets/reference/GRID.png": "3ec986c90bfc0324ddb71423704a8747c31f05da19d5b54648239e937a161bc2"
+  }
+}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import concurrent.futures
+import copy
 import json
 import math
 from pathlib import Path
@@ -322,7 +323,33 @@ def assess_audio(client,record):
                 'narration_presence':{'status':'unverified','reason':'Actual-audio listener unavailable or invalid.'}}
 
 
-def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcript_guard=False,applicability=None):
+def prepare_evidence(video, out, client, *, transcript_guard=False):
+    """Extract once and freeze shared listening evidence before independent judges."""
+    out = Path(out)
+    packet = extract(video, out/'evidence', review_every_frame=True)
+    audio = [assess_audio(client, row) for row in packet['audio']]
+    if transcript_guard:
+        from .transcript_guard import guard_audio
+        write_json(out/'actual_audio_before_guard.json', audio)
+        audio = guard_audio(video, packet, audio, client, out/'transcript_guard')
+    write_json(out/'actual_audio.json', audio)
+    return {'packet': packet, 'audio': audio, 'transcript_guard': transcript_guard}
+
+
+def audio_dimension(audio):
+    complete = bool(audio) and all(a['status'] == 'reviewed' for a in audio)
+    score = None
+    if complete:
+        total = sum(a['end_s']-a['start_s'] for a in audio)
+        weighted = [sum(a['criteria'][key]['score']*(a['end_s']-a['start_s']) for a in audio)/total
+                    for key in DIMENSIONS['audio_quality']['criteria']]
+        score = (sum(weighted)/len(weighted)-1)*25
+    return {'score': score, 'chunk_reviews': audio, 'source': 'actual_final_audio',
+            'status': 'reviewed' if complete else 'unverified'}
+
+
+def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcript_guard=False,applicability=None,
+             prepared_evidence=None):
     if applicability is not None:
         from .applicability import validate_annotation
         validate_annotation(applicability,case)
@@ -330,12 +357,15 @@ def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcr
     out.mkdir(parents=True,exist_ok=True)
     if applicability is not None:
         write_json(out/'criterion_applicability.json',applicability)
-    packet=extract(video,out/'evidence',review_every_frame=True)
-    audio=[assess_audio(client,row) for row in packet['audio']]
-    if transcript_guard:
-        from .transcript_guard import guard_audio
-        write_json(out/'actual_audio_before_guard.json',audio)
-        audio=guard_audio(video,packet,audio,client,out/'transcript_guard')
+    if prepared_evidence is None:
+        prepared_evidence = prepare_evidence(video, out, client, transcript_guard=transcript_guard)
+    else:
+        from .provenance import file_hash
+        if (prepared_evidence['packet']['video_sha256'] != file_hash(video)
+                or prepared_evidence['transcript_guard'] != transcript_guard):
+            raise ValueError('shared evidence does not match video or transcript policy')
+    packet, audio = copy.deepcopy((prepared_evidence['packet'], prepared_evidence['audio']))
+    write_json(out/'evidence/packet.json',packet)
     write_json(out/'actual_audio.json',audio)
     from .timeline_review import review as review_timeline
     timeline=review_timeline(client,packet,audio,case,out/'timeline')
@@ -439,7 +469,6 @@ approximate; do not infer subsecond accuracy or rapid speech from expanded numbe
     dimensions.update(independent_stage('alignment',['crossmodal_alignment'],
         lambda:{'crossmodal_alignment':assess_alignment(client,packet,audio,case['id'],out)},stage_errors))
     write_json(out/'stage_errors.json',stage_errors)
-    complete_audio=all(a['status']=='reviewed' for a in audio) and bool(audio)
     complete_transcript=bool(audio) and all(a.get('transcript_valid') for a in audio)
     complete_timing=bool(audio) and all(a.get('timing_valid') for a in audio)
     if not complete_transcript:
@@ -451,15 +480,7 @@ approximate; do not infer subsecond accuracy or rapid speech from expanded numbe
     if not complete_timing:
         dimensions['crossmodal_alignment']['score']=None
         dimensions['crossmodal_alignment']['evidence_status']='unverified_audio_timing'
-    audio_score=None
-    if complete_audio:
-        weighted=[]
-        for key in DIMENSIONS['audio_quality']['criteria']:
-            weighted.append(sum(a['criteria'][key]['score']*(a['end_s']-a['start_s']) for a in audio)/
-                            sum(a['end_s']-a['start_s'] for a in audio))
-        audio_score=(sum(weighted)/len(weighted)-1)*25
-    dimensions['audio_quality']={'score':audio_score,'chunk_reviews':audio,
-                                 'source':'actual_final_audio','status':'reviewed' if complete_audio else 'unverified'}
+    dimensions['audio_quality']=audio_dimension(audio)
     from .strict_anchors import score_review_conflicts
     conflicts=score_review_conflicts(verification['checks'],dimensions)
     scoring=aggregate_dimensions(dimensions)

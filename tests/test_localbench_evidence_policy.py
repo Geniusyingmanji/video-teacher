@@ -188,3 +188,11 @@ def test_missing_score_validity_is_idempotent_and_never_manufactures_zero():
     assert clean['scoring']['overall'] is None
     assert clean['dimensions']['audio_quality']['score'] is None
     assert apply(clean) == clean
+
+
+def test_legacy_panel_empty_concern_wrappers_are_not_invented_conflicts():
+    result = scored()
+    result['reference_concerns'] = [{'judge_id': str(i), 'concerns': []} for i in range(3)]
+    assert not invalid_reasons(result)
+    result['reference_concerns'][1]['concerns'] = [{'affected': ['task_completeness.coverage']}]
+    assert set(invalid_reasons(result)) == {'task_completeness'}

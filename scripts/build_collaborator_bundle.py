@@ -17,7 +17,7 @@ from localbench.rubric import VERSION as RUBRIC_VERSION
 
 
 def build(destination):
-    files = {ROOT/name for name in ('teacher.py', 'AGENTS.md', 'requirements.txt', 'requirements-tts.txt')}
+    files = {ROOT/name for name in ('teacher.py', 'AGENTS.md', 'PAPER_PLAN.md', 'requirements.txt', 'requirements-tts.txt')}
     files.update(p for p in (ROOT/'localbench').rglob('*') if p.is_file() and p.suffix in {'.py', '.md'})
     files.update((ROOT/'tests').glob('test_localbench*.py'))
     files.update((ROOT/'configs').glob('*.json'))

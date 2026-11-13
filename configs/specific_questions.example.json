@@ -1,0 +1,33 @@
+{
+  "version": "fixed-specific-v1",
+  "cases": {
+    "math_exp_02": {
+      "case_hash": "252c030eae5ca1066d020b1be69e79b29e6064268e03a21ced0b2dab7ce9ad00",
+      "references": {
+        "R1": {
+          "statement": "The task requires detaching the three interior-angle pieces from one triangle and arranging those same pieces along a straight line to form 180 degrees.",
+          "source": "Public task prompt; demonstration requirement."
+        }
+      },
+      "questions": [
+        {
+          "id": "S01",
+          "question": "Does the video visibly move the three angle pieces from one triangle into a straight angle while preserving their sizes and correspondence?",
+          "reference_status": "draft",
+          "targets": [
+            {
+              "criterion": "The three detached pieces visibly correspond to the three interior angles of the same original triangle.",
+              "source_ids": ["R1"],
+              "visual_required": true
+            },
+            {
+              "criterion": "The same pieces are visibly rearranged with their angle sizes preserved to form a straight angle, rather than only displaying the final angle-sum statement.",
+              "source_ids": ["R1"],
+              "visual_required": true
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
