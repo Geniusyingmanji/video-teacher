@@ -30,7 +30,7 @@ def speech_windows(audio):
                 groups=[[{'word':utterance['text'],'start_s':utterance['start_s'],'end_s':utterance['end_s']}]]
             for group in groups:
                 text=' '.join(w['word'].strip() for w in group).strip()
-                if len(text.split())<4:continue
+                if not text:continue
                 window={'audio_id':record['id'],'text':text,
                                 'start_s':record['start_s']+group[0]['start_s'],
                                 'end_s':record['start_s']+group[-1]['end_s']}
@@ -41,17 +41,17 @@ def speech_windows(audio):
     return windows
 
 
-def make_probes(packet,audio,limit=8):
+def make_probes(packet,audio,limit=None):
     windows=speech_windows(audio)
-    if len(windows)>limit:
+    if limit is not None and len(windows)>limit:
         windows=[windows[round(i*(len(windows)-1)/(limit-1))] for i in range(limit)]
     probes=[]
     for i,window in enumerate(windows):
         start,end=window['start_s'],window['end_s']
         # Use only frames in/near this utterance, not semantically related frames elsewhere.
-        candidates=[f for f in packet['frames'] if start-.75<=f['time_s']<=end+.75]
+        candidates=[f for f in packet.get('review_frames',packet['frames']) if start-.75<=f['time_s']<=end+.75]
         if not candidates:
-            nearest=min(packet['frames'],key=lambda f:abs(f['time_s']-(start+end)/2))
+            nearest=min(packet.get('review_frames',packet['frames']),key=lambda f:abs(f['time_s']-(start+end)/2))
             if abs(nearest['time_s']-(start+end)/2)>1.75:continue
             candidates=[nearest]
         selected=[]
@@ -63,11 +63,10 @@ def make_probes(packet,audio,limit=8):
     return probes
 
 
-def assess_alignment(client,packet,audio,case_id,out):
+def _assess_probe_batch(client,packet,audio,case_id,out,probes):
     keys=DIMENSIONS['crossmodal_alignment']['criteria']
     if audio and all(narration_absent(a) for a in audio):
         return assess_absent_speech_alignment(client,packet,audio,case_id,out)
-    probes=make_probes(packet,audio)
     write_json(out/'alignment_probes.json',probes)
     if not probes or any(not a.get('timing_valid') for a in audio):
         return {'score':None,'criteria':{k:{'score':None,'status':'unverified','evidence_ids':[],
@@ -142,6 +141,46 @@ normalized to spoken words. Replacement timing is approximate, not forced word a
             if attempt:raise
             messages.extend([{'role':'assistant','content':json.dumps(raw,ensure_ascii=False)},
                              {'role':'user','content':'Fix schema/citations while preserving evidence-based judgments. Criterion status must be exactly observed or unverified, NOT a quality label. Observed score is one of 1,2,3,4,5; unverified score is null. Cite real F/A IDs in observations. Error: '+str(exc)}])
+
+
+def assess_alignment(client,packet,audio,case_id,out):
+    """Review every usable spoken window in bounded calls; never truncate to eight."""
+    from pathlib import Path
+    out=Path(out);out.mkdir(parents=True,exist_ok=True)
+    if audio and all(narration_absent(a) for a in audio):
+        return assess_absent_speech_alignment(client,packet,audio,case_id,out)
+    probes=make_probes(packet,audio)
+    write_json(out/'alignment_probes.json',probes)
+    batches=[];errors=[]
+    for i in range(0,len(probes),8):
+        try:
+            batch_out=out/f'batch_{i//8:03d}';batch_out.mkdir(exist_ok=True)
+            batches.append(_assess_probe_batch(client,packet,audio,f'{case_id}:batch{i//8}',batch_out,probes[i:i+8]))
+        except Exception as exc:
+            errors.append({'probe_ids':[p['id'] for p in probes[i:i+8]],'error':str(exc)[:500]})
+    expected=speech_windows(audio)
+    covered=sum(len(b.get('observations',[])) for b in batches)
+    complete=bool(expected) and len(probes)==len(expected) and covered==len(probes) and not errors
+    criteria={}
+    for key in DIMENSIONS['crossmodal_alignment']['criteria']:
+        rows=[b.get('criteria',{}).get(key,{}) for b in batches]
+        if complete and rows and all(r.get('status')=='observed' and r.get('score') is not None for r in rows):
+            # Whole-video criterion describes the strongest observed limitation,
+            # retaining each window rating rather than averaging a severe mismatch away.
+            criteria[key]=dict(min(rows,key=lambda r:r['score']))
+        else:
+            criteria[key]={'status':'unverified','score':None,'evidence_ids':[],
+                           'reason':'Incomplete or uncertain speech-window alignment evidence.'}
+    from .rubric import validate_scores
+    allowed={x for p in probes for x in p['allowed_ids']}
+    result=validate_scores({'dimensions':{'crossmodal_alignment':{'criteria':criteria}}},allowed,
+                          ['crossmodal_alignment'],strict=True)['crossmodal_alignment']
+    result.update(observations=[r for b in batches for r in b.get('observations',[])],
+        coverage={'status':'reviewed' if complete else 'partial','expected_windows':len(expected),
+                  'proposed_windows':len(probes),'reviewed_windows':covered,'errors':errors},
+        batch_reviews=batches,aggregation='most severe observed limitation per criterion across all speech windows',
+        source='all_timed_speech_windows_paired_with_contemporaneous_frames')
+    return result
 
 
 def assess_absent_speech_alignment(client,packet,audio,case_id,out):

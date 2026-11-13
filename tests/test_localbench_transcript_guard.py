@@ -68,7 +68,7 @@ def test_corroborated_replacement_keeps_approximate_observed_span_and_surroundin
 def test_timing_is_not_invented_when_continuous_asr_has_no_word_evidence():
     with pytest.raises(ValueError,match='word timestamps'):
         timed_tokens({'duration_s':10,'utterances':[{'text':'words without timing'}]})
-    assert evaluation_version()=='localbench-ten-dimensions-dev13-integer-r3'
+    assert evaluation_version()=='localbench-ten-dimensions-dev14-integer-r4'
     assert '+transcript-guard-dev3+' in evaluation_version(transcript_guard=True)
 
 

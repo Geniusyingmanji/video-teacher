@@ -40,7 +40,7 @@ Return JSON {dimensions:{dimension_id:{criteria:{criterion_id:{status:"observed"
 score:one of 1,2,3,4,5 or null, evidence_ids:["F00","A00",...],reason:"concrete concise finding",
 severity:"none"|"minor"|"moderate"|"major"|"critical",limitation:"specific defect or none observed",
 high_score_evidence:"specific support for 5, empty otherwise"}}}},
-major_findings:[{dimension,description,evidence_ids}],reference_concerns:[]}.
+major_findings:[{dimension,description,evidence_ids}],reference_concerns:[{affected:["dimension.criterion"],reason:"unresolved factual reference conflict",evidence_ids:[]}]}.
 Return EXACTLY the requested dimensions and criteria. No overall number.
 1=severe failure or required content absent; 2=major defect; 3=adequate with visible limitations;
 4=strong with minor issues; 5=exceptional and fully evidenced. Every observed rating needs real evidence IDs.
@@ -241,7 +241,7 @@ def assess_presentation(client, packet, case_id, out):
     context={'rubric':{k:DIMENSIONS[k] for k in wanted},'sampling':packet['sampling'],
              'layout_pixel_observations':layout,
              'layout_policy':'Recheck these fallible observations against actual whole frames. Name affected text and border/occlusion/contrast in criterion reasons, including when rejecting an alleged defect. Enlarged crops cannot prove native readability. Never infer a numeric score from an issue count.',
-             'temporal_limit':packet['temporal_limit']}
+             'temporal_limit':packet['temporal_limit'],'timeline_findings':packet.get('timeline_review')}
     content=[{'type':'text','text':json.dumps(context,ensure_ascii=False)}]
     for frame in packet['frames']:content.extend(image_content(frame))
     messages=[{'role':'system','content':PRESENTATION_SYSTEM},{'role':'user','content':content}]
@@ -261,6 +261,13 @@ def assess_presentation(client, packet, case_id, out):
 
 
 def assess_audio(client,record):
+    if record.get('status')=='audio_stream_missing':
+        return {**record,'status':'reviewed','transcript':'','utterances':[],
+                'transcript_valid':True,'timing_valid':True,'transcriber':'verified_missing_audio_stream',
+                'narration_presence':{'status':'observed_absent','reason':'Media stream inventory confirms no audio track.'},
+                'criteria':{key:{'score':1,'severity':'critical','limitation':'Required audio track is absent.',
+                    'high_score_evidence':'','reason':'Positive media stream inventory confirms no audio stream; not an extraction or service failure.'}
+                    for key in DIMENSIONS['audio_quality']['criteria']}}
     if record.get('status')!='extracted':
         return {**record,'status':'unverified'}
     duration=record['end_s']-record['start_s']
@@ -323,13 +330,17 @@ def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcr
     out.mkdir(parents=True,exist_ok=True)
     if applicability is not None:
         write_json(out/'criterion_applicability.json',applicability)
-    packet=extract(video,out/'evidence')
+    packet=extract(video,out/'evidence',review_every_frame=True)
     audio=[assess_audio(client,row) for row in packet['audio']]
     if transcript_guard:
         from .transcript_guard import guard_audio
         write_json(out/'actual_audio_before_guard.json',audio)
         audio=guard_audio(video,packet,audio,client,out/'transcript_guard')
     write_json(out/'actual_audio.json',audio)
+    from .timeline_review import review as review_timeline
+    timeline=review_timeline(client,packet,audio,case,out/'timeline')
+    from .timeline_review import context_summary
+    packet['timeline_review']=context_summary(timeline)
     wanted=[k for k in DIMENSIONS if DIMENSIONS[k]['group']=='teaching' and k!='crossmodal_alignment']
     reference={k:case.get(k) for k in ('expected_concepts','expected_visual_elements',
                                       'expected_narrative_order','discipline_specific_rubric')}
@@ -351,7 +362,7 @@ def evaluate(video,case,out,client,contract=None,semantic_outcomes=False,transcr
     context={'public_task':{k:case.get(k) for k in ('prompt_text','task_type','pedagogical_target_audience','target_duration_s')},
              'reference':reference,'actual_audio':safe_audio,'video_duration_s':packet['metadata']['duration'],
              'rubric':{k:DIMENSIONS[k] for k in wanted},'sampling':packet['sampling'],
-             'temporal_limit':packet['temporal_limit']}
+             'temporal_limit':packet['temporal_limit'],'timeline_findings':packet['timeline_review']}
     if applicability is not None:
         context['criterion_applicability']=applicability
     source,source_content=source_evidence(case)
@@ -377,7 +388,7 @@ Do not invent a proof requirement. Report observed omissions and contradictions,
         if not isinstance(observations,dict) or not isinstance(observations.get('observations'),list) or not observations['observations']:
             observation_messages.append({'role':'user','content':'Return a JSON OBJECT with a nonempty observations list. Text-only slides still have observable text; explicitly report the absence of diagrams when that is what the frames show. Do not return an empty array.'})
             observations=client.chat(observation_messages,purpose='literal_observer_schema_repair:'+case['id'],max_tokens=2400)
-        frame_ids={f['id'] for f in packet['frames']}
+        frame_ids={f['id'] for f in chosen}
         if not isinstance(observations,dict) or not isinstance(observations.get('observations'),list) or not observations['observations']:
             observations={'status':'auxiliary_observer_unavailable','observations':[],
                           'reason':'Empty response after one schema retry; grade the actual supplied frames directly.'}
@@ -391,14 +402,18 @@ Do not invent a proof requirement. Report observed omissions and contradictions,
     write_json(out/'literal_observations.json',observations)
     content.append({'type':'text','text':'A preliminary observer produced these claims. Recheck them against the frames; they may be wrong. '+json.dumps(observations,ensure_ascii=False)})
     try:verification=verify(client,case,packet,out=out)
-    except (ValueError,RuntimeError) as exc:
-        verification={'status':'auxiliary_check_error','checks':[],'error':str(exc)[:600]}
+    except Exception as exc:
+        from .verification import checks_for
+        verification={'status':'auxiliary_check_error','checks':[],'error':str(exc)[:600],
+            'affected':list({k for q in checks_for(case) for k in q.get('affected',[])})}
     from .relation_audit import review_relations
     relations=review_relations(client,packet,case['id'],out/'relations')
     verification['checks'].extend(relations['checks'])
+    verification['checks'].extend(timeline['checks'])
     verification['screen_relation_review']=relations
     write_json(out/'critical_verification.json',verification)
-    content.append({'type':'text','text':'A separate enlarged-pixel check found the following. Reconcile any conflict against the frames. If a concrete required relationship fails, it is a major defect in the named criteria, not a minor aesthetic issue. '+json.dumps(verification,ensure_ascii=False)})
+    verification_context={**verification,**context_summary(verification,limit=64)}
+    content.append({'type':'text','text':'A separate enlarged-pixel check found the following. Reconcile any conflict against the frames. If a concrete required relationship fails, it is a major defect in the named criteria, not a minor aesthetic issue. '+json.dumps(verification_context,ensure_ascii=False)})
     for frame in packet['frames']:content.extend(image_content(frame))
     allowed_ids={r['id'] for r in packet['frames']}|{r['id'] for r in audio if r.get('transcript_valid')}
     generated_ids=set(allowed_ids)
@@ -458,7 +473,7 @@ approximate; do not infer subsecond accuracy or rapid speech from expanded numbe
             'stage_errors':stage_errors,'evaluation_status':('partial_stage_failure' if stage_errors else
                 'scored_all_dimensions' if scoring['overall'] is not None else 'incomplete_scores'),
             'scoring':scoring,'major_findings':raw.get('major_findings',[]),
-            'verification_conflicts':conflicts,'critical_verification':verification,
+            'verification_conflicts':conflicts,'critical_verification':verification,'timeline_review':timeline,
             'auxiliary_verification_status':verification['status'],
             'reference_concerns':raw.get('reference_concerns',[]),'evidence_path':str((out/'evidence/packet.json').resolve()),
             'human_calibration':'pending','scope':'small_development_batch_not_published_benchmark'}
@@ -471,6 +486,11 @@ approximate; do not infer subsecond accuracy or rapid speech from expanded numbe
     if transcript_guard:
         from .transcript_validity import apply_validity
         result=apply_validity(result,audio)
+    from .score_validity import apply as apply_evidence_validity
+    from .acceptance import assess as assess_acceptance
+    result=apply_evidence_validity(result)
+    result['output_checks']=output_checks(result,audio,packet,case)
+    result['acceptance']=assess_acceptance(result)
     write_json(out/'scores.json',result)
     print(case['id'],Path(video).stem,'overall',result['scoring']['overall'],flush=True)
     return result

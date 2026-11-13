@@ -288,8 +288,8 @@ def score_review_conflicts(checks,dimensions):
             row=dimensions.get(dimension,{}).get('criteria',{}).get(criterion,{})
             score=row.get('score')
             if score is None:continue
-            incompatible=(score>2 if check.get('severity')=='major' else
-                          score>4 if check.get('severity')=='minor' else score>=4)
+            maximum={'critical':1,'major':2,'moderate':3,'minor':4}.get(check.get('severity'),2)
+            incompatible=score>maximum
             if incompatible:conflicts.append({'check':check['id'],'criterion':item,'score':score,
                 'review_severity':check.get('severity'),'reason':'Scoring and independent evidence review disagree; no numerical rating has been edited.'})
     return conflicts

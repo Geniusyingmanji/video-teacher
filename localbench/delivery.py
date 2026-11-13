@@ -8,6 +8,8 @@ from pathlib import Path
 
 from .common import write_json
 from .rubric import DIMENSIONS, TEACHING_GROUPS
+from .score_validity import valid_score, invalid_reasons
+from .acceptance import assess as assess_acceptance
 
 
 def build_report(out, cases, generated, evaluated, students=None):
@@ -29,8 +31,15 @@ def build_report(out, cases, generated, evaluated, students=None):
                'unverified_checks':score.get('output_checks',{}).get('unverified',[]),
                'video_path': artifact.get('video_path'), 'duration_s': artifact.get('duration_s'),
                'video': scoring.get('groups', {}).get('video'),
-               'teaching': scoring.get('groups', {}).get('teaching'), 'overall': scoring.get('overall'),
+               'teaching': scoring.get('groups', {}).get('teaching'), 'overall': valid_score(score,'overall'),
                'error': gen.get('error') or score.get('error')}
+        invalid=invalid_reasons(score)
+        for group in ('video','teaching'):
+            if any(name in invalid for name,d in DIMENSIONS.items() if d['group']==group):row[group]=None
+        acceptance=assess_acceptance(score)
+        row['acceptance_status']=acceptance['status']
+        row['acceptance_failures']=acceptance['failures']
+        row['acceptance_unverified']=acceptance['unverified']
         row['rubric_version'] = score.get('rubric_version')
         if students is not None:
             learner = student_results.get(id_, {})
@@ -43,13 +52,17 @@ def build_report(out, cases, generated, evaluated, students=None):
             for status in ('supported', 'contradicted', 'unverified'):
                 row[f'student_{status}_claims'] = verdicts.get(status, 0) if verdicts is not None else None
         for name in TEACHING_GROUPS:
-            row[name] = scoring.get('teaching_groups', {}).get(name, {}).get('score')
+            row[name] = (None if any(k in invalid for k in TEACHING_GROUPS[name]['dimensions']) else
+                         scoring.get('teaching_groups', {}).get(name, {}).get('score'))
         for name in DIMENSIONS:
-            row[name] = score.get('dimensions', {}).get(name, {}).get('score')
+            row[name] = valid_score(score,name)
         rows.append(row)
     valid = [r['overall'] for r in rows if r['overall'] is not None]
     n = len(rows)
     summary = {'planned_cases': n, 'delivered_cases': sum(bool(r['video_path']) for r in rows),
+               'accepted_cases':sum(r['acceptance_status']=='passed' for r in rows),
+               'acceptance_rate':sum(r['acceptance_status']=='passed' for r in rows)/n if n else 0,
+               'acceptance_statuses':dict(Counter(r['acceptance_status'] for r in rows)),
                'scored_cases': len(valid), 'valid_score_coverage': len(valid)/n if n else 0,
                'mean_overall_among_valid': sum(valid)/len(valid) if valid else None,
                'all_cases_mean': sum(valid)/n if n and len(valid) == n else None,
@@ -75,17 +88,17 @@ def build_report(out, cases, generated, evaluated, students=None):
     def fmt(x):
         return '—' if x is None else f'{x:.2f}'
     lines = ['# RISE-Teacher 运行报告', '',
-             f'计划 {n} 题；交付 {summary["delivered_cases"]} 条；综合分有效 {len(valid)} 条。',
+             f'计划 {n} 题；交付 {summary["delivered_cases"]} 条；综合分有效 {len(valid)} 条；质量验收通过 {summary["accepted_cases"]} 条。',
              f'有效样本综合均分：{fmt(summary["mean_overall_among_valid"])}。全体均分：{fmt(summary["all_cases_mean"])}。',
              '评分仅来自最终视频证据；有效格式不保证判断正确。缺失评分不记零，失败题不移出分母。', '',
-             '| 题号 | 生成 | 评测 | 质量核查 | 视频 | 教学内容 | 教学组织 | 教学表达 | 综合 |',
-             '| --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |']
+             '| 题号 | 生成 | 评测 | 质量核查 | 质量验收 | 视频 | 教学内容 | 教学组织 | 教学表达 | 综合 |',
+             '| --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |']
     for r in rows:
         label = r['id']
         if r['video_path']:
             import os
             label = f'[{label}]({os.path.relpath(r["video_path"], out).replace(os.sep, "/")})'
-        lines.append(f'| {label} | {r["generation_status"]} | {r["evaluation_status"]} | {r["quality_check_status"]} | '+
+        lines.append(f'| {label} | {r["generation_status"]} | {r["evaluation_status"]} | {r["quality_check_status"]} | {r["acceptance_status"]} | '+
                      ' | '.join(fmt(r[k]) for k in ('video', 'content', 'organization', 'expression', 'overall'))+' |')
     lines += ['', '质量核查中的 fail 表示观察到具体缺陷，review 表示需复核；高均分不等于通过。',
               '十个叶维度与逐题错误见 `scores.csv`、`summary.json`；证据见 `evaluation/`。',
@@ -125,6 +138,8 @@ def build_report(out, cases, generated, evaluated, students=None):
     # Keep actionable evidence next to the score table, rather than hiding it in JSON.
     for r in rows:
         score=scores.get(r['id'],{});issues=[]
+        for failure in r['acceptance_failures']:issues.append(('验收失败',failure))
+        for unknown in r['acceptance_unverified']:issues.append(('验收未验证',unknown))
         if r['error']:issues.append(('运行错误',r['error']))
         for issue in score.get('stage_errors',[]):
             issues.append(('评测阶段 '+issue['stage'],issue['error']))

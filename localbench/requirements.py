@@ -82,6 +82,16 @@ def output_checks(result, audio=(), packet=None, case=None):
         for finding in result.get('requirement_findings',[]):
             state={'met':'observed','missing':'fail','unverified':'unverified'}[finding['verdict']]
             add('public_requirement:'+finding['requirement_id'],state,finding['reason'],finding['evidence_ids'])
+    timeline=result.get('timeline_review')
+    if timeline is not None:
+        if timeline.get('status')!='reviewed':
+            add('timeline_review_coverage','unverified','Not every dense/change-boundary window was reviewed.')
+        for check in timeline.get('checks',[]):
+            add('timeline:'+check['id'], 'fail' if check['verdict']=='fail' and check.get('severity') in {'major','critical'}
+                else 'review' if check['verdict']=='fail' else 'unverified',check['reason'],check.get('evidence_ids',[]))
+    for name,dimension in result.get('dimensions',{}).items():
+        if dimension.get('score_validity',{}).get('status')=='unverified':
+            add('dimension_evidence:'+name,'unverified','; '.join(dimension['score_validity'].get('reasons',[])) or 'Dimension evidence incomplete.')
     if result.get('verification_conflicts'):
         add('score_verification_consistency','review','Unresolved disagreement between dimension scores and specific verification checks.')
     failed=[c['id'] for c in checks if c['status']=='fail']

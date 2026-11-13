@@ -130,3 +130,36 @@ Specific 用本题专属问题核对完整视频的知识覆盖，与 General �
 | `text_visual_consistency` | On-screen text, arrowheads, labels and geometry agree about the represented relationship; do not excuse a contradiction using an unstated convention. |
 | `state_tracking` | Narrated changes correspond to the actual current visual state, without silently describing a prior or future scene. |
 | `completion_claims` | Compare each observed substantive conclusion or completed-state claim with the visible outcome at that time. Separate instructions and ongoing actions from claims of completion; a later correct endpoint does not justify an earlier false completed-state claim. |
+
+## dev14：证据完整性与非补偿验收
+
+当前协议为 `localbench-ten-dimensions-dev14-integer-r4`，旧 dev13 成绩保留，不与新协议混排；改协议后使用新输出目录，不能继续复用旧评分缓存。General 的 50/50 权重、十维六十项定义不变，新增明确的证据有效性和独立验收政策。
+
+### 音轨缺失与故障
+
+先以 ffprobe 正向探测音轨。成功探测且无音轨时记录 `audio_stream_missing`，实际必需旁白为已观察到的缺失，音质六项为 1。探测失败、提取/解码失败、听音服务失败仍为未验证，不假装静音。探测器不可用但音频能成功解码时继续正常听音流程。纯音乐、数字静音、无音轨和故障分别保留来源，均不能用虚构转写补齐。
+
+### 全片画面与同步覆盖
+
+General 调用 `extract(..., review_every_frame=True)`，把**每一个实际解码帧**放入 `review_frames`，不只给 24 张概览帧。`timeline_review` 每批最多 16 帧，批次共享边界帧，逐批检查状态变化、字幕残留、遮挡、短暂概念错误及过渡；要求明确回传所有本批帧 ID。每次最多一次 schema 修复。任何批次失败、缺帧或完整帧清单与解码帧数不符，都记 partial 并扣留依赖视觉证据的正式维度分数。概览帧仍用于原有全局 rubric，不再被当作完整覆盖证明。
+
+`alignment` 对所有可用定时语音时窗分批检查（每批最多八个），保留短语音窗口；不再静默截取八个。语音时窗没有邻近画面、任何批次失败或未定时语音片段都会使音画维度未验证。每个项目按所有时窗中最严重的**已观察局部限制**给全片评级，同时保存每批原始项目评级；不把严重局部错位平均掉。未验证窗口不会被当成低分或自动通过。字幕与画面按实际帧引用核对，ASR 定时不被表述为逐字强制对齐。
+
+一般学生/媒体工具默认仍可用 2fps 加突变边界的轻量提取；它不能替代 General 所要求的逐帧审查。逐帧送审会显著增加存储、API 次数和 token；预算照常限制，不够即保留覆盖缺口，不能通过截断提高覆盖率。所有帧已送审只是模型检查覆盖，不等于模型保证检出全部错误，更不是人工视听认证。
+
+### 维度有效性与配对
+
+`score_validity` 将未解决的参考冲突、独立检查缺失/失败/歧义、检查与评分矛盾、布局检查缺口、逐帧检查缺口及转写争议传播到受影响维度。具体 scope 已知时不连带抹掉无关维度；未结构化参考冲突保守阻断教学维度。原始 criterion 评级保留，失效的维度原数字另存 `raw_score_before_validity`，正式 `score` 为 null，分组和总分据此重算。
+
+每个维度返回 `score_validity.status/reasons`。`verified` 仅表示协议所要求的证据可用且无未解冲突，不表示专家判定正确。被扣留的总分不会被后续汇总复活。报告和配对器使用同一有效性函数；旧文件即便仍有数字，也会读取其冲突/缺失信息，排除受影响的维度及总分，保留无争议维度。配对输出 `evidence_exclusions`，失败/缺失任务仍留在分母。
+
+### 独立验收：高均分不能补偿关键缺陷
+
+`acceptance` 与连续 General 分数并列保存，不进行隐含封顶或改写原始评级：
+
+- 每维至少 60；概念正确性、任务完整性、教学清晰度至少 70；视频和教学分组均至少 70。
+- 任一有可用证据的项目出现 major/critical 缺陷，或独立检查确认重大/关键缺陷，均验收失败，即便总分很高。
+- 已观察的要求失败均使验收失败；未解冲突、必需检查缺失、覆盖缺口或待核查使验收未验证。
+- 状态为 `passed / failed / unverified`。确认失败与未知可以共存：总体为 failed，同时仍列出未知原因。只有证据完整且所有规则满足才 passed。
+
+上述阈值是提前声明的开发政策，尚未进行人工效度校准；不是学习成效测量。`scores.json`、CSV、运行报告和配对报告均展示验收状态/原因与全计划题验收率。CLI 退出成功表示生成/评测执行完成，不代表所有视频质量验收通过。旧文件缺少完整检查时不能仅因保留一个高分被标为通过。

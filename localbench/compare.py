@@ -10,6 +10,8 @@ import numpy as np
 from .common import write_json
 from .rubric import DIMENSIONS
 from .requirements import checks_from_score_file
+from .score_validity import valid_score, invalid_reasons
+from .acceptance import assess as assess_acceptance
 
 
 def paired_summary(rows, left='code', right='slides', seed=20261111, expected_ids=()):
@@ -33,8 +35,8 @@ def paired_summary(rows, left='code', right='slides', seed=20261111, expected_id
             l,r = by_key.get((id_,left)),by_key.get((id_,right))
             if l is None or r is None:
                 continue
-            lv = l['scoring']['overall'] if name=='overall' else l['dimensions'][name].get('score')
-            rv = r['scoring']['overall'] if name=='overall' else r['dimensions'][name].get('score')
+            lv = valid_score(l,name)
+            rv = valid_score(r,name)
             if lv is not None and rv is not None:
                 a.append(lv);b.append(rv);paired_ids.append(id_)
         diff=np.asarray(a)-np.asarray(b)
@@ -48,8 +50,18 @@ def paired_summary(rows, left='code', right='slides', seed=20261111, expected_id
                       'right_mean':float(np.mean(b)) if b else None,
                       'mean_delta':float(np.mean(diff)) if len(diff) else None,
                       'bootstrap_95_ci':ci}
-    return {'left':left,'right':right,'dimensions':output,'seed':seed,
+    acceptance={}
+    for mode in (left,right):
+        subset=[r for r in rows if r['mode']==mode]
+        states=[assess_acceptance(r)['status'] for r in subset]
+        acceptance[mode]={'planned_tasks':len(ids),'passed':states.count('passed'),
+            'failed':states.count('failed'),'unverified':states.count('unverified'),
+            'missing_ids':sorted(set(ids)-{r['case_id'] for r in subset}),
+            'acceptance_rate':states.count('passed')/len(ids) if ids else 0}
+    return {'left':left,'right':right,'dimensions':output,'seed':seed,'acceptance_by_mode':acceptance,
             'task_identity_verified_ids':verified_ids,'task_identity_unverified_ids':unverified_ids,
+            'evidence_exclusions':[{'case_id':r['case_id'],'mode':r['mode'],'invalid_dimensions':invalid_reasons(r)}
+                                   for r in rows if invalid_reasons(r)],
             'inference_scope':'descriptive development sample; bootstrap captures task sampling only, not judge bias or human agreement'}
 
 
@@ -94,6 +106,8 @@ def main():
     lines+=['',f'有评分记录的视频：{len(rows)}；有完整总分：{sum(r["scoring"]["overall"] is not None for r in rows)}；评测失败记录：{len(errors)}。失败视频未作为零分进入均值。','']
     lines+=['## 交付要求与评分覆盖','',
             '均值不代表要求全部达成。下面并列显示失败、待核查与未验证；不改变原始分数，也不筛掉低质量结果。','']
+    for mode,acceptance in report['acceptance_by_mode'].items():
+        lines.append(f"- `{mode}`：非补偿质量验收 {acceptance['passed']}/{acceptance['planned_tasks']} 通过，{acceptance['failed']} 失败，{acceptance['unverified']} 未验证，{len(acceptance['missing_ids'])} 缺失。")
     for mode,r in report['requirements_by_mode'].items():
         lines.append(f"- `{mode}`：{r['n_scored_videos']}/{r['n_planned_tasks']} 题有评分记录，{r['n_complete_overall_scores']} 题有完整总分；要求失败 {len(r['failed'])} 题；待核查 {len(r['review'])} 题；要求证据不全 {len(r['unverified'])} 题。")
         if r['failed']:lines.append('  - 失败明细：`'+json.dumps(r['failed'],ensure_ascii=False)+'`。')

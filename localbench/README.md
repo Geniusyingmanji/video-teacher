@@ -18,6 +18,8 @@
 
 [rubric.py](rubric.py), [detailed_rubric.py](detailed_rubric.py), [strict_anchors.py](strict_anchors.py), [applicability.py](applicability.py), [judge.py](judge.py), [verification.py](verification.py), [requirements.py](requirements.py)。
 
+[score_validity.py](score_validity.py)：逐维证据完整性与冲突传播；[acceptance.py](acceptance.py)：独立非补偿质量验收；[timeline_review.py](timeline_review.py)：全部解码帧的分批检查与覆盖记录。
+
 ## 成片证据与音频
 
 [evidence.py](evidence.py), [asr.py](asr.py), [alignment.py](alignment.py), [transcript_guard.py](transcript_guard.py), [transcript_validity.py](transcript_validity.py), [pixel_regions.py](pixel_regions.py), [region_review.py](region_review.py), [program_consistency.py](program_consistency.py), [relation_audit.py](relation_audit.py), [source_changes.py](source_changes.py), [source_observation.py](source_observation.py), [source_region.py](source_region.py), [claim_scope.py](claim_scope.py), [literal_visual_probe.py](literal_visual_probe.py)。
