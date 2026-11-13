@@ -2,9 +2,32 @@
 
 当前代码入口为 `teacher.py`。`bench` 使用统一代码场景后端测模型的教学视频生成能力；`method` 在同一后端增加公开题面的状态计算和受约束视觉修复。两者均自动生成完整英文旁白视频，再用相同评测协议评分。
 
-原生入口 `bench --backend video` 支持 Ark／Wan／Wan3 异步协议，尚待服务实测通过。代码场景基线不能充当原生 T2V，本方法不是官方 Code2Video 复现。进度见[当前状态](status.md)。
+原生入口 `bench --backend video` 支持 Ark／Wan／Wan3 异步协议，尚待服务实测通过。代码场景基线不能充当原生 T2V，`bench --framework code2video` 另行调用官方源码适配器，本方法与其分开。进度见[当前状态](status.md)。
 
 当前实验与付费模型调用暂停；以下命令供恢复运行或协作者使用。
+
+三评委已接入 `bench`、`method` 和 `evaluate`，固定题包的 Specific 可同时启用。完整配置字段、调用示例与输出位置直接维护在 [README：三评委配置与调用](../README.md#三评委配置与调用)。旧单评委配置继续可用；前缀学生提问仍独立于固定题包评分。
+
+## 三条实验路线的接口状态
+
+| 路线 | 当前入口与已实现部分 | 尚需完成 |
+| --- | --- | --- |
+| 原生视频生成 | `bench --backend video`；Ark／Wan／Wan3 请求构造、异步提交与查询、任务续跑、下载、分镜拼接及共用配音 | 真实服务验收；逐型号时长／图像输入适配。当前没有 Veo、Sora 协议实现 |
+| 语言／多模态模型＋统一代码框架 | `bench --backend code`；模型输出 JSON 场景，校验、渲染、配音并自动评 General | 旗舰 B* 的服务和任务兼容性验收；这一路不是官方 Code2Video |
+| 语言／多模态模型＋我们的框架 | `method`；在代码后端加入公开任务状态、布局处理、成片反馈与可选关系工具 | 旗舰 B* 验收；论文中 Base→S→S+R→Full 的统一阶段开关仍需拆分 |
+| 模型＋Code2Video | `bench --framework code2video`；固定官方源码、公开任务／旁白适配、Manim 容器渲染、共用三评委 | 离线官方调用链已验证；Docker 渲染和真实模型五题验收待执行 |
+| 模型＋其他外部框架 | 可用 `evaluate --manifest` 接收外部成片 | SGA、ManimAgent、Remotion 生成适配未实现 |
+| 模型＋通用成片反馈基线 | 已有 `visual_agent.py` 反馈组件 | 独立于方法专用编译／修复的 Generic Visual Repair 入口待拆出 |
+
+Code2Video 的安装、配置及完整调用直接见 [README](../README.md#官方-code2video-接入与调用)。
+
+代码依据：[服务配置](../localbench/services.py)、[聊天传输](../localbench/client.py)、[CLI 编排](../localbench/run.py)、[原生视频协议](../localbench/video_api.py)、[原生分镜拼接](../localbench/native_pipeline.py)。
+
+**切换 B* 的边界：** 当前聊天传输固定使用 `/chat/completions` 请求和 `choices[0].message.content` 响应，支持文字／图片及可配置 JSON 输出参数。兼容该格式的网关可以通过配置接入；其他厂商的原生消息、内容生成或 Responses 协议尚无独立适配。仅更换模型名不能证明旗舰模型已经接通，还需核对图像输入、token 参数、JSON 输出和生成／听音／视觉评委各自的服务配置。`doctor` 只检查本地配置与环境，输出 `network_probed: false`，不验证 API 可用性。
+
+**全库输入边界：** 当前自动附件路由覆盖 178 道 GRADE 图片题；另 3 道题的 `source.local_before_path` 已随代码包保留图片，但尚未由 `public_case()` 传给生成器。旧 `wan` 协议明确拒绝图片输入，不能直接承担全部带图题；`wan3` 与 Ark 的带图请求也需逐型号实测。原生片段当前统一输出 720p／24 fps 展示副本，代码默认输出 1024×576／12 fps，论文比较需要记录这一差异。
+
+接口已通过禁用网络连接的离线测试，覆盖聊天调用、三评委与固定题包评分、原生任务收据／续跑、分批 CLI、预检与视觉反馈。原生协议使用模拟服务响应，测试通过不等于已通过真实视频服务或旗舰模型验收。
 
 ## 安装
 
@@ -56,7 +79,7 @@ export VIDEO_TEACHER_API_KEY='YOUR-API-KEY'
 .venv/bin/python teacher.py method --out results/my_method
 ```
 
-生成模型需要支持文本／图片输入，输出符合提示的 JSON 场景程序。默认视觉 judge 与生成模型共用服务。对 Qwen 系列，默认通过相同 URL／key 调用 `qwen3.5-omni-flash` 做实际听音；全模态 Omni 则直接复用自身。如果服务没有这个音频模型，需要配置可听音的评测模型。只有视觉能力的模型不能完成音频质量评测，缺失的维度会保持为空，不伪造总分。
+生成模型需要支持文本／图片输入，输出符合提示的 JSON 场景程序。旧单评委模式中，未配置 judge 时与生成模型共用服务；三评委模式要求显式配置三家模型，且不与 `judge` 混用。单评委 Qwen 默认通过相同 URL／key 调用 `qwen3.5-omni-flash` 做实际听音；全模态 Omni 则复用自身。三评委模式必须明确配置 `audio_judge`，或设为 `false` 保留音频缺失。只有视觉能力的模型不能完成听音评分。
 
 不同服务分别配置时，复制 [collaborator.example.json](../configs/collaborator.example.json) 到仓库外，修改模型和 URL。每个服务可指定不同的 `api_key_env`；只有地址相同才允许继承未提供的凭据。API key 不写进运行配置及报告。
 
@@ -126,7 +149,7 @@ CLI 默认 API 并发 8、渲染并发 2、评测并发 4；本项目恢复运�
 
 可选第三块为 [模拟学生诊断](student.md)。在配置中加入 `student_evaluation` 可随原命令运行；`teacher.py student` 可单独评已有视频。第三块报告理解、疑问、证据核验与覆盖率，不参与原综合分。若启用此块，退出码 0 还要求所有学生会话完成；单独 `student` 命令的退出码仅检查该块完成情况。
 
-退出码 0 表示所选题全部交付且综合分可计算；退出码 2 表示配置错误或有失败／缺失评分。有效综合分仍不等于教学质量合格，VLM judge 需要人工校准。不要只展示成功视频的均分而忽略交付率和评分覆盖率。
+退出码 0 表示所选题全部交付且 General 可计算，并且已启用的 Specific／学生阶段完成；退出码 2 表示配置错误或有失败／缺失评分。有效综合分仍不等于教学质量合格，VLM judge 需要人工校准。不要只展示成功视频的均分而忽略交付率和评分覆盖率。
 
 ## 原生视频 API
 

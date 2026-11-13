@@ -12,7 +12,7 @@ from .common import ROOT, digest, public_case, read_jsonl, write_json, write_jso
 from .delivery import build_report
 from .pipeline import generate_one
 from .provenance import file_hash, freeze_run
-from .services import JudgeClient, ServicePool, service_from
+from .services import JudgeClient, ServicePool, service_from, judge_panel_from
 from .tts import resolve_tts
 
 DEFAULT_IDS = ['math_exp_02', 'cs_exp_01', 'chem_exp_01']
@@ -60,7 +60,8 @@ def resolve_services(args, config):
     gen.setdefault('model', os.environ.get('VIDEO_TEACHER_MODEL', ''))
     gen.setdefault('url', os.environ.get('VIDEO_TEACHER_BASE_URL', ''))
     generator = service_from(gen)
-    judge = service_from(config.get('judge'), fallback=generator)
+    panel = judge_panel_from(config)
+    judge = panel[0].service if panel else service_from(config.get('judge'), fallback=generator)
     audio_config = config.get('audio_judge')
     if audio_config is False:
         audio = None
@@ -257,6 +258,7 @@ def execute(args):
     if spatial_graphs and spatial_contracts:
         raise ValueError('choose method_spatial_graphs or method_spatial_contracts, not both')
     generator, judge, audio = resolve_services(args, config)
+    panel_specs = judge_panel_from(config)
     manifest = None
     ids = args.ids
     if args.command == 'evaluate':
@@ -270,6 +272,19 @@ def execute(args):
             ids = manifest.get('planned_ids') or manifest_ids
     rows = select_cases(args.data, ids, args.suite,
                         num=getattr(args, 'num', None), offset=getattr(args, 'offset', 0))
+    framework = getattr(args, 'framework', 'unified')
+    code2video_settings = None
+    if framework == 'code2video' and args.command != 'evaluate':
+        if args.command not in {'bench', 'doctor'} or args.backend != 'code':
+            raise ValueError('Code2Video uses bench --backend code --framework code2video; method is our own framework')
+        from .code2video_runtime import settings_from as code2video_settings_from
+        code2video_settings = code2video_settings_from(config.get('code2video'), args.config.parent if args.config else ROOT)
+    specific_settings = None
+    if config.get('specific_questions') is not None:
+        if not panel_specs:
+            raise ValueError('fixed Specific evaluation requires the explicit three-judge panel')
+        from .specific_eval import load_questions
+        specific_settings = load_questions(config['specific_questions'], rows, args.config.parent if args.config else ROOT)
     from .student_run import settings_from, public_settings, run_stage
     student_settings = settings_from(config, judge, args.config.parent if args.config else ROOT)
     tts = resolve_tts(config.get('tts')) if args.command != 'evaluate' else None
@@ -309,6 +324,16 @@ def execute(args):
                      'video_service': video_service.public() if video_service else None,
                      'max_video_seconds': getattr(args, 'max_video_seconds', 120),
                      'artifact_mode': getattr(args, 'mode', None)}
+    public_config['framework'] = framework
+    if code2video_settings:
+        public_config['code2video'] = code2video_settings
+    if panel_specs:
+        from .judge_panel import VERSION as PANEL_VERSION, DISAGREEMENT_RANGE
+        public_config['judge_panel'] = {'version': PANEL_VERSION, 'judges': [s.public() for s in panel_specs],
+                                       'required_votes': 3, 'disagreement_range': DISAGREEMENT_RANGE,
+                                       'audio_policy': 'shared_single_listener'}
+    if specific_settings:
+        public_config['specific_questions'] = {k: specific_settings[k] for k in ('path', 'sha256')}
     if student_settings:
         public_config['student_evaluation'] = public_settings(student_settings, rows)
     if piano_bridge:
@@ -332,6 +357,9 @@ def execute(args):
     if args.command == 'doctor':
         print(json.dumps({'status': 'configuration_ready', 'selected_cases': len(rows),
                           'services': {k: public_config[k] for k in ('generator', 'judge', 'audio_judge')},
+                          'judge_panel': public_config.get('judge_panel'),
+                          'specific_questions': public_config.get('specific_questions'),
+                          'framework': framework, 'code2video': code2video_settings,
                           'tts': tts, 'audio_warning': None if audio else 'No audio judge; audio dimensions cannot be fully scored.',
                           'network_probed': False}, ensure_ascii=False, indent=2))
         return 0
@@ -348,6 +376,7 @@ def execute(args):
     pool = ServicePool(out/'api', concurrency=args.api_workers, max_calls=args.max_calls, max_tokens=args.max_tokens)
     gen_client = pool.client(generator)
     eval_client = JudgeClient(pool.client(judge), pool.client(audio) if audio else None)
+    panel_members = [(spec, JudgeClient(pool.client(spec.service), None)) for spec in panel_specs] if panel_specs else None
     native_api = None
     if video_service:
         from .video_api import VideoAPI
@@ -369,6 +398,11 @@ def execute(args):
             attempts = list((base/id_/'attempts').glob('attempt_*'))
             base = base/id_/'attempts'/f'attempt_{len(attempts)+1:03d}'
         try:
+            if code2video_settings:
+                from .code2video import generate_code2video
+                result = generate_code2video(case, base, gen_client, code2video_settings, tts)
+                write_json(saved, result)
+                return result
             if native_api:
                 from .native_pipeline import generate_native
                 result = generate_native(case, base, gen_client, native_api, tts)
@@ -405,6 +439,9 @@ def execute(args):
         except Exception as exc:
             result = {'id': id_, 'status': 'generation_error', 'error': str(exc)[:600], 'artifacts': [],
                       'public_input_hash': digest(public_case(case))}
+            if code2video_settings:
+                result.update(framework='official_code2video_adapted',
+                              upstream_commit=code2video_settings['upstream']['commit'])
         write_json(saved, result)
         return result
     try:
@@ -429,7 +466,7 @@ def execute(args):
                     result = future.result()
                     generated = [result if r['id'] == result['id'] else r for r in generated]
                     write_json(out/'manifest.json', {'cases': generated, 'planned_ids': [r['id'] for r in rows]})
-                    build_report(out, rows, generated, evaluated)
+                    build_report(out, rows, generated, evaluated, specific_requested=bool(specific_settings))
         write_json(out/'manifest.json', {'cases': generated, 'planned_ids': [r['id'] for r in rows]})
         lookup = {r['id']: r for r in rows}
         def evaluate(record):
@@ -444,7 +481,10 @@ def execute(args):
                 previous = json.loads(scores.read_text())
                 if previous['video_sha256'] != artifact['sha256'] or previous['case_hash'] != digest(case):
                     raise ValueError('saved evaluation differs from media/task')
-                if previous.get('scoring', {}).get('overall') is not None or not getattr(args, 'retry_incomplete', False):
+                complete = previous.get('scoring', {}).get('overall') is not None
+                if specific_settings:
+                    complete = complete and previous.get('specific', {}).get('status') == 'complete'
+                if complete or not getattr(args, 'retry_incomplete', False):
                     print(id_, 'reused saved evaluation', flush=True)
                     return previous
             if directory.exists():
@@ -454,9 +494,22 @@ def execute(args):
                     if item != attempts:
                         item.rename(destination/item.name)
             try:
-                return judge_video(artifact['video_path'], case, directory, eval_client,
-                                   **({'transcript_guard': True} if transcript_guard else {}),
-                                   **({'applicability': applicability[id_]} if applicability else {}))
+                options = {**({'transcript_guard': True} if transcript_guard else {}),
+                           **({'applicability': applicability[id_]} if applicability else {})}
+                if panel_members:
+                    from .judge_panel import evaluate_panel
+                    result = evaluate_panel(artifact['video_path'], case, directory, panel_members, eval_client, **options)
+                else:
+                    result = judge_video(artifact['video_path'], case, directory, eval_client, **options)
+                if specific_settings:
+                    from .specific_eval import evaluate_specific
+                    try:
+                        result['specific'] = evaluate_specific(case, specific_settings['cases'][id_], directory, panel_members)
+                    except Exception as exc:
+                        result['specific'] = {'status': 'evaluation_error', 'specific_score': None,
+                                              'error_type': type(exc).__name__, 'error': str(exc)[:600]}
+                    write_json(directory/'scores.json', result)
+                return result
             except Exception as exc:
                 error = {'case_id': id_, 'status': 'evaluation_error', 'error': str(exc)[:600]}
                 write_json(directory/'error.json', error)
@@ -468,16 +521,18 @@ def execute(args):
             for future in concurrent.futures.as_completed(futures):
                 evaluated.append(future.result())
                 write_json(out/'evaluations.json', evaluated)
-                build_report(out, rows, generated, evaluated)
+                build_report(out, rows, generated, evaluated, specific_requested=bool(specific_settings))
         students = run_stage(out, rows, generated, pool, student_settings,
                              resume=args.resume, workers=args.eval_workers) if student_settings else None
-        summary = build_report(out, rows, generated, evaluated, students=students)
+        summary = build_report(out, rows, generated, evaluated, students=students, specific_requested=bool(specific_settings))
         from .api_usage import summarize
         write_json(out/'api_usage.json', summarize(out/'api'))
         print(json.dumps({k: v for k, v in summary.items() if k != 'cases'}, ensure_ascii=False, indent=2))
         print('Report:', out/'REPORT.md', flush=True)
         student_complete = students is None or all(r['status'] == 'complete' for r in students)
-        return 0 if summary['delivered_cases'] == len(rows) and summary['scored_cases'] == len(rows) and student_complete else 2
+        specific_complete = not specific_settings or (len(evaluated) == len(rows) and
+                            all(r.get('specific', {}).get('status') == 'complete' for r in evaluated))
+        return 0 if summary['delivered_cases'] == len(rows) and summary['scored_cases'] == len(rows) and student_complete and specific_complete else 2
     finally:
         if native_api: native_api.close()
         pool.close()
@@ -497,6 +552,8 @@ def main():
     parser.add_argument('--num', type=int, help='run exactly N cases in stable input order (defaults to full bank)')
     parser.add_argument('--offset', type=int, default=0, help='skip N cases before --num; default 0')
     parser.add_argument('--backend', choices=['code', 'video'], default='code')
+    parser.add_argument('--framework', choices=['unified', 'code2video'], default='unified',
+                        help='code generation framework; Code2Video requires its pinned sources and Docker image')
     parser.add_argument('--out', type=Path, default=ROOT/'results/localbench/collaborator_run')
     parser.add_argument('--manifest', type=Path)
     parser.add_argument('--mode', help='explicit artifact mode when importing a multi-mode manifest')

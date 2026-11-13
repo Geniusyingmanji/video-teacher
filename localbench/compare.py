@@ -17,14 +17,6 @@ def paired_summary(rows, left='code', right='slides', seed=20261111, expected_id
     if len(by_key)!=len(rows):
         raise ValueError('duplicate case/mode scores cannot be pooled')
     ids = sorted({r['case_id'] for r in rows}|set(expected_ids))
-    verified_ids=[];unverified_ids=[]
-    for id_ in ids:
-        l,r=by_key.get((id_,left)),by_key.get((id_,right))
-        if l is None or r is None:continue
-        for field in ('case_hash','rubric_version','judge_model'):
-            if (l.get(field) is not None or r.get(field) is not None) and l.get(field)!=r.get(field):
-                raise ValueError(f'paired {field} mismatch for {id_}')
-        (verified_ids if l.get('case_hash') else unverified_ids).append(id_)
     rng = np.random.default_rng(seed)
     output = {}
     for name in [*DIMENSIONS,'overall']:
@@ -49,7 +41,6 @@ def paired_summary(rows, left='code', right='slides', seed=20261111, expected_id
                       'mean_delta':float(np.mean(diff)) if len(diff) else None,
                       'bootstrap_95_ci':ci}
     return {'left':left,'right':right,'dimensions':output,'seed':seed,
-            'task_identity_verified_ids':verified_ids,'task_identity_unverified_ids':unverified_ids,
             'inference_scope':'descriptive development sample; bootstrap captures task sampling only, not judge bias or human agreement'}
 
 

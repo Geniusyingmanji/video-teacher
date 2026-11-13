@@ -5,6 +5,7 @@
 | 入口 | 输入与输出 | 接入状态 |
 | --- | --- | --- |
 | `teacher.py student` / `student_run.py` | 小模型看截至当前检查点的视频帧、独立音轨转写、受众画像与自身先前状态，输出理解和疑问；reviewer 核对知识与媒体依据 | 默认 CLI 的分段诊断 |
+| `specific_eval.py` + 配置 `specific_questions` | 三评委读取同一完整视频证据及预先冻结的题目问题／参考，独立评分后汇总 Specific | 已接入 `bench`／`method`／`evaluate`；不是运行时学生提问 |
 | `student_questions/pipeline.py` | 学生看 1/4、1/2 或协议指定前缀提出本题问题；judge 看完整媒体与有效问题逐问评分，输出 Specific | 独立研究入口 |
 | `student_questions/trajectory.py` | 学生继续观看后回答原问题，记录回答与疑问变化 | 研究协议 |
 | `student_knowledge.py` | 用预先冻结的知识点问题检查学生回答及图示对应 | 小规模试验 |
@@ -19,4 +20,4 @@
 .venv/bin/python teacher.py student --manifest results/my_method/manifest.json --config /path/to/student-services.json --out results/student_review
 ```
 
-下一步是统一 CLI 与问题协议、冻结逐题题包、用人工标注和受控缺陷校准 judge／学生检错能力。
+固定题包格式与三评委调用见 [README](../README.md#三评委配置与调用)。示例只有一题的一问，400 题正式题包尚待裁定；自动前缀提问协议仍为研究入口。下一步是冻结逐题题包，用人工标注和受控缺陷校准 judge／学生检错能力。

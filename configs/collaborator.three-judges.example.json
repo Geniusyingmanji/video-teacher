@@ -1,0 +1,37 @@
+{
+  "generator": {
+    "model": "YOUR_GENERATOR_MODEL",
+    "url": "https://YOUR-GENERATOR-SERVICE/v1",
+    "api_key_env": "VIDEO_TEACHER_GENERATOR_KEY"
+  },
+  "judges": [
+    {
+      "id": "judge_a",
+      "family": "qwen",
+      "model": "qwen3.8-flash",
+      "url": "https://YOUR-JUDGE-A-SERVICE/v1",
+      "api_key_env": "VIDEO_TEACHER_JUDGE_A_KEY"
+    },
+    {
+      "id": "judge_b",
+      "family": "family_b",
+      "model": "YOUR_JUDGE_B_MODEL",
+      "url": "https://YOUR-JUDGE-B-SERVICE/v1",
+      "api_key_env": "VIDEO_TEACHER_JUDGE_B_KEY"
+    },
+    {
+      "id": "judge_c",
+      "family": "family_c",
+      "model": "YOUR_JUDGE_C_MODEL",
+      "url": "https://YOUR-JUDGE-C-SERVICE/v1",
+      "api_key_env": "VIDEO_TEACHER_JUDGE_C_KEY"
+    }
+  ],
+  "audio_judge": {
+    "model": "qwen3.5-omni-flash",
+    "url": "https://YOUR-AUDIO-SERVICE/v1",
+    "api_key_env": "VIDEO_TEACHER_AUDIO_KEY",
+    "json_format": false
+  },
+  "tts": {"backend": "auto"}
+}

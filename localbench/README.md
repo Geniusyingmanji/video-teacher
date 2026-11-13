@@ -18,6 +18,8 @@
 
 [rubric.py](rubric.py), [detailed_rubric.py](detailed_rubric.py), [strict_anchors.py](strict_anchors.py), [applicability.py](applicability.py), [judge.py](judge.py), [verification.py](verification.py), [requirements.py](requirements.py)。
 
+[judge_panel.py](judge_panel.py) 编排三名独立评委，共享媒体与单独听音结果，保留缺评／分歧并逐项汇总。
+
 ## 成片证据与音频
 
 [evidence.py](evidence.py), [asr.py](asr.py), [alignment.py](alignment.py), [transcript_guard.py](transcript_guard.py), [transcript_validity.py](transcript_validity.py), [pixel_regions.py](pixel_regions.py), [region_review.py](region_review.py), [program_consistency.py](program_consistency.py), [relation_audit.py](relation_audit.py), [source_changes.py](source_changes.py), [source_observation.py](source_observation.py), [source_region.py](source_region.py), [claim_scope.py](claim_scope.py), [literal_visual_probe.py](literal_visual_probe.py)。
@@ -25,6 +27,8 @@
 ## Specific 与学生
 
 [student.py](student.py), [student_run.py](student_run.py), [student_protocol.py](student_protocol.py), [student_keyed.py](student_keyed.py), [student_retention.py](student_retention.py), [student_knowledge.py](student_knowledge.py), [student_perception.py](student_perception.py)。
+
+[specific_eval.py](specific_eval.py) 为正式固定题包入口，使用三评委评完整视频；与运行时学生提问分开。
 
 ## 生成规划与重渲染
 
@@ -67,3 +71,5 @@
 
 这些研究协议尚未全部替换默认学生 CLI；近期固定四问知识点试验也不能称为自动前缀问题池。
 
+
+[code2video.py](code2video.py) 调用固定官方生成流程；[code2video_source.py](code2video_source.py) 校验上游源码，[code2video_runtime.py](code2video_runtime.py) 配置隔离 Manim 执行。命令维护在[根 README](../README.md#官方-code2video-接入与调用)。

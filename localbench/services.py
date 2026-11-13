@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import os
+import re
 import threading
 from urllib.parse import urlparse
 
@@ -61,6 +62,50 @@ def service_from(config, *, fallback=None):
     return Service(model,
                    config.get('url', fallback.url if fallback else ''), key or '',
                    config.get('json_format', default_json), config.get('extra_body', {}))
+
+
+@dataclass
+class JudgeSpec:
+    id: str
+    family: str
+    service: Service
+
+    def public(self):
+        return {'id': self.id, 'family': self.family, **self.service.public()}
+
+
+def judge_panel_from(config):
+    """Require three explicit, distinct judges; never inherit the generator."""
+    if 'judges' not in config:
+        return None
+    if 'judge' in config:
+        raise ValueError('choose judges (three-member panel) or judge (single), not both')
+    rows = config['judges']
+    if not isinstance(rows, list) or len(rows) != 3:
+        raise ValueError('judges must contain exactly three explicit services')
+    members = []
+    for row in rows:
+        if not isinstance(row, dict):
+            raise ValueError('each judge must be an object')
+        values = dict(row)
+        id_, family = values.pop('id', None), values.pop('family', None)
+        if not isinstance(id_, str) or not re.fullmatch(r'[a-zA-Z][a-zA-Z0-9_-]{0,47}', id_):
+            raise ValueError('judge id must be a safe identifier (1..48 characters)')
+        if not isinstance(family, str) or not family.strip():
+            raise ValueError('each judge needs an explicit model family')
+        if not values.get('model') or not values.get('url'):
+            raise ValueError('each judge needs explicit model and url; no generator fallback')
+        members.append(JudgeSpec(id_, family.strip(), service_from(values)))
+    for label, values in (
+        ('ids', [m.id.casefold() for m in members]),
+        ('families', [m.family.casefold() for m in members]),
+        ('models', [m.service.model.casefold() for m in members]),
+    ):
+        if len(set(values)) != 3:
+            raise ValueError('three judge '+label+' must be distinct')
+    if 'audio_judge' not in config:
+        raise ValueError('panel requires explicit audio_judge service or false for missing audio scores')
+    return members
 
 
 class ServicePool:

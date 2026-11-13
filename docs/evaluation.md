@@ -2,6 +2,8 @@
 
 General 使用 VLM judge，对实际视频帧、独立音轨与转写逐项评定。计划或生成代码只能辅助定位，不能代替成片证据。运行定义位于 [rubric.py](../localbench/rubric.py)、[detailed_rubric.py](../localbench/detailed_rubric.py)、[strict_anchors.py](../localbench/strict_anchors.py)。
 
+可配置三个独立评委，使用同一份抽帧／转写。54 项视觉与教学准则逐项取整数中位数，6 项音频准则使用明确标注的共享听音单评；缺票、适用性不一致或极差达到 2 分时留空并写复核清单，原有未解决证据冲突继续阻止完整总分。实现见 [judge_panel.py](../localbench/judge_panel.py)，接口见 [README](../README.md#三评委配置与调用)。这改变评委聚合方式，不改变十维权重或各项 1–5 评分锚点。
+
 | 大块 | 子块 | 叶维度 |
 | --- | --- | --- |
 | 视频质量 | — | 画面与文字呈现、时间一致性、语音与音频质量 |
